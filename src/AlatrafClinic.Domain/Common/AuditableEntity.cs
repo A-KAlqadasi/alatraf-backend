@@ -1,11 +1,11 @@
 namespace AlatrafClinic.Domain.Common;
 
-public abstract class AuditableEntity : Entity
+public abstract class AuditableEntity<TId> : Entity<TId>
 {
     protected AuditableEntity()
     { }
 
-    protected AuditableEntity(int id)
+    protected AuditableEntity(TId id)
         : base(id)
     {
     }

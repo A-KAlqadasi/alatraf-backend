@@ -5,7 +5,7 @@ using AlatrafClinic.Domain.Common.Results;
 
 namespace AlatrafClinic.Domain.People;
 
-public class Person : AuditableEntity
+public sealed class Person : AuditableEntity<int>
 {
     public string? Fullname { get; private set; }
 
@@ -29,32 +29,7 @@ public class Person : AuditableEntity
 
     public static Result<Person> Create(string? fullname, DateTime? birthdate, string? phone, string? nationalNo, string? address)
     {
-        if (Validate(fullname, birthdate, phone, address).IsError)
-        {
-            return Validate(fullname, birthdate, phone, address).Errors!;
-        }
-
-        return new Person(fullname, birthdate, phone, nationalNo, address);
-    }
-
-    public Result<Updated> Update(string? fullname, DateTime? birthdate, string? phone, string? nationalNo, string? address)
-    {
-        if (Validate(fullname, birthdate, phone, address).IsError)
-        {
-            return Validate(fullname, birthdate, phone, address).Errors!;
-        }
-      
-        Fullname = fullname;
-        Birthdate = birthdate;
-        Phone = phone;
-        NationalNo = nationalNo;
-        Address = address;
-
-        return Result.Updated;
-    }
-
-    private static Result<Success> Validate(string? fullname, DateTime? birthdate, string? phone, string? address)
-    {
+         
         if (string.IsNullOrWhiteSpace(fullname))
         {
             return PersonErrors.NameRequired;
@@ -80,6 +55,44 @@ public class Person : AuditableEntity
             return PersonErrors.AddressRequired;
         }
 
-        return Result.Success;
+        return new Person(fullname, birthdate, phone, nationalNo, address);
+    }
+
+    public Result<Updated> Update(string? fullname, DateTime? birthdate, string? phone, string? nationalNo, string? address)
+    {
+        
+        
+        if (string.IsNullOrWhiteSpace(fullname))
+        {
+            return PersonErrors.NameRequired;
+        }
+
+        if (string.IsNullOrWhiteSpace(phone) || !Regex.IsMatch(phone, @"^(77|78|73|71)\d{7}$"))
+        {
+            return PersonErrors.InvalidPhoneNumber;
+        }
+
+        if (birthdate == null)
+        {
+            return PersonErrors.BirthdateRequired;
+        }
+
+        if (birthdate > DateTime.UtcNow)
+        {
+            return PersonErrors.InvalidBirthdate;
+        }
+
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return PersonErrors.AddressRequired;
+        }
+      
+        Fullname = fullname;
+        Birthdate = birthdate;
+        Phone = phone;
+        NationalNo = nationalNo;
+        Address = address;
+
+        return Result.Updated;
     }
 }

@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AlatrafClinic.Domain.Common;
 
-public abstract class Entity
+public abstract class Entity<TId>
 {
-    public int Id { get; private set; }
+    public TId? Id { get; private set; }
 
     private readonly List<DomainEvent> _domainEvents = new();
 
@@ -14,7 +14,7 @@ public abstract class Entity
     protected Entity()
     { }
 
-    protected Entity(int id)
+    protected Entity(TId id)
     {
         Id = id;
     }
@@ -34,3 +34,4 @@ public abstract class Entity
         _domainEvents.Clear();
     }
 }
+
