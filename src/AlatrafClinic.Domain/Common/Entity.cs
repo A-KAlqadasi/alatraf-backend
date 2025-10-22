@@ -4,9 +4,9 @@ namespace AlatrafClinic.Domain.Common;
 
 public abstract class Entity
 {
-    public int Id { get; }
+    public int Id { get; private set; }
 
-    private readonly List<DomainEvent> _domainEvents = [];
+    private readonly List<DomainEvent> _domainEvents = new();
 
     [NotMapped]
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
