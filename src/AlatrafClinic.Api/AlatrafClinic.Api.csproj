@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\AlatrafClinic.Application\AlatrafClinic.Application.csproj" />
+    <ProjectReference Include="..\AlatrafClinic.Infrastructure\AlatrafClinic.Infrastructure.csproj" />
+    <ProjectReference Include="..\AlatrafClinic.Contracts\AlatrafClinic.Contracts.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
