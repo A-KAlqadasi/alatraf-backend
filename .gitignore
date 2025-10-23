@@ -3,7 +3,7 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-Patients/
+
 EFCoreConfiguration.txt
 domainStructure.txt
 # dotenv files
