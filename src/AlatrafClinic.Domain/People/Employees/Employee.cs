@@ -23,7 +23,7 @@ public sealed class Employee : AuditableEntity<Guid>
         {
             return EmployeeErrors.IdRequired;
         }
-
+        
         if (personId <= 0)
         {
             return EmployeeErrors.PersonIdRequired;

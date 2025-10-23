@@ -86,7 +86,7 @@ public sealed class Person : AuditableEntity<int>
         {
             return PersonErrors.AddressRequired;
         }
-      
+        
         Fullname = fullname;
         Birthdate = birthdate;
         Phone = phone;
