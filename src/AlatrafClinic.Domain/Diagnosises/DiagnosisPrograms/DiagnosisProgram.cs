@@ -1,5 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.TherapyCards.Sessions;
 
 namespace AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 
@@ -8,14 +10,13 @@ public class DiagnosisProgram : AuditableEntity<int>
     public int? DiagnosisId { get; set; }
     public Diagnosis? Diagnosis { get; set; }
     public int? MedicalProgramId { get; set; }
-    // public MedicalPrograms? MedicalProgram { get; set; }
+    public MedicalProgram? MedicalProgram { get; set; }
     public int? Duration { get; set; }
     public string? Notes { get; set; }
-    // FK -> TherapyCards
     public int? TherapyCardId { get; set; }
     //public TherapyCard? TherapyCard { get; set; }
 
-    //public ICollection<ProgramSession> ProgramSessions { get; set; } = new List<ProgramSession>();
+    public ICollection<SessionProgram> SessionPrograms { get; set; } = new List<SessionProgram>();
     private DiagnosisProgram()
     {
     }
