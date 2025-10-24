@@ -1,5 +1,6 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
@@ -28,8 +29,7 @@ public class Diagnosis : AuditableEntity<int>
     public Patient? Patient { get; set; }
     public DiagnosisType? DiagnosisType { get; set; }
 
-    // // Navigations
-    // public ICollection<DiagnosisPrograms> DiagnosisPrograms { get; set; } = new List<DiagnosisPrograms>();
+    public ICollection<DiagnosisProgram> DiagnosisPrograms { get; set; } = new List<DiagnosisProgram>();
     // public ICollection<DiagnosisIndustrialParts> DiagnosisIndustrialParts { get; set; } = new List<DiagnosisIndustrialParts>();
     // public ICollection<Sales> Sales { get; set; } = new List<Sales>();
     // public ICollection<RepairCards> RepairCards { get; set; } = new List<RepairCards>();
