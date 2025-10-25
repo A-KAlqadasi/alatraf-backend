@@ -8,7 +8,7 @@ public class Session : AuditableEntity<int>
     public bool? IsTaken { get; set; }
     public int? Number { get; set; }
     public int? TherapyCardId { get; set; }
-    //public TherapyCard? TherapyCard { get; set; }
+    public TherapyCard? TherapyCard { get; set; }
 
     private readonly List<SessionProgram> _sessionPrograms = new();
     public IEnumerable<SessionProgram> SessionPrograms => _sessionPrograms.AsReadOnly();

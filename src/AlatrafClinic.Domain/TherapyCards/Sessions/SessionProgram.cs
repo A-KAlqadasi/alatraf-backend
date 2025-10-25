@@ -18,28 +18,23 @@ public class SessionProgram : AuditableEntity<int>
     private SessionProgram()
     {
     }
-    private SessionProgram(int diagnosisProgramId, int sessionId, int doctorSectionRoomId)
+    private SessionProgram(int diagnosisProgramId, int doctorSectionRoomId)
     {
         DiagnosisProgramId = diagnosisProgramId;
-        SessionId = sessionId;
         DoctorSectionRoomId = doctorSectionRoomId;
     }
-    public static Result<SessionProgram> Create(int diagnosisProgramId, int sessionId, int doctorSectionRoomId)
+    public static Result<SessionProgram> Create(int diagnosisProgramId, int doctorSectionRoomId)
     {
         if (diagnosisProgramId <= 0)
         {
             return SessionProgramErrors.DiagnosisProgramIdIsRequired;
-        }
-        if (sessionId <= 0)
-        {
-            return SessionProgramErrors.SessionIdIsRequired;
         }
         if (doctorSectionRoomId <= 0)
         {
             return SessionProgramErrors.DoctorSectionRoomIdIsRequired;
         }
 
-        return new SessionProgram(diagnosisProgramId, sessionId, doctorSectionRoomId);
+        return new SessionProgram(diagnosisProgramId, doctorSectionRoomId);
     }
     public Result<Updated> UpdateDoctorSectionRoom(int doctorSectionRoomId)
     {

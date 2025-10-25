@@ -1,5 +1,6 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 
@@ -14,7 +15,7 @@ public class DiagnosisProgram : AuditableEntity<int>
     public int? Duration { get; set; }
     public string? Notes { get; set; }
     public int? TherapyCardId { get; set; }
-    //public TherapyCard? TherapyCard { get; set; }
+    public TherapyCard? TherapyCard { get; set; }
 
     public ICollection<SessionProgram> SessionPrograms { get; set; } = new List<SessionProgram>();
     private DiagnosisProgram()
@@ -40,7 +41,6 @@ public class DiagnosisProgram : AuditableEntity<int>
         string? notes,
         int? therapyCardId = null)
     {
-        // Validation
         if (diagnosisId is null)
         {
             return DiagnosisProgramErrors.DiagnosisIdIsRequired;
