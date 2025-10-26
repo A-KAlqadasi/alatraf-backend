@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Organization.Doctors;
@@ -8,102 +10,38 @@ namespace AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 
 public class DoctorSectionRoom : AuditableEntity<int>
 {
-    public int? DoctorId { get; set; }
-    public Doctor? Doctor { get; set; }
-    public int? SectionId { get; set; }
-    public Section? Section { get; set; }
-    public int? RoomId { get; set; }
-    public Room? Room { get; set; }
-    public DateTime? AssignDate { get; set; }
-    public bool? IsActive { get; set; }
-    public string? Notes { get; set; }
+   public int DoctorId { get; private set; }
+    public Doctor Doctor { get; private set; } = default!;
+    public int RoomId { get; private set; }
+    public Room Room { get; private set; } = default!;
+    public DateTime AssignDate { get; private set; }
+    public DateTime? EndDate { get; private set; }
+    public bool IsActive { get; private set; }
+    public string? Notes { get; private set; }
 
     private DoctorSectionRoom() { }
 
-    private DoctorSectionRoom(int? doctorId, int? sectionId, int? roomId, DateTime? assignDate, bool? isActive, string? notes)
+    private DoctorSectionRoom(int doctorId, int roomId, DateTime assignDate, string? notes)
     {
         DoctorId = doctorId;
-        SectionId = sectionId;
         RoomId = roomId;
         AssignDate = assignDate;
-        IsActive = isActive;
+        IsActive = true;
         Notes = notes;
     }
 
-    public static Result<DoctorSectionRoom> Create(int? doctorId, int? sectionId, int? roomId, DateTime? assignDate, bool? isActive, string? notes)
+    public static Result<DoctorSectionRoom> Assign(int doctorId, int roomId, string? notes = null)
     {
-        if (doctorId is null || doctorId <= 0)
-        {
-            return DoctorSectionRoomErrors.DoctorIdRequired;
-        }
-
-        if (sectionId is null || sectionId <= 0)
-        {
-            return DoctorSectionRoomErrors.SectionIdRequired;
-        }
-
-        if (roomId is null || roomId <= 0)
-        {
-            return DoctorSectionRoomErrors.RoomIdRequired;
-        }
-
-        if (assignDate is null)
-        {
-            return DoctorSectionRoomErrors.AssignDateRequired;
-        }
-
-        if (isActive is null)
-        {
-            return DoctorSectionRoomErrors.IsActiveRequired;
-        }
-
-        if (assignDate is not null && assignDate < DateTime.UtcNow)
-        {
-            return DoctorSectionRoomErrors.AssignDateInvalid;
-        }
-
-        return new DoctorSectionRoom(doctorId, sectionId, roomId, assignDate, isActive, notes);
+        return new DoctorSectionRoom(doctorId, roomId, DateTime.UtcNow, notes);
     }
 
-    public Result<Updated> Update(int? doctorId, int? sectionId, int? roomId, DateTime? assignDate, bool? isActive, string? notes)
+    public Result<Updated> EndAssignment()
     {
-        if (doctorId is null || doctorId <= 0)
-        {
-            return DoctorSectionRoomErrors.DoctorIdRequired;
-        }
+        if (!IsActive)
+            return DoctorSectionRoomErrors.AssignmentAlreadyEnded;
 
-        if (sectionId is null || sectionId <= 0)
-        {
-            return DoctorSectionRoomErrors.SectionIdRequired;
-        }
-
-        if (roomId is null || roomId <= 0)
-        {
-            return DoctorSectionRoomErrors.RoomIdRequired;
-        }
-
-        if (assignDate is null)
-        {
-            return DoctorSectionRoomErrors.AssignDateRequired;
-        }
-
-        if (isActive is null)
-        {
-            return DoctorSectionRoomErrors.IsActiveRequired;
-        }
-
-        if (assignDate is not null && assignDate < DateTime.UtcNow)
-        {
-            return DoctorSectionRoomErrors.AssignDateInvalid;
-        }
-
-        DoctorId = doctorId;
-        SectionId = sectionId;
-        RoomId = roomId;
-        AssignDate = assignDate;
-        IsActive = isActive;
-        Notes = notes;
-
+        IsActive = false;
+        EndDate = DateTime.UtcNow;
         return Result.Updated;
     }
 }

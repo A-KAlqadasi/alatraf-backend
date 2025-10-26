@@ -22,29 +22,20 @@ public class DiagnosisProgram : AuditableEntity<int>
     {
     }
     public DiagnosisProgram(
-        int? diagnosisId,
         int? medicalProgramId,
         int? duration,
-        string? notes,
-        int? therapyCardId)
+        string? notes)
     {
-        DiagnosisId = diagnosisId;
         MedicalProgramId = medicalProgramId;
         Duration = duration;
         Notes = notes;
-        TherapyCardId = therapyCardId;
     }
     public static Result<DiagnosisProgram> Create(
-        int? diagnosisId,
         int? medicalProgramId,
         int? duration,
-        string? notes,
-        int? therapyCardId = null)
+        string? notes)
     {
-        if (diagnosisId is null)
-        {
-            return DiagnosisProgramErrors.DiagnosisIdIsRequired;
-        }
+       
         if (medicalProgramId is null)
         {
             return DiagnosisProgramErrors.MedicalProgramIdIsRequired;
@@ -59,24 +50,16 @@ public class DiagnosisProgram : AuditableEntity<int>
         }
 
         return new DiagnosisProgram(
-            diagnosisId,
             medicalProgramId,
             duration,
-            notes,
-            therapyCardId);
+            notes);
     }
 
     public Result<Updated> Update(
-        int? diagnosisId,
         int? medicalProgramId,
         int? duration,
-        string? notes,
-        int? therapyCardId = null)
+        string? notes)
     {
-        if (diagnosisId is null)
-        {
-            return DiagnosisProgramErrors.DiagnosisIdIsRequired;
-        }
         if (medicalProgramId is null)
         {
             return DiagnosisProgramErrors.MedicalProgramIdIsRequired;
@@ -89,12 +72,10 @@ public class DiagnosisProgram : AuditableEntity<int>
         {
             return DiagnosisProgramErrors.NotesTooLong;
         }
-
-        DiagnosisId = diagnosisId;
+        
         MedicalProgramId = medicalProgramId;
         Duration = duration;
         Notes = notes;
-        TherapyCardId = therapyCardId;
 
         return Result.Updated;
     }

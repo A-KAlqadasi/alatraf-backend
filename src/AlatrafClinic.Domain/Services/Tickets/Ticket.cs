@@ -1,5 +1,6 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Services.Appointments;
 
@@ -12,8 +13,8 @@ public class Ticket : AuditableEntity<int>
     public int ServiceId { get; set; }
     public Service? Service { get; set; }
 
-    //public ICollection<Diagnosis> Diagnosises { get; set; } = new List<Diagnosis>();
-    public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+    public Diagnosis? Diagnosis { get; set; }
+    public Appointment? Appointment { get; set; }
     private Ticket() { }
 
     private Ticket(int patientId, int serviceId)
@@ -48,6 +49,27 @@ public class Ticket : AuditableEntity<int>
         }
         PatientId = patientId;
         ServiceId = serviceId;
+
+        return Result.Updated;
+    }
+    public Result<Updated> AssignDiagnosis(Diagnosis diagnosis)
+    {
+        if (Diagnosis is not null)
+        {
+            return TicketErrors.DiagnosisAlreadyAssigned;
+        }
+        Diagnosis = diagnosis;
+
+        return Result.Updated;
+    }
+    
+    public Result<Updated> AssignAppointment(Appointment appointment)
+    {
+        if (Appointment is not null)
+        {
+            return TicketErrors.AppointmentAlreadyAssigned;
+        }
+        Appointment = appointment;
 
         return Result.Updated;
     }

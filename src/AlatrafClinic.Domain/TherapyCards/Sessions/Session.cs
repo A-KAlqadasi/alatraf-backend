@@ -9,6 +9,7 @@ public class Session : AuditableEntity<int>
     public int? Number { get; set; }
     public int? TherapyCardId { get; set; }
     public TherapyCard? TherapyCard { get; set; }
+    public DateTime SessionDate { get; set; }
 
     private readonly List<SessionProgram> _sessionPrograms = new();
     public IEnumerable<SessionProgram> SessionPrograms => _sessionPrograms.AsReadOnly();
@@ -22,6 +23,27 @@ public class Session : AuditableEntity<int>
         Number = number;
         IsTaken = isTaken;
         _sessionPrograms = sessionPrograms;
+        SessionDate = DateTime.Now;
+    }
+    private Session(int number, DateTime date, int therapyCardId)
+    {
+        Number = number;
+        SessionDate = date;
+        TherapyCardId = therapyCardId;
+        IsTaken = false;
+    }
+    public static Result<Session> Create(int number, DateTime date, int therapyCardId)
+    {
+        if (therapyCardId <= 0)
+        {
+            return SessionErrors.TherapyCardIdIsRequired;
+        }
+        if (number <= 0)
+        {
+            return SessionErrors.NumberIsRequired;
+        }
+
+        return new Session(number, date, therapyCardId);
     }
 
     public static Result<Session> Create(int therapyCardId, int number, List<SessionProgram> sessionPrograms, bool isTaken = true)
@@ -35,6 +57,22 @@ public class Session : AuditableEntity<int>
             return SessionErrors.NumberIsRequired;
         }
         return new Session(therapyCardId, number, sessionPrograms, isTaken);
+    }
+    public Result<Updated> TakeSession(List<SessionProgram> sessionPrograms)
+    {
+        if (IsTaken == true)
+        {
+            return SessionErrors.SessionAlreadyTaken;
+        }
+        
+        if(SessionDate.Date != DateTime.Now.Date)
+        {
+            return SessionErrors.InvalidSessionDate(SessionDate);
+        }
+        _sessionPrograms.AddRange(sessionPrograms);
+        IsTaken = true;
+
+        return Result.Updated;
     }
 
 }

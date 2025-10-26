@@ -12,4 +12,12 @@ public static class SessionErrors
         Error.Validation(
             "Session.NumberIsRequired",
             "Session number is required.");
+    public static readonly Error SessionAlreadyTaken =
+        Error.Validation(
+            "Session.SessionAlreadyTaken",
+            "This session is already taken.");
+    public static Error InvalidSessionDate(DateTime sessionDate) =>
+        Error.Validation(
+            "Session.InvalidSessionDate",
+            $"Session date must be in {sessionDate.ToString("dd/MM/yyyy")}.");
 }

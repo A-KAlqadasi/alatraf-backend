@@ -8,50 +8,49 @@ namespace AlatrafClinic.Domain.Organization.Doctors;
 
 public class Doctor : AuditableEntity<int>
 {
-    public int PersonId { get; set; }
-    public Person? Person { get; set; }
-    public int? DepartmentId { get; set; }
-    public Department? Department { get; set; }
-    public ICollection<DoctorSectionRoom> DoctorSectionRooms { get; set; } = new List<DoctorSectionRoom>();
+    private readonly List<DoctorSectionRoom> _assignments = [];
+    public int PersonId { get; private set; }
+    public int DepartmentId { get; private set; }
+    public Department Department { get; private set; } = default!;
+    public IReadOnlyCollection<DoctorSectionRoom> Assignments => _assignments.AsReadOnly();
 
-    private Doctor()
-    {
-    }
-    private Doctor(int personId, int? departmentId)
+    private Doctor() { }
+
+    private Doctor(int personId, int departmentId)
     {
         PersonId = personId;
         DepartmentId = departmentId;
     }
-    public static Result<Doctor> Create(int personId, int? departmentId)
+
+    public static Result<Doctor> Create(int personId, int departmentId)
     {
         if (personId <= 0)
-        {
             return DoctorErrors.PersonIdRequired;
-        }
 
-        if (departmentId is null || departmentId <= 0)
-        {
+        if (departmentId <= 0)
             return DoctorErrors.DepartmentIdRequired;
-        }
 
         return new Doctor(personId, departmentId);
     }
-    
-    public Result<Updated> Update(int personId, int? departmentId)
+
+    public Result<Updated> ChangeDepartment(int newDepartmentId)
     {
-        if (personId <= 0)
-        {
-            return DoctorErrors.PersonIdRequired;
-        }
-
-        if (departmentId is null || departmentId <= 0)
-        {
+        if (newDepartmentId <= 0)
             return DoctorErrors.DepartmentIdRequired;
-        }
 
-        PersonId = personId;
-        DepartmentId = departmentId;
-
+        DepartmentId = newDepartmentId;
         return Result.Updated;
+    }
+
+    public Result<DoctorSectionRoom> AssignToRoom(int roomId, string? notes = null)
+    {
+        // End previous active assignment if any
+        var current = _assignments.FirstOrDefault(a => a.IsActive);
+        current?.EndAssignment();
+
+        var newAssignment = DoctorSectionRoom.Assign(Id, roomId, notes);
+        _assignments.Add(newAssignment.Value);
+
+        return newAssignment;
     }
 }

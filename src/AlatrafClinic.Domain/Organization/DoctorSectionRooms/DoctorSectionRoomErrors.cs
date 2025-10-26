@@ -21,4 +21,6 @@ public static class DoctorSectionRoomErrors
 
     public static readonly Error IsActiveRequired =
         Error.Validation("DoctorSectionRoom.IsActiveRequired", "Is Active is required.");
+    public static readonly Error AssignmentAlreadyEnded =
+        Error.Validation("DoctorSectionRoom.AssignmentAlreadyEnded", "The assignment has already ended.");
 }

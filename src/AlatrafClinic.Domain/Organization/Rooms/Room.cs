@@ -7,51 +7,37 @@ namespace AlatrafClinic.Domain.Organization.Rooms;
 
 public class Room : AuditableEntity<int>
 {  
-    public string? Name { get; set; }
-    public int? SectionId { get; set; }
-    public Section? Section { get; set; }
-    public ICollection<DoctorSectionRoom> DoctorSectionRooms { get; set; } = new List<DoctorSectionRoom>();
-    
-    private Room()
-    {
-    }
+   private readonly List<DoctorSectionRoom> _doctorAssignments = new();
+    public int Number { get; private set; }
+    public int SectionId { get; private set; }
+    public Section Section { get; private set; } = default!;
+    public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
 
-    private Room(string? name, int? sectionId)
+    private Room() { }
+
+    private Room(int number, int sectionId)
     {
-        Name = name;
+        Number = number;
         SectionId = sectionId;
     }
-    public static Result<Room> Create(string? name, int? sectionId)
+
+    public static Result<Room> Create(int number, int sectionId)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return RoomErrors.NameRequired;
-        }
+        if (number <= 0)
+            return RoomErrors.InvalidNumber;
 
-        if (sectionId is null || sectionId <= 0)
-        {
-            return RoomErrors.SectionIdRequired;
-        }
+        if (sectionId <= 0)
+            return RoomErrors.InvalidSection;
 
-        return new Room(name, sectionId);
+        return new Room(number, sectionId);
     }
 
-    public Result<Updated> Update(string? name, int? sectionId)
+    public Result<Updated> UpdateNumber(int newNumber)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return RoomErrors.NameRequired;
-        }
+        if (newNumber <= 0)
+            return RoomErrors.InvalidNumber;
 
-        if (sectionId is null || sectionId <= 0)
-        {
-            return RoomErrors.SectionIdRequired;
-        }
-
-        Name = name;
-        SectionId = sectionId;
-
+        Number = newNumber;
         return Result.Updated;
     }
-
 }

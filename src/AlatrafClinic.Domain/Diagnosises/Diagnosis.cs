@@ -7,6 +7,7 @@ using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.TherapyCards;
 
 namespace AlatrafClinic.Domain.Diagnosises;
 
@@ -27,13 +28,15 @@ public class Diagnosis : AuditableEntity<int>
     public Ticket? Ticket { get; set; }
     public int? PatientId { get; set; }
     public Patient? Patient { get; set; }
-    public DiagnosisType? DiagnosisType { get; set; }
+    public DiagnosisType? DiagnoType { get; set; }
 
-    public ICollection<DiagnosisProgram> DiagnosisPrograms { get; set; } = new List<DiagnosisProgram>();
+    private readonly List<DiagnosisProgram> _diagnosisPrograms = new();
+    public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
     // public ICollection<DiagnosisIndustrialParts> DiagnosisIndustrialParts { get; set; } = new List<DiagnosisIndustrialParts>();
     // public ICollection<Sales> Sales { get; set; } = new List<Sales>();
     // public ICollection<RepairCards> RepairCards { get; set; } = new List<RepairCards>();
-    // public ICollection<TherapyCards> TherapyCards { get; set; } = new List<TherapyCards>();
+
+    public TherapyCard? TherapyCard { get; set; }
 
     private Diagnosis()
     {
@@ -55,7 +58,7 @@ public class Diagnosis : AuditableEntity<int>
         TypeId = typeId;
         TicketId = ticketId;
         PatientId = patientId;
-        DiagnosisType = diagnosisType;
+        DiagnoType = diagnosisType;
     }
     public static Result<Diagnosis> Create(
         string? diagnosisText,
@@ -152,7 +155,7 @@ public class Diagnosis : AuditableEntity<int>
         TypeId = typeId;
         TicketId = ticketId;
         PatientId = patientId;
-        DiagnosisType = diagnosisType;
+        DiagnoType = diagnosisType;
 
         return Result.Updated;
     }
@@ -162,9 +165,35 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.InvalidDiagnosisType;
         }
-        
-        DiagnosisType = diagnosisType;
+
+        DiagnoType = diagnosisType;
         return Result.Updated;
     }
 
+    public Result<Updated> AssignDiagnosisPrograms(List<DiagnosisProgram> diagnosisPrograms)
+    {
+        if (DiagnoType != DiagnosisType.Therapy)
+        {
+            return DiagnosisErrors.DiagnosisProgramAdditionOnlyForTherapyDiagnosis;
+        }
+
+        _diagnosisPrograms.AddRange(diagnosisPrograms);
+        
+        return Result.Updated;
+    }
+
+    public Result<Updated> AssignTherapyCard(TherapyCard therapyCard)
+    {
+        if (DiagnoType != DiagnosisType.Therapy)
+        {
+            return DiagnosisErrors.TherapyCardAdditionOnlyForTherapyDiagnosis;
+        }
+        if (TherapyCard != null)
+        {
+            return DiagnosisErrors.TherapyCardAlreadyAssigned;
+        }
+
+        TherapyCard = therapyCard;
+        return Result.Updated;
+    }   
 }

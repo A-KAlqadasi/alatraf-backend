@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Organization.Departments;
+using AlatrafClinic.Domain.Services.Tickets;
 
 namespace AlatrafClinic.Domain.Services;
 
@@ -11,8 +12,7 @@ public class Service : AuditableEntity<int>
     public string? Name { get; set; }
     public int? DepartmentId { get; set; }
     public Department? Department { get; set; }
-
-    //public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     private Service()
     {
     }

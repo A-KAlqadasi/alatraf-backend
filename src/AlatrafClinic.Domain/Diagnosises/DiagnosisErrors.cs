@@ -36,4 +36,17 @@ public static class DiagnosisErrors
         Error.Validation(
             code: "Diagnosis.InvalidDiagnosisType",
             description: "Diagnosis type is invalid.");
+    public static readonly Error DiagnosisProgramAdditionOnlyForTherapyDiagnosis =
+        Error.Validation(
+            code: "Diagnosis.DiagnosisProgramAdditionOnlyForTherapyDiagnosis",
+            description: "Adding diagnosis programs is only allowed for therapy diagnoses.");
+    public static readonly Error TherapyCardAdditionOnlyForTherapyDiagnosis =
+        Error.Validation(
+            code: "Diagnosis.TherapyCardAdditionOnlyForTherapyDiagnosis",
+            description: "Adding therapy cards is only allowed for therapy diagnoses.");
+    public static readonly Error TherapyCardAlreadyAssigned =
+        Error.Validation(
+            code: "Diagnosis.TherapyCardAlreadyAssigned",
+            description: "A therapy card has already been assigned to this diagnosis.");
+            
 }
