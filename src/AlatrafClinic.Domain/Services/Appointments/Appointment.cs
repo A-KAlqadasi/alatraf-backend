@@ -1,7 +1,10 @@
+using System.Data;
+
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Enums;
 using AlatrafClinic.Domain.Services.Appointments.Enums;
+using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Domain.Services.Tickets;
 
 namespace AlatrafClinic.Domain.Services.Appointments;
@@ -38,19 +41,23 @@ public class Appointment : AuditableEntity<int>
         string? notes,
         int ticketId,
         DateTime? lastScheduledDate,
-        IEnumerable<DayOfWeek> allowedDays)
+        AppointmentScheduleRules rules,
+        HolidayCalendar holidays)
     {
         if (!Enum.IsDefined(typeof(PatientType), patientType))
         {
             return AppointmentErrors.PatientTypeInvalid;
         }
 
-        if (allowedDays is null || allowedDays.Count() == 0)
+        if (rules is null)
         {
-            return AppointmentErrors.AllowedDaysIsRequired;
+            return AppointmentErrors.AllowedDaysAreRequired;
         }
-
-        AllowedDays = allowedDays.ToList().AsReadOnly();
+        
+        if(holidays is null)
+        {
+            return AppointmentErrors.HolidaysAreRequired;
+        }
 
         if (ticketId <= 0)
         {
@@ -64,7 +71,7 @@ public class Appointment : AuditableEntity<int>
             baseDate = requestedDate.Value.Date;
         }
 
-        while (!IsAllowedDay(baseDate.DayOfWeek))
+        while (!rules.IsAllowedDay(baseDate.DayOfWeek) || holidays.IsHoliday(baseDate))
         {
             baseDate = baseDate.AddDays(1);
         }
@@ -75,21 +82,28 @@ public class Appointment : AuditableEntity<int>
         return new Appointment(patientType, baseDate, AppointmentState.Scheduled, notes, ticketId);
     }
     
-    public Result<Updated> Reschedule(DateTime newDate, IEnumerable<DayOfWeek> allowedDays)
+    public Result<Updated> Reschedule(DateTime newDate, AppointmentScheduleRules rules,
+        HolidayCalendar holidays)
     {
         if (!IsEditable)
             return AppointmentErrors.Readonly;
-
-        if (allowedDays is null || allowedDays.Count() == 0)
+        if (rules is null)
         {
-            return AppointmentErrors.AllowedDaysIsRequired;
+            return AppointmentErrors.AllowedDaysAreRequired;
+        }
+        if(holidays is null)
+        {
+            return AppointmentErrors.HolidaysAreRequired;
         }
 
-        AllowedDays = allowedDays.ToList().AsReadOnly();
-
-        if (!IsAllowedDay(newDate.DayOfWeek))
+        if (!rules.IsAllowedDay(newDate.DayOfWeek))
         {
-            return AppointmentErrors.InvalidAppointmentDay(AllowedDays.ToList()); 
+            return AppointmentErrors.InvalidAppointmentDay(rules.AllowedDays.ToList());
+        }
+        
+        if (holidays.IsHoliday(newDate))
+        {
+            return AppointmentErrors.AppointmentOnHoliday(newDate);
         }
 
         if (newDate < DateTime.UtcNow.Date)
