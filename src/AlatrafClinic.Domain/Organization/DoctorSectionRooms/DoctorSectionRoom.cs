@@ -12,8 +12,13 @@ public class DoctorSectionRoom : AuditableEntity<int>
 {
    public int DoctorId { get; private set; }
     public Doctor Doctor { get; private set; } = default!;
-    public int RoomId { get; private set; }
-    public Room Room { get; private set; } = default!;
+
+    public int SectionId { get; private set; }
+    public Section Section { get; private set; } = default!;
+
+    public int? RoomId { get; private set; }     // optional now
+    public Room? Room { get; private set; }
+
     public DateTime AssignDate { get; private set; }
     public DateTime? EndDate { get; private set; }
     public bool IsActive { get; private set; }
@@ -21,20 +26,48 @@ public class DoctorSectionRoom : AuditableEntity<int>
 
     private DoctorSectionRoom() { }
 
-    private DoctorSectionRoom(int doctorId, int roomId, DateTime assignDate, string? notes)
+    private DoctorSectionRoom(int doctorId, int sectionId, int? roomId, string? notes)
     {
         DoctorId = doctorId;
+        SectionId = sectionId;
         RoomId = roomId;
-        AssignDate = assignDate;
+        AssignDate = DateTime.UtcNow;
         IsActive = true;
         Notes = notes;
     }
 
-    public static Result<DoctorSectionRoom> Assign(int doctorId, int roomId, string? notes = null)
+    public static Result<DoctorSectionRoom> AssignToSection(int doctorId, int sectionId, string? notes = null)
     {
-        return new DoctorSectionRoom(doctorId, roomId, DateTime.UtcNow, notes);
+        if (sectionId <= 0)
+        {
+            return DoctorSectionRoomErrors.SectionIdRequired;
+        }
+        if (doctorId <= 0)
+        {
+            return DoctorSectionRoomErrors.DoctorIdRequired;
+        }
+
+        return new DoctorSectionRoom(doctorId, sectionId, null, notes);
     }
 
+    public static Result<DoctorSectionRoom> AssignToRoom(int doctorId, int sectionId, int roomId, string? notes = null)
+    {
+        if (roomId <= 0)
+        {
+            return DoctorSectionRoomErrors.RoomIdRequired;
+        }
+        if (sectionId <= 0)
+        {
+            return DoctorSectionRoomErrors.SectionIdRequired;
+        }
+        if (doctorId <= 0)
+        {
+            return DoctorSectionRoomErrors.DoctorIdRequired;
+        }
+
+        return new DoctorSectionRoom(doctorId, sectionId, roomId, notes);
+    }
+    
     public Result<Updated> EndAssignment()
     {
         if (!IsActive)

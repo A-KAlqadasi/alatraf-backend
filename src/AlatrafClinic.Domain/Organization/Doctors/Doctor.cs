@@ -42,13 +42,23 @@ public class Doctor : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<DoctorSectionRoom> AssignToRoom(int roomId, string? notes = null)
+    public Result<DoctorSectionRoom> AssignToRoom(int sectionId, int roomId, string? notes = null)
     {
-        // End previous active assignment if any
         var current = _assignments.FirstOrDefault(a => a.IsActive);
         current?.EndAssignment();
 
-        var newAssignment = DoctorSectionRoom.Assign(Id, roomId, notes);
+        var newAssignment = DoctorSectionRoom.AssignToRoom(Id, sectionId, roomId, notes);
+        _assignments.Add(newAssignment.Value);
+
+        return newAssignment;
+    }
+
+    public Result<DoctorSectionRoom> AssignToSection(int sectionId, string? notes = null)
+    {
+        var current = _assignments.FirstOrDefault(a => a.IsActive);
+        current?.EndAssignment();
+
+        var newAssignment = DoctorSectionRoom.AssignToSection(Id, sectionId, notes);
         _assignments.Add(newAssignment.Value);
 
         return newAssignment;

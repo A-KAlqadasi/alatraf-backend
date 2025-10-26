@@ -7,10 +7,11 @@ namespace AlatrafClinic.Domain.Organization.Rooms;
 
 public class Room : AuditableEntity<int>
 {  
-   private readonly List<DoctorSectionRoom> _doctorAssignments = new();
     public int Number { get; private set; }
     public int SectionId { get; private set; }
     public Section Section { get; private set; } = default!;
+    private readonly List<DoctorSectionRoom> _doctorAssignments = new();
+
     public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
 
     private Room() { }

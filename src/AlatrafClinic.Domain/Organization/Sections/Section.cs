@@ -9,11 +9,14 @@ namespace AlatrafClinic.Domain.Organization.Sections;
 
 public class Section :AuditableEntity<int>
 {
-    private readonly List<Room> _rooms = new();
     public string Name { get; private set; } = default!;
     public int DepartmentId { get; private set; }
     public Department Department { get; private set; } = default!;
+    private readonly List<Room> _rooms = new();
     public IReadOnlyCollection<Room> Rooms => _rooms.AsReadOnly();
+    private readonly List<DoctorSectionRoom> _doctorAssignments = new();
+
+     public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
 
     private Section() { }
 
@@ -32,6 +35,14 @@ public class Section :AuditableEntity<int>
             return SectionErrors.InvalidDepartmentId;
 
         return new Section(name, departmentId);
+    }
+    public Result<Updated> UpdateName(string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+            return SectionErrors.NameRequired;
+
+        Name = newName;
+        return Result.Updated;
     }
 
     public Result<Room> AddRoom(int number)
