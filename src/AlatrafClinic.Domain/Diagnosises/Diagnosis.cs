@@ -1,5 +1,6 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
@@ -32,7 +33,8 @@ public class Diagnosis : AuditableEntity<int>
 
     private readonly List<DiagnosisProgram> _diagnosisPrograms = new();
     public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
-    // public ICollection<DiagnosisIndustrialParts> DiagnosisIndustrialParts { get; set; } = new List<DiagnosisIndustrialParts>();
+    private readonly List<DiagnosisIndustrialPart> _diagnosisIndustrialParts = new();
+    public IReadOnlyCollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts => _diagnosisIndustrialParts.AsReadOnly();
     // public ICollection<Sales> Sales { get; set; } = new List<Sales>();
     // public ICollection<RepairCards> RepairCards { get; set; } = new List<RepairCards>();
 
@@ -176,6 +178,10 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.DiagnosisProgramAdditionOnlyForTherapyDiagnosis;
         }
+        if (diagnosisPrograms.Count() <= 0)
+        {
+            return DiagnosisErrors.MedicalProgramsAreRequired;
+        }
 
         _diagnosisPrograms.AddRange(diagnosisPrograms);
         
@@ -195,5 +201,20 @@ public class Diagnosis : AuditableEntity<int>
 
         TherapyCard = therapyCard;
         return Result.Updated;
-    }   
+    }
+    public Result<Updated> AssignDiagnosisIndustrialParts(List<DiagnosisIndustrialPart> diagnosisIndustrialParts)
+    {
+        if (DiagnoType != DiagnosisType.Limbs)
+        {
+            return DiagnosisErrors.IndustrialPartAdditionOnlyForLimbsDiagnosis;
+        }
+        if (diagnosisIndustrialParts.Count() <= 0)
+        {
+            return DiagnosisErrors.IndustrialPartsAreRequired;
+        }
+
+        _diagnosisIndustrialParts.AddRange(diagnosisIndustrialParts);
+
+        return Result.Updated;
+    }
 }
