@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+
+EFCoreConfiguration.txt
+domainStructure.txt
 # dotenv files
 .env
 
