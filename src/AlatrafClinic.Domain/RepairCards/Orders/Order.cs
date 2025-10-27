@@ -66,7 +66,7 @@ public class Order : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> UpsertItems(List<OrderItem> incomingOrderItems)
+    public Result<Updated> UpsertOrderItems(List<OrderItem> incomingOrderItems)
     {
         if (!IsEditable)
         {
