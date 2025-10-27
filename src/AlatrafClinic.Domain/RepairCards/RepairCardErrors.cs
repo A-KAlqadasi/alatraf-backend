@@ -12,5 +12,5 @@ public static class RepairCardErrors
        code: "RepairCard.InvalidStateTransition",
        description: $"Repair card Invalid State transition from '{current}' to '{next}'.");
     public static readonly Error AttendanceTimeIsRequired = Error.Validation("RepairCard.AttendanceTime", "Attendance time is required.");
-
+    public static readonly Error OrderAlreadyExists = Error.Conflict("RepairCard.OrderAlreadyExists", "Order already exists in the repair card.");
 }
