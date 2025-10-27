@@ -1,6 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
+using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 namespace AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
@@ -16,6 +17,8 @@ public class DiagnosisIndustrialPart : AuditableEntity<int>
     public int Quantity { get; set; }
     public decimal Price { get; set; }
     public DateTime DoctorAssignDate { get; set; }
+    public int? RepairCardId { get; set; }
+    public RepairCard? RepairCard { get; set; }
 
     private DiagnosisIndustrialPart() { }
 
