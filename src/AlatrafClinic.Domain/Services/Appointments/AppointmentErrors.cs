@@ -23,8 +23,8 @@ public static class AppointmentErrors
     public static Error CannotMarkFutureAsAbsent(DateTime attendDate) => Error.Conflict(
        code: "Appointment.CannotMarkFutureAsAbsent", description: $"Cannot mark appointment as 'Absent' when its attend date is in the future '{attendDate:yyyy-MM-dd}'.");
     public static Error Readonly => Error.Conflict(
-    code: "WorkOrderErrors.Readonly",
-    description: "WorkOrder is read-only.");
+    code: "Appointment.Readonly",
+    description: "Appointment is read-only.");
 
     public static Error HolidaysAreRequired = Error.Validation("Appointment.HolidaysAreRequired", "Holiday calendar must be provided.");
 }

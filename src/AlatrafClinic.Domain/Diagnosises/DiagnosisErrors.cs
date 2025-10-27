@@ -37,16 +37,21 @@ public static class DiagnosisErrors
             code: "Diagnosis.InvalidDiagnosisType",
             description: "Diagnosis type is invalid.");
     public static readonly Error DiagnosisProgramAdditionOnlyForTherapyDiagnosis =
-        Error.Validation(
+        Error.Conflict(
             code: "Diagnosis.DiagnosisProgramAdditionOnlyForTherapyDiagnosis",
             description: "Adding diagnosis programs is only allowed for therapy diagnoses.");
     public static readonly Error TherapyCardAdditionOnlyForTherapyDiagnosis =
-        Error.Validation(
+        Error.Conflict(
             code: "Diagnosis.TherapyCardAdditionOnlyForTherapyDiagnosis",
             description: "Adding therapy cards is only allowed for therapy diagnoses.");
     public static readonly Error TherapyCardAlreadyAssigned =
         Error.Validation(
             code: "Diagnosis.TherapyCardAlreadyAssigned",
             description: "A therapy card has already been assigned to this diagnosis.");
-            
+    public static readonly Error IndustrialPartAdditionOnlyForLimbsDiagnosis = Error.Conflict("Diagnosis.IndustrialPartAdditionOnlyForLimbsDiagnosis", "Adding industrial parts is only allowed for limbs diagnoses.");
+
+    public static readonly Error IndustrialPartsAreRequired = Error.Validation("Diagnosis.IndustrialPartsAreRequired", "Industrial parts are required for this diagnosis.");
+
+    public static readonly Error MedicalProgramsAreRequired = Error.Validation("Diagnosis.MedicalProgramsAreRequired", "Medical programs are required for this diagnosis.");
+
 }
