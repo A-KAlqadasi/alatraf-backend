@@ -6,6 +6,8 @@ using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Patients.Cards.ExitCards;
 using AlatrafClinic.Domain.RepairCards.AttendanceTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
+using AlatrafClinic.Domain.RepairCards.Orders;
+
 
 namespace AlatrafClinic.Domain.RepairCards;
 
@@ -23,7 +25,8 @@ public class RepairCard : AuditableEntity<int>
     // Navigation
     public AttendanceTime? AttendanceTime { get; set; }
 
-    //public ICollection<Order> Orders { get; set; } = new List<Order>();
+    private readonly List<Order> _orders = new();
+    public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
     private readonly List<DiagnosisIndustrialPart> _diagnosisIndustrialParts = new();
     public IReadOnlyCollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts => _diagnosisIndustrialParts.AsReadOnly();
 
@@ -185,8 +188,25 @@ public class RepairCard : AuditableEntity<int>
         {
             return RepairCardErrors.AttendanceTimeIsRequired;
         }
-        
+
         AttendanceTime = attendanceTime;
+        return Result.Updated;
+    }
+    
+    public Result<Updated> AddOrder(Order order)
+    {
+        if (!IsEditable)
+        {
+            return RepairCardErrors.Readonly;
+        }
+        
+        if (_orders.Any(o => o.Id == order.Id))
+        {
+            return RepairCardErrors.OrderAlreadyExists;
+        }
+        order.MakeAsRepairCardOrder();
+        
+        _orders.Add(order);
         return Result.Updated;
     }
 }
