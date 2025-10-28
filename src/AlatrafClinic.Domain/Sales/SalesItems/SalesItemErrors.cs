@@ -2,23 +2,17 @@
 using AlatrafClinic.Domain.Common.Results;
 
 namespace AlatrafClinic.Domain.Sales.SalesItems;
-
 public static class SalesItemErrors
 {
-    public static readonly Error QuantityInvalid =
-        Error.Validation("SalesItem.QuantityInvalid", "Quantity must be greater than zero.");
-
-    public static readonly Error PriceInvalid =
-        Error.Validation("SalesItem.PriceInvalid", "Price must be greater than zero.");
+    public static readonly Error ItemRequired =
+        Error.Validation("SalesItem.ItemRequired", "Item is required for the sales item.");
 
     public static readonly Error UnitRequired =
-        Error.Validation(".UnitRequired", "Unit must be provided.");
-   
-     public static Error SaleIdRequired => Error.Validation(
-        code: "SalesItemErrors.SaleRequired",
-        description: "SaleID is required.");
+        Error.Validation("SalesItem.UnitRequired", "Unit is required for the sales item.");
 
-         public static readonly Error ItemIdRequired =
-        Error.Validation("SalesItem.ItemRequired", "Item is required .");
+    public static readonly Error InvalidQuantity =
+        Error.Validation("SalesItem.InvalidQuantity", "Quantity must be greater than zero.");
 
+    public static readonly Error InvalidPrice =
+        Error.Validation("SalesItem.InvalidPrice", "Price cannot be negative.");
 }

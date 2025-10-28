@@ -6,45 +6,57 @@ namespace AlatrafClinic.Domain.Sales.SalesItems;
 public class SalesItem : AuditableEntity<int>
 {
     public int SaleId { get; private set; }
-     public Sales? Sales { get; set; }
+    public Sale Sale { get; private set; } = default!;
+
     public int ItemId { get; private set; }
-    // public Items? Item { get; set; }
-    public int Quantity { get; private set; }
+    // public Item Item { get; private set; } = default!;
+
+    public int UnitId { get; private set; }
+    // public Unit Unit { get; private set; } = default!;
+
+    public decimal Quantity { get; private set; }
     public decimal Price { get; private set; }
-    public string Unit { get; private set; } = default!;
 
-    private SalesItem(int salesId, int itemId, int quantity, decimal price, string unit)
+    public decimal Total => Quantity * Price;
+
+    private SalesItem() { }
+
+    private SalesItem(int itemId, int unitId, decimal quantity, decimal price)
     {
-        SaleId = salesId;
         ItemId = itemId;
+        UnitId = unitId;
         Quantity = quantity;
         Price = price;
-        Unit = unit;
     }
 
-    public static Result<SalesItem> Create(int salesId, int itemId, int quantity, decimal price, string unit)
+    public static Result<SalesItem> Create(int itemId, int unitId, decimal quantity, decimal price)
     {
-        if (quantity <= 0) return SalesItemErrors.QuantityInvalid;
-        if (price    <= 0) return SalesItemErrors.PriceInvalid;
-        if (price    <= 0) return SalesItemErrors.PriceInvalid;
-        if (string.IsNullOrWhiteSpace(unit)) return SalesItemErrors.UnitRequired;
+        if (itemId <= 0)
+            return SalesItemErrors.ItemRequired;
 
-        return new SalesItem(salesId, itemId, quantity, price, unit);
+        if (unitId <= 0)
+            return SalesItemErrors.UnitRequired;
+
+        if (quantity <= 0)
+            return SalesItemErrors.InvalidQuantity;
+
+        if (price < 0)
+            return SalesItemErrors.InvalidPrice;
+
+        return new SalesItem(itemId, unitId, quantity, price);
     }
 
-    public Result<Updated> Update(int quantity, decimal price, string unit)
+    public Result<Updated> Update(decimal quantity, decimal price)
     {
-        if (quantity <= 0) return SalesItemErrors.QuantityInvalid;
-        if (price    <= 0) return SalesItemErrors.PriceInvalid;
-        if (string.IsNullOrWhiteSpace(unit)) return SalesItemErrors.UnitRequired;
+        if (quantity <= 0)
+            return SalesItemErrors.InvalidQuantity;
+
+        if (price < 0)
+            return SalesItemErrors.InvalidPrice;
 
         Quantity = quantity;
         Price = price;
-        Unit = unit;
 
         return Result.Updated;
     }
-
-    public decimal CalculateTotal() => Quantity * Price;
-}  
-
+}
