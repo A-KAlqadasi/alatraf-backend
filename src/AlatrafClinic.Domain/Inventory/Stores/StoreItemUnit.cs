@@ -10,7 +10,6 @@ public class StoreItemUnit : AuditableEntity<int>
     public Store Store { get; private set; } = default!;
     public int ItemUnitId { get; private set; }
     public ItemUnit ItemUnit { get; private set; } = default!;
-
     public decimal Quantity { get; private set; }
 
     private StoreItemUnit() { }

@@ -27,5 +27,4 @@ public static class StoreErrors
     
     public static readonly Error ItemUnitIsRequired =
         Error.Validation("Store.ItemUnitIsRequired", "Item unit is required.");
-
 }
