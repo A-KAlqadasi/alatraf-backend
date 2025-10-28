@@ -3,7 +3,7 @@ using AlatrafClinic.Domain.Common.Results;
 
 namespace AlatrafClinic.Domain.Sales.SalesItems;
 
-public class SalesItem : AuditableEntity<int>
+public class SaleItem : AuditableEntity<int>
 {
     public int SaleId { get; private set; }
     public Sale Sale { get; private set; } = default!;
@@ -19,9 +19,9 @@ public class SalesItem : AuditableEntity<int>
 
     public decimal Total => Quantity * Price;
 
-    private SalesItem() { }
+    private SaleItem() { }
 
-    private SalesItem(int itemId, int unitId, decimal quantity, decimal price)
+    private SaleItem(int itemId, int unitId, decimal quantity, decimal price)
     {
         ItemId = itemId;
         UnitId = unitId;
@@ -29,30 +29,30 @@ public class SalesItem : AuditableEntity<int>
         Price = price;
     }
 
-    public static Result<SalesItem> Create(int itemId, int unitId, decimal quantity, decimal price)
+    public static Result<SaleItem> Create(int itemId, int unitId, decimal quantity, decimal price)
     {
         if (itemId <= 0)
-            return SalesItemErrors.ItemRequired;
+            return SaleItemErrors.ItemRequired;
 
         if (unitId <= 0)
-            return SalesItemErrors.UnitRequired;
+            return SaleItemErrors.UnitRequired;
 
         if (quantity <= 0)
-            return SalesItemErrors.InvalidQuantity;
+            return SaleItemErrors.InvalidQuantity;
 
         if (price < 0)
-            return SalesItemErrors.InvalidPrice;
+            return SaleItemErrors.InvalidPrice;
 
-        return new SalesItem(itemId, unitId, quantity, price);
+        return new SaleItem(itemId, unitId, quantity, price);
     }
 
     public Result<Updated> Update(decimal quantity, decimal price)
     {
         if (quantity <= 0)
-            return SalesItemErrors.InvalidQuantity;
+            return SaleItemErrors.InvalidQuantity;
 
         if (price < 0)
-            return SalesItemErrors.InvalidPrice;
+            return SaleItemErrors.InvalidPrice;
 
         Quantity = quantity;
         Price = price;
