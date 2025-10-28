@@ -5,15 +5,15 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlatrafClinic.Api", "src\AlatrafClinic.Api\AlatrafClinic.Api.csproj", "{60A5F8E5-46A8-4664-BD73-7A07F1FD1313}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlatrafClinic.Api", "src\AlatrafClinic.Api\AlatrafClinic.Api.csproj", "{60A5F8E5-46A8-4664-BD73-7A07F1FD1313}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlatrafClinic.Application", "src\AlatrafClinic.Application\AlatrafClinic.Application.csproj", "{6DD0CD96-2EFC-4D65-B499-A95C079FB003}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlatrafClinic.Application", "src\AlatrafClinic.Application\AlatrafClinic.Application.csproj", "{6DD0CD96-2EFC-4D65-B499-A95C079FB003}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlatrafClinic.Domain", "src\AlatrafClinic.Domain\AlatrafClinic.Domain.csproj", "{0E17578B-8453-4A96-94A0-69EE36760C9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlatrafClinic.Domain", "src\AlatrafClinic.Domain\AlatrafClinic.Domain.csproj", "{0E17578B-8453-4A96-94A0-69EE36760C9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlatrafClinic.Infrastructure", "src\AlatrafClinic.Infrastructure\AlatrafClinic.Infrastructure.csproj", "{70E7F345-E55E-4869-AF62-4E8B4CF8BCA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlatrafClinic.Infrastructure", "src\AlatrafClinic.Infrastructure\AlatrafClinic.Infrastructure.csproj", "{70E7F345-E55E-4869-AF62-4E8B4CF8BCA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlatrafClinic.Contracts", "src\AlatrafClinic.Contracts\AlatrafClinic.Contracts.csproj", "{A73CDF9A-016B-4951-8EB7-242A06B039F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlatrafClinic.Contracts", "src\AlatrafClinic.Contracts\AlatrafClinic.Contracts.csproj", "{A73CDF9A-016B-4951-8EB7-242A06B039F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,5 +95,8 @@ Global
 		{0E17578B-8453-4A96-94A0-69EE36760C9C} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{70E7F345-E55E-4869-AF62-4E8B4CF8BCA8} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{A73CDF9A-016B-4951-8EB7-242A06B039F5} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13CBC22B-27B6-4DA5-B230-92B17B5BFA87}
 	EndGlobalSection
 EndGlobal
