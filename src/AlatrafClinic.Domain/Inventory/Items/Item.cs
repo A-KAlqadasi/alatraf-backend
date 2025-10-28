@@ -76,8 +76,7 @@ public class Item : AuditableEntity<int>
                     incoming.Price,
                     incoming.ConversionFactor,
                     incoming.MinPriceToPay,
-                    incoming.MaxPriceToPay,
-                    incoming.Quantity
+                    incoming.MaxPriceToPay
                 );
 
                 if (result.IsError)
