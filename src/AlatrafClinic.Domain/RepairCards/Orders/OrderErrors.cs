@@ -5,10 +5,10 @@ namespace AlatrafClinic.Domain.RepairCards.Orders;
 
 public static class OrderErrors
 {
-    public static readonly Error OrderItemsAreRequired = Error.Validation("Order.ItemsRequired", "Order must have at least one item.");
-
-    public static readonly Error SectionIdInvalid = Error.Validation("Order.SectionIdInvalid", "Section ID is invalid.");
-    public static readonly Error ReadOnly = Error.Conflict("Order.ReadOnly", "Order is read-only and cannot be modified.");
-    public static readonly Error OrderCannotCompleteUntilHasExchangeOrder = Error.Validation("Order.OrderCannotCompleteUntilHasExchangeOrder", "Order cannot be completed until it has an Exchange Order.");
-    public static readonly Error InvalidExchangeOrderId = Error.Validation("Order.InvalidExchangeOrderId", "Invalid Exchange Order ID.");
+    public static readonly Error InvalidSection     = Error.Validation("Order.InvalidSection", "Section is required.");
+    public static readonly Error InvalidStore       = Error.Validation("Order.InvalidStore", "Store is required.");
+    public static readonly Error InvalidRepairCard  = Error.Validation("Order.InvalidRepairCard", "Repair card is required for this order type.");
+    public static readonly Error NoItems            = Error.Validation("Order.NoItems", "At least one order item is required.");
+    public static readonly Error ReadOnly           = Error.Validation("Order.ReadOnly", "Order is not editable in the current state.");
+    public static readonly Error MixedStores        = Error.Validation("Order.MixedStores", "All items must belong to the same store.");
 }

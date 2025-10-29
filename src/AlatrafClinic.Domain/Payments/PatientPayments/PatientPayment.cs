@@ -1,13 +1,13 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 
-namespace AlatrafClinic.Domain.Patients.Payments.PatientPayments;
+namespace AlatrafClinic.Domain.Payments.PatientPayments;
 
 public class PatientPayment : AuditableEntity<int>
 {
     public string? CouponNumber { get; set; }
     public int? PaymentId { get; set; }
-    //public Payment? Payment { get; set; }
+    public Payment? Payment { get; set; }
 
     private PatientPayment() { }
 

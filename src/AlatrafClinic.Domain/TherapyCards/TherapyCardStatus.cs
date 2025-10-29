@@ -1,7 +1,6 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Patients.Payments;
-using AlatrafClinic.Domain.Patients.Payments.Enums;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 
 namespace AlatrafClinic.Domain.TherapyCards;

@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
 
-namespace AlatrafClinic.Domain.Patients.Payments.WoundedPayments;
+namespace AlatrafClinic.Domain.Payments.WoundedPayments;
 
 
 public static class WoundedPaymentErrors

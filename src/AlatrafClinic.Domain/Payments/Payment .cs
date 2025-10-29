@@ -1,10 +1,11 @@
-
-
+using AlatrafClinic.Domain.AccountTypes;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Patients.Payments.Enums;
+using AlatrafClinic.Domain.Payments.DisabledPayments;
+using AlatrafClinic.Domain.Payments.PatientPayments;
+using AlatrafClinic.Domain.Payments.WoundedPayments;
 
-namespace AlatrafClinic.Domain.Patients.Payments;
+namespace AlatrafClinic.Domain.Payments;
 
    public sealed class Payment : AuditableEntity<int>
 {
@@ -13,8 +14,12 @@ namespace AlatrafClinic.Domain.Patients.Payments;
     public decimal? Discount { get; private set; }
 
     public int AccountId { get; private set; }
-
+    public AccountType AccountType { get; private set; } = default!;
     public PaymentType Type { get; private set; }
+
+    public PatientPayment? PatientPayment { get; private set; }
+    public DisabledPayment? DisabledPayment { get; private set; }
+    public WoundedPayment? WoundedPayment { get; private set; }
 
 
     public decimal Residual =>
@@ -49,7 +54,6 @@ namespace AlatrafClinic.Domain.Patients.Payments;
         return new Payment(total, paid, discount, accountId, type);
     }
 
-   
     public Result<Updated> UpdateAmounts(decimal total, decimal? paid, decimal? discount)
     {
         if (total <= 0)
@@ -71,7 +75,6 @@ namespace AlatrafClinic.Domain.Patients.Payments;
         return Result.Updated;
     }
 
-// if the paid amount is added incrementally 
     public Result<Updated> AddPaidAmount(decimal amount)
     {
         if (amount <= 0)
@@ -86,6 +89,5 @@ namespace AlatrafClinic.Domain.Patients.Payments;
         PaidAmount = currentPaid + amount;
         return Result.Updated;
     }
-
     public bool IsFullyPaid => Residual == 0;
 }

@@ -2,150 +2,133 @@ using System.Reflection.Metadata;
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.Organization.Departments;
 using AlatrafClinic.Domain.Organization.Sections;
 using AlatrafClinic.Domain.RepairCards.Enums;
 
 namespace AlatrafClinic.Domain.RepairCards.Orders;
-
 public class Order : AuditableEntity<int>
 {
-    public int? RepairCardId { get; set; }
-    public RepairCard? RepairCard { get; set; }
-    public int? SectionId { get; set; }
-    public Section? Section { get; set; }
-    public OrderStatus OrderStatus { get; set; }
-    public OrderType OrderType { get; set; }
-    public int? ExchangeOrderId { get; set; }
+    public int? RepairCardId { get; private set; }
+    public RepairCard? RepairCard { get; private set; }
 
-    //public ExchangeOrder? ExchangeOrder { get; set; }
+    public int SectionId { get; private set; }
+    public Section Section { get; private set; } = default!;
+
+    public OrderType OrderType { get; private set; } = OrderType.Raw;
+    public OrderStatus Status { get; private set; } = OrderStatus.New;
+
+    public int StoreId { get; private set; }
+    public Store Store { get; private set; } = default!;
+
+    public int? ExchangeOrderId { get; private set; }
+    public ExchangeOrder? ExchangeOrder { get; private set; }
+
     private readonly List<OrderItem> _orderItems = new();
-
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
 
     private Order() { }
 
-    private Order(int sectionId, List<OrderItem> orderItems, OrderStatus orderStatus)
+    private Order(int sectionId, Store store, IEnumerable<OrderItem> items, OrderType type, int? repairCardId)
     {
-        OrderType = OrderType.Raw;
         SectionId = sectionId;
-        OrderStatus = orderStatus;
-        _orderItems = orderItems;
+        Store = store;
+        StoreId = store.Id;
+        RepairCardId = repairCardId;
+        OrderType = type;
+        Status = OrderStatus.New;
+        _orderItems = new List<OrderItem>(items);
     }
 
-    public static Result<Order> Create(int sectionId, List<OrderItem> orderItems)
+    // ---------- Factory ----------
+    public static Result<Order> CreateForRaw(int sectionId, Store store, IEnumerable<OrderItem> items)
     {
-        if (sectionId <= 0)
-        {
-            return OrderErrors.SectionIdInvalid;
-        }
+        if (sectionId <= 0) return OrderErrors.InvalidSection;
+        if (store is null) return OrderErrors.InvalidStore;
+        if (items == null || !items.Any()) return OrderErrors.NoItems;
 
-        if (orderItems == null || !orderItems.Any())
-        {
-            return OrderErrors.OrderItemsAreRequired;
-        }
-
-        return new Order(sectionId, orderItems, OrderStatus.New);
+        var order = new Order(sectionId, store, items, OrderType.Raw, null);
+        return order;
     }
-    public bool IsEditable => OrderStatus == OrderStatus.New;
 
-    public Result<Updated> Update(int sectionId)
+    public static Result<Order> CreateForRepairCard(int sectionId, Store store, int repairCardId, IEnumerable<OrderItem> items)
     {
-        if (!IsEditable)
-        {
-            return OrderErrors.ReadOnly;
-        }
+        if (sectionId <= 0) return OrderErrors.InvalidSection;
+        if (repairCardId <= 0) return OrderErrors.InvalidRepairCard;
+        if (store is null) return OrderErrors.InvalidStore;
+        if (items == null || !items.Any()) return OrderErrors.NoItems;
 
-        if (sectionId <= 0)
-        {
-            return OrderErrors.SectionIdInvalid;
-        }
+        var order = new Order(sectionId, store, items, OrderType.RepairCard, repairCardId);
+        return order;
+    }
+
+    public bool IsEditable => Status == OrderStatus.New;
+
+    // ---------- Behavior ----------
+    public Result<Updated> UpdateSection(int sectionId)
+    {
+        if (!IsEditable) return OrderErrors.ReadOnly;
+        if (sectionId <= 0) return OrderErrors.InvalidSection;
 
         SectionId = sectionId;
-
         return Result.Updated;
     }
 
-    public Result<Updated> UpsertOrderItems(List<OrderItem> incomingOrderItems)
+    public Result<Updated> ReplaceItems(IEnumerable<OrderItem> newItems)
     {
-        if (!IsEditable)
-        {
-            return OrderErrors.ReadOnly;
-        }
-        _orderItems.RemoveAll(existing => incomingOrderItems.All(v => v.Id != existing.Id));
+        if (!IsEditable) return OrderErrors.ReadOnly;
+        var list = newItems?.ToList() ?? new();
+        if (list.Count == 0) return OrderErrors.NoItems;
+        if (list.Any(i => i.StoreItemUnit.StoreId != StoreId))
+            return OrderErrors.MixedStores;
 
-        foreach (var incoming in incomingOrderItems)
-        {
-            var existing = _orderItems.FirstOrDefault(v => v.Id == incoming.Id);
-            if (existing is null)
-            {
-                _orderItems.Add(incoming);
-            }
-            else
-            {
-                var updateOrderItemResult = existing.Update(incoming.ItemUnitId, incoming.Price, incoming.Quantity);
-
-                if (updateOrderItemResult.IsError)
-                {
-                    return updateOrderItemResult.Errors;
-                }
-            }
-        }
-        return Result.Updated;
-    }
-    public Result<Updated> MarkAsCompleted()
-    {
-        if (!IsEditable)
-        {
-            return OrderErrors.ReadOnly;
-        }
-
-        if (ExchangeOrderId is null)
-        {
-            return OrderErrors.OrderCannotCompleteUntilHasExchangeOrder;
-        }
-
-        OrderStatus = OrderStatus.Completed;
-
-        return Result.Updated;
-    }
-    public Result<Updated> MarkAsCancelled()
-    {
-        if (!IsEditable)
-        {
-            return OrderErrors.ReadOnly;
-        }
-        OrderStatus = OrderStatus.Cancelled;
+        _orderItems.Clear();
+        _orderItems.AddRange(list);
         return Result.Updated;
     }
 
-    public Result<Updated> LinkExchangeOrder(int exchangeOrderId)
+    public Result<Updated> Cancel()
     {
-        if (!IsEditable)
-        {
-            return OrderErrors.ReadOnly;
-        }
-        
-        if(exchangeOrderId <= 0)
-        {
-            return OrderErrors.InvalidExchangeOrderId;
-        }
-
-        ExchangeOrderId = exchangeOrderId;
-        OrderStatus = OrderStatus.Completed;
-
+        if (!IsEditable) return OrderErrors.ReadOnly;
+        Status = OrderStatus.Cancelled;
         return Result.Updated;
     }
-    
-    public Result<Updated> MakeAsRepairCardOrder()
+
+    // ---------- Exchange Order (approval) ----------
+    public Result<Updated> Approve(string exchangeOrderNumber)
     {
-        if (!IsEditable)
-        {
-            return OrderErrors.ReadOnly;
-        }
+        if (!IsEditable) return OrderErrors.ReadOnly;
+        if (_orderItems.Count == 0) return OrderErrors.NoItems;
 
-        OrderType = OrderType.RepairCard;
+        // create exchange order lines from order items
+        var exchangeOrderItems = _orderItems
+            .Select(i => ExchangeOrderItem.Create(i.StoreItemUnit, i.Quantity).Value)
+            .ToList();
 
+        var exchangeOrderResult = ExchangeOrder.Create(Store, exchangeOrderItems);
+        if (exchangeOrderResult.IsError)
+            return exchangeOrderResult.Errors;
+
+        var exchangeOrder = exchangeOrderResult.Value;
+
+        // assign number and back-references
+        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Number))!
+            .SetValue(exchangeOrder, exchangeOrderNumber);
+        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Order))!
+            .SetValue(exchangeOrder, this);
+        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.OrderId))!
+            .SetValue(exchangeOrder, this.Id);
+
+        // approve exchange order (decrease stock)
+        var approval = exchangeOrder.Approve();
+        if (approval.IsError)
+            return approval.Errors;
+
+        ExchangeOrder = exchangeOrder;
+        ExchangeOrderId = exchangeOrder.Id;
+        Status = OrderStatus.Completed;
         return Result.Updated;
     }
 }
