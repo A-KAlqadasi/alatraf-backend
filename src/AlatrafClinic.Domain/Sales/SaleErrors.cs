@@ -42,4 +42,9 @@ public static class SaleErrors
 
     public static readonly Error LockedBySourceDocument =
         Error.Validation("Sale.LockedBySourceDocument", "This sale's items are locked because it is linked to an ExitCard or ExchangeOrder.");
+
+    public static readonly Error InvalidPaymentType =
+    Error.Validation("Entity.InvalidPaymentType", "Payment type does not match entity type.");
+
+
 }

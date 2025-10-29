@@ -2,7 +2,7 @@
 using AlatrafClinic.Domain.Common.Results;
 
 namespace AlatrafClinic.Domain.Sales.SalesItems;
-public static class SalesItemErrors
+public static class SaleItemErrors
 {
     public static readonly Error ItemRequired =
         Error.Validation("SalesItem.ItemRequired", "Item is required for the sales item.");

@@ -7,6 +7,8 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Patients.Cards.ExitCards;
+using AlatrafClinic.Domain.Patients.Payments;
+using AlatrafClinic.Domain.Patients.Payments.Enums;
 using AlatrafClinic.Domain.Sales.SalesItems;
 namespace AlatrafClinic.Domain.Sales;
 
@@ -19,7 +21,7 @@ public class Sale : AuditableEntity<int>
     public Diagnosis Diagnosis { get; private set; } = default!;
 
     public int? PaymentId { get; private set; }
-    // public Payment? Payment { get; private set; }
+    public Payment? Payment { get; private set; }
 
     public int? ExchangeOrderId { get; private set; }
     // public ExchangeOrder? ExchangeOrder { get; private set; }
@@ -27,12 +29,12 @@ public class Sale : AuditableEntity<int>
     public int? ExitCardId { get; private set; }
     public ExitCard? ExitCard { get; private set; }
 
-    private readonly List<SalesItem> _salesItems = new();
-    public IReadOnlyCollection<SalesItem> SalesItems => _salesItems.AsReadOnly();
+    private readonly List<SaleItem> _salesItems = new();
+    public IReadOnlyCollection<SaleItem> SalesItems => _salesItems.AsReadOnly();
 
     private Sale() { }
 
-    private Sale(int diagnosisId, List<SalesItem> salesItems,
+    private Sale(int diagnosisId, List<SaleItem> salesItems,
                  int? paymentId = null, int? exchangeOrderId = null, int? exitCardId = null)
     {
         DiagnosisId = diagnosisId;
@@ -43,7 +45,7 @@ public class Sale : AuditableEntity<int>
     }
 
     // ---------------- FACTORY ----------------
-    public static Result<Sale> Create(int diagnosisId, List<SalesItem> salesItems,
+    public static Result<Sale> Create(int diagnosisId, List<SaleItem> salesItems,
                                       int? paymentId = null,
                                       int? exchangeOrderId = null,
                                       int? exitCardId = null)
@@ -58,7 +60,7 @@ public class Sale : AuditableEntity<int>
     }
 
     // ---------------- BEHAVIOR ----------------
-    public Result<Updated> AddSalesItem(SalesItem salesItem)
+    public Result<Updated> AddSalesItem(SaleItem salesItem)
     {
         if (!IsActive)
             return SaleErrors.NotEditable;
@@ -102,17 +104,26 @@ public class Sale : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignPayment(int paymentId)
-    {
-        if (!IsActive)
-            return SaleErrors.NotEditable;
+  public Result<Updated> AssignPayment(Payment payment)
+{
+    if (!IsActive)
+        return SaleErrors.NotEditable;
 
-        if (paymentId <= 0)
-            return SaleErrors.InvalidPayment;
+    if (payment is null)
+        return SaleErrors.InvalidPayment;
 
-        PaymentId = paymentId;
-        return Result.Updated;
-    }
+    if (payment.Type != PaymentType.Sales)
+        return SaleErrors.InvalidPaymentType;
+
+    PaymentId = payment.Id;
+
+    // Optional: mark sale as finalized when fully paid
+    if (payment.IsFullyPaid)
+        IsActive = false;
+
+    return Result.Updated;
+}
+
 
     public Result<Updated> AssignExchangeOrder(int exchangeOrderId)
     {
