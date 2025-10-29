@@ -27,12 +27,12 @@ public class Sale : AuditableEntity<int>
     public int? ExitCardId { get; private set; }
     public ExitCard? ExitCard { get; private set; }
 
-    private readonly List<SalesItem> _salesItems = new();
-    public IReadOnlyCollection<SalesItem> SalesItems => _salesItems.AsReadOnly();
+    private readonly List<SaleItem> _salesItems = new();
+    public IReadOnlyCollection<SaleItem> SalesItems => _salesItems.AsReadOnly();
 
     private Sale() { }
 
-    private Sale(int diagnosisId, List<SalesItem> salesItems,
+    private Sale(int diagnosisId, List<SaleItem> salesItems,
                  int? paymentId = null, int? exchangeOrderId = null, int? exitCardId = null)
     {
         DiagnosisId = diagnosisId;
@@ -43,7 +43,7 @@ public class Sale : AuditableEntity<int>
     }
 
     // ---------------- FACTORY ----------------
-    public static Result<Sale> Create(int diagnosisId, List<SalesItem> salesItems,
+    public static Result<Sale> Create(int diagnosisId, List<SaleItem> salesItems,
                                       int? paymentId = null,
                                       int? exchangeOrderId = null,
                                       int? exitCardId = null)
@@ -58,7 +58,7 @@ public class Sale : AuditableEntity<int>
     }
 
     // ---------------- BEHAVIOR ----------------
-    public Result<Updated> AddSalesItem(SalesItem salesItem)
+    public Result<Updated> AddSalesItem(SaleItem salesItem)
     {
         if (!IsActive)
             return SaleErrors.NotEditable;
