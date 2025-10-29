@@ -2,14 +2,14 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Cards.DisabledCards;
 
-namespace AlatrafClinic.Domain.Patients.Payments.DisabledPayments;
+namespace AlatrafClinic.Domain.Payments.DisabledPayments;
 
 public class DisabledPayment : AuditableEntity<int>
 {
     public int? DisabledCardId { get; set; }
     public DisabledCard? DisabledCard { get; set; }
     public int? PaymentId { get; set; }
-    //public Payment? Payment { get; set; }
+    public Payment? Payment { get; set; }
     private DisabledPayment()
     {
     }

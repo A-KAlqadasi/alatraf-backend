@@ -4,7 +4,7 @@ using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Patients.Cards.ExitCards;
-using AlatrafClinic.Domain.Patients.Payments;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards.AttendanceTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
@@ -193,45 +193,24 @@ public class RepairCard : AuditableEntity<int>
         AttendanceTime = attendanceTime;
         return Result.Updated;
     }
-
-    public Result<Updated> AddOrder(Order order)
+    
+    public Result<Updated> AssignPayment(Payment payment)
     {
         if (!IsEditable)
-        {
             return RepairCardErrors.Readonly;
-        }
 
-        if (_orders.Any(o => o.Id == order.Id))
-        {
-            return RepairCardErrors.OrderAlreadyExists;
-        }
-        order.MakeAsRepairCardOrder();
+        if (payment is null)
+            return RepairCardErrors.InvalidPayment;
 
-        _orders.Add(order);
+        if (payment.Type != PaymentType.Repair)
+            return RepairCardErrors.InvalidPaymentType;
+
+        PaymentId = payment.Id;
+
+        // Optional: mark card as completed if fully paid
+        if (payment.IsFullyPaid && CanTransitionTo(RepairCardStatus.Completed))
+            Status = RepairCardStatus.Completed;
+
         return Result.Updated;
     }
-
-
-public Result<Updated> AssignPayment(Payment payment)
-{
-    if (!IsEditable)
-        return RepairCardErrors.Readonly;
-
-    if (payment is null)
-        return RepairCardErrors.InvalidPayment;
-
-    if (payment.Type != PaymentType.Repair)
-        return RepairCardErrors.InvalidPaymentType;
-
-    PaymentId = payment.Id;
-
-    // Optional: mark card as completed if fully paid
-    if (payment.IsFullyPaid && CanTransitionTo(RepairCardStatus.Completed))
-        Status = RepairCardStatus.Completed;
-
-    return Result.Updated;
-}
-
-
-
 }

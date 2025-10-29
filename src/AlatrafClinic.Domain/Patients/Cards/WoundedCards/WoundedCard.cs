@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Patients.Payments.WoundedPayments;
+using AlatrafClinic.Domain.Payments.WoundedPayments;
 
 namespace AlatrafClinic.Domain.Patients.Cards.WoundedCards;
 

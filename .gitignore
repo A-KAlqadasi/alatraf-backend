@@ -7,6 +7,7 @@
 EFCoreConfiguration.txt
 domainStructure.txt
 gitcommand.txt
+myPayment/
 # dotenv files
 .env
 

@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
 
-namespace AlatrafClinic.Domain.Patients.Payments.Enums;
+namespace AlatrafClinic.Domain.Payments;
 public static class PaymentErrors
 {
     public static readonly Error InvalidTotal =

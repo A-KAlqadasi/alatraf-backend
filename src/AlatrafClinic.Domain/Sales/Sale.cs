@@ -3,13 +3,14 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 using AlatrafClinic.Domain.Inventory.Stores;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Sales.Enums;
 using AlatrafClinic.Domain.Sales.SalesItems;
 namespace AlatrafClinic.Domain.Sales;
 
 public class Sale : AuditableEntity<int>
 {
-   public SaleStatus Status { get; private set; } = SaleStatus.Draft;
+    public SaleStatus Status { get; private set; } = SaleStatus.Draft;
 
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; private set; } = default!;
@@ -17,6 +18,7 @@ public class Sale : AuditableEntity<int>
     public int StoreId { get; private set; }
     public Store Store { get; private set; } = default!;
 
+    public Payment? Payment { get; private set; }
     public int? PaymentId { get; private set; }
     public int? ExitCardId { get; private set; }
 
@@ -52,11 +54,12 @@ public class Sale : AuditableEntity<int>
     }
 
     // ---------- Behavior ------
-    public Result<Updated> AssignPayment(int paymentId)
+    public Result<Updated> AssignPayment(Payment payment)
     {
         if (Status != SaleStatus.Draft) return SaleErrors.NotDraft;
-        if (paymentId <= 0)             return SaleErrors.InvalidPayment;
-        PaymentId = paymentId;
+        if (payment is null)            return SaleErrors.InvalidPayment;
+        Payment = payment;
+        PaymentId = payment.Id;
         return Result.Updated;
     }
 
@@ -89,7 +92,7 @@ public class Sale : AuditableEntity<int>
         if (Status == SaleStatus.Posted)    return SaleErrors.AlreadyPosted;
         if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
 
-        if (!PaymentId.HasValue) return SaleErrors.PaymentRequired;
+        if (Payment is null) return SaleErrors.PaymentRequired;
         if (_items.Count == 0)   return SaleErrors.NoItemsProvided;
 
         // Build ExchangeOrderItems from sale items

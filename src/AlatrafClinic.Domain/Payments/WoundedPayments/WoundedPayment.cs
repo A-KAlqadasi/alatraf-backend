@@ -2,7 +2,7 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Cards.WoundedCards;
 
-namespace AlatrafClinic.Domain.Patients.Payments.WoundedPayments;
+namespace AlatrafClinic.Domain.Payments.WoundedPayments;
 
 public class WoundedPayment :AuditableEntity<int>
 {
@@ -13,7 +13,7 @@ public class WoundedPayment :AuditableEntity<int>
     public decimal MinimumPriceForReportNumber { get; private set; } = 30000;
 
     public int? PaymentId { get; private set; }
-   //public Payment? Payment { get; set; }
+    public Payment? Payment { get; private set; }
     public string? ReportNumber { get; private set; }
 
     private WoundedPayment() { }
@@ -96,6 +96,4 @@ public class WoundedPayment :AuditableEntity<int>
 
         return Result.Updated;
     }
-
-
 }
