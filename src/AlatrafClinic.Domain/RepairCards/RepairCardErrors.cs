@@ -13,4 +13,13 @@ public static class RepairCardErrors
        description: $"Repair card Invalid State transition from '{current}' to '{next}'.");
     public static readonly Error AttendanceTimeIsRequired = Error.Validation("RepairCard.AttendanceTime", "Attendance time is required.");
     public static readonly Error OrderAlreadyExists = Error.Conflict("RepairCard.OrderAlreadyExists", "Order already exists in the repair card.");
+
+
+public static readonly Error InvalidPayment =
+    Error.Validation("Entity.InvalidPayment", "Invalid payment reference.");
+
+public static readonly Error InvalidPaymentType =
+    Error.Validation("Entity.InvalidPaymentType", "Payment type does not match entity type.");
+
+
 }

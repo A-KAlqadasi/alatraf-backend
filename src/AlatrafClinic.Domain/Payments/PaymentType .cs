@@ -1,4 +1,4 @@
-namespace AlatrafClinic.Domain.Patients.Payments.Enums;
+namespace AlatrafClinic.Domain.Patients.Payments;
 
 public enum PaymentType : byte
 {

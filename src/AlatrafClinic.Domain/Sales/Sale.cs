@@ -7,6 +7,8 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Patients.Cards.ExitCards;
+using AlatrafClinic.Domain.Patients.Payments;
+using AlatrafClinic.Domain.Patients.Payments.Enums;
 using AlatrafClinic.Domain.Sales.SalesItems;
 namespace AlatrafClinic.Domain.Sales;
 
@@ -19,7 +21,7 @@ public class Sale : AuditableEntity<int>
     public Diagnosis Diagnosis { get; private set; } = default!;
 
     public int? PaymentId { get; private set; }
-    // public Payment? Payment { get; private set; }
+    public Payment? Payment { get; private set; }
 
     public int? ExchangeOrderId { get; private set; }
     // public ExchangeOrder? ExchangeOrder { get; private set; }
@@ -102,17 +104,26 @@ public class Sale : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignPayment(int paymentId)
-    {
-        if (!IsActive)
-            return SaleErrors.NotEditable;
+  public Result<Updated> AssignPayment(Payment payment)
+{
+    if (!IsActive)
+        return SaleErrors.NotEditable;
 
-        if (paymentId <= 0)
-            return SaleErrors.InvalidPayment;
+    if (payment is null)
+        return SaleErrors.InvalidPayment;
 
-        PaymentId = paymentId;
-        return Result.Updated;
-    }
+    if (payment.Type != PaymentType.Sales)
+        return SaleErrors.InvalidPaymentType;
+
+    PaymentId = payment.Id;
+
+    // Optional: mark sale as finalized when fully paid
+    if (payment.IsFullyPaid)
+        IsActive = false;
+
+    return Result.Updated;
+}
+
 
     public Result<Updated> AssignExchangeOrder(int exchangeOrderId)
     {

@@ -12,4 +12,11 @@ public static class TherapyCardStatusErrors
     public static readonly Error CardNotExpiredToRenew = Error.Conflict("TherapyCardStatus.CardNotExpiredToRenew", "Therapy Card is not expired to renew.");
     public static readonly Error CardExpiredToReplace = Error.Conflict("TherapyCardStatus.CardExpiredToReplace", "Therapy Card is expired to replace.");
 
+    public static readonly Error InvalidPayment =
+        Error.Validation("Entity.InvalidPayment", "Invalid payment reference.");
+
+    public static readonly Error InvalidPaymentType =
+        Error.Validation("Entity.InvalidPaymentType", "Payment type does not match entity type.");
+
+
 }
