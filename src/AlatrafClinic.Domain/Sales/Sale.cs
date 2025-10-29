@@ -1,161 +1,133 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
-using AlatrafClinic.Domain.Patients.Cards.ExitCards;
+using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+using AlatrafClinic.Domain.Inventory.Stores;
+using AlatrafClinic.Domain.Sales.Enums;
 using AlatrafClinic.Domain.Sales.SalesItems;
 namespace AlatrafClinic.Domain.Sales;
 
 public class Sale : AuditableEntity<int>
 {
-    public decimal Total => _salesItems.Sum(i => i.Total);
-    public bool IsActive { get; private set; } = true;
+   public SaleStatus Status { get; private set; } = SaleStatus.Draft;
 
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; private set; } = default!;
 
+    public int StoreId { get; private set; }
+    public Store Store { get; private set; } = default!;
+
     public int? PaymentId { get; private set; }
-    // public Payment? Payment { get; private set; }
-
-    public int? ExchangeOrderId { get; private set; }
-    // public ExchangeOrder? ExchangeOrder { get; private set; }
-
     public int? ExitCardId { get; private set; }
-    public ExitCard? ExitCard { get; private set; }
 
-    private readonly List<SaleItem> _salesItems = new();
-    public IReadOnlyCollection<SaleItem> SalesItems => _salesItems.AsReadOnly();
+    private readonly List<SaleItem> _items = new();
+    public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
+
+    public ExchangeOrder? ExchangeOrder { get; private set; }
+    public int? ExchangeOrderId { get; private set; }
+
+    public decimal Total => _items.Sum(i => i.Total);
 
     private Sale() { }
 
-    private Sale(int diagnosisId, List<SaleItem> salesItems,
-                 int? paymentId = null, int? exchangeOrderId = null, int? exitCardId = null)
+    private Sale(int diagnosisId, Store store, IEnumerable<SaleItem> items)
     {
         DiagnosisId = diagnosisId;
-        _salesItems = salesItems;
-        PaymentId = paymentId;
-        ExchangeOrderId = exchangeOrderId;
-        ExitCardId = exitCardId;
+        Store = store;
+        StoreId = store.Id;
+        _items = new List<SaleItem>(items);
     }
 
-    // ---------------- FACTORY ----------------
-    public static Result<Sale> Create(int diagnosisId, List<SaleItem> salesItems,
-                                      int? paymentId = null,
-                                      int? exchangeOrderId = null,
-                                      int? exitCardId = null)
+    public static Result<Sale> Create(int diagnosisId, Store store, IEnumerable<SaleItem> items)
     {
-        if (diagnosisId <= 0)
-            return SaleErrors.DiagnosisRequired;
+        if (diagnosisId <= 0) return SaleErrors.DiagnosisRequired;
+        if (store is null)    return SaleErrors.StoreRequired;
 
-        if (salesItems is null || salesItems.Count == 0)
-            return SaleErrors.NoItemsProvided;
+        var list = (items ?? Enumerable.Empty<SaleItem>()).ToList();
+        if (list.Count == 0)  return SaleErrors.NoItemsProvided;
+        if (list.Any(i => i.StoreItemUnit is null || i.StoreItemUnit.StoreId != store.Id))
+            return SaleErrors.WrongStore;
 
-        return new Sale(diagnosisId, salesItems, paymentId, exchangeOrderId, exitCardId);
+        return new Sale(diagnosisId, store, list);
     }
 
-    // ---------------- BEHAVIOR ----------------
-    public Result<Updated> AddSalesItem(SaleItem salesItem)
-    {
-        if (!IsActive)
-            return SaleErrors.NotEditable;
-
-        if (ExchangeOrderId.HasValue || ExitCardId.HasValue)
-            return SaleErrors.LockedBySourceDocument;
-
-        if (salesItem is null)
-            return SaleErrors.InvalidSalesItem;
-
-        var existing = _salesItems
-            .FirstOrDefault(i => i.ItemId == salesItem.ItemId && i.UnitId == salesItem.UnitId);
-
-        if (existing is not null)
-        {
-            var result = existing.Update(existing.Quantity + salesItem.Quantity, salesItem.Price);
-            if (result.IsError)
-                return result.Errors;
-        }
-        else
-        {
-            _salesItems.Add(salesItem);
-        }
-
-        return Result.Updated;
-    }
-
-    public Result<Updated> RemoveSalesItem(int salesItemId)
-    {
-        if (!IsActive)
-            return SaleErrors.NotEditable;
-
-        if (ExchangeOrderId.HasValue || ExitCardId.HasValue)
-            return SaleErrors.LockedBySourceDocument;
-
-        var item = _salesItems.FirstOrDefault(x => x.Id == salesItemId);
-        if (item is null)
-            return SaleErrors.SalesItemNotFound;
-
-        _salesItems.Remove(item);
-        return Result.Updated;
-    }
-
+    // ---------- Behavior ------
     public Result<Updated> AssignPayment(int paymentId)
     {
-        if (!IsActive)
-            return SaleErrors.NotEditable;
-
-        if (paymentId <= 0)
-            return SaleErrors.InvalidPayment;
-
+        if (Status != SaleStatus.Draft) return SaleErrors.NotDraft;
+        if (paymentId <= 0)             return SaleErrors.InvalidPayment;
         PaymentId = paymentId;
         return Result.Updated;
     }
 
-    public Result<Updated> AssignExchangeOrder(int exchangeOrderId)
+    public Result<Updated> AddItem(SaleItem item)
     {
-        if (!IsActive)
-            return SaleErrors.NotEditable;
+        if (Status != SaleStatus.Draft) return SaleErrors.NotDraft;
+        if (item is null)               return SaleErrors.InvalidSaleItem;
+        if (item.StoreItemUnit.StoreId != StoreId) return SaleErrors.WrongStore;
 
-        if (ExitCardId.HasValue)
-            return SaleErrors.ExitCardConflictWithExchangeOrder;
+        var existing = _items.FirstOrDefault(i => i.StoreItemUnitId == item.StoreItemUnitId);
+        if (existing is not null)
+        {
+            existing.IncreaseQuantity(item.Quantity);
+            existing.Update(existing.StoreItemUnit, existing.Quantity, item.Price);
+            return Result.Updated;
+        }
 
-        if (ExchangeOrderId.HasValue)
-            return SaleErrors.ExchangeOrderAlreadyAssigned;
-
-        if (exchangeOrderId <= 0)
-            return SaleErrors.InvalidExchangeOrder;
-
-        ExchangeOrderId = exchangeOrderId;
+        typeof(SaleItem).GetProperty(nameof(SaleItem.Sale))!.SetValue(item, this);
+        typeof(SaleItem).GetProperty(nameof(SaleItem.SaleId))!.SetValue(item, this.Id);
+        _items.Add(item);
         return Result.Updated;
     }
 
-    public Result<Updated> AssignExitCard(int exitCardId)
+    // ---------- State transitions ----------
+    /// <summary>
+    /// Payment confirmed -> stock decreases -> ExchangeOrder created.
+    /// </summary>
+    public Result<Updated> Post(string exchangeOrderNumber)
     {
-        if (!IsActive)
-            return SaleErrors.NotEditable;
+        if (Status == SaleStatus.Posted)    return SaleErrors.AlreadyPosted;
+        if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
 
-        if (ExchangeOrderId.HasValue)
-            return SaleErrors.ExitCardConflictWithExchangeOrder;
+        if (!PaymentId.HasValue) return SaleErrors.PaymentRequired;
+        if (_items.Count == 0)   return SaleErrors.NoItemsProvided;
 
-        if (ExitCardId.HasValue)
-            return SaleErrors.ExitCardAlreadyAssigned;
+        // Build ExchangeOrderItems from sale items
+        var orderItems = _items
+            .Select(i => ExchangeOrderItem.Create(i.StoreItemUnit, i.Quantity).Value)
+            .ToList();
 
-        if (exitCardId <= 0)
-            return SaleErrors.InvalidExitCard;
+        // Create ExchangeOrder entity
+        var exchangeOrderResult = ExchangeOrder.Create(Store, orderItems);
+        if (exchangeOrderResult.IsError) return exchangeOrderResult.Errors;
 
-        ExitCardId = exitCardId;
+        var exchangeOrder = exchangeOrderResult.Value;
+
+        // Assign number (provided by app/service)
+        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Number))!
+            .SetValue(exchangeOrder, exchangeOrderNumber);
+        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Sale))!
+            .SetValue(exchangeOrder, this);
+        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.SaleId))!
+            .SetValue(exchangeOrder, this.Id);
+
+        // Approve (decrease stock)
+        var approveResult = exchangeOrder.Approve();
+        if (approveResult.IsError)
+            return approveResult.Errors;
+
+        ExchangeOrder = exchangeOrder;
+        ExchangeOrderId = exchangeOrder.Id;
+        Status = SaleStatus.Posted;
+
         return Result.Updated;
     }
 
-    public Result<Updated> Deactivate()
+    public Result<Updated> Cancel()
     {
-        if (!IsActive)
-            return SaleErrors.AlreadyInactive;
-
-        IsActive = false;
+        if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
+        if (Status == SaleStatus.Posted)    return SaleErrors.AlreadyPosted;
+        Status = SaleStatus.Cancelled;
         return Result.Updated;
     }
 }
