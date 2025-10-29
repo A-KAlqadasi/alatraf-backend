@@ -1,5 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Patients.Payments;
+using AlatrafClinic.Domain.Patients.Payments.Enums;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 
 namespace AlatrafClinic.Domain.TherapyCards;
@@ -12,7 +14,7 @@ public class TherapyCardStatus : AuditableEntity<int>
     public CardStatus? Status { get; set; }
 
     public int? PaymentId { get; set; }
-   //public Payment? Payment { get; set; }
+    public Payment? Payment { get; set; }
     private TherapyCardStatus()
     {
 
@@ -30,5 +32,20 @@ public class TherapyCardStatus : AuditableEntity<int>
         }
         return new TherapyCardStatus(status);
     }
+
+    public Result<Updated> AssignPayment(Payment payment)
+    {
+        if (payment is null)
+            return TherapyCardStatusErrors.InvalidPayment;
+
+        if (payment.Type != PaymentType.Therapy)
+            return TherapyCardStatusErrors.InvalidPaymentType;
+
+        PaymentId = payment.Id;
+
+        // Optional: future logic (e.g., mark status as "Renewed" if fully paid)
+        return Result.Updated;
+    }
+
 
 }

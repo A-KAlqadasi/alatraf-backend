@@ -4,6 +4,7 @@ using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Patients.Cards.ExitCards;
+using AlatrafClinic.Domain.Patients.Payments;
 using AlatrafClinic.Domain.RepairCards.AttendanceTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
@@ -18,7 +19,7 @@ public class RepairCard : AuditableEntity<int>
     public int DiagnosisId { get; set; }
     public Diagnosis? Diagnosis { get; set; }
     public int? PaymentId { get; set; }
-    //public Payment? Payment { get; set; }
+    public Payment? Payment { get; set; }
     public int? ExitCardId { get; set; }
     public ExitCard? ExitCard { get; set; }
 
@@ -77,7 +78,7 @@ public class RepairCard : AuditableEntity<int>
         {
             return RepairCardErrors.InvalidStateTransition(Status, RepairCardStatus.AssignedToTechnician);
         }
-        
+
         _diagnosisIndustrialParts.ForEach(i => i.AssignDoctor(doctorSectionRoomId));
         Status = RepairCardStatus.AssignedToTechnician;
         return Result.Updated;
@@ -192,21 +193,45 @@ public class RepairCard : AuditableEntity<int>
         AttendanceTime = attendanceTime;
         return Result.Updated;
     }
-    
+
     public Result<Updated> AddOrder(Order order)
     {
         if (!IsEditable)
         {
             return RepairCardErrors.Readonly;
         }
-        
+
         if (_orders.Any(o => o.Id == order.Id))
         {
             return RepairCardErrors.OrderAlreadyExists;
         }
         order.MakeAsRepairCardOrder();
-        
+
         _orders.Add(order);
         return Result.Updated;
     }
+
+
+public Result<Updated> AssignPayment(Payment payment)
+{
+    if (!IsEditable)
+        return RepairCardErrors.Readonly;
+
+    if (payment is null)
+        return RepairCardErrors.InvalidPayment;
+
+    if (payment.Type != PaymentType.Repair)
+        return RepairCardErrors.InvalidPaymentType;
+
+    PaymentId = payment.Id;
+
+    // Optional: mark card as completed if fully paid
+    if (payment.IsFullyPaid && CanTransitionTo(RepairCardStatus.Completed))
+        Status = RepairCardStatus.Completed;
+
+    return Result.Updated;
+}
+
+
+
 }
