@@ -8,4 +8,5 @@ public static class DiagnosisIndustrialPartErrors
     public static readonly Error QuantityInvalid = Error.Validation("DiagnosisIndustrialPart.Quantity", "Quantity is invalid");
     public static readonly Error PriceInvalid = Error.Validation("DiagnosisIndustrialPart.Price", "Price is invalid");
     public static readonly Error DoctorSectionRoomIdInvalid = Error.Validation("DiagnosisIndustrialPart.DoctorSectionRoomId", "DoctorSectionRoomId is invalid");
+    public static readonly Error DiagnosisIdInvalid = Error.Validation("DiagnosisIndustrialPart.DiagnosisId", "DiagnosisId is invalid");
 }

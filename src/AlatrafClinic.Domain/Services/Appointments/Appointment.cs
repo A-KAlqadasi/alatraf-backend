@@ -3,7 +3,7 @@ using System.Data;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.Services.Appointments.Enums;
+using AlatrafClinic.Domain.Services.Enums;
 using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Domain.Services.Tickets;
 
@@ -11,39 +11,44 @@ namespace AlatrafClinic.Domain.Services.Appointments;
 
 public class Appointment : AuditableEntity<int>
 {
-    public PatientType? PatientType { get; set; }
-    public DateTime AttendDate { get; set; }
-    public AppointmentState State { get; set; } 
-    public string? Notes { get; set; }
-    public int? TicketId { get; set; }
+    public PatientType PatientType { get; private set; }
+    public DateTime AttendDate { get; private set; }
+    public AppointmentStatus Status { get; private set; } 
+    public string? Notes { get; private set; }
+    public int TicketId { get; private set; }
     public Ticket? Ticket { get; set; }
     public static IReadOnlyCollection<DayOfWeek>? AllowedDays { get; private set; }
+
 
     private Appointment() { }
 
     private Appointment(
+        int ticketId,
         PatientType patientType,
         DateTime attendDate,
-        AppointmentState state,
-        string? notes,
-        int? ticketId)
+        AppointmentStatus state,
+        string? notes)
     {
+        TicketId = ticketId;
         PatientType = patientType;
         AttendDate = attendDate;
-        State = state;
+        Status = state;
         Notes = notes;
-        TicketId = ticketId;
     }
 
     public static Result<Appointment> Schedule(
+        int ticketId,
         PatientType patientType,
         DateTime? requestedDate,
         string? notes,
-        int ticketId,
         DateTime? lastScheduledDate,
         AppointmentScheduleRules rules,
         HolidayCalendar holidays)
     {
+        if (ticketId <= 0)
+        {
+            return AppointmentErrors.TicketIdRequired;
+        }
         if (!Enum.IsDefined(typeof(PatientType), patientType))
         {
             return AppointmentErrors.PatientTypeInvalid;
@@ -57,11 +62,6 @@ public class Appointment : AuditableEntity<int>
         if(holidays is null)
         {
             return AppointmentErrors.HolidaysAreRequired;
-        }
-
-        if (ticketId <= 0)
-        {
-            return AppointmentErrors.TicketIdRequired;
         }
 
         DateTime baseDate = lastScheduledDate?.Date.AddDays(1) ?? DateTime.UtcNow.Date;
@@ -79,14 +79,14 @@ public class Appointment : AuditableEntity<int>
         if (baseDate < DateTime.UtcNow.Date)
             return AppointmentErrors.AttendDateMustBeInFuture;
 
-        return new Appointment(patientType, baseDate, AppointmentState.Scheduled, notes, ticketId);
+        return new Appointment(ticketId, patientType, baseDate, AppointmentStatus.Scheduled, notes);
     }
     
     public Result<Updated> Reschedule(DateTime newDate, AppointmentScheduleRules rules,
         HolidayCalendar holidays)
     {
-        if (!IsEditable)
-            return AppointmentErrors.Readonly;
+        if (!IsEditable) return AppointmentErrors.Readonly;
+        
         if (rules is null)
         {
             return AppointmentErrors.AllowedDaysAreRequired;
@@ -113,34 +113,35 @@ public class Appointment : AuditableEntity<int>
         return Result.Updated;
     }
   
-    public bool IsEditable => State is AppointmentState.Scheduled or AppointmentState.Today;
-    public bool CanTransitionTo(AppointmentState newState)
+    public bool IsEditable => Status is AppointmentStatus.Scheduled or AppointmentStatus.Today;
+    public bool CanTransitionTo(AppointmentStatus newState)
     {
-        return (State, newState) switch
+        return (Status, newState) switch
         {
-            (AppointmentState.Scheduled, AppointmentState.Today) => true,
-            (AppointmentState.Today, AppointmentState.Attended) => true,
-            (AppointmentState.Today, AppointmentState.Absent) => true,
-            (_, AppointmentState.Cancelled) when State != AppointmentState.Attended => true,
+            (AppointmentStatus.Scheduled, AppointmentStatus.Today) => true,
+            (AppointmentStatus.Today, AppointmentStatus.Attended) => true,
+            (AppointmentStatus.Today, AppointmentStatus.Absent) => true,
+            (_, AppointmentStatus.Cancelled) when Status != AppointmentStatus.Attended => true,
             _ => false
         };
     }
 
     public Result<Updated> Cancel()
     {
-        if (!CanTransitionTo(AppointmentState.Cancelled))
+        if (!CanTransitionTo(AppointmentStatus.Cancelled))
         {
-            return AppointmentErrors.InvalidStateTransition(State, AppointmentState.Cancelled);
+            return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Cancelled);
         }
 
-        State = AppointmentState.Cancelled;
+        Status = AppointmentStatus.Cancelled;
+        Ticket?.Cancel();
         return Result.Updated;
     }
     public Result<Updated> MarkAsToday()
     {
-        if (!CanTransitionTo(AppointmentState.Today))
+        if (!CanTransitionTo(AppointmentStatus.Today))
         {
-            return AppointmentErrors.InvalidStateTransition(State, AppointmentState.Today);
+            return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Today);
         }
 
         if (AttendDate.Date != DateTime.UtcNow.Date)
@@ -148,14 +149,15 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.InvalidTodayMark(AttendDate);
         }
 
-        State = AppointmentState.Today;
+        Status = AppointmentStatus.Today;
+        Ticket?.Continue();
         return Result.Updated;
     }
     public Result<Updated> MarkAsAttended()
     {
-        if (!CanTransitionTo(AppointmentState.Attended))
+        if (!CanTransitionTo(AppointmentStatus.Attended))
         {
-            return AppointmentErrors.InvalidStateTransition(State, AppointmentState.Attended);
+            return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Attended);
         }
 
         if (AttendDate.Date > DateTime.UtcNow.Date)
@@ -163,29 +165,29 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.CannotMarkFutureAsAttended(AttendDate);
         }
 
-        State = AppointmentState.Attended;
+        Status = AppointmentStatus.Attended;
         return Result.Updated;
     }
 
     public Result<Updated> MarkAsAbsent()
     {
-        if (!CanTransitionTo(AppointmentState.Absent))
+        if (!CanTransitionTo(AppointmentStatus.Absent))
         {
-            return AppointmentErrors.InvalidStateTransition(State, AppointmentState.Absent);
+            return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Absent);
         }
-        
+
         if (AttendDate.Date >= DateTime.UtcNow.Date)
         {
             return AppointmentErrors.CannotMarkFutureAsAbsent(AttendDate);
         }
 
-        State = AppointmentState.Absent;
+        Status = AppointmentStatus.Absent;
+        Ticket?.Cancel();
         return Result.Updated;
     }
 
-    private static bool IsAllowedDay(DayOfWeek day)
+    public bool IsAppointmentTomorrow()
     {
-        return AllowedDays!.Contains(day);
+        return AttendDate.Date == DateTime.UtcNow.Date.AddDays(1);
     }
-
 }

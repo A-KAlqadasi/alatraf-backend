@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
@@ -9,8 +10,9 @@ namespace AlatrafClinic.Domain.Services;
 
 public class Service : AuditableEntity<int>
 {
-    public string? Name { get; set; }
-    public int? DepartmentId { get; set; }
+    public string Name { get; private set; } = string.Empty;
+    public string? Code { get; private set; }
+    public int? DepartmentId { get; private set; }
     public Department? Department { get; set; }
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     private Service()
@@ -23,7 +25,7 @@ public class Service : AuditableEntity<int>
         DepartmentId = departmentId;
     }
 
-    public static Result<Service> Create(string? name, int? departmentId)
+    public static Result<Service> Create(string name, int? departmentId)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -33,7 +35,7 @@ public class Service : AuditableEntity<int>
         {
             return ServiceErrors.DepartmentIdIsRequired;
         }
-
+        
         return new Service(name, departmentId);
     }
     

@@ -31,7 +31,7 @@ public class Order : AuditableEntity<int>
 
     private Order() { }
 
-    private Order(int sectionId, Store store, IEnumerable<OrderItem> items, OrderType type, int? repairCardId)
+    private Order(int sectionId, Store store, List<OrderItem> items, OrderType type, int? repairCardId)
     {
         SectionId = sectionId;
         Store = store;
@@ -39,11 +39,11 @@ public class Order : AuditableEntity<int>
         RepairCardId = repairCardId;
         OrderType = type;
         Status = OrderStatus.New;
-        _orderItems = new List<OrderItem>(items);
+        _orderItems = items;
     }
 
     // ---------- Factory ----------
-    public static Result<Order> CreateForRaw(int sectionId, Store store, IEnumerable<OrderItem> items)
+    public static Result<Order> CreateForRaw(int sectionId, Store store, List<OrderItem> items)
     {
         if (sectionId <= 0) return OrderErrors.InvalidSection;
         if (store is null) return OrderErrors.InvalidStore;
@@ -53,7 +53,7 @@ public class Order : AuditableEntity<int>
         return order;
     }
 
-    public static Result<Order> CreateForRepairCard(int sectionId, Store store, int repairCardId, IEnumerable<OrderItem> items)
+    public static Result<Order> CreateForRepairCard(int sectionId, Store store, int repairCardId, List<OrderItem> items)
     {
         if (sectionId <= 0) return OrderErrors.InvalidSection;
         if (repairCardId <= 0) return OrderErrors.InvalidRepairCard;
@@ -76,7 +76,7 @@ public class Order : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> ReplaceItems(IEnumerable<OrderItem> newItems)
+    public Result<Updated> ReplaceItems(List<OrderItem> newItems)
     {
         if (!IsEditable) return OrderErrors.ReadOnly;
         var list = newItems?.ToList() ?? new();
@@ -113,13 +113,7 @@ public class Order : AuditableEntity<int>
 
         var exchangeOrder = exchangeOrderResult.Value;
 
-        // assign number and back-references
-        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Number))!
-            .SetValue(exchangeOrder, exchangeOrderNumber);
-        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Order))!
-            .SetValue(exchangeOrder, this);
-        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.OrderId))!
-            .SetValue(exchangeOrder, this.Id);
+        exchangeOrder.AssignOrder(this, exchangeOrderNumber);
 
         // approve exchange order (decrease stock)
         var approval = exchangeOrder.Approve();

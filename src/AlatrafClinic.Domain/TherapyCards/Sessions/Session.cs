@@ -5,11 +5,11 @@ namespace AlatrafClinic.Domain.TherapyCards.Sessions;
 
 public class Session : AuditableEntity<int>
 {
-    public bool? IsTaken { get; set; }
-    public int? Number { get; set; }
-    public int? TherapyCardId { get; set; }
-    public TherapyCard? TherapyCard { get; set; }
-    public DateTime SessionDate { get; set; }
+    public bool IsTaken { get; private set; }
+    public int Number { get; private set; }
+    public int TherapyCardId { get; private set; }
+    public TherapyCard? TherapyCard { get; private set; }
+    public DateTime SessionDate { get; private set; }
 
     private readonly List<SessionProgram> _sessionPrograms = new();
     public IEnumerable<SessionProgram> SessionPrograms => _sessionPrograms.AsReadOnly();

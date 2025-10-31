@@ -7,14 +7,14 @@ namespace AlatrafClinic.Domain.Patients;
 
 public class Patient : AuditableEntity<int>
 {
-    public int PersonId { get; set; }
+    public int PersonId { get; private set; }
     public Person? Person { get; set; }
-    public PatientType? PatientType { get; set; }
+    public PatientType PatientType { get; private set; }
     public string? AutoRegistrationNumber { get; set; }
 
     private Patient() { }
 
-    private Patient(int personId, PatientType? patientType)
+    private Patient(int personId, PatientType patientType)
     {
         PersonId = personId;
         PatientType = patientType;

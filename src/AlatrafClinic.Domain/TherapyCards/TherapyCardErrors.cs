@@ -21,5 +21,6 @@ public static class TherapyCardErrors
         description: "TherapyCard is read-only.");
     public static Error ProgramEnded = Error.Forbidden("TherapyCard.ProgramEnded", "Therapy Card program ended");
     public static Error IsNotPaid = Error.Forbidden("TherapyCard.IsNotPaid", "Therapy Card is not paid");
+    public static Error InvalidDiagnosisId = Error.Validation("TherapyCard.InvalidDiagnosisId", "Diagnosis Id is invalid");
 
 }
