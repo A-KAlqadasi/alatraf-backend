@@ -7,44 +7,41 @@ namespace AlatrafClinic.Domain.TherapyCards;
 
 public class TherapyCardStatus : AuditableEntity<int>
 {
-    public int? TherapyCardId { get; set; }
-    public TherapyCard? TherapyCard { get; set; }
+    public int TherapyCardId { get; private set; }
+    public TherapyCard? TherapyCard { get; private set; }
 
-    public CardStatus? Status { get; set; }
+    public CardStatus Status { get; private set; }
 
-    public int? PaymentId { get; set; }
-    public Payment? Payment { get; set; }
+    public int? PaymentId { get; private set; }
+    public Payment? Payment { get; private set; }
     private TherapyCardStatus()
     {
 
     }
-    private TherapyCardStatus(CardStatus status)
+    private TherapyCardStatus(int therapyCardId, CardStatus status)
     {
+        TherapyCardId = therapyCardId;
         Status = status;
     }
 
-    public static Result<TherapyCardStatus> Create(CardStatus status)
+    public static Result<TherapyCardStatus> Create(int therapyCardId, CardStatus status)
     {
         if (!Enum.IsDefined(typeof(CardStatus), status))
         {
             return TherapyCardStatusErrors.InvalidStatus;
         }
-        return new TherapyCardStatus(status);
+        return new TherapyCardStatus(therapyCardId, status);
     }
 
     public Result<Updated> AssignPayment(Payment payment)
     {
-        if (payment is null)
-            return TherapyCardStatusErrors.InvalidPayment;
+        if (payment is null) return TherapyCardStatusErrors.InvalidPayment;
 
-        if (payment.Type != PaymentType.Therapy)
-            return TherapyCardStatusErrors.InvalidPaymentType;
-
+        if (payment.Type != PaymentType.Therapy) return TherapyCardStatusErrors.InvalidPaymentType;
+        
+        Payment = payment;
         PaymentId = payment.Id;
-
-        // Optional: future logic (e.g., mark status as "Renewed" if fully paid)
+        
         return Result.Updated;
     }
-
-
 }

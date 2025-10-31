@@ -15,11 +15,13 @@ public static class RepairCardErrors
     public static readonly Error OrderAlreadyExists = Error.Conflict("RepairCard.OrderAlreadyExists", "Order already exists in the repair card.");
 
 
-public static readonly Error InvalidPayment =
-    Error.Validation("Entity.InvalidPayment", "Invalid payment reference.");
+    public static readonly Error InvalidPayment =
+        Error.Validation("Entity.InvalidPayment", "Invalid payment reference.");
 
-public static readonly Error InvalidPaymentType =
-    Error.Validation("Entity.InvalidPaymentType", "Payment type does not match entity type.");
-
+    public static readonly Error InvalidPaymentType =
+        Error.Validation("Entity.InvalidPaymentType", "Payment type does not match entity type.");
+    public static readonly Error InvalidDiagnosisId =
+        Error.Validation("Entity.InvalidDiagnosisId", "Invalid diagnosis reference.");
+    public static readonly Error InvalidOrder = Error.Validation("RepairCard.InvalidOrder", "Invalid order reference.");
 
 }

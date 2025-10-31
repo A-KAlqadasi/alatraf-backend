@@ -14,17 +14,18 @@ namespace AlatrafClinic.Domain.RepairCards;
 
 public class RepairCard : AuditableEntity<int>
 {
-    public RepairCardStatus Status { get; set; }
-    public bool? IsActive { get; set; }
-    public int DiagnosisId { get; set; }
+    public RepairCardStatus Status { get; private set; }
+    public bool? IsActive { get; private set; }
+    public int DiagnosisId { get; private set; }
     public Diagnosis? Diagnosis { get; set; }
-    public int? PaymentId { get; set; }
+    public int? PaymentId { get; private set; }
     public Payment? Payment { get; set; }
-    public int? ExitCardId { get; set; }
+    public int? ExitCardId { get; private set; }
     public ExitCard? ExitCard { get; set; }
 
     // Navigation
     public AttendanceTime? AttendanceTime { get; set; }
+    public bool IsLate => AttendanceTime?.AttendanceDate.Date < DateTime.Now.Date;
 
     private readonly List<Order> _orders = new();
     public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
@@ -33,21 +34,27 @@ public class RepairCard : AuditableEntity<int>
 
     private RepairCard() { }
 
-    private RepairCard(RepairCardStatus status, List<DiagnosisIndustrialPart> industrialParts, bool isActive = true)
+    private RepairCard(int diagnosisId, List<DiagnosisIndustrialPart> industrialParts, RepairCardStatus status, bool isActive = true)
     {
+        DiagnosisId = diagnosisId;
         IsActive = isActive;
         Status = status;
         _diagnosisIndustrialParts = industrialParts;
     }
 
-    public static Result<RepairCard> Create(List<DiagnosisIndustrialPart> diagnosisIndustrialParts)
+    public static Result<RepairCard> Create(int diagnosisId, List<DiagnosisIndustrialPart> diagnosisIndustrialParts)
     {
+        if (diagnosisId <= 0)
+        {
+            return RepairCardErrors.InvalidDiagnosisId;
+        }
+        
         if (diagnosisIndustrialParts == null || !diagnosisIndustrialParts.Any())
         {
             return RepairCardErrors.DiagnosisIndustrialPartsAreRequired;
         }
 
-        return new RepairCard(RepairCardStatus.New, diagnosisIndustrialParts);
+        return new RepairCard(diagnosisId,diagnosisIndustrialParts, RepairCardStatus.New );
     }
 
     public bool IsEditable => Status is not RepairCardStatus.LegalExit or RepairCardStatus.IllegalExit;
@@ -193,7 +200,7 @@ public class RepairCard : AuditableEntity<int>
         AttendanceTime = attendanceTime;
         return Result.Updated;
     }
-    
+
     public Result<Updated> AssignPayment(Payment payment)
     {
         if (!IsEditable)
@@ -206,10 +213,20 @@ public class RepairCard : AuditableEntity<int>
             return RepairCardErrors.InvalidPaymentType;
 
         PaymentId = payment.Id;
+        Payment = payment;
 
-        // Optional: mark card as completed if fully paid
-        if (payment.IsFullyPaid && CanTransitionTo(RepairCardStatus.Completed))
-            Status = RepairCardStatus.Completed;
+        return Result.Updated;
+    }
+    public Result<Updated> AssignOrder(Order order)
+    {
+        if (!IsEditable) return RepairCardErrors.Readonly;
+
+        if (order is null) return RepairCardErrors.InvalidOrder;
+        
+        if (_orders.Any(o => o.Id == order.Id)) return RepairCardErrors.OrderAlreadyExists;
+
+
+        _orders.Add(order);
 
         return Result.Updated;
     }

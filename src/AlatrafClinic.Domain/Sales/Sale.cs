@@ -16,9 +16,9 @@ public class Sale : AuditableEntity<int>
     public Diagnosis Diagnosis { get; private set; } = default!;
 
     public int StoreId { get; private set; }
-    public Store Store { get; private set; } = default!;
+    public Store Store { get; set; } = default!;
 
-    public Payment? Payment { get; private set; }
+    public Payment? Payment { get; set; }
     public int? PaymentId { get; private set; }
     public int? ExitCardId { get; private set; }
 
@@ -32,17 +32,21 @@ public class Sale : AuditableEntity<int>
 
     private Sale() { }
 
-    private Sale(int diagnosisId, Store store, IEnumerable<SaleItem> items)
+    private Sale(int diagnosisId, Store store, List<SaleItem> items)
     {
         DiagnosisId = diagnosisId;
         Store = store;
         StoreId = store.Id;
-        _items = new List<SaleItem>(items);
+        _items = items;
     }
 
-    public static Result<Sale> Create(int diagnosisId, Store store, IEnumerable<SaleItem> items)
+    public static Result<Sale> Create(int diagnosisId, Store store, List<SaleItem> items)
     {
-        if (diagnosisId <= 0) return SaleErrors.DiagnosisRequired;
+        if (diagnosisId <= 0)
+        {
+            return SaleErrors.InvalidDiagnosisId;
+        }
+
         if (store is null)    return SaleErrors.StoreRequired;
 
         var list = (items ?? Enumerable.Empty<SaleItem>()).ToList();
@@ -107,12 +111,7 @@ public class Sale : AuditableEntity<int>
         var exchangeOrder = exchangeOrderResult.Value;
 
         // Assign number (provided by app/service)
-        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Number))!
-            .SetValue(exchangeOrder, exchangeOrderNumber);
-        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.Sale))!
-            .SetValue(exchangeOrder, this);
-        typeof(ExchangeOrder).GetProperty(nameof(ExchangeOrder.SaleId))!
-            .SetValue(exchangeOrder, this.Id);
+        exchangeOrder.AssignSale(this, exchangeOrderNumber);
 
         // Approve (decrease stock)
         var approveResult = exchangeOrder.Approve();
@@ -129,7 +128,7 @@ public class Sale : AuditableEntity<int>
     public Result<Updated> Cancel()
     {
         if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
-        if (Status == SaleStatus.Posted)    return SaleErrors.AlreadyPosted;
+        if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
         Status = SaleStatus.Cancelled;
         return Result.Updated;
     }

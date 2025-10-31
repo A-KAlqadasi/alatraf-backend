@@ -17,7 +17,7 @@ public class ExchangeOrder : AuditableEntity<int>
     public Sale? Sale { get; private set; }
 
     public int? OrderId { get; private set; }
-    public Order? Order { get; private set; }
+    public Order? Order { get; set; }
 
     // store reference (which store released the items)
     public int StoreId { get; private set; }
@@ -60,6 +60,38 @@ public class ExchangeOrder : AuditableEntity<int>
         }
 
         IsApproved = true;
+        return Result.Updated;
+    }
+    public Result<Updated> AssignOrder(Order order, string number)
+    {
+        if (IsApproved)
+        {
+            return ExchangeOrderErrors.AlreadyApproved;
+        }
+
+        if (order is null)
+        {
+            return ExchangeOrderErrors.OrderIsRequired;
+        }
+        Order = order;
+        OrderId = order.Id;
+        Number = number;
+        return Result.Updated;
+    }
+    public Result<Updated> AssignSale(Sale sale, string number)
+    {
+        if (IsApproved)
+        {
+            return ExchangeOrderErrors.AlreadyApproved;
+        }
+
+        if (sale is null)
+        {
+            return ExchangeOrderErrors.SaleIsRequired;
+        }
+        Sale = sale;
+        SaleId = sale.Id;
+        Number = number;
         return Result.Updated;
     }
 }

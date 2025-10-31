@@ -8,13 +8,13 @@ namespace AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 
 public class DiagnosisProgram : AuditableEntity<int>
 {
-    public int? DiagnosisId { get; set; }
+    public int DiagnosisId { get; private set; }
     public Diagnosis? Diagnosis { get; set; }
-    public int? MedicalProgramId { get; set; }
+    public int MedicalProgramId { get; private set; }
     public MedicalProgram? MedicalProgram { get; set; }
-    public int? Duration { get; set; }
-    public string? Notes { get; set; }
-    public int? TherapyCardId { get; set; }
+    public int Duration { get; private set; }
+    public string? Notes { get; private set; }
+    public int? TherapyCardId { get; private set; }
     public TherapyCard? TherapyCard { get; set; }
 
     public ICollection<SessionProgram> SessionPrograms { get; set; } = new List<SessionProgram>();
@@ -22,25 +22,32 @@ public class DiagnosisProgram : AuditableEntity<int>
     {
     }
     public DiagnosisProgram(
-        int? medicalProgramId,
-        int? duration,
+        int diagnosisId,
+        int medicalProgramId,
+        int duration,
         string? notes)
     {
+        DiagnosisId = diagnosisId;
         MedicalProgramId = medicalProgramId;
         Duration = duration;
         Notes = notes;
     }
     public static Result<DiagnosisProgram> Create(
-        int? medicalProgramId,
-        int? duration,
+        int diagnosisId,
+        int medicalProgramId,
+        int duration,
         string? notes)
     {
-       
-        if (medicalProgramId is null)
+        if (diagnosisId <= 0)
         {
-            return DiagnosisProgramErrors.MedicalProgramIdIsRequired;
+            return DiagnosisProgramErrors.InvalidDiagnosisId;
         }
-        if (duration is not null && duration <= 0)
+       
+        if (medicalProgramId <= 0)
+        {
+            return DiagnosisProgramErrors.InvalidMedicalProgramId;
+        }
+        if (duration <=0 )
         {
             return DiagnosisProgramErrors.InvalidDuration;
         }
@@ -50,21 +57,27 @@ public class DiagnosisProgram : AuditableEntity<int>
         }
 
         return new DiagnosisProgram(
+            diagnosisId,
             medicalProgramId,
             duration,
             notes);
     }
 
     public Result<Updated> Update(
-        int? medicalProgramId,
-        int? duration,
+        int diagnosisId,
+        int medicalProgramId,
+        int duration,
         string? notes)
     {
-        if (medicalProgramId is null)
+        if (diagnosisId <= 0)
         {
-            return DiagnosisProgramErrors.MedicalProgramIdIsRequired;
+            return DiagnosisProgramErrors.InvalidDiagnosisId;
         }
-        if (duration is not null && duration <= 0)
+        if (medicalProgramId <= 0)
+        {
+            return DiagnosisProgramErrors.InvalidMedicalProgramId;
+        }
+        if (duration <= 0)
         {
             return DiagnosisProgramErrors.InvalidDuration;
         }
@@ -72,7 +85,7 @@ public class DiagnosisProgram : AuditableEntity<int>
         {
             return DiagnosisProgramErrors.NotesTooLong;
         }
-        
+        DiagnosisId = diagnosisId;
         MedicalProgramId = medicalProgramId;
         Duration = duration;
         Notes = notes;
@@ -80,14 +93,15 @@ public class DiagnosisProgram : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignTherapyCard(int therapyCardId)
+    public Result<Updated> AssignTherapyCard(TherapyCard therapyCard)
     {
-        if (therapyCardId <= 0)
+        if (therapyCard is null)
         {
-            return DiagnosisProgramErrors.TherapyCardIdIsRequired;
+            return DiagnosisProgramErrors.TherapyCardIsRequired;
         }
-
-        TherapyCardId = therapyCardId;
+        
+        TherapyCard = therapyCard;
+        TherapyCardId = therapyCard.Id;
         return Result.Updated;
     }
 }

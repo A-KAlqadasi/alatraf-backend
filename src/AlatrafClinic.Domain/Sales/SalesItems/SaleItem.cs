@@ -6,15 +6,14 @@ namespace AlatrafClinic.Domain.Sales.SalesItems;
 
 public class SaleItem : AuditableEntity<int>
 {
-   public int SaleId { get; private set; }
+    public int SaleId { get; private set; }
     public Sale Sale { get; private set; } = default!;
 
-    // We sell from a specific store => point to StoreItemUnit (not raw Item/Unit)
     public int StoreItemUnitId { get; private set; }
     public StoreItemUnit StoreItemUnit { get; private set; } = default!;
 
     public decimal Quantity { get; private set; }
-    public decimal Price { get; private set; }         // can be zero if fully discounted
+    public decimal Price { get; private set; }
     public decimal Total => Quantity * Price;
 
     private SaleItem() { }

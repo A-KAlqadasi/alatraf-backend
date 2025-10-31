@@ -6,7 +6,7 @@ namespace AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 public class IndustrialPart : AuditableEntity<int>
 {
-    public string? Name { get; set; }
+    public string Name { get; private set; } = default!;
     public string? Description { get; set; }
 
     private readonly List<IndustrialPartUnit> _industrialPartUnits = new();
@@ -16,14 +16,14 @@ public class IndustrialPart : AuditableEntity<int>
 
     private IndustrialPart() { }
 
-    private IndustrialPart(string? name, string? description, List<IndustrialPartUnit> industrialPartUnits)
+    private IndustrialPart(string name, string? description, List<IndustrialPartUnit> industrialPartUnits)
     {
         Name = name;
         Description = description;
         _industrialPartUnits = industrialPartUnits;
     }
 
-    public static Result<IndustrialPart> Create(string? name, string? description, List<IndustrialPartUnit> industrialPartUnits)
+    public static Result<IndustrialPart> Create(string name, string? description, List<IndustrialPartUnit> industrialPartUnits)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -33,7 +33,7 @@ public class IndustrialPart : AuditableEntity<int>
         return new IndustrialPart(name, description, industrialPartUnits);
     }
 
-    public Result<Updated> Update(string? name, string? description, List<IndustrialPartUnit> industrialPartUnits)
+    public Result<Updated> Update(string name, string? description)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -42,9 +42,6 @@ public class IndustrialPart : AuditableEntity<int>
 
         Name = name;
         Description = description;
-        _industrialPartUnits.Clear();
-        _industrialPartUnits.AddRange(industrialPartUnits);
-
         return Result.Updated;
     }
     public Result<Updated> AssignUnit(IndustrialPartUnit industrialPartUnit)
@@ -54,8 +51,32 @@ public class IndustrialPart : AuditableEntity<int>
         {
             return IndustrialPartErrors.UnitAlreadyExists;
         }
-        
+
         _industrialPartUnits.Add(industrialPartUnit);
+        return Result.Updated;
+    }
+    public Result<Updated> UpsertUnits(List<IndustrialPartUnit> incomingUnits)
+    {
+        _industrialPartUnits.RemoveAll(existing => incomingUnits.All(u => u.Id != existing.Id));
+
+        foreach (var incoming in incomingUnits)
+        {
+            var existing = _industrialPartUnits.FirstOrDefault(u => u.Id == incoming.Id);
+            if (existing is null)
+            {
+                _industrialPartUnits.Add(incoming);
+            }
+            else
+            {
+                var updateUnitResult = existing.Update(Id, incoming.UnitId, incoming.PricePerUnit);
+
+                if (updateUnitResult.IsError)
+                {
+                    return updateUnitResult.Errors;
+                }
+            }
+        }
+
         return Result.Updated;
     }
 }

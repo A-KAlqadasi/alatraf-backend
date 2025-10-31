@@ -6,21 +6,26 @@ namespace AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 public class IndustrialPartUnit : AuditableEntity<int>
 {
-    public int IndustrialPartId { get; set; }
+    public int IndustrialPartId { get; private set; }
     public IndustrialPart? IndustrialPart { get; set; }
-    public int UnitId { get; set; }
+    public int UnitId { get; private set; }
     public Unit? Unit { get; set; }
-    public decimal PricePerUnit { get; set; }
+    public decimal PricePerUnit { get; private set; }
 
     private IndustrialPartUnit() { }
-    private IndustrialPartUnit(int unitId, decimal price)
+    private IndustrialPartUnit(int industrialPartId, int unitId, decimal price)
     {
+        IndustrialPartId = industrialPartId;
         UnitId = unitId;
         PricePerUnit = price;
     }
 
-    public static Result<IndustrialPartUnit> Create(int unitId, decimal price)
+    public static Result<IndustrialPartUnit> Create(int industrialPartId, int unitId, decimal price)
     {
+        if (industrialPartId <= 0)
+        {
+            return IndustrialPartUnitErrors.IndustrialPartIdInvalid;
+        }
         if (unitId <= 0)
         {
             return IndustrialPartUnitErrors.UnitIdInvalid;
@@ -30,11 +35,16 @@ public class IndustrialPartUnit : AuditableEntity<int>
             return IndustrialPartUnitErrors.PriceInvalid;
         }
 
-        return new IndustrialPartUnit(unitId, price);
+        return new IndustrialPartUnit(industrialPartId, unitId, price);
     }
 
-    public Result<Updated> Update(int unitId, decimal price)
+    public Result<Updated> Update(int industrialPartId, int unitId, decimal price)
     {
+        if (industrialPartId <= 0)
+        {
+            return IndustrialPartUnitErrors.IndustrialPartIdInvalid;
+        }
+
         if (unitId <= 0)
         {
             return IndustrialPartUnitErrors.UnitIdInvalid;
@@ -43,6 +53,7 @@ public class IndustrialPartUnit : AuditableEntity<int>
         {
             return IndustrialPartUnitErrors.PriceInvalid;
         }
+        IndustrialPartId = industrialPartId;
         UnitId = unitId;
         PricePerUnit = price;
         return Result.Updated;

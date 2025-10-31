@@ -53,5 +53,20 @@ public static class DiagnosisErrors
     public static readonly Error IndustrialPartsAreRequired = Error.Validation("Diagnosis.IndustrialPartsAreRequired", "Industrial parts are required for this diagnosis.");
 
     public static readonly Error MedicalProgramsAreRequired = Error.Validation("Diagnosis.MedicalProgramsAreRequired", "Medical programs are required for this diagnosis.");
-
+    public static readonly Error RepairCardAlreadyAssigned =
+        Error.Validation(
+            code: "Diagnosis.RepairCardAlreadyAssigned",
+            description: "A repair card has already been assigned to this diagnosis.");
+    public static readonly Error RepairCardAdditionOnlyForLimbsDiagnosis =
+        Error.Conflict(
+            code: "Diagnosis.RepairCardAdditionOnlyForLimbsDiagnosis",
+            description: "Adding repair cards is only allowed for limbs diagnoses.");
+    public static readonly Error SaleAlreadyAssigned =
+        Error.Validation(
+            code: "Diagnosis.SaleAlreadyAssigned",
+            description: "A sale has already been assigned to this diagnosis.");
+    public static readonly Error SaleAssignmentOnlyForSalesDiagnosis =
+        Error.Conflict(
+            code: "Diagnosis.SaleAssignmentOnlyForSalesDiagnosis",
+            description: "Assigning a sale is only allowed for sales diagnoses.");
 }

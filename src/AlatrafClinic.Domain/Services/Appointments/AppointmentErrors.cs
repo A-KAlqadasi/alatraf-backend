@@ -1,5 +1,5 @@
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Appointments.Enums;
+using AlatrafClinic.Domain.Services.Enums;
 
 namespace AlatrafClinic.Domain.Services.Appointments;
 
@@ -13,7 +13,7 @@ public static class AppointmentErrors
     public static readonly Error TicketIdRequired = Error.Validation("Appointment.TicketIdRequired", "A valid Ticket Id is required to schedule an appointment.");
     public static Error PatientTypeInvalid =>
        Error.Validation("Appointment.PatientTypeInvalid", "Invalid patient type.");
-    public static Error InvalidStateTransition(AppointmentState current, AppointmentState next) => Error.Conflict(
+    public static Error InvalidStateTransition(AppointmentStatus current, AppointmentStatus next) => Error.Conflict(
        code: "Appointment.InvalidStateTransition",
        description: $"Appointment Invalid State transition from '{current}' to '{next}'.");
     public static Error InvalidTodayMark(DateTime attendDate) => Error.Conflict(
