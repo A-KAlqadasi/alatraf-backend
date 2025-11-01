@@ -17,4 +17,5 @@ public static class SaleErrors
     public static readonly Error InvalidExchangeOrder = Error.Validation("Sale.InvalidExchangeOrder", "Invalid exchange order id.");
     public static readonly Error InvalidSaleItem = Error.Validation("Sale.InvalidSaleItem", "Sale item is required.");
     public static readonly Error SaleItemNotFound = Error.Validation("Sale.SaleItemNotFound", "Sale item not found.");
+    public static readonly Error InvalidExitCardId = Error.Validation("Sale.InvalidExitCardId", "Invalid exit card id.");
 }

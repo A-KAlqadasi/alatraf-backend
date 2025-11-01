@@ -21,30 +21,52 @@ public class ExchangeOrder : AuditableEntity<int>
 
     // store reference (which store released the items)
     public int StoreId { get; private set; }
-    public Store Store { get; private set; } = default!;
+    public Store Store { get; set; } = default!;
 
     private readonly List<ExchangeOrderItem> _items = new();
     public IReadOnlyCollection<ExchangeOrderItem> Items => _items.AsReadOnly();
 
     private ExchangeOrder() { }
 
-    private ExchangeOrder(Store store, List<ExchangeOrderItem> items, string? notes = null)
+    private ExchangeOrder(int storeId, string? notes = null)
     {
-        Store = store;
-        StoreId = store.Id;
+        StoreId = storeId;
         Notes = notes;
-        _items = items;
         IsApproved = false;
     }
 
-    public static Result<ExchangeOrder> Create(Store store, List<ExchangeOrderItem> items, string? notes = null)
+    public static Result<ExchangeOrder> Create(int storeId, string? notes = null)
     {
-        if (store is null)
+        if (storeId <= 0)
             return ExchangeOrderErrors.StoreRequired;
-        if (items == null || !items.Any())
-            return ExchangeOrderErrors.NoItems;
 
-        return new ExchangeOrder(store, items, notes);
+        return new ExchangeOrder(storeId, notes);
+    }
+
+    public Result<Updated> UpsertItems(List<ExchangeOrderItem> items)
+    {
+        if (IsApproved)
+            return ExchangeOrderErrors.AlreadyApproved;
+
+        _items.RemoveAll(existing => items.All(v => v.Id != existing.Id));
+
+        foreach (var incoming in items)
+        {
+            var existing = _items.FirstOrDefault(v => v.Id == incoming.Id);
+            if (existing is null)
+            {
+                _items.Add(incoming);
+            }
+            else
+            {
+                var result = existing.Update(this.Id, incoming.StoreItemUnitId, incoming.Quantity);
+
+                if (result.IsError)
+                    return result.Errors;
+            }
+        }
+
+        return Result.Updated;
     }
 
     public Result<Updated> Approve()

@@ -32,29 +32,50 @@ public class Sale : AuditableEntity<int>
 
     private Sale() { }
 
-    private Sale(int diagnosisId, Store store, List<SaleItem> items)
+    private Sale(int diagnosisId, int storeId)
     {
         DiagnosisId = diagnosisId;
-        Store = store;
-        StoreId = store.Id;
-        _items = items;
+        StoreId = storeId;
     }
 
-    public static Result<Sale> Create(int diagnosisId, Store store, List<SaleItem> items)
+    public static Result<Sale> Create(int diagnosisId, int storeId)
     {
         if (diagnosisId <= 0)
         {
             return SaleErrors.InvalidDiagnosisId;
         }
 
-        if (store is null)    return SaleErrors.StoreRequired;
+        if (storeId <= 0) return SaleErrors.StoreRequired;
 
-        var list = (items ?? Enumerable.Empty<SaleItem>()).ToList();
-        if (list.Count == 0)  return SaleErrors.NoItemsProvided;
-        if (list.Any(i => i.StoreItemUnit is null || i.StoreItemUnit.StoreId != store.Id))
+        return new Sale(diagnosisId, storeId);
+    }
+    public Result<Updated> UpsertItems(List<SaleItem> newItems)
+    {
+        var list = (newItems ?? Enumerable.Empty<SaleItem>()).ToList();
+        if (list.Count == 0) return SaleErrors.NoItemsProvided;
+        if (list.Any(i => i.StoreItemUnit is null || i.StoreItemUnit.StoreId != this.StoreId))
             return SaleErrors.WrongStore;
+        
+        
+        _items.RemoveAll(existing => list.All(v => v.Id != existing.Id));
 
-        return new Sale(diagnosisId, store, list);
+        foreach (var incoming in list)
+        {
+            var existing = _items.FirstOrDefault(v => v.Id == incoming.Id);
+            if (existing is null)
+            {
+                _items.Add(incoming);
+            }
+            else
+            {
+                var result = existing.Update(this.Id, incoming.StoreItemUnitId, incoming.Quantity, incoming.Price);
+
+                if (result.IsError)
+                    return result.Errors;
+            }
+        }
+
+        return Result.Updated;
     }
 
     // ---------- Behavior ------
@@ -77,12 +98,12 @@ public class Sale : AuditableEntity<int>
         if (existing is not null)
         {
             existing.IncreaseQuantity(item.Quantity);
-            existing.Update(existing.StoreItemUnit, existing.Quantity, item.Price);
+            existing.Update(this.Id, existing.StoreItemUnitId, existing.Quantity, item.Price);
             return Result.Updated;
         }
 
-        typeof(SaleItem).GetProperty(nameof(SaleItem.Sale))!.SetValue(item, this);
-        typeof(SaleItem).GetProperty(nameof(SaleItem.SaleId))!.SetValue(item, this.Id);
+        item.AssignSale(this);
+        
         _items.Add(item);
         return Result.Updated;
     }
@@ -99,14 +120,17 @@ public class Sale : AuditableEntity<int>
         if (Payment is null) return SaleErrors.PaymentRequired;
         if (_items.Count == 0)   return SaleErrors.NoItemsProvided;
 
+        // Create ExchangeOrder entity 
+        var exchangeOrderResult = ExchangeOrder.Create(Store.Id);
+
+        if (exchangeOrderResult.IsError) return exchangeOrderResult.Errors;
+
         // Build ExchangeOrderItems from sale items
         var orderItems = _items
-            .Select(i => ExchangeOrderItem.Create(i.StoreItemUnit, i.Quantity).Value)
+            .Select(i => ExchangeOrderItem.Create(exchangeOrderResult.Value.Id, i.StoreItemUnit.Id, i.Quantity).Value)
             .ToList();
 
-        // Create ExchangeOrder entity
-        var exchangeOrderResult = ExchangeOrder.Create(Store, orderItems);
-        if (exchangeOrderResult.IsError) return exchangeOrderResult.Errors;
+        var upsertResult = exchangeOrderResult.Value.UpsertItems(orderItems);    
 
         var exchangeOrder = exchangeOrderResult.Value;
 
@@ -115,6 +139,7 @@ public class Sale : AuditableEntity<int>
 
         // Approve (decrease stock)
         var approveResult = exchangeOrder.Approve();
+        
         if (approveResult.IsError)
             return approveResult.Errors;
 
@@ -130,6 +155,13 @@ public class Sale : AuditableEntity<int>
         if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
         if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
         Status = SaleStatus.Cancelled;
+        return Result.Updated;
+    }
+
+    public Result<Updated> AssignExitCard(int exitCardId)
+    {
+        if (exitCardId <= 0) return SaleErrors.InvalidExitCardId;
+        ExitCardId = exitCardId;
         return Result.Updated;
     }
 }

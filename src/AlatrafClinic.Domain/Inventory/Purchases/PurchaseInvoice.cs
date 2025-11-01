@@ -28,7 +28,7 @@ public class PurchaseInvoice : AuditableEntity<int>
 
     private PurchaseInvoice() { }
 
-    private PurchaseInvoice(string number, DateTime date, Supplier supplier, Store store, List<PurchaseItem> items)
+    private PurchaseInvoice(string number, DateTime date, Supplier supplier, Store store)
     {
         Number = number;
         Date = date;
@@ -36,25 +36,15 @@ public class PurchaseInvoice : AuditableEntity<int>
         SupplierId = supplier.Id;
         Store = store;
         StoreId = store.Id;
-        _items = items ?? new();
     }
 
-    public static Result<PurchaseInvoice> Create(string number, DateTime date, Supplier supplier, Store store, List<PurchaseItem> items)
+    public static Result<PurchaseInvoice> Create(string number, DateTime date, Supplier supplier, Store store)
     {
         if (string.IsNullOrWhiteSpace(number)) return PurchaseInvoiceErrors.NumberRequired;
         if (supplier is null) return PurchaseInvoiceErrors.InvalidSupplier;
         if (store is null) return PurchaseInvoiceErrors.InvalidStore;
 
-        items ??= new();
-        var invoice = new PurchaseInvoice(number, date, supplier, store, new());
-
-        if (items.Count == 0) return PurchaseInvoiceErrors.ItemsRequired;
-
-        // Enforce same-store invariant and merge duplicates
-        var addResult = invoice.ReplaceItems(items);
-        if (addResult.IsError) return addResult.Errors;
-
-        return invoice;
+        return new PurchaseInvoice(number, date, supplier, store);;
     }
 
     public Result<Updated> UpdateHeader(string number, DateTime date, Supplier supplier, Store store)
@@ -98,15 +88,13 @@ public class PurchaseInvoice : AuditableEntity<int>
             return Result.Updated;
         }
 
-        var created = PurchaseItem.Create(storeItemUnit, quantity, unitPrice, notes);
+        var created = PurchaseItem.Create(this.Id, storeItemUnit, quantity, unitPrice, notes);
         if (created.IsError) return created.Errors;
 
         // Set back-reference
         var line = created.Value;
-        typeof(PurchaseItem).GetProperty(nameof(PurchaseItem.PurchaseInvoice))!
-            .SetValue(line, this);
-        typeof(PurchaseItem).GetProperty(nameof(PurchaseItem.PurchaseInvoiceId))!
-            .SetValue(line, this.Id);
+
+        line.AssignPurchaseInvoice(this);
 
         _items.Add(line);
         return Result.Updated;
@@ -141,11 +129,8 @@ public class PurchaseInvoice : AuditableEntity<int>
             }
             else
             {
-                // Re-anchor item to this invoice aggregate
-                typeof(PurchaseItem).GetProperty(nameof(PurchaseItem.PurchaseInvoice))!
-                    .SetValue(it, this);
-                typeof(PurchaseItem).GetProperty(nameof(PurchaseItem.PurchaseInvoiceId))!
-                    .SetValue(it, this.Id);
+                it.AssignPurchaseInvoice(this);
+                
                 merged.Add(it.StoreItemUnitId, it);
             }
         }
@@ -165,7 +150,7 @@ public class PurchaseInvoice : AuditableEntity<int>
 
         if (newStoreItemUnit.StoreId != StoreId) return PurchaseItemErrors.WrongStore;
 
-        var result = existing.Update(newStoreItemUnit, quantity, unitPrice, notes);
+        var result = existing.Update(this.Id, newStoreItemUnit, quantity, unitPrice, notes);
         if (result.IsError) return result.Errors;
 
         // If StoreItemUnitId changed and causes a duplicate, merge

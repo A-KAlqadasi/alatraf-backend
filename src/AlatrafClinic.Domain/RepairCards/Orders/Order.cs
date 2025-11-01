@@ -31,36 +31,32 @@ public class Order : AuditableEntity<int>
 
     private Order() { }
 
-    private Order(int sectionId, Store store, List<OrderItem> items, OrderType type, int? repairCardId)
+    private Order(int sectionId, int storeId, OrderType type, int? repairCardId)
     {
         SectionId = sectionId;
-        Store = store;
-        StoreId = store.Id;
+        StoreId = storeId;
         RepairCardId = repairCardId;
         OrderType = type;
         Status = OrderStatus.New;
-        _orderItems = items;
     }
 
     // ---------- Factory ----------
-    public static Result<Order> CreateForRaw(int sectionId, Store store, List<OrderItem> items)
+    public static Result<Order> CreateForRaw(int sectionId, int storeId)
     {
         if (sectionId <= 0) return OrderErrors.InvalidSection;
-        if (store is null) return OrderErrors.InvalidStore;
-        if (items == null || !items.Any()) return OrderErrors.NoItems;
+        if (storeId <= 0) return OrderErrors.InvalidStore;
 
-        var order = new Order(sectionId, store, items, OrderType.Raw, null);
+        var order = new Order(sectionId, storeId, OrderType.Raw, null);
         return order;
     }
 
-    public static Result<Order> CreateForRepairCard(int sectionId, Store store, int repairCardId, List<OrderItem> items)
+    public static Result<Order> CreateForRepairCard(int sectionId, int storeId, int repairCardId)
     {
         if (sectionId <= 0) return OrderErrors.InvalidSection;
         if (repairCardId <= 0) return OrderErrors.InvalidRepairCard;
-        if (store is null) return OrderErrors.InvalidStore;
-        if (items == null || !items.Any()) return OrderErrors.NoItems;
+        if (storeId <= 0) return OrderErrors.InvalidStore;
 
-        var order = new Order(sectionId, store, items, OrderType.RepairCard, repairCardId);
+        var order = new Order(sectionId, storeId, OrderType.RepairCard, repairCardId);
         return order;
     }
 
@@ -75,7 +71,35 @@ public class Order : AuditableEntity<int>
         SectionId = sectionId;
         return Result.Updated;
     }
+    public Result<Updated> UpsertItems(List<OrderItem> newItems)
+    {
+        var list = (newItems ?? Enumerable.Empty<OrderItem>()).ToList();
+        if (list.Count == 0) return OrderErrors.NoItems;
+        if (list.Any(i => i.StoreItemUnit is null || i.StoreItemUnit.StoreId != this.StoreId))
+            return OrderErrors.MixedStores;
 
+
+        _orderItems.RemoveAll(existing => list.All(v => v.Id != existing.Id));
+
+        foreach (var incoming in list)
+        {
+            var existing = _orderItems.FirstOrDefault(v => v.Id == incoming.Id);
+            if (existing is null)
+            {
+                _orderItems.Add(incoming);
+            }
+            else
+            {
+                var result = existing.Update(this.Id, incoming.StoreItemUnitId, incoming.Quantity, incoming.Price);
+
+                if (result.IsError)
+                    return result.Errors;
+            }
+        }
+
+        return Result.Updated;
+    }
+    
     public Result<Updated> ReplaceItems(List<OrderItem> newItems)
     {
         if (!IsEditable) return OrderErrors.ReadOnly;
@@ -102,14 +126,14 @@ public class Order : AuditableEntity<int>
         if (!IsEditable) return OrderErrors.ReadOnly;
         if (_orderItems.Count == 0) return OrderErrors.NoItems;
 
-        // create exchange order lines from order items
-        var exchangeOrderItems = _orderItems
-            .Select(i => ExchangeOrderItem.Create(i.StoreItemUnit, i.Quantity).Value)
-            .ToList();
-
-        var exchangeOrderResult = ExchangeOrder.Create(Store, exchangeOrderItems);
+        var exchangeOrderResult = ExchangeOrder.Create(Store.Id);
         if (exchangeOrderResult.IsError)
             return exchangeOrderResult.Errors;
+
+        // create exchange order lines from order items
+        var exchangeOrderItems = _orderItems
+            .Select(i => ExchangeOrderItem.Create(exchangeOrderResult.Value.Id, i.StoreItemUnit.Id, i.Quantity).Value)
+            .ToList();
 
         var exchangeOrder = exchangeOrderResult.Value;
 

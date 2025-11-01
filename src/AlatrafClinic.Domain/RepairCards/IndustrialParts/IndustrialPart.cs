@@ -16,21 +16,20 @@ public class IndustrialPart : AuditableEntity<int>
 
     private IndustrialPart() { }
 
-    private IndustrialPart(string name, string? description, List<IndustrialPartUnit> industrialPartUnits)
+    private IndustrialPart(string name, string? description)
     {
         Name = name;
         Description = description;
-        _industrialPartUnits = industrialPartUnits;
     }
 
-    public static Result<IndustrialPart> Create(string name, string? description, List<IndustrialPartUnit> industrialPartUnits)
+    public static Result<IndustrialPart> Create(string name, string? description)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             return IndustrialPartErrors.NameIsRequired;
         }
 
-        return new IndustrialPart(name, description, industrialPartUnits);
+        return new IndustrialPart(name, description);
     }
 
     public Result<Updated> Update(string name, string? description)

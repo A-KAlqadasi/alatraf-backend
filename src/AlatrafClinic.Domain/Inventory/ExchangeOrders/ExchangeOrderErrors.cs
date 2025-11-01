@@ -11,4 +11,5 @@ public static class ExchangeOrderErrors
     public static readonly Error InvalidQuantity = Error.Validation("ExchangeOrder.InvalidQuantity", "Quantity must be greater than zero.");
     public static readonly Error OrderIsRequired = Error.Validation("ExchangeOrder.OrderIsRequired", "Order is required to link with exchange order.");
     public static readonly Error SaleIsRequired = Error.Validation("ExchangeOrder.SaleIsRequired", "Sale is required to link with exchange order.");
+    public static readonly Error ExchangeOrderRequired = Error.Validation("ExchangeOrder.ExchangeOrderRequired", "Exchange order is required.");
 }
