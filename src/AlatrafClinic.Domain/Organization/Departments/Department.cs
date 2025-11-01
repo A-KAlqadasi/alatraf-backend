@@ -41,18 +41,33 @@ public class Department : AuditableEntity<int>
 
     public Result<Section> AddSection(string sectionName)
     {
-        var section = Section.Create(sectionName, Id).Value;
-        _sections.Add(section);
+        if (string.IsNullOrWhiteSpace(sectionName))
+            return SectionErrors.NameRequired;
 
+        if (_sections.Any(s => s.Name.Equals(sectionName, StringComparison.OrdinalIgnoreCase)))
+            return DepartmentErrors.DuplicateSectionName;
+
+        var result = Section.Create(sectionName, Id);
+        if (result.IsError)
+            return result.Errors;
+
+        var section = result.Value;
+        _sections.Add(section);
         return section;
     }
-    public Result<Service> AddService(string name)
+   public Result<Service> AddService(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return DepartmentErrors.ServiceRequired;
 
-        var service = Service.Create(name, Id).Value;
+        if (_services.Any(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            return DepartmentErrors.DuplicateServiceName;
 
+        var result = Service.Create(name, Id);
+        if (result.IsError)
+            return result.Errors;
+
+        var service = result.Value;
         _services.Add(service);
         return service;
     }

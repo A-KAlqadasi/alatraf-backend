@@ -36,18 +36,32 @@ public class Section :AuditableEntity<int>
 
         return new Section(name, departmentId);
     }
-    public Result<Updated> UpdateName(string newName)
-    {
-        if (string.IsNullOrWhiteSpace(newName))
-            return SectionErrors.NameRequired;
+  public Result<Updated> UpdateName(string newName)
+{
+    if (string.IsNullOrWhiteSpace(newName))
+        return SectionErrors.NameRequired;
 
-        Name = newName;
-        return Result.Updated;
-    }
+    if (Department.Sections.Any(s => s.Id != Id && 
+                                     s.Name.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+        return SectionErrors.DuplicateSectionName;
+
+    Name = newName;
+    return Result.Updated;
+}
 
     public Result<Room> AddRoom(int number)
     {
-        var room = Room.Create(number, Id).Value;
+        if (number <= 0)
+            return RoomErrors.InvalidNumber;
+
+        if (_rooms.Any(r => r.Number == number))
+            return RoomErrors.DuplicateRoomNumber;
+
+        var result = Room.Create(number, Id);
+        if (result.IsError)
+            return result.Errors;
+
+        var room = result.Value;
         _rooms.Add(room);
         return room;
     }
