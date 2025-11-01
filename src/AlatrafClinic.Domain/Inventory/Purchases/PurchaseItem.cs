@@ -19,8 +19,9 @@ public class PurchaseItem : AuditableEntity<int>
 
     private PurchaseItem() { }
 
-    private PurchaseItem(StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes)
+    private PurchaseItem(int invoiceId, StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes)
     {
+        PurchaseInvoiceId = invoiceId;
         StoreItemUnit = storeItemUnit;
         StoreItemUnitId = storeItemUnit.Id;
         Quantity = quantity;
@@ -28,21 +29,31 @@ public class PurchaseItem : AuditableEntity<int>
         Notes = notes;
     }
 
-    public static Result<PurchaseItem> Create(StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes = null)
+    public static Result<PurchaseItem> Create(int invoiceId, StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes = null)
     {
+        if (invoiceId <= 0)
+        {
+            return PurchaseItemErrors.PurchaseInvoiceIsRequired;
+        }
         if (storeItemUnit is null) return PurchaseItemErrors.InvalidItem;
         if (quantity <= 0) return PurchaseItemErrors.InvalidQuantity;
         if (unitPrice <= 0) return PurchaseItemErrors.InvalidUnitPrice;
 
-        return new PurchaseItem(storeItemUnit, quantity, unitPrice, notes);
+        return new PurchaseItem(invoiceId, storeItemUnit, quantity, unitPrice, notes);
     }
 
-    internal Result<Updated> Update(StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes)
+    internal Result<Updated> Update(int invoiceId, StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes)
     {
+        if (invoiceId <= 0)
+        {
+            return PurchaseItemErrors.PurchaseInvoiceIsRequired;
+        }
+
         if (storeItemUnit is null) return PurchaseItemErrors.InvalidItem;
         if (quantity <= 0) return PurchaseItemErrors.InvalidQuantity;
         if (unitPrice <= 0) return PurchaseItemErrors.InvalidUnitPrice;
 
+        PurchaseInvoiceId = invoiceId;
         StoreItemUnit = storeItemUnit;
         StoreItemUnitId = storeItemUnit.Id;
         Quantity = quantity;
@@ -53,4 +64,15 @@ public class PurchaseItem : AuditableEntity<int>
     }
 
     internal void IncreaseQuantity(decimal by) => Quantity += by; // validated by caller
+
+    public Result<Updated> AssignPurchaseInvoice(PurchaseInvoice invoice)
+    {
+        if (invoice is null)
+        {
+            return PurchaseItemErrors.PurchaseInvoiceIsRequired;
+        }
+        PurchaseInvoice = invoice;
+        PurchaseInvoiceId = invoice.Id;
+        return Result.Updated;
+    }
 }

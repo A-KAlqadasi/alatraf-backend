@@ -7,29 +7,42 @@ namespace AlatrafClinic.Domain.Inventory.ExchangeOrders;
 public class ExchangeOrderItem : AuditableEntity<int>
 {
     public int ExchangeOrderId { get; private set; }
-    public ExchangeOrder ExchangeOrder { get; private set; } = default!;
+    public ExchangeOrder ExchangeOrder { get;  set; } = default!;
 
     public int StoreItemUnitId { get; private set; }
-    public StoreItemUnit StoreItemUnit { get; private set; } = default!;
+    public StoreItemUnit StoreItemUnit { get;  set; } = default!;
 
     public decimal Quantity { get; private set; }
 
     private ExchangeOrderItem() { }
 
-    private ExchangeOrderItem(StoreItemUnit storeItemUnit, decimal quantity)
+    private ExchangeOrderItem(int exchangeOrderId, int storeItemUnitId, decimal quantity)
     {
-        StoreItemUnit = storeItemUnit;
-        StoreItemUnitId = storeItemUnit.Id;
+        ExchangeOrderId = exchangeOrderId;
+        StoreItemUnitId = storeItemUnitId;
         Quantity = quantity;
     }
 
-    public static Result<ExchangeOrderItem> Create(StoreItemUnit storeItemUnit, decimal quantity)
+    public static Result<ExchangeOrderItem> Create(int exchangeOrderId, int storeItemUnitId, decimal quantity)
     {
-        if (storeItemUnit == null)
+        if (exchangeOrderId <= 0)
+            return ExchangeOrderErrors.ExchangeOrderRequired;
+
+        if (storeItemUnitId <= 0)
             return ExchangeOrderErrors.InvalidItem;
         if (quantity <= 0)
             return ExchangeOrderErrors.InvalidQuantity;
 
-        return new ExchangeOrderItem(storeItemUnit, quantity);
+        return new ExchangeOrderItem(exchangeOrderId, storeItemUnitId, quantity);
+    }
+    public Result<Updated> Update(int exchangeOrderId, int storeItemUnitId, decimal quantity)
+    {
+        if (exchangeOrderId <= 0) return ExchangeOrderErrors.ExchangeOrderRequired;
+        if (storeItemUnitId <= 0) return ExchangeOrderErrors.InvalidItem;
+        if (quantity <= 0) return ExchangeOrderErrors.InvalidQuantity;
+        ExchangeOrderId = exchangeOrderId;
+        StoreItemUnitId = storeItemUnitId;
+        Quantity = quantity;
+        return Result.Updated;
     }
 }

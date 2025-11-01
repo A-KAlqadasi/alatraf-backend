@@ -7,10 +7,10 @@ namespace AlatrafClinic.Domain.Sales.SalesItems;
 public class SaleItem : AuditableEntity<int>
 {
     public int SaleId { get; private set; }
-    public Sale Sale { get; private set; } = default!;
+    public Sale Sale { get; set; } = default!;
 
     public int StoreItemUnitId { get; private set; }
-    public StoreItemUnit StoreItemUnit { get; private set; } = default!;
+    public StoreItemUnit StoreItemUnit { get; set; } = default!;
 
     public decimal Quantity { get; private set; }
     public decimal Price { get; private set; }
@@ -18,31 +18,33 @@ public class SaleItem : AuditableEntity<int>
 
     private SaleItem() { }
 
-    private SaleItem(StoreItemUnit storeItemUnit, decimal quantity, decimal price)
+    private SaleItem(int saleId, int storeItemUnitId, decimal quantity, decimal price)
     {
-        StoreItemUnit = storeItemUnit;
-        StoreItemUnitId = storeItemUnit.Id;
+        SaleId = saleId;
+        StoreItemUnitId = storeItemUnitId;
         Quantity = quantity;
         Price = price;
     }
 
-    public static Result<SaleItem> Create(StoreItemUnit storeItemUnit, decimal quantity, decimal price)
+    public static Result<SaleItem> Create(int saleId, int storeItemUnitId, decimal quantity, decimal price)
     {
-        if (storeItemUnit is null)  return SaleItemErrors.InvalidItem;
+        if (saleId <= 0) return SaleItemErrors.InvalidSaleId;
+        if (storeItemUnitId <= 0)  return SaleItemErrors.InvalidItem;
         if (quantity <= 0)          return SaleItemErrors.InvalidQuantity;
         if (price < 0)              return SaleItemErrors.InvalidPrice;
 
-        return new SaleItem(storeItemUnit, quantity, price);
+        return new SaleItem(saleId, storeItemUnitId, quantity, price);
     }
 
-    internal Result<Updated> Update(StoreItemUnit storeItemUnit, decimal quantity, decimal price)
+    internal Result<Updated> Update(int saleId, int storeItemUnitId, decimal quantity, decimal price)
     {
-        if (storeItemUnit is null)  return SaleItemErrors.InvalidItem;
+        if (saleId <= 0) return SaleItemErrors.InvalidSaleId;
+        if (StoreItemUnitId <= 0)  return SaleItemErrors.InvalidItem;
         if (quantity <= 0)          return SaleItemErrors.InvalidQuantity;
-        if (price < 0)              return SaleItemErrors.InvalidPrice;
+        if (price < 0) return SaleItemErrors.InvalidPrice;
 
-        StoreItemUnit = storeItemUnit;
-        StoreItemUnitId = storeItemUnit.Id;
+        SaleId = saleId;
+        StoreItemUnitId = storeItemUnitId;
         Quantity = quantity;
         Price = price;
 
@@ -50,4 +52,16 @@ public class SaleItem : AuditableEntity<int>
     }
 
     internal void IncreaseQuantity(decimal by) => Quantity += by; // caller validates
+
+    public Result<Updated> AssignSale(Sale sale)
+    {
+        if (sale is null)
+        {
+            return SaleItemErrors.SaleIsRequired;
+        }
+        Sale = sale;
+        SaleId = sale.Id;
+        
+        return Result.Updated;
+    }
 }

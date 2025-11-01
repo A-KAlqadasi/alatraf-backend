@@ -22,17 +22,15 @@ public class Item : AuditableEntity<int>
 
     private Item(string name,
                  Unit baseUnit,
-                 List<ItemUnit> itemUnits,
                  string? description = null)
     {
         Name = name;
         BaseUnit = baseUnit;
         BaseUnitId = baseUnit.Id;
-        _itemUnits = itemUnits;
         Description = description;
     }
 
-    public static Result<Item> Create(string name, Unit baseUnit, List<ItemUnit> itemUnits, string? description = null)
+    public static Result<Item> Create(string name, Unit baseUnit, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             return ItemErrors.NameIsRequired;
@@ -40,10 +38,7 @@ public class Item : AuditableEntity<int>
         if (baseUnit == null)
             return ItemErrors.BaseUnitIsRequired;
 
-        if (itemUnits == null || itemUnits.Count == 0)
-            return ItemErrors.ItemUnitsAreRequired;
-
-        return new Item(name, baseUnit, itemUnits, description);
+        return new Item(name, baseUnit, description);
     }
 
     public Result<Updated> Update(string name, string? description = null)
