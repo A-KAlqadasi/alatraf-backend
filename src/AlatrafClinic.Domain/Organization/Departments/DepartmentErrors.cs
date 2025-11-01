@@ -19,4 +19,13 @@ public static class DepartmentErrors
     public static readonly Error DoctorRequired = Error.Validation(
         code: "Department.DoctorRequired",
         description: "At least one doctor is required.");
+
+    // ✅ Added: to prevent duplicates inside a department
+    public static readonly Error DuplicateSectionName = Error.Validation(
+        code: "Department.DuplicateSectionName",
+        description: "A section with the same name already exists in this department.");
+
+    public static readonly Error DuplicateServiceName = Error.Validation(
+        code: "Department.DuplicateServiceName",
+        description: "A service with the same name already exists in this department.");
 }

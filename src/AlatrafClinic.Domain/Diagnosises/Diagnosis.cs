@@ -53,7 +53,7 @@ public class Diagnosis : AuditableEntity<int>
         int typeId,
         int patientId,
         DiagnosisType diagnosisType)
-    {
+     {
         TicketId = ticketId;
         DiagnosisText = diagnosisText;
         InjuryDate = injuryDate;
@@ -63,16 +63,8 @@ public class Diagnosis : AuditableEntity<int>
         PatientId = patientId;
         DiagnoType = diagnosisType;
     }
-    public static Result<Diagnosis> Create(
-        int ticketId,
-        string diagnosisText,
-        DateTime injuryDate,
-        int reasonId,
-        int sideId,
-        int typeId,
-        int patientId,
-        DiagnosisType diagnosisType)
-    {
+    public static Result<Diagnosis> Create(int ticketId, string diagnosisText, DateTime injuryDate, int reasonId,
+                                        int sideId,int typeId,int patientId,DiagnosisType diagnosisType) {
         if(ticketId <= 0)
         {
             return DiagnosisErrors.InvalidTicketId;
@@ -119,8 +111,6 @@ public class Diagnosis : AuditableEntity<int>
         int reasonId,
         int sideId,
         int typeId,
-        int ticketId,
-        int patientId,
         DiagnosisType diagnosisType)
     {
         if (string.IsNullOrWhiteSpace(diagnosisText))
@@ -143,22 +133,13 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.InvalidTypeId;
         }
-        if (ticketId <= 0)
-        {
-            return DiagnosisErrors.InvalidTicketId;
-        }
-        if (patientId <= 0)
-        {
-            return DiagnosisErrors.InvalidPatientId;
-        }
+      
 
         DiagnosisText = diagnosisText;
         InjuryDate = injuryDate;
         ReasonId = reasonId;
         SideId = sideId;
         TypeId = typeId;
-        TicketId = ticketId;
-        PatientId = patientId;
         DiagnoType = diagnosisType;
 
         return Result.Updated;
@@ -169,10 +150,12 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.InvalidDiagnosisType;
         }
-
         DiagnoType = diagnosisType;
         return Result.Updated;
     }
+
+
+
 
     public Result<Updated> AssignDiagnosisPrograms(List<DiagnosisProgram> diagnosisPrograms)
     {
@@ -186,7 +169,7 @@ public class Diagnosis : AuditableEntity<int>
         }
 
         _diagnosisPrograms.AddRange(diagnosisPrograms);
-        
+
         return Result.Updated;
     }
 

@@ -33,10 +33,13 @@ public class Room : AuditableEntity<int>
         return new Room(number, sectionId);
     }
 
-    public Result<Updated> UpdateNumber(int newNumber)
+   public Result<Updated> UpdateNumber(int newNumber)
     {
         if (newNumber <= 0)
             return RoomErrors.InvalidNumber;
+
+        if (Section.Rooms.Any(r => r.Id != Id && r.Number == newNumber))
+            return RoomErrors.DuplicateRoomNumber;
 
         Number = newNumber;
         return Result.Updated;
