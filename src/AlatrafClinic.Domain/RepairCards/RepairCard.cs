@@ -34,27 +34,24 @@ public class RepairCard : AuditableEntity<int>
 
     private RepairCard() { }
 
-    private RepairCard(int diagnosisId, List<DiagnosisIndustrialPart> industrialParts, RepairCardStatus status, bool isActive = true)
+    private RepairCard(int diagnosisId,  RepairCardStatus status, bool isActive = true)
     {
         DiagnosisId = diagnosisId;
         IsActive = isActive;
         Status = status;
-        _diagnosisIndustrialParts = industrialParts;
+       
     }
 
-    public static Result<RepairCard> Create(int diagnosisId, List<DiagnosisIndustrialPart> diagnosisIndustrialParts)
+    public static Result<RepairCard> Create(int diagnosisId)
     {
         if (diagnosisId <= 0)
         {
             return RepairCardErrors.InvalidDiagnosisId;
         }
         
-        if (diagnosisIndustrialParts == null || !diagnosisIndustrialParts.Any())
-        {
-            return RepairCardErrors.DiagnosisIndustrialPartsAreRequired;
-        }
+     
 
-        return new RepairCard(diagnosisId,diagnosisIndustrialParts, RepairCardStatus.New );
+        return new RepairCard(diagnosisId, RepairCardStatus.New );
     }
 
     public bool IsEditable => Status is not RepairCardStatus.LegalExit or RepairCardStatus.IllegalExit;
