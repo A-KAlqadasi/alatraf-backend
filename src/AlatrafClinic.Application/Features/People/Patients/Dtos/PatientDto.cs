@@ -7,7 +7,7 @@ namespace AlatrafClinic.Application.Features.People.Patients.Dtos
     {
         public int PatientId { get; set; }
         public int PersonId { get; set; }
-        public PersonDto? Person { get; set; }
+        public PersonDto? PersonDto { get; set; }
         public PatientType PatientType { get; set; }
         public string? AutoRegistrationNumber { get; set; }
     }

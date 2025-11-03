@@ -1,8 +1,10 @@
 
 
+
 using AlatrafClinic.Application.Features.People.Doctors.Dtos;
 using AlatrafClinic.Application.Features.People.Persons.Mappers;
 using AlatrafClinic.Domain.Organization.Doctors;
+using AlatrafClinic.Domain.People;
 
 namespace AlatrafClinic.Application.Features.People.Doctors.Mappers;
 
@@ -16,7 +18,7 @@ public static class DoctorMapper
         {
             DoctorId = entity.Id,
             PersonId = entity.PersonId,
-            // PersonDto = PersonMapper.ToDto(entity.Person)?? null,
+            PersonDto = entity.Person!.ToDto(),
             DepartmentId = entity.DepartmentId,
             Specialization = entity.Specialization
         };
@@ -24,7 +26,6 @@ public static class DoctorMapper
 
     public static List<DoctorDto> ToDtos(this IEnumerable<Doctor> entities)
     {
-        ArgumentNullException.ThrowIfNull(entities);
         return entities.Select(e => e.ToDto()).ToList();
     }
 }
