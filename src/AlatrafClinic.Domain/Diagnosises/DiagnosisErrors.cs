@@ -12,18 +12,18 @@ public static class DiagnosisErrors
         Error.Validation(
             code: "Diagnosis.InvalidInjuryDate",
             description: "Injury date is invalid.");
-    public static readonly Error InvalidReasonId =
+    public static readonly Error InjuryReasonIsRequired =
         Error.Validation(
-            code: "Diagnosis.InvalidReasonId",
-            description: "Reason ID is invalid.");
-    public static readonly Error InvalidSideId =
+            code: "Diagnosis.InjuryReasonIsRequired",
+            description: "Injury reason is required.");
+    public static readonly Error InjurySideIsRequired =
         Error.Validation(
-            code: "Diagnosis.InvalidSideId",
-            description: "Side ID is invalid.");
-    public static readonly Error InvalidTypeId =
+            code: "Diagnosis.InjurySideIsRequired",
+            description: "Injury side is required.");
+    public static readonly Error InjuryTypeIsRequired =
         Error.Validation(
-            code: "Diagnosis.InvalidTypeId",
-            description: "Type ID is invalid.");
+            code: "Diagnosis.InjuryTypeIsRequired",
+            description: "Injury type is required.");
     public static readonly Error InvalidTicketId =
         Error.Validation(
             code: "Diagnosis.InvalidTicketId",
