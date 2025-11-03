@@ -167,7 +167,7 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.MedicalProgramsAreRequired;
         }
-
+        
         _diagnosisPrograms.AddRange(diagnosisPrograms);
 
         return Result.Updated;
