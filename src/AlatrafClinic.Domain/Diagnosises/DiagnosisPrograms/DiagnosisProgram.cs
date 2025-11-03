@@ -38,16 +38,12 @@ public class DiagnosisProgram : AuditableEntity<int>
         int duration,
         string? notes)
     {
-        if (diagnosisId <= 0)
-        {
-            return DiagnosisProgramErrors.InvalidDiagnosisId;
-        }
-       
+        
         if (medicalProgramId <= 0)
         {
             return DiagnosisProgramErrors.InvalidMedicalProgramId;
         }
-        if (duration <=0 )
+        if (duration <= 0)
         {
             return DiagnosisProgramErrors.InvalidDuration;
         }

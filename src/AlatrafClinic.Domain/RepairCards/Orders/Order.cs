@@ -71,8 +71,10 @@ public class Order : AuditableEntity<int>
         SectionId = sectionId;
         return Result.Updated;
     }
+
     public Result<Updated> UpsertItems(List<OrderItem> newItems)
     {
+        if (!IsEditable) return OrderErrors.ReadOnly;
         var list = (newItems ?? Enumerable.Empty<OrderItem>()).ToList();
         if (list.Count == 0) return OrderErrors.NoItems;
         if (list.Any(i => i.StoreItemUnit is null || i.StoreItemUnit.StoreId != this.StoreId))
@@ -100,16 +102,24 @@ public class Order : AuditableEntity<int>
         return Result.Updated;
     }
     
-    public Result<Updated> ReplaceItems(List<OrderItem> newItems)
+    public Result<Updated> ReplaceItems(List<(StoreItemUnit storeItemUnit, decimal quantity, decimal price)> newItems)
     {
         if (!IsEditable) return OrderErrors.ReadOnly;
         var list = newItems?.ToList() ?? new();
         if (list.Count == 0) return OrderErrors.NoItems;
-        if (list.Any(i => i.StoreItemUnit.StoreId != StoreId))
+        if (list.Any(i => i.storeItemUnit.StoreId != StoreId))
             return OrderErrors.MixedStores;
 
         _orderItems.Clear();
-        _orderItems.AddRange(list);
+        foreach (var (storeItemUnit, quantity, price) in list)
+        {
+            var itemResult = OrderItem.Create(this.Id, storeItemUnit.Id, quantity, price);
+            if (itemResult.IsError)
+                return itemResult.Errors;
+
+            _orderItems.Add(itemResult.Value);
+        }
+
         return Result.Updated;
     }
 

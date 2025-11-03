@@ -11,6 +11,7 @@ using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.TherapyCards;
+using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 
 namespace AlatrafClinic.Domain.Diagnosises;
 
@@ -31,6 +32,7 @@ public class Diagnosis : AuditableEntity<int>
     private readonly List<DiagnosisIndustrialPart> _diagnosisIndustrialParts = new();
     public IReadOnlyCollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts => _diagnosisIndustrialParts.AsReadOnly();
     public TherapyCard? TherapyCard { get; set; }
+    
     public RepairCard? RepairCard { get; set; }
     public Sale? Sale { get; set; }
     private readonly List<InjuryReason> _injuryReasons = new();
@@ -39,7 +41,8 @@ public class Diagnosis : AuditableEntity<int>
     public IReadOnlyCollection<InjurySide> InjurySides => _injurySides.AsReadOnly();
     private readonly List<InjuryType> _injuryTypes = new();
     public IReadOnlyCollection<InjuryType> InjuryTypes => _injuryTypes.AsReadOnly();
-
+    private readonly List<TherapyCard> _therapyCards = new();
+    public IReadOnlyCollection<TherapyCard> TherapyCards => _therapyCards.AsReadOnly();
     private Diagnosis()
     {
     }
@@ -146,8 +149,8 @@ public class Diagnosis : AuditableEntity<int>
         InjuryDate = injuryDate;
         _injuryReasons.Clear();
         _injurySides.Clear();
-        _injuryTypes.Clear();
         _injuryReasons.AddRange(injuryReasons);
+        _injuryTypes.Clear();
         _injurySides.AddRange(injurySides);
         _injuryTypes.AddRange(injuryTypes);
         DiagnoType = diagnosisType;
@@ -164,19 +167,45 @@ public class Diagnosis : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignDiagnosisPrograms(List<DiagnosisProgram> diagnosisPrograms)
+    public Result<Updated> UpsertDiagnosisPrograms(List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms)
     {
         if (DiagnoType != DiagnosisType.Therapy)
         {
             return DiagnosisErrors.DiagnosisProgramAdditionOnlyForTherapyDiagnosis;
         }
-        if (diagnosisPrograms.Count() <= 0)
+        if (diagnosisPrograms is null || !diagnosisPrograms.Any())
         {
             return DiagnosisErrors.MedicalProgramsAreRequired;
         }
 
-        _diagnosisPrograms.AddRange(diagnosisPrograms);
+        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId && dp.TherapyCardId == null));
+            
+        foreach (var (medicalProgramId, duration, notes) in diagnosisPrograms)
+        {
 
+            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId && dp.TherapyCardId == null);
+
+            if (existing != null)
+            {
+                var updated = existing.Update(this.Id, medicalProgramId, duration, notes);
+                if (updated.IsError)
+                {
+                    return updated.Errors;
+                }
+
+            }
+            else
+            {
+                var result = DiagnosisProgram.Create(this.Id, medicalProgramId, duration, notes);
+                if (result.IsError)
+                {
+                    return result.Errors;
+                }
+
+                _diagnosisPrograms.Add(result.Value);
+            }
+        }
+        
         return Result.Updated;
     }
 
@@ -209,19 +238,43 @@ public class Diagnosis : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignDiagnosisIndustrialParts(List<DiagnosisIndustrialPart> diagnosisIndustrialParts)
+    public Result<Updated> AssignDiagnosisIndustrialParts(List<(int industrialPartUnitId, int quantity, decimal price)> incomingIndustrialParts)
     {
         if (DiagnoType != DiagnosisType.Limbs)
         {
             return DiagnosisErrors.IndustrialPartAdditionOnlyForLimbsDiagnosis;
         }
-        if (diagnosisIndustrialParts.Count() <= 0)
+        if (incomingIndustrialParts.Count() <= 0)
         {
             return DiagnosisErrors.IndustrialPartsAreRequired;
         }
 
-        _diagnosisIndustrialParts.AddRange(diagnosisIndustrialParts);
+        _diagnosisIndustrialParts.RemoveAll(dip => incomingIndustrialParts.All(d => d.industrialPartUnitId != dip.IndustrialPartUnitId));
 
+        foreach (var (industrialPartUnitId, quantity, price) in incomingIndustrialParts)
+        {
+
+            var existing = _diagnosisIndustrialParts.FirstOrDefault(dip => dip.IndustrialPartUnitId == industrialPartUnitId);
+
+            if (existing != null)
+            {
+                var updated = existing.Update(this.Id, industrialPartUnitId, quantity, price);
+                if (updated.IsError)
+                {
+                    return updated.Errors;
+                }
+            }
+            else
+            {
+                var result = DiagnosisIndustrialPart.Create(this.Id, industrialPartUnitId, quantity, price);
+                if (result.IsError)
+                {
+                    return result.Errors;
+                }
+
+                _diagnosisIndustrialParts.Add(result.Value);
+            }
+        }
         return Result.Updated;
     }
 
