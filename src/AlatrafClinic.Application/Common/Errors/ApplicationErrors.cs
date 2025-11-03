@@ -34,5 +34,8 @@ Error.NotFound(
     public static Error EmployeeAlreadyExists(int personId) => Error.Conflict(
         code: "Employee.AlreadyExists",
         description: $"An employee already exists for person Id {personId}.");
-
+    public static readonly Error EmployeeNotFound = Error.NotFound(
+        "Employee.NotFound",
+        "Employee does not exist."
+    );
 }
