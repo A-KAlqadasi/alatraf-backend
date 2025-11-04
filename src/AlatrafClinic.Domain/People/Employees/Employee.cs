@@ -36,5 +36,14 @@ public sealed class Employee : AuditableEntity<Guid>
         
         return new Employee(id,personId, role);
     }
+   public Result<Updated> UpdateRole(Role newRole)
+    {
+        if (!Enum.IsDefined(typeof(Role), newRole))
+            return EmployeeErrors.RoleInvalid;
 
+        if (Role == newRole)  return EmployeeErrors.SameRole;
+
+        Role = newRole;
+        return Result.Updated;
+    }
 }
