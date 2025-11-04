@@ -5,7 +5,7 @@ namespace AlatrafClinic.Domain.TherapyCards.Sessions;
 
 public class Session : AuditableEntity<int>
 {
-    public bool IsTaken { get; private set; }
+    public bool IsTaken { get; private set; } = false;
     public int Number { get; private set; }
     public int TherapyCardId { get; private set; }
     public TherapyCard? TherapyCard { get; private set; }
@@ -17,22 +17,19 @@ public class Session : AuditableEntity<int>
     {
     }
 
-    private Session(int therapyCardId, int number, List<SessionProgram> sessionPrograms, bool isTaken)
+    private Session(int therapyCardId, int number)
     {
         TherapyCardId = therapyCardId;
         Number = number;
-        IsTaken = isTaken;
-        _sessionPrograms = sessionPrograms;
         SessionDate = DateTime.Now;
     }
-    private Session(int number, DateTime date, int therapyCardId)
+    private Session(int therapyCardId, int number, DateTime date)
     {
+        TherapyCardId = therapyCardId;
         Number = number;
         SessionDate = date;
-        TherapyCardId = therapyCardId;
-        IsTaken = false;
     }
-    public static Result<Session> Create(int number, DateTime date, int therapyCardId)
+    public static Result<Session> Create(int therapyCardId, int number, DateTime date)
     {
         if (therapyCardId <= 0)
         {
@@ -43,36 +40,48 @@ public class Session : AuditableEntity<int>
             return SessionErrors.NumberIsRequired;
         }
 
-        return new Session(number, date, therapyCardId);
+        return new Session(therapyCardId, number, date);
     }
 
-    public static Result<Session> Create(int therapyCardId, int number, List<SessionProgram> sessionPrograms, bool isTaken = true)
+    public static Result<Session> Create(int therapyCardId, int number)
     {
         if (therapyCardId <= 0)
         {
             return SessionErrors.TherapyCardIdIsRequired;
         }
+
         if (number <= 0)
         {
             return SessionErrors.NumberIsRequired;
         }
-        return new Session(therapyCardId, number, sessionPrograms, isTaken);
+        return new Session(therapyCardId, number);
     }
-    public Result<Updated> TakeSession(List<SessionProgram> sessionPrograms)
+    
+    public Result<Updated> TakeSession(List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
     {
-        if (IsTaken == true)
+        if (IsTaken)
         {
             return SessionErrors.SessionAlreadyTaken;
         }
-        
-        if(SessionDate.Date != DateTime.Now.Date)
+        if (SessionDate.Date != DateTime.Now.Date)
         {
             return SessionErrors.InvalidSessionDate(SessionDate);
         }
-        _sessionPrograms.AddRange(sessionPrograms);
-        IsTaken = true;
+        if (sessionProgramsData == null || !sessionProgramsData.Any())
+        {
+            return SessionErrors.SessionProgramsAreRequired;
+        }
 
+        foreach (var (diagnosisProgramId, doctorSectionRoomId) in sessionProgramsData)
+        {
+            var sessionProgramResult = SessionProgram.Create(diagnosisProgramId, doctorSectionRoomId);
+            if (sessionProgramResult.IsError)
+            {
+                return sessionProgramResult.TopError;
+            }
+            _sessionPrograms.Add(sessionProgramResult.Value);
+        }
+        IsTaken = true;
         return Result.Updated;
     }
-
 }

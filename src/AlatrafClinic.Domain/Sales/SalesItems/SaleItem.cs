@@ -28,7 +28,6 @@ public class SaleItem : AuditableEntity<int>
 
     public static Result<SaleItem> Create(int saleId, int storeItemUnitId, decimal quantity, decimal price)
     {
-        if (saleId <= 0) return SaleItemErrors.InvalidSaleId;
         if (storeItemUnitId <= 0)  return SaleItemErrors.InvalidItem;
         if (quantity <= 0)          return SaleItemErrors.InvalidQuantity;
         if (price < 0)              return SaleItemErrors.InvalidPrice;
