@@ -179,7 +179,7 @@ public class Diagnosis : AuditableEntity<int>
         }
 
         _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId && dp.TherapyCardId == null));
-            
+
         foreach (var (medicalProgramId, duration, notes) in diagnosisPrograms)
         {
 
@@ -192,7 +192,6 @@ public class Diagnosis : AuditableEntity<int>
                 {
                     return updated.Errors;
                 }
-
             }
             else
             {
@@ -205,40 +204,10 @@ public class Diagnosis : AuditableEntity<int>
                 _diagnosisPrograms.Add(result.Value);
             }
         }
-        
         return Result.Updated;
     }
 
-    public Result<Updated> AssignTherapyCard(TherapyCard therapyCard)
-    {
-        if (DiagnoType != DiagnosisType.Therapy)
-        {
-            return DiagnosisErrors.TherapyCardAdditionOnlyForTherapyDiagnosis;
-        }
-        if (TherapyCard != null)
-        {
-            return DiagnosisErrors.TherapyCardAlreadyAssigned;
-        }
-        TherapyCard = therapyCard;
-        return Result.Updated;
-    }
-
-    public Result<Updated> AssignRepairCard(RepairCard repairCard)
-    {
-        if (DiagnoType != DiagnosisType.Limbs)
-        {
-            return DiagnosisErrors.RepairCardAdditionOnlyForLimbsDiagnosis;
-        }
-        if (RepairCard != null)
-        {
-            return DiagnosisErrors.RepairCardAlreadyAssigned;
-        }
-        
-        RepairCard = repairCard;
-        return Result.Updated;
-    }
-
-    public Result<Updated> AssignDiagnosisIndustrialParts(List<(int industrialPartUnitId, int quantity, decimal price)> incomingIndustrialParts)
+    public Result<Updated> UpsertDiagnosisIndustrialParts(List<(int industrialPartUnitId, int quantity, decimal price)> incomingIndustrialParts)
     {
         if (DiagnoType != DiagnosisType.Limbs)
         {
@@ -277,19 +246,5 @@ public class Diagnosis : AuditableEntity<int>
         }
         return Result.Updated;
     }
-
-    public Result<Updated> AssignSale(Sale sale)
-    {
-        if (Sale != null)
-        {
-            return DiagnosisErrors.SaleAlreadyAssigned;
-        }
-        if (DiagnoType != DiagnosisType.Sales)
-        {
-            return DiagnosisErrors.SaleAssignmentOnlyForSalesDiagnosis;
-        }
-
-        Sale = sale;
-        return Result.Updated;
-    }
+    
 }

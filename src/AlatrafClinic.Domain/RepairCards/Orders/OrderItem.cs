@@ -9,8 +9,8 @@ public class OrderItem : AuditableEntity<int>
     public int OrderId { get; private set; }
     public Order Order { get; set; } = default!;
 
-    public int StoreItemUnitId { get; private set; }
-    public StoreItemUnit StoreItemUnit { get; set; } = default!;
+    public int ItemUnitId { get; private set; }
+    public ItemUnit ItemUnit { get; set; } = default!;
 
     public decimal Quantity { get; private set; }
     public decimal Price { get; private set; }
@@ -18,34 +18,35 @@ public class OrderItem : AuditableEntity<int>
 
     private OrderItem() { }
 
-    private OrderItem(int orderId, int storeItemUnitId, decimal quantity, decimal price)
+    private OrderItem(int orderId, ItemUnit itemUnit, decimal quantity)
     {
         OrderId = orderId;
-        StoreItemUnitId = storeItemUnitId;
+        ItemUnit = itemUnit;
+        ItemUnitId = itemUnit.Id;
         Quantity = quantity;
-        Price = price;
+        Price = itemUnit.Price;
     }
 
-    public static Result<OrderItem> Create(int orderId, int storeItemUnitId, decimal quantity, decimal price)
+    public static Result<OrderItem> Create(int orderId, ItemUnit itemUnit, decimal quantity)
     {
-        if (storeItemUnitId <= 0) return OrderItemErrors.StoreItemRequired;
+        if (itemUnit is null) return OrderItemErrors.ItemUnitRequired;
         if (quantity <= 0) return OrderItemErrors.InvalidQuantity;
-        if (price < 0) return OrderItemErrors.InvalidPrice;
 
-        return new OrderItem(orderId, storeItemUnitId, quantity, price);
+
+        return new OrderItem(orderId, itemUnit, quantity);
     }
 
-    internal Result<Updated> Update(int orderId, int storeItemUnitId, decimal quantity, decimal price)
+    internal Result<Updated> Update(int orderId, ItemUnit itemUnit, decimal quantity)
     {
         if (orderId <= 0) return OrderItemErrors.OrderIdIsRequired;
-        if (storeItemUnitId <= 0) return OrderItemErrors.StoreItemRequired;
+        if (itemUnit is null) return OrderItemErrors.ItemUnitRequired;
         if (quantity <= 0) return OrderItemErrors.InvalidQuantity;
-        if (price < 0) return OrderItemErrors.InvalidPrice;
 
         OrderId = orderId;
-        StoreItemUnitId = storeItemUnitId;
+        ItemUnit = itemUnit;
+        ItemUnitId = itemUnit.Id;
         Quantity = quantity;
-        Price = price;
+        Price = itemUnit.Price;
 
         return Result.Updated;
     }

@@ -8,7 +8,7 @@ namespace AlatrafClinic.Domain.Inventory.ExchangeOrders;
 
 public class ExchangeOrder : AuditableEntity<int>
 {
-    public string Number { get; private set; } = string.Empty;   // e.g., "EX-2025-001"
+    public string Number { get; private set; } = string.Empty;   // e.g., "EX-S-25-11-001"
 
     public bool IsApproved { get; private set; }
     public string? Notes { get; private set; }
@@ -90,6 +90,14 @@ public class ExchangeOrder : AuditableEntity<int>
         {
             return ExchangeOrderErrors.AlreadyApproved;
         }
+        if (string.IsNullOrWhiteSpace(number))
+        {
+            return ExchangeOrderErrors.ExchangeOrderNumberRequired;
+        }
+        if(Sale is not null)
+        {
+            return ExchangeOrderErrors.ExchangeOrderAlreadyAssignedToSales;
+        }
 
         if (order is null)
         {
@@ -105,6 +113,16 @@ public class ExchangeOrder : AuditableEntity<int>
         if (IsApproved)
         {
             return ExchangeOrderErrors.AlreadyApproved;
+        }
+
+        if (string.IsNullOrWhiteSpace(number))
+        {
+            return ExchangeOrderErrors.ExchangeOrderNumberRequired;
+        }
+        
+        if(Order is not null)
+        {
+            return ExchangeOrderErrors.ExchangeOrderAlreadyAssignedToOrder;
         }
 
         if (sale is null)
