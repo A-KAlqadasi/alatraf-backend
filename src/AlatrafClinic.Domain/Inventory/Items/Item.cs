@@ -15,9 +15,6 @@ public class Item : AuditableEntity<int>
     private readonly List<ItemUnit> _itemUnits = new();
     public IReadOnlyCollection<ItemUnit> ItemUnits => _itemUnits.AsReadOnly();
 
-    public ICollection<OrderItem> OrderItems { get; private set; } = new List<OrderItem>();
-    public decimal TotalQuantity => _itemUnits.Sum(iu => iu.ToBaseQuantity());
-
     private Item() { }
 
     private Item(string name,
