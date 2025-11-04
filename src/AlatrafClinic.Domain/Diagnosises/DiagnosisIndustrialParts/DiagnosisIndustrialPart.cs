@@ -30,10 +30,6 @@ public class DiagnosisIndustrialPart : AuditableEntity<int>
 
     public static Result<DiagnosisIndustrialPart> Create(int diagnosisId, int industrialPartUnitId, int quantity, decimal price)
     {
-        if(diagnosisId <= 0)
-        {
-            return DiagnosisIndustrialPartErrors.DiagnosisIdInvalid;
-        }
         if (industrialPartUnitId <= 0)
         {
             return DiagnosisIndustrialPartErrors.IndustrialPartUnitIdInvalid;

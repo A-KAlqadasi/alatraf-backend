@@ -187,14 +187,20 @@ public class RepairCard : AuditableEntity<int>
         Status = RepairCardStatus.ExitForPractice;
         return Result.Updated;
     }
-    public Result<Updated> AssignAttendanceTime(AttendanceTime attendanceTime)
+    public Result<Updated> AssignAttendanceTime((DateTime attendanceDate, string? note) attendanceData)
     {
-        if (attendanceTime is null)
+        if (!IsEditable)
         {
-            return RepairCardErrors.AttendanceTimeIsRequired;
+            return RepairCardErrors.Readonly;
         }
 
-        AttendanceTime = attendanceTime;
+        var attendanceTimeResult = AttendanceTime.Create(Id, attendanceData.attendanceDate, attendanceData.note);
+        if (attendanceTimeResult.IsError)
+        {
+            return attendanceTimeResult.Errors;
+        }
+
+        AttendanceTime = attendanceTimeResult.Value;
         return Result.Updated;
     }
 

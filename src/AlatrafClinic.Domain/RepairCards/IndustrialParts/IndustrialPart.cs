@@ -41,33 +41,50 @@ public class IndustrialPart : AuditableEntity<int>
 
         Name = name;
         Description = description;
-        return Result.Updated;
+        return Result.Updated; 
     }
-    public Result<Updated> AssignUnit(IndustrialPartUnit industrialPartUnit)
+    public Result<Updated> AssignUnit(List<(int unitId, decimal price)> unit)
     {
-        var doesUnitExists = _industrialPartUnits.Any(u => u.Unit?.Name == industrialPartUnit?.Unit?.Name);
+        var doesUnitExists = _industrialPartUnits.Any(u => unit.Any(i => i.unitId == u.Unit?.Id));
+
         if (doesUnitExists)
         {
             return IndustrialPartErrors.UnitAlreadyExists;
         }
+        foreach (var (unitId, price) in unit)
+        {
+            var industrialPartUnit = IndustrialPartUnit.Create(this.Id, unitId, price);
 
-        _industrialPartUnits.Add(industrialPartUnit);
+            if (industrialPartUnit.IsError)
+            {
+                return industrialPartUnit.Errors;
+            }
+
+            _industrialPartUnits.Add(industrialPartUnit.Value);
+        }
+
         return Result.Updated;
     }
-    public Result<Updated> UpsertUnits(List<IndustrialPartUnit> incomingUnits)
+    public Result<Updated> UpsertUnits(List<(int unitId, decimal price)> incomingUnits)
     {
-        _industrialPartUnits.RemoveAll(existing => incomingUnits.All(u => u.Id != existing.Id));
+        _industrialPartUnits.RemoveAll(existing => incomingUnits.All(u => u.unitId != existing.UnitId));
 
-        foreach (var incoming in incomingUnits)
+        foreach (var (unitId, price) in incomingUnits)
         {
-            var existing = _industrialPartUnits.FirstOrDefault(u => u.Id == incoming.Id);
+            var existing = _industrialPartUnits.FirstOrDefault(u => u.UnitId == unitId);
             if (existing is null)
             {
-                _industrialPartUnits.Add(incoming);
+                var createUnitResult = IndustrialPartUnit.Create(this.Id, unitId, price);
+                if (createUnitResult.IsError)
+                {
+                    return createUnitResult.Errors;
+                }
+
+                _industrialPartUnits.Add(createUnitResult.Value);
             }
             else
             {
-                var updateUnitResult = existing.Update(Id, incoming.UnitId, incoming.PricePerUnit);
+                var updateUnitResult = existing.Update(this.Id, unitId, price);
 
                 if (updateUnitResult.IsError)
                 {

@@ -1,12 +1,9 @@
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Common.Results.Abstractions;
-
 using FluentValidation;
-
 using MediatR;
 
 namespace AlatrafClinic.Application.Common.Behaviors;
-
 
 public class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest>? validator = null)
     : IPipelineBehavior<TRequest, TResponse>
