@@ -4,11 +4,10 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
     // Ensures save and  commits all  tracked changes as a single  transaction. 
     public interface IUnitWork : IAsyncDisposable
     {
-        IPersonRepository People { get; }
+        IPersonRepository Person { get; }
         IEmployeeRepository Employees { get; }
         IPatientRepository Patients { get; }
         IDoctorRepository Doctors { get; }
-
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
