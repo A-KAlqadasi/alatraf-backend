@@ -13,4 +13,7 @@ public static class EmployeeErrors
 
     public static Error RoleInvalid =>
         Error.Validation("Employee.RoleInvalid", "Invalid role assigned to employee.");
+         public static readonly Error SameRole =
+        Error.Conflict("Employee.SameRole", "The new role must be different from the current one.");
+
 }
