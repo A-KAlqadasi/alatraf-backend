@@ -7,7 +7,6 @@ public class InjurySide : AuditableEntity<int>
 {
     public string? Name { get; set; }
 
-    public ICollection<Diagnosis> Diagnosises { get; set; } = new List<Diagnosis>();
     private InjurySide()
     {
     }

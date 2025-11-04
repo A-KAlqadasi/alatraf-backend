@@ -1,9 +1,7 @@
 using MediatR;
-
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Common.Behaviors;
-
 
 public class UnhandledExceptionBehaviour<TRequest, TResponse>(ILogger<TRequest> logger)
     : IPipelineBehavior<TRequest, TResponse>

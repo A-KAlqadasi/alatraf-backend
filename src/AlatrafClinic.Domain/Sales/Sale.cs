@@ -49,26 +49,32 @@ public class Sale : AuditableEntity<int>
 
         return new Sale(diagnosisId, storeId);
     }
-    public Result<Updated> UpsertItems(List<SaleItem> newItems)
+    public Result<Updated> UpsertItems(List<(StoreItemUnit storeItemUnit, decimal quantity, decimal price)> newItems)
     {
-        var list = (newItems ?? Enumerable.Empty<SaleItem>()).ToList();
-        if (list.Count == 0) return SaleErrors.NoItemsProvided;
-        if (list.Any(i => i.StoreItemUnit is null || i.StoreItemUnit.StoreId != this.StoreId))
-            return SaleErrors.WrongStore;
-        
-        
-        _items.RemoveAll(existing => list.All(v => v.Id != existing.Id));
+        if (Status != SaleStatus.Draft) return SaleErrors.NotDraft;
 
-        foreach (var incoming in list)
+        var list = newItems?.ToList() ?? new();
+        if (list.Count == 0) return SaleErrors.NoItemsProvided;
+        if (list.Any(i => i.storeItemUnit is null || i.storeItemUnit.StoreId != this.StoreId))
+            return SaleErrors.WrongStore;
+
+
+        _items.RemoveAll(existing => list.All(v => v.storeItemUnit.Id != existing.StoreItemUnitId));
+
+        foreach (var (storeItemUnit, quantity, price) in list)
         {
-            var existing = _items.FirstOrDefault(v => v.Id == incoming.Id);
+            var existing = _items.FirstOrDefault(v => v.StoreItemUnitId == storeItemUnit.Id);
             if (existing is null)
             {
-                _items.Add(incoming);
+                var itemResult = SaleItem.Create(this.Id, storeItemUnit.Id, quantity, price);
+                if (itemResult.IsError)
+                    return itemResult.Errors;
+                    
+                _items.Add(itemResult.Value);
             }
             else
             {
-                var result = existing.Update(this.Id, incoming.StoreItemUnitId, incoming.Quantity, incoming.Price);
+                var result = existing.Update(this.Id, storeItemUnit.Id, quantity, price);
 
                 if (result.IsError)
                     return result.Errors;

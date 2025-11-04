@@ -20,4 +20,8 @@ public static class SessionErrors
         Error.Validation(
             "Session.InvalidSessionDate",
             $"Session date must be in {sessionDate.ToString("dd/MM/yyyy")}.");
+    public static readonly Error SessionProgramsAreRequired =
+        Error.Validation(
+            "Session.SessionProgramsAreRequired",
+            "At least one session program is required.");
 }

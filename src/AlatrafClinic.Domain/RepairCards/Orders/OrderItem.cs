@@ -28,7 +28,6 @@ public class OrderItem : AuditableEntity<int>
 
     public static Result<OrderItem> Create(int orderId, int storeItemUnitId, decimal quantity, decimal price)
     {
-        if (orderId <= 0) return OrderItemErrors.OrderIdIsRequired;
         if (storeItemUnitId <= 0) return OrderItemErrors.StoreItemRequired;
         if (quantity <= 0) return OrderItemErrors.InvalidQuantity;
         if (price < 0) return OrderItemErrors.InvalidPrice;

@@ -11,6 +11,7 @@ using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.TherapyCards;
+using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 
 namespace AlatrafClinic.Domain.Diagnosises;
 
@@ -18,13 +19,6 @@ public class Diagnosis : AuditableEntity<int>
 {
     public string DiagnosisText { get; private set; } = string.Empty;
     public DateTime InjuryDate { get; private set; }
-    public int ReasonId { get; private set; }
-    public InjuryReason? Reason { get; set; }
-    public int SideId { get; private set; }
-    public InjurySide? Side { get; set; }
-
-    public int TypeId { get; private set; }
-    public InjuryType? Type { get; set; }
 
     // Links
     public int TicketId { get; private set; }
@@ -38,9 +32,17 @@ public class Diagnosis : AuditableEntity<int>
     private readonly List<DiagnosisIndustrialPart> _diagnosisIndustrialParts = new();
     public IReadOnlyCollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts => _diagnosisIndustrialParts.AsReadOnly();
     public TherapyCard? TherapyCard { get; set; }
+    
     public RepairCard? RepairCard { get; set; }
     public Sale? Sale { get; set; }
-
+    private readonly List<InjuryReason> _injuryReasons = new();
+    public IReadOnlyCollection<InjuryReason> InjuryReasons => _injuryReasons.AsReadOnly();
+    private readonly List<InjurySide> _injurySides = new();
+    public IReadOnlyCollection<InjurySide> InjurySides => _injurySides.AsReadOnly();
+    private readonly List<InjuryType> _injuryTypes = new();
+    public IReadOnlyCollection<InjuryType> InjuryTypes => _injuryTypes.AsReadOnly();
+    private readonly List<TherapyCard> _therapyCards = new();
+    public IReadOnlyCollection<TherapyCard> TherapyCards => _therapyCards.AsReadOnly();
     private Diagnosis()
     {
     }
@@ -48,69 +50,76 @@ public class Diagnosis : AuditableEntity<int>
         int ticketId,
         string diagnosisText,
         DateTime injuryDate,
-        int reasonId,
-        int sideId,
-        int typeId,
+        List<InjuryReason> injuryReasons,
+        List<InjurySide> injurySides,
+        List<InjuryType> injuryTypes,
         int patientId,
         DiagnosisType diagnosisType)
      {
         TicketId = ticketId;
         DiagnosisText = diagnosisText;
         InjuryDate = injuryDate;
-        ReasonId = reasonId;
-        SideId = sideId;
-        TypeId = typeId;
+        _injuryReasons = injuryReasons;
+        _injurySides = injurySides;
+        _injuryTypes = injuryTypes;
         PatientId = patientId;
         DiagnoType = diagnosisType;
     }
-    public static Result<Diagnosis> Create(int ticketId, string diagnosisText, DateTime injuryDate, int reasonId,
-                                        int sideId,int typeId,int patientId,DiagnosisType diagnosisType) {
-        if(ticketId <= 0)
+    public static Result<Diagnosis> Create(int ticketId,
+        string diagnosisText,
+        DateTime injuryDate,
+        List<InjuryReason> injuryReasons,
+        List<InjurySide> injurySides,
+        List<InjuryType> injuryTypes,
+        int patientId,
+        DiagnosisType diagnosisType) 
         {
-            return DiagnosisErrors.InvalidTicketId;
-        }
-        if (string.IsNullOrWhiteSpace(diagnosisText))
-        {
-            return DiagnosisErrors.DiagnosisTextIsRequired;
-        }
-        if (injuryDate > DateTime.UtcNow)
-        {
-            return DiagnosisErrors.InvalidInjuryDate;
-        }
-        if (reasonId <= 0)
-        {
-            return DiagnosisErrors.InvalidReasonId;
-        }
-        if (sideId <= 0)
-        {
-            return DiagnosisErrors.InvalidSideId;
-        }
-        if (typeId <= 0)
-        {
-            return DiagnosisErrors.InvalidTypeId;
-        }
-        
-        if (patientId <= 0)
-        {
-            return DiagnosisErrors.InvalidPatientId;
-        }
+            if(ticketId <= 0)
+            {
+                return DiagnosisErrors.InvalidTicketId;
+            }
+            if (string.IsNullOrWhiteSpace(diagnosisText))
+            {
+                return DiagnosisErrors.DiagnosisTextIsRequired;
+            }
+            if (injuryDate > DateTime.UtcNow)
+            {
+                return DiagnosisErrors.InvalidInjuryDate;
+            }
+            if (injuryReasons == null || injuryReasons.Count == 0)
+            {
+                return DiagnosisErrors.InjuryReasonIsRequired;
+            }
+            if (injurySides == null || injurySides.Count == 0)
+            {
+                return DiagnosisErrors.InjurySideIsRequired;
+            }
+            if (injuryTypes == null || injuryTypes.Count == 0)
+            {
+                return DiagnosisErrors.InjuryTypeIsRequired;
+            }
+            
+            if (patientId <= 0)
+            {
+                return DiagnosisErrors.InvalidPatientId;
+            }
 
         return new Diagnosis(
             ticketId,
             diagnosisText,
             injuryDate,
-            reasonId,
-            sideId,
-            typeId,
+            injuryReasons,
+            injurySides,
+            injuryTypes,
             patientId,
             diagnosisType);
     }
     public Result<Updated> Update(
         string diagnosisText,
         DateTime injuryDate,
-        int reasonId,
-        int sideId,
-        int typeId,
+        List<InjuryReason> injuryReasons,
+        List<InjurySide> injurySides,
+        List<InjuryType> injuryTypes,
         DiagnosisType diagnosisType)
     {
         if (string.IsNullOrWhiteSpace(diagnosisText))
@@ -121,25 +130,29 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.InvalidInjuryDate;
         }
-        if (reasonId <= 0)
+        
+        if (injuryReasons == null || injuryReasons.Count == 0)
         {
-            return DiagnosisErrors.InvalidReasonId;
+            return DiagnosisErrors.InjuryReasonIsRequired;
         }
-        if (sideId <= 0)
+        if (injurySides == null || injurySides.Count == 0)
         {
-            return DiagnosisErrors.InvalidSideId;
+            return DiagnosisErrors.InjurySideIsRequired;
         }
-        if (typeId <= 0)
+        if (injuryTypes == null || injuryTypes.Count == 0)
         {
-            return DiagnosisErrors.InvalidTypeId;
+            return DiagnosisErrors.InjuryTypeIsRequired;
         }
       
 
         DiagnosisText = diagnosisText;
         InjuryDate = injuryDate;
-        ReasonId = reasonId;
-        SideId = sideId;
-        TypeId = typeId;
+        _injuryReasons.Clear();
+        _injurySides.Clear();
+        _injuryReasons.AddRange(injuryReasons);
+        _injuryTypes.Clear();
+        _injurySides.AddRange(injurySides);
+        _injuryTypes.AddRange(injuryTypes);
         DiagnoType = diagnosisType;
 
         return Result.Updated;
@@ -154,22 +167,45 @@ public class Diagnosis : AuditableEntity<int>
         return Result.Updated;
     }
 
-
-
-
-    public Result<Updated> AssignDiagnosisPrograms(List<DiagnosisProgram> diagnosisPrograms)
+    public Result<Updated> UpsertDiagnosisPrograms(List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms)
     {
         if (DiagnoType != DiagnosisType.Therapy)
         {
             return DiagnosisErrors.DiagnosisProgramAdditionOnlyForTherapyDiagnosis;
         }
-        if (diagnosisPrograms.Count() <= 0)
+        if (diagnosisPrograms is null || !diagnosisPrograms.Any())
         {
             return DiagnosisErrors.MedicalProgramsAreRequired;
         }
-        
-        _diagnosisPrograms.AddRange(diagnosisPrograms);
 
+        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId && dp.TherapyCardId == null));
+            
+        foreach (var (medicalProgramId, duration, notes) in diagnosisPrograms)
+        {
+
+            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId && dp.TherapyCardId == null);
+
+            if (existing != null)
+            {
+                var updated = existing.Update(this.Id, medicalProgramId, duration, notes);
+                if (updated.IsError)
+                {
+                    return updated.Errors;
+                }
+
+            }
+            else
+            {
+                var result = DiagnosisProgram.Create(this.Id, medicalProgramId, duration, notes);
+                if (result.IsError)
+                {
+                    return result.Errors;
+                }
+
+                _diagnosisPrograms.Add(result.Value);
+            }
+        }
+        
         return Result.Updated;
     }
 
@@ -202,19 +238,43 @@ public class Diagnosis : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignDiagnosisIndustrialParts(List<DiagnosisIndustrialPart> diagnosisIndustrialParts)
+    public Result<Updated> AssignDiagnosisIndustrialParts(List<(int industrialPartUnitId, int quantity, decimal price)> incomingIndustrialParts)
     {
         if (DiagnoType != DiagnosisType.Limbs)
         {
             return DiagnosisErrors.IndustrialPartAdditionOnlyForLimbsDiagnosis;
         }
-        if (diagnosisIndustrialParts.Count() <= 0)
+        if (incomingIndustrialParts.Count() <= 0)
         {
             return DiagnosisErrors.IndustrialPartsAreRequired;
         }
 
-        _diagnosisIndustrialParts.AddRange(diagnosisIndustrialParts);
+        _diagnosisIndustrialParts.RemoveAll(dip => incomingIndustrialParts.All(d => d.industrialPartUnitId != dip.IndustrialPartUnitId));
 
+        foreach (var (industrialPartUnitId, quantity, price) in incomingIndustrialParts)
+        {
+
+            var existing = _diagnosisIndustrialParts.FirstOrDefault(dip => dip.IndustrialPartUnitId == industrialPartUnitId);
+
+            if (existing != null)
+            {
+                var updated = existing.Update(this.Id, industrialPartUnitId, quantity, price);
+                if (updated.IsError)
+                {
+                    return updated.Errors;
+                }
+            }
+            else
+            {
+                var result = DiagnosisIndustrialPart.Create(this.Id, industrialPartUnitId, quantity, price);
+                if (result.IsError)
+                {
+                    return result.Errors;
+                }
+
+                _diagnosisIndustrialParts.Add(result.Value);
+            }
+        }
         return Result.Updated;
     }
 
