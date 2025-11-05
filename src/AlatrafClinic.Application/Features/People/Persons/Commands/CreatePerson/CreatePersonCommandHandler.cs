@@ -15,11 +15,11 @@ namespace AlatrafClinic.Application.Features.People.Persons.Commands.CreatePerso
 
 public  class CreatePersonCommandHandler(
     ILogger<CreatePersonCommandHandler> logger,
-    IUnitWork unitWork
+    IUnitOfWork unitWork
     ) : IRequestHandler<CreatePersonCommand, Result<PersonDto>>
 {
   private readonly ILogger<CreatePersonCommandHandler> _logger = logger;
-  private readonly IUnitWork _unitWork = unitWork;
+  private readonly IUnitOfWork _unitWork = unitWork;
 
   public async Task<Result<PersonDto>> Handle(CreatePersonCommand command, CancellationToken cancellationToken)
   {

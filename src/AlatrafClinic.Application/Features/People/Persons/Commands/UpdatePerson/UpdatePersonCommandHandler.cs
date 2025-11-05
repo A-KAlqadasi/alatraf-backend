@@ -13,12 +13,12 @@ namespace AlatrafClinic.Application.Features.People.Persons.Commands.UpdatePerso
 
 public class UpdatePersonCommandHandler(
     ILogger<UpdatePersonCommandHandler> logger,
-    IUnitWork unitWork
+    IUnitOfWork unitWork
     )
     : IRequestHandler<UpdatePersonCommand, Result<Updated>>
 {
   private readonly ILogger<UpdatePersonCommandHandler> _logger = logger;
-  private readonly IUnitWork _unitWork = unitWork;
+  private readonly IUnitOfWork _unitWork = unitWork;
 
   public async Task<Result<Updated>> Handle(UpdatePersonCommand command, CancellationToken cancellationToken)
   {

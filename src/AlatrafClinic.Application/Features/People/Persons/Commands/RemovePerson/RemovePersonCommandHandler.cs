@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 namespace AlatrafClinic.Application.Features.People.Persons.Commands.RemovePerson;
 public class RemovePersonCommandHandler(
     ILogger<RemovePersonCommandHandler> logger,
-    IUnitWork unitWork,
+    IUnitOfWork unitWork,
     HybridCache cache
     )
     : IRequestHandler<RemovePersonCommand, Result<Deleted>>
 {
   private readonly ILogger<RemovePersonCommandHandler> _logger = logger;
-  private readonly IUnitWork _unitWork = unitWork;
+  private readonly IUnitOfWork _unitWork = unitWork;
   private readonly HybridCache _cache = cache;
 
   public async Task<Result<Deleted>> Handle(RemovePersonCommand command, CancellationToken ct)
