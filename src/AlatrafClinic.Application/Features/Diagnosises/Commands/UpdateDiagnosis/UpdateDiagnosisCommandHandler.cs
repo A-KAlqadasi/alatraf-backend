@@ -82,12 +82,13 @@ public class UpdateDiagnosisCommandHandler : IRequestHandler<UpdateDiagnosisComm
             injurySides,
             injuryTypes,
             command.diagnosisType);
-            
+
         if (updateResult.IsError)
         {
-            _logger.LogWarning("Failed to update diagnosis with id {DiagnosisId}: {Error}", command.diagnosisId, updateResult.Errors);
+            _logger.LogWarning("Failed to update diagnosis with id {DiagnosisId}: {Error}", command.diagnosisId, updateResult.TopError.Code);
             return updateResult;
         }
+        
         await _uow.Diagnosises.UpdateAsync(diagnosis, ct);
         await _uow.SaveChangesAsync(ct);
 

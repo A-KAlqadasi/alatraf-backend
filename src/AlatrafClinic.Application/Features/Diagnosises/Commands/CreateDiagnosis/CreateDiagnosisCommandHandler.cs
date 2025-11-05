@@ -89,6 +89,8 @@ public class CreateDiagnosisCommandHandler: IRequestHandler<CreateDiagnosisComma
 
         await _uow.Diagnosises.AddAsync(diagnosisResult.Value, ct);
         await _uow.SaveChangesAsync(ct);
+        
+        _logger.LogInformation("Diagnosis created successfully with Id {DiagnosisId} for ticket {TicketId}", diagnosisResult.Value.Id, command.ticketId);
 
         return diagnosisResult.Value.ToDto();
     }

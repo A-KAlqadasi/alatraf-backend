@@ -13,6 +13,8 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
         IInjuryReasonRepository InjuryReasons { get; }
         IInjurySideRepository InjurySides { get; }
         IInjuryTypeRepository InjuryTypes { get; }
+        IServiceRepository Services { get; }
+        IDepartmentRepository Departments { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
