@@ -40,33 +40,13 @@ public static class DiagnosisErrors
         Error.Conflict(
             code: "Diagnosis.DiagnosisProgramAdditionOnlyForTherapyDiagnosis",
             description: "Adding diagnosis programs is only allowed for therapy diagnoses.");
-    public static readonly Error TherapyCardAdditionOnlyForTherapyDiagnosis =
-        Error.Conflict(
-            code: "Diagnosis.TherapyCardAdditionOnlyForTherapyDiagnosis",
-            description: "Adding therapy cards is only allowed for therapy diagnoses.");
-    public static readonly Error TherapyCardAlreadyAssigned =
-        Error.Validation(
-            code: "Diagnosis.TherapyCardAlreadyAssigned",
-            description: "A therapy card has already been assigned to this diagnosis.");
     public static readonly Error IndustrialPartAdditionOnlyForLimbsDiagnosis = Error.Conflict("Diagnosis.IndustrialPartAdditionOnlyForLimbsDiagnosis", "Adding industrial parts is only allowed for limbs diagnoses.");
 
     public static readonly Error IndustrialPartsAreRequired = Error.Validation("Diagnosis.IndustrialPartsAreRequired", "Industrial parts are required for this diagnosis.");
 
     public static readonly Error MedicalProgramsAreRequired = Error.Validation("Diagnosis.MedicalProgramsAreRequired", "Medical programs are required for this diagnosis.");
-    public static readonly Error RepairCardAlreadyAssigned =
-        Error.Validation(
-            code: "Diagnosis.RepairCardAlreadyAssigned",
-            description: "A repair card has already been assigned to this diagnosis.");
-    public static readonly Error RepairCardAdditionOnlyForLimbsDiagnosis =
-        Error.Conflict(
-            code: "Diagnosis.RepairCardAdditionOnlyForLimbsDiagnosis",
-            description: "Adding repair cards is only allowed for limbs diagnoses.");
-    public static readonly Error SaleAlreadyAssigned =
-        Error.Validation(
-            code: "Diagnosis.SaleAlreadyAssigned",
-            description: "A sale has already been assigned to this diagnosis.");
-    public static readonly Error SaleAssignmentOnlyForSalesDiagnosis =
-        Error.Conflict(
-            code: "Diagnosis.SaleAssignmentOnlyForSalesDiagnosis",
-            description: "Assigning a sale is only allowed for sales diagnoses.");
+    public static readonly Error DiagnosisNotFound =
+        Error.NotFound(
+            code: "Diagnosis.DiagnosisNotFound",
+            description: "Diagnosis not found.");
 }

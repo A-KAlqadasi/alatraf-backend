@@ -149,8 +149,8 @@ public class Diagnosis : AuditableEntity<int>
         InjuryDate = injuryDate;
         _injuryReasons.Clear();
         _injurySides.Clear();
-        _injuryReasons.AddRange(injuryReasons);
         _injuryTypes.Clear();
+        _injuryReasons.AddRange(injuryReasons);
         _injurySides.AddRange(injurySides);
         _injuryTypes.AddRange(injuryTypes);
         DiagnoType = diagnosisType;
@@ -245,6 +245,5 @@ public class Diagnosis : AuditableEntity<int>
             }
         }
         return Result.Updated;
-    }
-    
+    }  
 }

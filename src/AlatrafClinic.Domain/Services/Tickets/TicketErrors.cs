@@ -19,4 +19,5 @@ public static class TicketErrors
        description: "Ticket is not editable");
     public static readonly Error DiagnosisTicketMismatch = Error.Validation("Ticket.DiagnosisTicketMismatch", "The diagnosis does not belong to this ticket");
     public static readonly Error AppointmentTicketMismatch = Error.Validation("Ticket.AppointmentTicketMismatch", "The appointment does not belong to this ticket");
+    public static readonly Error TicketNotFound = Error.NotFound("Ticket.NotFound", "Ticket not found");
 }
