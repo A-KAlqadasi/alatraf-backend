@@ -9,7 +9,7 @@ namespace AlatrafClinic.Application.Features.People.Persons.Commands.CreatePerso
 
 public sealed record CreatePersonCommand(
     string Fullname,
-    DateTime? Birthdate,
-    string? Phone,
+    DateTime Birthdate,
+    string Phone,
     string? NationalNo,
-    string? Address) : IRequest<Result<PersonDto>>;
+    string Address) : IRequest<Result<PersonDto>>;

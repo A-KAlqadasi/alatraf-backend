@@ -13,7 +13,7 @@ namespace AlatrafClinic.Application.Features.People.Persons.Mappers;
             return new PersonDto
             {
                 PersonId = entity.Id,
-                Fullname = entity.Fullname ?? string.Empty,
+                Fullname = entity.FullName ?? string.Empty,
                 Birthdate = entity.Birthdate,
                 Phone = entity.Phone,
                 NationalNo = entity.NationalNo,

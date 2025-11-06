@@ -8,7 +8,7 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
         IEmployeeRepository Employees { get; }
         IPatientRepository Patients { get; }
         IDoctorRepository Doctors { get; }
-        IDiagnosisRepository Diagnosises { get; }
+        IDiagnosisRepository Diagnoses { get; }
         ITicketRepository Tickets { get; }
         IInjuryReasonRepository InjuryReasons { get; }
         IInjurySideRepository InjurySides { get; }

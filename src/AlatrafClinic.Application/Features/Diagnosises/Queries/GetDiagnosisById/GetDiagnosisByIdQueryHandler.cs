@@ -22,7 +22,7 @@ public class GetDiagnosisByIdQueryHandler : IRequestHandler<GetDiagnosisByIdQuer
     }
     public async Task<Result<DiagnosisDto>> Handle(GetDiagnosisByIdQuery query, CancellationToken ct)
     {
-        Diagnosis? diagnosis = await _uow.Diagnosises.GetByIdAsync(query.diagnosisId, ct);
+        Diagnosis? diagnosis = await _uow.Diagnoses.GetByIdAsync(query.diagnosisId, ct);
         
         if (diagnosis is null)
         {

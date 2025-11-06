@@ -5,7 +5,5 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 
 public interface IDiagnosisRepository : IGenericRepository<Diagnosis, int>
 {
-    Task<IReadOnlyList<Diagnosis>?> GetPatientDiagnosesAsync(int patientId, CancellationToken ct = default);
-    Task<IReadOnlyList<Diagnosis>?> GetPatientDiagnosesTypeAsync(int patientId, DiagnosisType type, CancellationToken ct = default);
-    
+    Task<IQueryable<Diagnosis>> GetDiagnosesQueryAsync(CancellationToken ct = default);   
 }

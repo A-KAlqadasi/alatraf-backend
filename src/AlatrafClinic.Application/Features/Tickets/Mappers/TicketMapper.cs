@@ -17,4 +17,8 @@ public static class TicketMapper
             Status = ticket.Status
         };
     }
+    public static List<TicketDto> ToDtos(this IEnumerable<Ticket> tickets)
+    {
+        return tickets.Select(t => t.ToDto()).ToList();
+    }
 }

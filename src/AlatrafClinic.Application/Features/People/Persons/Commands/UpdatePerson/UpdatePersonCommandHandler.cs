@@ -43,9 +43,9 @@ public class UpdatePersonCommandHandler(
     var updateResult = person.Update(
         command.Fullname.Trim(),
         command.Birthdate,
-        command.Phone?.Trim(),
+        command.Phone.Trim(),
         command.NationalNo?.Trim(),
-        command.Address?.Trim());
+        command.Address.Trim());
 
     if (updateResult.IsError)
     {
