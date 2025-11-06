@@ -17,10 +17,9 @@ public class RepairCard : AuditableEntity<int>
     public RepairCardStatus Status { get; private set; }
     public bool? IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
-    public Diagnosis? Diagnosis { get; set; }
+    public Diagnosis Diagnosis { get; set; } = default!;
     public int? PaymentId { get; private set; }
     public Payment? Payment { get; set; }
-    public int? ExitCardId { get; private set; }
     public ExitCard? ExitCard { get; set; }
 
     // Navigation
@@ -225,11 +224,33 @@ public class RepairCard : AuditableEntity<int>
         if (!IsEditable) return RepairCardErrors.Readonly;
 
         if (order is null) return RepairCardErrors.InvalidOrder;
-        
+
         if (_orders.Any(o => o.Id == order.Id)) return RepairCardErrors.OrderAlreadyExists;
 
 
         _orders.Add(order);
+
+        return Result.Updated;
+    }
+    
+    public Result<Updated> AssignExitCard(string? notes)
+    {
+        if (ExitCard is not null)
+        {
+            return RepairCardErrors.ExitCardAlreadyAssigned;
+        }
+
+        var patientId = Diagnosis.PatientId;
+
+        var exitCardResult = ExitCard.Create(patientId, notes);
+        if (exitCardResult.IsError)
+        {
+            return exitCardResult.Errors;
+        }
+
+        ExitCard = exitCardResult.Value;
+
+        ExitCard.AssignRepairCard(this);
 
         return Result.Updated;
     }

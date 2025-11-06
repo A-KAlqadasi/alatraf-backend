@@ -11,10 +11,10 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.People.Patients.Queries.GetPatientById;
 
 public class GetPatientByIdQueryHandler(
-    IUnitWork unitWork
+    IUnitOfWork unitWork
 ) : IRequestHandler<GetPatientByIdQuery, Result<PatientDto>>
 {
-    private readonly IUnitWork _unitWork = unitWork;
+    private readonly IUnitOfWork _unitWork = unitWork;
 
     public async Task<Result<PatientDto>> Handle(GetPatientByIdQuery query, CancellationToken ct)
     {

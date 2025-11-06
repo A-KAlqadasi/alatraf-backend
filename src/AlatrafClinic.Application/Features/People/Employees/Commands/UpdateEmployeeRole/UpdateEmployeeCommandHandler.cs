@@ -10,10 +10,10 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.People.Employees.Commands.UpdateEmployeeRole;
 
 public class UpdateEmployeeCommandHandler(
-    IUnitWork unitWork
+    IUnitOfWork unitWork
 ) : IRequestHandler<UpdateEmployeeCommand, Result<Updated>>
 {
-  private readonly IUnitWork _unitWork = unitWork;
+  private readonly IUnitOfWork _unitWork = unitWork;
 
   public async Task<Result<Updated>> Handle(UpdateEmployeeCommand request, CancellationToken ct)
   {

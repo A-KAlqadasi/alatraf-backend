@@ -14,7 +14,7 @@ public class ExchangeOrderItem : AuditableEntity<int>
 
     public decimal Quantity { get; private set; }
 
-    private ExchangeOrderItem() { }
+    private ExchangeOrderItem() {  }
 
     private ExchangeOrderItem(int exchangeOrderId, int storeItemUnitId, decimal quantity)
     {
@@ -25,9 +25,7 @@ public class ExchangeOrderItem : AuditableEntity<int>
 
     public static Result<ExchangeOrderItem> Create(int exchangeOrderId, int storeItemUnitId, decimal quantity)
     {
-        if (exchangeOrderId <= 0)
-            return ExchangeOrderErrors.ExchangeOrderRequired;
-
+        
         if (storeItemUnitId <= 0)
             return ExchangeOrderErrors.InvalidItem;
         if (quantity <= 0)

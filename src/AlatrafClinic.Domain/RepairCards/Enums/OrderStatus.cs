@@ -2,7 +2,7 @@ namespace AlatrafClinic.Domain.RepairCards.Enums;
 
 public enum OrderStatus : byte
 {
-    New = 0,
-    Cancelled = 1,
-    Completed = 2
+    Draft = 0,
+    Posted = 1,
+    Cancelled = 2,
 }

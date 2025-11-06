@@ -11,10 +11,10 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.People.Employees.Commands.CreateEmployee;
 
 public class CreateEmployeeCommandHandler(
-    IUnitWork unitWork
+    IUnitOfWork unitWork
 ) : IRequestHandler<CreateEmployeeCommand, Result<EmployeeDto>>
 {
-  private readonly IUnitWork _unitWork = unitWork;
+  private readonly IUnitOfWork _unitWork = unitWork;
 
   public async Task<Result<EmployeeDto>> Handle(CreateEmployeeCommand request, CancellationToken ct)
   {

@@ -5,17 +5,17 @@ namespace AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 
 public class InjuryReason : AuditableEntity<int>
 {
-    public string? Name { get; set; }
+    public string Name { get; private set; } = string.Empty;
 
     private InjuryReason()
     {
     }
-    private InjuryReason(string? name)
+    private InjuryReason(string name)
     {
         Name = name;
     }
 
-    public static Result<InjuryReason> Create(string? name)
+    public static Result<InjuryReason> Create(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -25,7 +25,7 @@ public class InjuryReason : AuditableEntity<int>
         return new InjuryReason(name);
     }
 
-    public Result<Updated> Update(string? name)
+    public Result<Updated> Update(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {

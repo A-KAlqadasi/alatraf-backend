@@ -8,11 +8,11 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.People.Persons.Queries.GetPeople;
 
 public class GetPeopleQueryHandler(
-    IUnitWork unitWork
+    IUnitOfWork unitWork
     )
     : IRequestHandler<GetPersonsQuery, Result<List<PersonDto>>>
 {
-  private readonly IUnitWork _unitWork = unitWork;
+  private readonly IUnitOfWork _unitWork = unitWork;
 
   public async Task<Result<List<PersonDto>>> Handle(GetPersonsQuery query, CancellationToken ct)
   {

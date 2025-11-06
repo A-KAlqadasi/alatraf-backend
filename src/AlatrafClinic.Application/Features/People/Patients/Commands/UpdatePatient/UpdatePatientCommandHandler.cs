@@ -8,10 +8,10 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.People.Patients.Commands.UpdatePatient;
 
 public class UpdatePatientCommandHandler(
-    IUnitWork unitWork
+    IUnitOfWork unitWork
 ) : IRequestHandler<UpdatePatientCommand, Result<Updated>>
 {
-    private readonly IUnitWork _unitWork = unitWork;
+    private readonly IUnitOfWork _unitWork = unitWork;
 
     public async Task<Result<Updated>> Handle(UpdatePatientCommand request, CancellationToken ct)
     {
