@@ -6,7 +6,7 @@ namespace AlatrafClinic.Application.Features.Diagnosises.Dtos;
 
 public class DiagnosisDto
 {
-    public int Id { get; set; }
+    public int DiagnosisId { get; set; }
     public string DiagnosisText { get; set; } = string.Empty;
     public DateTime InjuryDate { get; set; }
     public int TicketId { get; set; }

@@ -12,7 +12,7 @@ public static class DiagnosisMapper
     {
         return new DiagnosisDto
         {
-            Id = diagnosis.Id,
+            DiagnosisId = diagnosis.Id,
             DiagnosisText = diagnosis.DiagnosisText,
             InjuryDate = diagnosis.InjuryDate,
             TicketId = diagnosis.TicketId,

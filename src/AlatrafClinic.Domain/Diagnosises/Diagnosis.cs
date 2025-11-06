@@ -31,7 +31,6 @@ public class Diagnosis : AuditableEntity<int>
     public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
     private readonly List<DiagnosisIndustrialPart> _diagnosisIndustrialParts = new();
     public IReadOnlyCollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts => _diagnosisIndustrialParts.AsReadOnly();
-    public TherapyCard? TherapyCard { get; set; }
     
     public RepairCard? RepairCard { get; set; }
     public Sale? Sale { get; set; }

@@ -7,27 +7,27 @@ namespace AlatrafClinic.Domain.People;
 
 public sealed class Person : AuditableEntity<int>
 {
-    public string? Fullname { get; private set; }
+    public string FullName { get; private set; }
 
-    public DateTime? Birthdate { get; private set; }
+    public DateTime Birthdate { get; private set; }
 
-    public string? Phone { get; private set; }
+    public string Phone { get; private set; }
     
     public string? NationalNo { get; private set; }
 
-    public string? Address { get; private set; }
+    public string Address { get; private set; }
     private Person() { }
 
-    private Person(string? fullname, DateTime? birthdate, string? phone, string? nationalNo, string? address)
+    private Person(string fullname, DateTime birthdate, string phone, string? nationalNo, string address)
     {
-        Fullname = fullname;
+        FullName = fullname;
         Birthdate = birthdate;
         Phone = phone;
         NationalNo = nationalNo;
         Address = address;
     }
 
-    public static Result<Person> Create(string? fullname, DateTime? birthdate, string? phone, string? nationalNo, string? address)
+    public static Result<Person> Create(string fullname, DateTime birthdate, string phone, string? nationalNo, string address)
     {
          
         if (string.IsNullOrWhiteSpace(fullname))
@@ -38,11 +38,6 @@ public sealed class Person : AuditableEntity<int>
         if (string.IsNullOrWhiteSpace(phone) || !Regex.IsMatch(phone, @"^(77|78|73|71)\d{7}$"))
         {
             return PersonErrors.InvalidPhoneNumber;
-        }
-
-        if (birthdate == null)
-        {
-            return PersonErrors.BirthdateRequired;
         }
 
         if (birthdate > DateTime.UtcNow)
@@ -58,7 +53,7 @@ public sealed class Person : AuditableEntity<int>
         return new Person(fullname, birthdate, phone, nationalNo, address);
     }
 
-    public Result<Updated> Update(string? fullname, DateTime? birthdate, string? phone, string? nationalNo, string? address)
+    public Result<Updated> Update(string fullname, DateTime birthdate, string phone, string? nationalNo, string address)
     {
         
         
@@ -72,11 +67,6 @@ public sealed class Person : AuditableEntity<int>
             return PersonErrors.InvalidPhoneNumber;
         }
 
-        if (birthdate == null)
-        {
-            return PersonErrors.BirthdateRequired;
-        }
-
         if (birthdate > DateTime.UtcNow)
         {
             return PersonErrors.InvalidBirthdate;
@@ -87,7 +77,7 @@ public sealed class Person : AuditableEntity<int>
             return PersonErrors.AddressRequired;
         }
         
-        Fullname = fullname;
+        FullName = fullname;
         Birthdate = birthdate;
         Phone = phone;
         NationalNo = nationalNo;

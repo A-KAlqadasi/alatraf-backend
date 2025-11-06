@@ -27,7 +27,7 @@ public class UpdateDiagnosisCommandHandler : IRequestHandler<UpdateDiagnosisComm
     }
     public async Task<Result<Updated>> Handle(UpdateDiagnosisCommand command, CancellationToken ct)
     {
-        Diagnosis? diagnosis = await _uow.Diagnosises.GetByIdAsync(command.diagnosisId, ct);
+        Diagnosis? diagnosis = await _uow.Diagnoses.GetByIdAsync(command.diagnosisId, ct);
         if (diagnosis is null)
         {
             _logger.LogWarning("Diagnosis with id {DiagnosisId} not found", command.diagnosisId);
@@ -82,13 +82,14 @@ public class UpdateDiagnosisCommandHandler : IRequestHandler<UpdateDiagnosisComm
             injurySides,
             injuryTypes,
             command.diagnosisType);
-            
+
         if (updateResult.IsError)
         {
-            _logger.LogWarning("Failed to update diagnosis with id {DiagnosisId}: {Error}", command.diagnosisId, updateResult.Errors);
+            _logger.LogWarning("Failed to update diagnosis with id {DiagnosisId}: {Error}", command.diagnosisId, updateResult.TopError.Code);
             return updateResult;
         }
-        await _uow.Diagnosises.UpdateAsync(diagnosis, ct);
+        
+        await _uow.Diagnoses.UpdateAsync(diagnosis, ct);
         await _uow.SaveChangesAsync(ct);
 
         return Result.Updated;
