@@ -1,3 +1,5 @@
+using AlatrafClinic.Application.Common.Interfaces.Repositories.Inventory;
+
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories
 {
     // Coordinates multiple repositories that share the same database context.
@@ -13,6 +15,7 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
         IInjuryReasonRepository InjuryReasons { get; }
         IInjurySideRepository InjurySides { get; }
         IInjuryTypeRepository InjuryTypes { get; }
+        ISupplierRepository Suppliers { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
