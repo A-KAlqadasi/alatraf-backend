@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.Diagnosises.Commands.CreateDiagnosis;

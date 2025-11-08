@@ -9,13 +9,13 @@ public class DiagnosisListItemDto
 
     public DateTime InjuryDate { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
-
-    public string? PatientName { get; set; }
+    public int PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
     public int TicketNumber { get; set; }
     public DiagnosisType Type { get; set; }
 
-    public List<string> Programs { get; set; } = [];
-    public List<string> IndustrialParts { get; set; } = [];
+    public List<string> Programs { get; set; } = new();
+    public List<string> IndustrialParts { get; set; } = new();
 
     public bool HasRepairCard { get; set; }
     public bool HasSale { get; set; }

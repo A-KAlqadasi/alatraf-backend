@@ -244,5 +244,19 @@ public class Diagnosis : AuditableEntity<int>
             }
         }
         return Result.Updated;
-    }  
+    }
+    public Result<Updated> AssignToSale(Sale sale)
+    {
+        if (DiagnoType != DiagnosisType.Sales)
+        {
+            return DiagnosisErrors.SaleAssignOnlyForSaleDiagnosis;
+        }
+        
+        if (sale is null)
+        {
+            return DiagnosisErrors.SaleIsRequired;
+        }
+        Sale = sale;
+        return Result.Updated;
+    }
 }

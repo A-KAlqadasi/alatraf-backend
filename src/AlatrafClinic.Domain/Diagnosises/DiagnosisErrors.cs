@@ -49,4 +49,7 @@ public static class DiagnosisErrors
         Error.NotFound(
             code: "Diagnosis.DiagnosisNotFound",
             description: "Diagnosis not found.");
+    public static readonly Error SaleIsRequired = Error.Validation("Diagnosis.SaleIsRequired", "Sale is required to assign diagnosis to sale.");
+    public static readonly Error SaleAssignOnlyForSaleDiagnosis = Error.Conflict("Diagnosis.SaleAssignOnlyForSaleDiagnosis", "Assigning sale is only allowed for sale diagnoses.");
+    public static readonly Error SaleItemsAreRequired = Error.Validation("Diagnosis.SaleItemsAreRequired", "Sale items are required for sale diagnosis.");
 }

@@ -1,8 +1,11 @@
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Domain.Diagnosises;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
+using AlatrafClinic.Domain.Sales.SalesItems;
 
 namespace AlatrafClinic.Application.Features.Diagnosises.Mappers;
 
@@ -20,7 +23,10 @@ public static class DiagnosisMapper
             DiagnosisType = diagnosis.DiagnoType,
             InjuryReasons = diagnosis.InjuryReasons.Select(r => r.ToDto()).ToList(),
             InjurySides = diagnosis.InjurySides.Select(s => s.ToDto()).ToList(),
-            InjuryTypes = diagnosis.InjuryTypes.Select(t => t.ToDto()).ToList()
+            InjuryTypes = diagnosis.InjuryTypes.Select(t => t.ToDto()).ToList(),
+            Programs = diagnosis.DiagnosisPrograms?.ToDtos(),
+            IndustrialParts = diagnosis.DiagnosisIndustrialParts?.ToDtos(),
+            SaleItems = diagnosis.Sale?.SaleItems?.ToDtos()
         };
     }
 
@@ -64,5 +70,42 @@ public static class DiagnosisMapper
     public static List<InjuryDto> ToDtos(this IEnumerable<InjuryType> types)
     {
         return types.Select(t => t.ToDto()).ToList();
+    }
+    public static List<DiagnosisProgramDto> ToDtos(this IEnumerable<DiagnosisProgram> programs)
+    {
+        return programs.Select(p => new DiagnosisProgramDto
+        {
+            DiagnosisProgramId = p.Id,
+            ProgramName = p.MedicalProgram?.Name ?? string.Empty,
+            MedicalProgramId = p.MedicalProgramId,
+            Duration = p.Duration,
+            Notes = p.Notes
+        }).ToList();
+    }
+    public static List<DiagnosisIndustrialPartDto> ToDtos(this IEnumerable<DiagnosisIndustrialPart> parts)
+    {
+        return parts.Select(part => new DiagnosisIndustrialPartDto
+        {
+            DiagnosisIndustrialPartId = part.Id,
+            IndustrialPartId = part.IndustrialPartUnit?.IndustrialPartId ?? 0,
+            PartName = part.IndustrialPartUnit?.IndustrialPart?.Name ?? string.Empty,
+            UnitId = part.IndustrialPartUnit?.UnitId ?? 0,
+            UnitName = part.IndustrialPartUnit?.Unit?.Name ?? string.Empty,
+            Quantity = part.Quantity,
+            Price = part.Price
+        }).ToList();
+    }
+    public static List<SaleItemDto> ToDtos(this IEnumerable<SaleItem> saleItems)
+    {
+        return saleItems.Select(item => new SaleItemDto
+        {
+            SaleItemId = item.Id,
+            UnitId = item.ItemUnit?.UnitId ?? 0,
+            UnitName = item.ItemUnit?.Unit?.Name ?? string.Empty,
+            ItemId = item.ItemUnit?.ItemId ?? 0,
+            ItemName = item.ItemUnit?.Item?.Name ?? string.Empty,
+            Quantity = item.Quantity,
+            Price = item.Price,
+        }).ToList();
     }
 }
