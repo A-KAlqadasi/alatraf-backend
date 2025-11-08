@@ -8,4 +8,5 @@ public static class IndustrialPartUnitErrors
 
     public static readonly Error PriceInvalid = Error.Validation("IndustrialPartUnit.PriceInvalid", "Price is invalid");
     public static readonly Error IndustrialPartIdInvalid = Error.Validation("IndustrialPartUnit.IndustrialPartIdInvalid", "Industrial Part Id is invalid");
+    public static readonly Error IndustrialPartUnitNotFound = Error.NotFound("IndustrialPartUnit.NotFound", "Industrial part unit not found");
 }

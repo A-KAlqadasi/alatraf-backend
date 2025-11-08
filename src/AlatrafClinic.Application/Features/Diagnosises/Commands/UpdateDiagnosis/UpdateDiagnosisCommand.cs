@@ -14,5 +14,9 @@ public sealed record UpdateDiagnosisCommand(
     List<int> injuryReasons,
     List<int> injurySides,
     List<int> injuryTypes,
-    DiagnosisType diagnosisType
+    int patientId,
+    DiagnosisType diagnosisType,
+    List<(int MedicalProgramId, int duration, string? notes)>? programs = null,
+    List<(int partId, int unitId, int quantity, decimal price)>? industrialParts = null,
+    List<(int itemId, int unitId, decimal quantity)>? items = null
 ) : IRequest<Result<Updated>>;

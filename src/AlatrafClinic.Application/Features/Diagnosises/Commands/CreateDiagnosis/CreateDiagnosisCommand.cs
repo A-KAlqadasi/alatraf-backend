@@ -14,5 +14,8 @@ public sealed record CreateDiagnosisCommand(
     List<int> injurySides,
     List<int> injuryTypes,
     int patientId,
-    DiagnosisType diagnosisType
+    DiagnosisType diagnosisType,
+    List<(int MedicalProgramId, int duration, string? notes)>? programs = null,
+    List<(int partId, int unitId, int quantity, decimal price)>? industrialParts = null,
+    List<(int itemId, int unitId, decimal quantity)>? items = null
 ) : IRequest<Result<DiagnosisDto>>;

@@ -1,5 +1,3 @@
-
-
 using AlatrafClinic.Application.Features.People.Persons.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 

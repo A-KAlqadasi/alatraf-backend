@@ -11,8 +11,13 @@ public class DiagnosisDto
     public DateTime InjuryDate { get; set; }
     public int TicketId { get; set; }
     public int PatientId { get; set; }
+    public string PatientName { get; set; } = string.Empty;
     public DiagnosisType DiagnosisType { get; set; }
     public List<InjuryDto> InjuryReasons { get; set; } = new();
     public List<InjuryDto> InjurySides { get; set; } = new();
     public List<InjuryDto> InjuryTypes { get; set; } = new();
+    public List<DiagnosisProgramDto>? Programs { get; set; }
+    public List<DiagnosisIndustrialPartDto>? IndustrialParts { get; set; }
+    public List<SaleItemDto>? SaleItems { get; set; }
+    
 }
