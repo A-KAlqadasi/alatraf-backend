@@ -1,13 +1,13 @@
-using System.Data;
-
 using FluentValidation;
 
-namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
+namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 
-public class CreateTherapyCardCommandValidator : AbstractValidator<CreateTherapyCardCommand>
+public class UpdateTherapyCardCommandValidator : AbstractValidator<UpdateTherapyCardCommand>
 {
-    public CreateTherapyCardCommandValidator()
+    public UpdateTherapyCardCommandValidator()
     {
+        RuleFor(x => x.TherapyCardId)
+            .GreaterThan(0).WithMessage("TherapyCardId must be greater than 0.");
         RuleFor(x => x.TicketId)
             .GreaterThan(0).WithMessage("TicketId must be greater than 0.");
         RuleFor(x => x.PatientId)

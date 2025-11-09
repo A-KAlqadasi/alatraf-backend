@@ -69,8 +69,15 @@ public sealed class CreateTherapyCardCommandHandler
                 return MedicalProgramErrors.MedicalProgramNotFound;
             }
         }
-        diagnosis.UpsertDiagnosisPrograms(command.Programs);
 
+        var upsertDiagnosisResult = diagnosis.UpsertDiagnosisPrograms(command.Programs);
+
+        if (upsertDiagnosisResult.IsError)
+        {
+            _logger.LogWarning("Failed to upsert diagnosis programs for Diagnosis {DiagnosisId}. Errors: {Errors}", diagnosis.Id, string.Join(", ", upsertDiagnosisResult.Errors));
+            return upsertDiagnosisResult.Errors;
+        }
+        
         decimal? price = await _uow.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
 
         if(!price.HasValue)
@@ -79,18 +86,35 @@ public sealed class CreateTherapyCardCommandHandler
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
-        var therapyCard = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), CardStatus.New, null, command.Notes);
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), CardStatus.New, null, command.Notes);
+
+        if (createTherapyCardResult.IsError)
+        {
+            _logger.LogWarning("Failed to create TherapyCard for Diagnosis {DiagnosisId}. Errors: {Errors}", diagnosis.Id, string.Join(", ", createTherapyCardResult.Errors));
+            return createTherapyCardResult.Errors;
+        }
+
+        var therapyCard = createTherapyCardResult.Value;
+        var upsertTherapyResult = therapyCard.UpsertDiagnosisPrograms(diagnosis.DiagnosisPrograms.ToList());
+
+        if (upsertTherapyResult.IsError)
+        {
+            _logger.LogWarning("Failed to upsert therapy card programs for TherapyCard {TherapyCardId}. Errors: {Errors}", therapyCard.Id, string.Join(", ", upsertTherapyResult.Errors));
+            return upsertTherapyResult.Errors;
+        }
+        
 
         await _uow.Diagnoses.AddAsync(diagnosis, ct);
-        await _uow.TherapyCards.AddAsync(therapyCard.Value, ct);
+        await _uow.TherapyCards.AddAsync(therapyCard, ct);
         await _uow.SaveChangesAsync(ct);
 
         // Optional cache write-through
-        var dto = therapyCard.Value.ToDto();
+        var dto = therapyCard.ToDto();
 
         //await _cache.SetAsync($"therapycard:{dto.TherapyCardId}", dto, ct: ct);
 
-        _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Value.Id, diagnosis.Id);
+        _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);
+        
         return dto;
     }
 }

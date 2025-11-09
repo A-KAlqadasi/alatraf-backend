@@ -1,14 +1,12 @@
-using AlatrafClinic.Application.Features.Diagnosises.Dtos;
-using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 
 using MediatR;
 
-namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
+namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 
-public sealed record CreateTherapyCardCommand(
+public sealed record class UpdateTherapyCardCommand(
+    int TherapyCardId,
     int TicketId,
     string DiagnosisText,
     DateTime InjuryDate,
@@ -21,4 +19,4 @@ public sealed record CreateTherapyCardCommand(
     TherapyCardType TherapyCardType,
     List<(int MedicalProgramId, int Duration, string? Notes)> Programs,
     string? Notes = null
-) : IRequest<Result<TherapyCardDto>>;
+) : IRequest<Result<Updated>>;

@@ -90,11 +90,11 @@ public class UpdateDiagnosisCommandHandler : IRequestHandler<UpdateDiagnosisComm
         if (updateResult.IsError)
         {
             _logger.LogWarning("Failed to update diagnosis with id {DiagnosisId}: {Error}", command.diagnosisId, updateResult.TopError.Code);
-            return updateResult;
+            return updateResult.Errors;
         }
 
         Result<Updated> upsertResult;
-        
+
         switch (command.diagnosisType)
         {
             case DiagnosisType.Therapy:
@@ -138,6 +138,7 @@ public class UpdateDiagnosisCommandHandler : IRequestHandler<UpdateDiagnosisComm
 
         return Result.Updated;
     }
+    
     private async Task<Result<Updated>> UpsertDiagnosisProgramsAsync(Diagnosis diagnosis, List<(int medicalProgramId, int duration, string? notes)>? programs, CancellationToken ct)
     {
         if (programs is null || !programs.Any())
@@ -153,8 +154,8 @@ public class UpdateDiagnosisCommandHandler : IRequestHandler<UpdateDiagnosisComm
 
                 return MedicalProgramErrors.MedicalProgramNotFound;
             }
-            diagnosis.UpsertDiagnosisPrograms(programs!);
         }
+        diagnosis.UpsertDiagnosisPrograms(programs!);
 
         return Result.Updated;
     }
