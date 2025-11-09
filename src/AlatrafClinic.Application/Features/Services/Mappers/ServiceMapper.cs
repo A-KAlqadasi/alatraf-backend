@@ -12,7 +12,8 @@ public static class ServiceMapper
             ServiceId = service.Id,
             Name = service.Name,
             DepartmentId = service.DepartmentId ?? 0,
-            Department = service.Department?.Name ?? ""
+            Department = service.Department?.Name ?? "",
+            Price = service.Price 
         };
     }
     

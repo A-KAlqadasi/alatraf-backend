@@ -13,6 +13,7 @@ public class Ticket : AuditableEntity<int>
     public Patient Patient { get; private set; } = default!;
     public int ServiceId { get; private set; }
     public Service Service { get; private set; } = default!;
+    public decimal? ServicePrice { get; private set; } = null;
     public TicketStatus Status { get; private set; } = TicketStatus.New;
     public bool IsEditable => Status != TicketStatus.Completed && Status != TicketStatus.Cancelled;
 
@@ -25,6 +26,7 @@ public class Ticket : AuditableEntity<int>
         Patient = patient;
         PatientId = patient.Id;
         Service = service;
+        ServicePrice = service.Price;
         ServiceId = service.Id;
     }
     public static Result<Ticket> Create(Patient patient, Service service)
@@ -62,6 +64,7 @@ public class Ticket : AuditableEntity<int>
         PatientId = patient.Id;
         Service = service;
         ServiceId = service.Id;
+        ServicePrice = service.Price;
 
         return Result.Updated;
     }

@@ -14,18 +14,20 @@ public class Service : AuditableEntity<int>
     public string? Code { get; private set; }
     public int? DepartmentId { get; private set; }
     public Department? Department { get; set; }
+    public decimal? Price { get; private set; } = null;
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     private Service()
     {
     }
 
-    private Service(string name, int? departmentId)
+    private Service(string name, int? departmentId, decimal? price = null)
     {
         Name = name;
         DepartmentId = departmentId;
+        Price = price;
     }
 
-    public static Result<Service> Create(string name, int? departmentId)
+    public static Result<Service> Create(string name, int? departmentId, decimal? price = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -38,8 +40,8 @@ public class Service : AuditableEntity<int>
         
         return new Service(name, departmentId);
     }
-    
-     public  Result<Updated> Update(string? name, int? departmentId)
+
+     public  Result<Updated> Update(string? name, int? departmentId, decimal? price = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -51,7 +53,7 @@ public class Service : AuditableEntity<int>
         }
         Name = name;
         DepartmentId = departmentId;
-
+        Price = price;
         return Result.Updated;
     }
 }

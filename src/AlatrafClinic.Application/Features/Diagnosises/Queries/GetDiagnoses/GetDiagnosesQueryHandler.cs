@@ -51,11 +51,10 @@ public class GetDiagnosesQueryHandler
                 InjuryDate = d.InjuryDate,
                 CreatedAtUtc = d.CreatedAtUtc,
 
-                PatientName = d.Patient != null
-                    ? (d.Patient.Person != null
+                PatientName = (d.Patient != null
+                    && d.Patient.Person != null)
                         ? d.Patient.Person.FullName
-                        : d.Patient.ToString()) // fallback if you don’t have Person.FullName
-                    : null,
+                        : string.Empty,
 
                 TicketNumber = d.Ticket != null ? d.Ticket.Id : 0,
                 Type = d.DiagnoType,

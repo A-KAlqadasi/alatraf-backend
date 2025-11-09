@@ -1,4 +1,5 @@
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
+using AlatrafClinic.Application.Features.People.Patients.Mappers;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
@@ -20,13 +21,12 @@ public static class DiagnosisMapper
             InjuryDate = diagnosis.InjuryDate,
             TicketId = diagnosis.TicketId,
             PatientId = diagnosis.PatientId,
+            PatientName = diagnosis.Ticket?.Patient?.Person?.FullName ?? string.Empty,
             DiagnosisType = diagnosis.DiagnoType,
-            InjuryReasons = diagnosis.InjuryReasons.Select(r => r.ToDto()).ToList(),
-            InjurySides = diagnosis.InjurySides.Select(s => s.ToDto()).ToList(),
-            InjuryTypes = diagnosis.InjuryTypes.Select(t => t.ToDto()).ToList(),
-            Programs = diagnosis.DiagnosisPrograms?.ToDtos(),
-            IndustrialParts = diagnosis.DiagnosisIndustrialParts?.ToDtos(),
-            SaleItems = diagnosis.Sale?.SaleItems?.ToDtos()
+            Patient = diagnosis.Ticket?.Patient?.ToDto(),
+            InjuryReasons = diagnosis.InjuryReasons.ToDtos(),
+            InjurySides = diagnosis.InjurySides.ToDtos(),
+            InjuryTypes = diagnosis.InjuryTypes.ToDtos(),
         };
     }
 

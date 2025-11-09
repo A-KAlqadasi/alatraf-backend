@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Services.Commands.CreateService;
 
-public sealed record CreateServiceCommand(string Name, int DepartmentId) : IRequest<Result<ServiceDto>>;
+public sealed record CreateServiceCommand(string Name, int DepartmentId, decimal? Price = null) : IRequest<Result<ServiceDto>>;

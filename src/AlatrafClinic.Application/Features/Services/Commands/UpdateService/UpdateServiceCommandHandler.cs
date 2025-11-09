@@ -31,7 +31,7 @@ public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand,
             return ServiceErrors.ServiceNotFound;
         }
 
-        var result = service.Update(command.Name, command.DepartmentId);
+        var result = service.Update(command.Name, command.DepartmentId, command.Price);
         if (result.IsError)
         {
             _logger.LogWarning("Failed to update service with ID {ServiceId}. Error: {Error}", command.ServiceId, result.TopError);
