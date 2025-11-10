@@ -15,6 +15,8 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
         IInjuryTypeRepository InjuryTypes { get; }
         IServiceRepository Services { get; }
         IDepartmentRepository Departments { get; }
+        ISectionRepository Sections { get; }
+        IRoomRepository Rooms { get; }
         IMedicalProgramRepository MedicalPrograms { get; }
         IIndustrialPartRepository IndustrialParts { get; }
         IItemRepository Items { get; }

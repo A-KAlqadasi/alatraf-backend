@@ -1,6 +1,4 @@
 
-
-
 using AlatrafClinic.Application.Features.People.Doctors.Dtos;
 using AlatrafClinic.Application.Features.People.Persons.Mappers;
 using AlatrafClinic.Domain.Organization.Doctors;

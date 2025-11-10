@@ -27,9 +27,9 @@ Error.NotFound(
         code: "Patient.AlreadyExists",
         description: $"A patient already exists for person Id {personId}.");
 
-    public static Error DoctorAlreadyExists(int personId) => Error.Conflict(
+    public static Error DoctorAlreadyExists(string nationalNo) => Error.Conflict(
         code: "Doctor.AlreadyExists",
-        description: $"A doctor already exists for person Id {personId}.");
+        description: $"A doctor already exists for NationalNo  {nationalNo}  .");
 
     public static Error EmployeeAlreadyExists(int personId) => Error.Conflict(
         code: "Employee.AlreadyExists",
@@ -38,4 +38,17 @@ Error.NotFound(
         "Employee.NotFound",
         "Employee does not exist."
     );
+
+
+    public static readonly Error DepartmentNotFound =
+        Error.NotFound("Doctor.DepartmentNotFound", "The specified department does not exist.");
+    public static readonly Error DoctorNotFound =
+      Error.NotFound("Doctor.DoctorNotFound", "The specified doctor does not exist.");
+    public static readonly Error SectionNotFound = Error.Validation(
+           code: "Section.NotFound",
+           description: "The section was not found in this department.");
+        
+         public static readonly Error RoomNotFound = Error.Validation(
+        code: "Room.NotFound",
+        description: "The Room was not found in this Section.");
 }

@@ -12,7 +12,7 @@ namespace AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 
 public class DoctorSectionRoom : AuditableEntity<int>
 {
-   public int DoctorId { get; private set; }
+    public int DoctorId { get; private set; }
     public Doctor Doctor { get; private set; } = default!;
 
     public int SectionId { get; private set; }
@@ -72,7 +72,7 @@ public class DoctorSectionRoom : AuditableEntity<int>
 
         return new DoctorSectionRoom(doctorId, sectionId, roomId, notes);
     }
-    
+
     public Result<Updated> EndAssignment()
     {
         if (!IsActive)
