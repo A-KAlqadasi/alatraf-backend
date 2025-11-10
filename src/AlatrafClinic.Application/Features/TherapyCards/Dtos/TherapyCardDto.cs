@@ -16,4 +16,5 @@ public class TherapyCardDto
     public CardStatus CardStatus { get; set; }
     public string? Notes { get; set; }
     public List<DiagnosisProgramDto>? Programs { get; set; }
+    public List<SessionDto>? Sessions { get; set; }
 }

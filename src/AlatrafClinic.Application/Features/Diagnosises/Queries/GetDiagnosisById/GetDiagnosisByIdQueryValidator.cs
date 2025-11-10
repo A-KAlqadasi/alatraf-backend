@@ -6,7 +6,7 @@ public class GetDiagnosisByIdQueryValidator : AbstractValidator<GetDiagnosisById
 {
     public GetDiagnosisByIdQueryValidator()
     {
-        RuleFor(x => x.diagnosisId)
+        RuleFor(x => x.DiagnosisId)
             .GreaterThan(0).WithMessage("Diagnosis Id must be greater than zero.");
     }
 }

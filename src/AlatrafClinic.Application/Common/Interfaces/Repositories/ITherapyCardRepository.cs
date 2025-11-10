@@ -5,5 +5,5 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 
 public interface ITherapyCardRepository : IGenericRepository<TherapyCard, int>
 {
-    
+    Task<IQueryable<TherapyCard>> GetTherapyCardsQueryAsync(CancellationToken ct = default);   
 }

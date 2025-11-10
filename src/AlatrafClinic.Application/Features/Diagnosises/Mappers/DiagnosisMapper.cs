@@ -14,98 +14,119 @@ public static class DiagnosisMapper
 {
     public static DiagnosisDto ToDto(this Diagnosis diagnosis)
     {
+        // Build optional related collections only if present (avoid empty arrays in payloads if you prefer)
+        var programs = diagnosis.DiagnosisPrograms?.Any() == true
+            ? diagnosis.DiagnosisPrograms!.ToDtos()
+            : null;
+
+        var industrialParts = diagnosis.DiagnosisIndustrialParts?.Any() == true
+            ? diagnosis.DiagnosisIndustrialParts!.ToDtos()
+            : null;
+
+        var saleItems = diagnosis.Sale?.SaleItems?.Any() == true
+            ? diagnosis.Sale!.SaleItems!.ToDtos()
+            : (List<SaleItemDto>?)null;
+
         return new DiagnosisDto
         {
-            DiagnosisId = diagnosis.Id,
+            DiagnosisId   = diagnosis.Id,
             DiagnosisText = diagnosis.DiagnosisText,
-            InjuryDate = diagnosis.InjuryDate,
-            TicketId = diagnosis.TicketId,
-            PatientId = diagnosis.PatientId,
-            PatientName = diagnosis.Ticket?.Patient?.Person?.FullName ?? string.Empty,
+            InjuryDate    = diagnosis.InjuryDate,
+
+            TicketId      = diagnosis.TicketId,
+            PatientId     = diagnosis.PatientId,
+
+            // Prefer PatientName from Patient.Person if available; fallback to Ticket.Patient.Person
+            PatientName   = diagnosis.Patient?.Person?.FullName
+                            ?? diagnosis.Ticket?.Patient?.Person?.FullName
+                            ?? string.Empty,
+
+            // Full Patient DTO if your Patient mapper exists
+            Patient       = diagnosis.Patient?.ToDto()
+                            ?? diagnosis.Ticket?.Patient?.ToDto(),
+
             DiagnosisType = diagnosis.DiagnoType,
-            Patient = diagnosis.Ticket?.Patient?.ToDto(),
+
             InjuryReasons = diagnosis.InjuryReasons.ToDtos(),
-            InjurySides = diagnosis.InjurySides.ToDtos(),
-            InjuryTypes = diagnosis.InjuryTypes.ToDtos(),
+            InjurySides   = diagnosis.InjurySides.ToDtos(),
+            InjuryTypes   = diagnosis.InjuryTypes.ToDtos(),
+
+            // New optional related collections
+            Programs        = programs,
+            IndustrialParts = industrialParts,
+            SaleItems       = saleItems,
+
+            // Relationship flags
+            HasTherapyCards = diagnosis.TherapyCards?.Any() == true,
+            HasRepairCard   = diagnosis.RepairCard != null,
+            HasSale         = diagnosis.Sale != null
         };
     }
 
     public static List<DiagnosisDto> ToDtos(this IEnumerable<Diagnosis> diagnosises)
-    {
-        return diagnosises.Select(d => d.ToDto()).ToList();
-    }
+        => diagnosises.Select(d => d.ToDto()).ToList();
 
     public static InjuryDto ToDto(this InjuryReason reason)
-    {
-        return new InjuryDto
+        => new()
         {
-            Id = reason.Id,
+            Id   = reason.Id,
             Name = reason.Name
         };
-    }
+
     public static InjuryDto ToDto(this InjurySide side)
-    {
-        return new InjuryDto
+        => new()
         {
-            Id = side.Id,
+            Id   = side.Id,
             Name = side.Name
         };
-    }
+
     public static InjuryDto ToDto(this InjuryType type)
-    {
-        return new InjuryDto
+        => new()
         {
-            Id = type.Id,
+            Id   = type.Id,
             Name = type.Name
         };
-    }
+
     public static List<InjuryDto> ToDtos(this IEnumerable<InjuryReason> reasons)
-    {
-        return reasons.Select(r => r.ToDto()).ToList();
-    }
+        => reasons.Select(r => r.ToDto()).ToList();
+
     public static List<InjuryDto> ToDtos(this IEnumerable<InjurySide> sides)
-    {
-        return sides.Select(s => s.ToDto()).ToList();
-    }
+        => sides.Select(s => s.ToDto()).ToList();
+
     public static List<InjuryDto> ToDtos(this IEnumerable<InjuryType> types)
-    {
-        return types.Select(t => t.ToDto()).ToList();
-    }
+        => types.Select(t => t.ToDto()).ToList();
+
     public static List<DiagnosisProgramDto> ToDtos(this IEnumerable<DiagnosisProgram> programs)
-    {
-        return programs.Select(p => new DiagnosisProgramDto
+        => programs.Select(p => new DiagnosisProgramDto
         {
             DiagnosisProgramId = p.Id,
-            ProgramName = p.MedicalProgram?.Name ?? string.Empty,
-            MedicalProgramId = p.MedicalProgramId,
-            Duration = p.Duration,
-            Notes = p.Notes
+            ProgramName        = p.MedicalProgram?.Name ?? string.Empty,
+            MedicalProgramId   = p.MedicalProgramId,
+            Duration           = p.Duration,
+            Notes              = p.Notes
         }).ToList();
-    }
+
     public static List<DiagnosisIndustrialPartDto> ToDtos(this IEnumerable<DiagnosisIndustrialPart> parts)
-    {
-        return parts.Select(part => new DiagnosisIndustrialPartDto
+        => parts.Select(part => new DiagnosisIndustrialPartDto
         {
             DiagnosisIndustrialPartId = part.Id,
-            IndustrialPartId = part.IndustrialPartUnit?.IndustrialPartId ?? 0,
-            PartName = part.IndustrialPartUnit?.IndustrialPart?.Name ?? string.Empty,
-            UnitId = part.IndustrialPartUnit?.UnitId ?? 0,
-            UnitName = part.IndustrialPartUnit?.Unit?.Name ?? string.Empty,
-            Quantity = part.Quantity,
-            Price = part.Price
+            IndustrialPartId          = part.IndustrialPartUnit?.IndustrialPartId ?? 0,
+            PartName                  = part.IndustrialPartUnit?.IndustrialPart?.Name ?? string.Empty,
+            UnitId                    = part.IndustrialPartUnit?.UnitId ?? 0,
+            UnitName                  = part.IndustrialPartUnit?.Unit?.Name ?? string.Empty,
+            Quantity                  = part.Quantity,
+            Price                     = part.Price
         }).ToList();
-    }
+
     public static List<SaleItemDto> ToDtos(this IEnumerable<SaleItem> saleItems)
-    {
-        return saleItems.Select(item => new SaleItemDto
+        => saleItems.Select(item => new SaleItemDto
         {
             SaleItemId = item.Id,
-            UnitId = item.ItemUnit?.UnitId ?? 0,
-            UnitName = item.ItemUnit?.Unit?.Name ?? string.Empty,
-            ItemId = item.ItemUnit?.ItemId ?? 0,
-            ItemName = item.ItemUnit?.Item?.Name ?? string.Empty,
-            Quantity = item.Quantity,
-            Price = item.Price,
+            UnitId     = item.ItemUnit?.UnitId ?? 0,
+            UnitName   = item.ItemUnit?.Unit?.Name ?? string.Empty,
+            ItemId     = item.ItemUnit?.ItemId ?? 0,
+            ItemName   = item.ItemUnit?.Item?.Name ?? string.Empty,
+            Quantity   = item.Quantity,
+            Price      = item.Price,
         }).ToList();
-    }
 }
