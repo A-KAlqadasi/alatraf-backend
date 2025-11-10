@@ -18,20 +18,20 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 {
     private readonly ILogger<UpdateTherapyCardCommandHandler> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IDiagnosisUpdateService _diagnosisUpdateService;
 
-    public UpdateTherapyCardCommandHandler(ILogger<UpdateTherapyCardCommandHandler> logger, HybridCache cache, IUnitOfWork uow, IDiagnosisUpdateService diagnosisUpdateService)
+    public UpdateTherapyCardCommandHandler(ILogger<UpdateTherapyCardCommandHandler> logger, HybridCache cache, IUnitOfWork unitOfWork, IDiagnosisUpdateService diagnosisUpdateService)
     {
         _logger = logger;
         _cache = cache;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _diagnosisUpdateService = diagnosisUpdateService;
     }
 
     public async Task<Result<Updated>> Handle(UpdateTherapyCardCommand command, CancellationToken ct)
     {
-        TherapyCard? currentTherapy = await _uow.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
+        TherapyCard? currentTherapy = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
         if (currentTherapy is null)
         {
             _logger.LogWarning("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
@@ -65,7 +65,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
         foreach (var (medicalProgramId, duration, notes) in command.Programs)
         {
-            var medicalProgram = await _uow.MedicalPrograms.IsExistAsync(medicalProgramId, ct);
+            var medicalProgram = await _unitOfWork.MedicalPrograms.IsExistAsync(medicalProgramId, ct);
             if (!medicalProgram)
             {
                 _logger.LogWarning("Medical program with id {MedicalProgramId} not found", medicalProgramId);
@@ -82,7 +82,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             return upsertDiagnosisProgramsResult.Errors;
         }
 
-        var sessionPricePerType = await _uow.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
+        var sessionPricePerType = await _unitOfWork.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
         if (!sessionPricePerType.HasValue)
         {
             _logger.LogWarning("Session price for TherapyCardType {TherapyCardType} not found", command.TherapyCardType);
@@ -105,9 +105,9 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             return upsertTherapyResult.Errors;
         }
 
-        await _uow.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
-        await _uow.TherapyCards.UpdateAsync(currentTherapy, ct);
-        await _uow.SaveChangesAsync(ct);
+        await _unitOfWork.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
+        await _unitOfWork.TherapyCards.UpdateAsync(currentTherapy, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("TherapyCard with id {TherapyCardId} updated successfully", command.TherapyCardId);
 

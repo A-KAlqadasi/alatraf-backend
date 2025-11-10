@@ -21,21 +21,21 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyC
 public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCommand, Result<TherapyCardDto>>
 {
     private readonly ILogger<RenewTherapyCardCommandHandler> _logger;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly HybridCache _cache;
     private readonly IDiagnosisCreationService _diagnosisService;
 
-    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IUnitOfWork uow, HybridCache cache, IDiagnosisCreationService diagnosisService)
+    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache, IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _cache = cache;
         _diagnosisService = diagnosisService;
     }
 
     public async Task<Result<TherapyCardDto>> Handle(RenewTherapyCardCommand command, CancellationToken ct)
     {
-        TherapyCard? currentTherapy = await _uow.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
+        TherapyCard? currentTherapy = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
 
         if (currentTherapy is null)
         {
@@ -79,7 +79,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         
         foreach (var (programId, duration, notes) in command.Programs)
         {
-            var exists = await _uow.MedicalPrograms.IsExistAsync(programId, ct);
+            var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(programId, ct);
             if (!exists)
             {
                 _logger.LogWarning("Medical program {ProgramId} not found.", programId);
@@ -95,7 +95,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             return upsertDiagnosisResult.Errors;
         }
         
-        decimal? price = await _uow.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
+        decimal? price = await _unitOfWork.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
 
         if(!price.HasValue)
         {
@@ -120,9 +120,9 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             return upsertTherapyResult.Errors;
         }
         
-        await _uow.Diagnoses.AddAsync(diagnosis, ct);
-        await _uow.TherapyCards.AddAsync(therapyCard, ct);
-        await _uow.SaveChangesAsync(ct);
+        await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
+        await _unitOfWork.TherapyCards.AddAsync(therapyCard, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
 
         // Optional cache write-through
         var dto = therapyCard.ToDto();

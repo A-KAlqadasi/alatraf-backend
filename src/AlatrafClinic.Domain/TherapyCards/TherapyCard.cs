@@ -168,7 +168,7 @@ public class TherapyCard : AuditableEntity<int>
         ;
         return Result.Success;
     }
-    public Result<Updated> AddSession(List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
+    public Result<Session> AddSession(List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
     {
         var sessionValidate = SessionValidation();
         if (sessionValidate.IsError)
@@ -183,13 +183,26 @@ public class TherapyCard : AuditableEntity<int>
             return session.TopError;
         }
         var assignProgramsResult = session.Value.TakeSession(sessionProgramsData);
+
         if (assignProgramsResult.IsError)
         {
             return assignProgramsResult.TopError;
         }
 
         _sessions.Add(session.Value);
-        return Result.Updated;
+
+        return session.Value;
+    }
+    public Result<Updated> TakeSession(int sessionId, List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
+    {
+        var session = _sessions.FirstOrDefault(s => s.Id == sessionId);
+        if (session == null)
+        {
+            return TherapyCardErrors.SessionNotFound;
+        }
+        
+
+        return session.TakeSession(sessionProgramsData);
     }
 
     public Result<Updated> GenerateSessions()

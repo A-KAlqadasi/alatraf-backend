@@ -17,16 +17,16 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCard
 public class GetTherapyCardsQueryHandler
     : IRequestHandler<GetTherapyCardsQuery, Result<PaginatedList<TherapyCardDto>>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetTherapyCardsQueryHandler(IUnitOfWork uow)
+    public GetTherapyCardsQueryHandler(IUnitOfWork unitOfWork)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<PaginatedList<TherapyCardDto>>> Handle(GetTherapyCardsQuery query, CancellationToken ct)
     {
-        var therapyQuery = await _uow.TherapyCards.GetTherapyCardsQueryAsync();
+        var therapyQuery = await _unitOfWork.TherapyCards.GetTherapyCardsQueryAsync();
 
         therapyQuery = ApplyFilters(therapyQuery, query);
 

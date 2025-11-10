@@ -13,13 +13,13 @@ namespace AlatrafClinic.Application.Features.Services.Commands.CreateService;
 
 public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand, Result<ServiceDto>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly HybridCache _cache;
     private readonly ILogger<CreateServiceCommandHandler> _logger;
 
-    public CreateServiceCommandHandler(ILogger<CreateServiceCommandHandler> logger, IUnitOfWork uow, HybridCache cache)
+    public CreateServiceCommandHandler(ILogger<CreateServiceCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _cache = cache;
         _logger = logger;
     }
@@ -27,7 +27,7 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
     public async Task<Result<ServiceDto>> Handle(CreateServiceCommand command, CancellationToken ct)
     {
 
-        var department = await _uow.Departments.GetByIdAsync(command.DepartmentId, ct);
+        var department = await _unitOfWork.Departments.GetByIdAsync(command.DepartmentId, ct);
 
         if (department is null)
         {
@@ -43,8 +43,8 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
         }
         var service = serviceResult.Value;
         service.Department = department;
-        await _uow.Services.AddAsync(service, ct);
-        await _uow.SaveChangesAsync(ct);
+        await _unitOfWork.Services.AddAsync(service, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         _logger.LogInformation("Service with ID {ServiceId} created successfully.", service.Id);
 
         return service.ToDto();

@@ -9,15 +9,15 @@ namespace AlatrafClinic.Application.Features.Tickets.Queries.GetTickets;
 
 public class GetTicketsQueryHandler : IRequestHandler<GetTicketsQuery, Result<List<TicketDto>>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetTicketsQueryHandler(IUnitOfWork uow)
+    public GetTicketsQueryHandler(IUnitOfWork unitOfWork)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
     public async Task<Result<List<TicketDto>>> Handle(GetTicketsQuery query, CancellationToken ct)
     {
-        var tickets = await _uow.Tickets.GetAllAsync(ct);
+        var tickets = await _unitOfWork.Tickets.GetAllAsync(ct);
 
         return tickets.ToDtos();
     }
