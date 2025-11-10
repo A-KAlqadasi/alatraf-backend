@@ -57,7 +57,7 @@ public static class DiagnosisMapper
             SaleItems       = saleItems,
 
             // Relationship flags
-            HasTherapyCards = diagnosis.TherapyCards?.Any() == true,
+            HasTherapyCards = diagnosis.TherapyCard != null,
             HasRepairCard   = diagnosis.RepairCard != null,
             HasSale         = diagnosis.Sale != null
         };

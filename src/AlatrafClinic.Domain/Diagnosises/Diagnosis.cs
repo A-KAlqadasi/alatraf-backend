@@ -34,14 +34,14 @@ public class Diagnosis : AuditableEntity<int>
     
     public RepairCard? RepairCard { get; set; }
     public Sale? Sale { get; set; }
+    public TherapyCard? TherapyCard { get; set; }
     private readonly List<InjuryReason> _injuryReasons = new();
     public IReadOnlyCollection<InjuryReason> InjuryReasons => _injuryReasons.AsReadOnly();
     private readonly List<InjurySide> _injurySides = new();
     public IReadOnlyCollection<InjurySide> InjurySides => _injurySides.AsReadOnly();
     private readonly List<InjuryType> _injuryTypes = new();
     public IReadOnlyCollection<InjuryType> InjuryTypes => _injuryTypes.AsReadOnly();
-    private readonly List<TherapyCard> _therapyCards = new();
-    public IReadOnlyCollection<TherapyCard> TherapyCards => _therapyCards.AsReadOnly();
+   
     private Diagnosis()
     {
     }
@@ -166,7 +166,7 @@ public class Diagnosis : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> UpsertDiagnosisPrograms(List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms, int? therapyCardId = null)
+    public Result<Updated> UpsertDiagnosisPrograms(List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms)
     {
         if (DiagnoType != DiagnosisType.Therapy)
         {
@@ -177,12 +177,12 @@ public class Diagnosis : AuditableEntity<int>
             return DiagnosisErrors.MedicalProgramsAreRequired;
         }
 
-        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId && dp.TherapyCardId == therapyCardId));
+        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId));
 
         foreach (var (medicalProgramId, duration, notes) in diagnosisPrograms)
         {
 
-            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId && dp.TherapyCardId == therapyCardId);
+            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId);
 
             if (existing != null)
             {

@@ -1,8 +1,6 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Hybrid;
-using MediatR;
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -12,43 +10,63 @@ using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
-using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 
-namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
+using MediatR;
 
-public sealed class CreateTherapyCardCommandHandler
-    : IRequestHandler<CreateTherapyCardCommand, Result<TherapyCardDto>>
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Logging;
+
+namespace AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
+
+public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCommand, Result<TherapyCardDto>>
 {
-    private readonly ILogger<CreateTherapyCardCommandHandler> _logger;
-    private readonly HybridCache _cache;
+    private readonly ILogger<RenewTherapyCardCommandHandler> _logger;
     private readonly IUnitOfWork _uow;
+    private readonly HybridCache _cache;
     private readonly IDiagnosisCreationService _diagnosisService;
 
-    public CreateTherapyCardCommandHandler(
-        ILogger<CreateTherapyCardCommandHandler> logger,
-        HybridCache cache,
-        IUnitOfWork uow,
-        IDiagnosisCreationService diagnosisService)
+    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IUnitOfWork uow, HybridCache cache, IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
-        _cache = cache;
         _uow = uow;
+        _cache = cache;
         _diagnosisService = diagnosisService;
     }
 
-    public async Task<Result<TherapyCardDto>> Handle(CreateTherapyCardCommand command, CancellationToken ct)
+    public async Task<Result<TherapyCardDto>> Handle(RenewTherapyCardCommand command, CancellationToken ct)
     {
+        TherapyCard? currentTherapy = await _uow.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
+
+        if (currentTherapy is null)
+        {
+            _logger.LogWarning("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
+            return TherapyCardErrors.TherapyCardNotFound;
+        }
+        if (!currentTherapy.IsExpired)
+        {
+            _logger.LogWarning("Therapy Card {TherapyCardId} is not expired to renew", currentTherapy.Id);
+            return TherapyCardErrors.TherapyCardNotExpired;
+        }
+
+        var currentDiagnosis = currentTherapy.Diagnosis;
+
+        if (currentDiagnosis is null)
+        {
+            _logger.LogWarning("Diagnosis for therapy card {therapyCard} not included", currentTherapy.Id);
+            return TherapyCardErrors.DiagnosisNotIncluded;
+        }
+        
         if (command.Programs is null || command.Programs.Count == 0)
             return DiagnosisErrors.MedicalProgramsAreRequired;
 
         var diagnosisResult = await _diagnosisService.CreateAsync(
             command.TicketId,
-            command.DiagnosisText,
-            command.InjuryDate,
-            command.InjuryReasons,
-            command.InjurySides,
-            command.InjuryTypes,
-            command.PatientId,
+            currentDiagnosis.DiagnosisText,
+            currentDiagnosis.InjuryDate,
+            currentDiagnosis.InjuryReasons.Select(r=> r.Id).ToList(),
+            currentDiagnosis.InjurySides.Select(s=> s.Id).ToList(),
+            currentDiagnosis.InjuryTypes.Select(s=> s.Id).ToList(),
+            currentDiagnosis.PatientId,
             DiagnosisType.Therapy,
             ct);
 
@@ -58,8 +76,7 @@ public sealed class CreateTherapyCardCommandHandler
         }
 
         var diagnosis = diagnosisResult.Value;
-
-        // Validate programs and add to diagnosis
+        
         foreach (var (programId, duration, notes) in command.Programs)
         {
             var exists = await _uow.MedicalPrograms.IsExistAsync(programId, ct);
@@ -86,11 +103,11 @@ public sealed class CreateTherapyCardCommandHandler
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
-        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), CardStatus.New, null, command.Notes);
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), CardStatus.Renew, currentTherapy.Id, command.Notes);
 
         if (createTherapyCardResult.IsError)
         {
-           _logger.LogWarning("Failed to create TherapyCard for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", createTherapyCardResult.Errors));
+            _logger.LogWarning("Failed to create TherapyCard for Diagnosis with ticket {ticketId}. Errors: {Errors}", command.TicketId, string.Join(", ", createTherapyCardResult.Errors));
             return createTherapyCardResult.Errors;
         }
 
@@ -99,11 +116,10 @@ public sealed class CreateTherapyCardCommandHandler
 
         if (upsertTherapyResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert therapy card programs for TherapyCard with ticket{TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertTherapyResult.Errors));
+            _logger.LogWarning("Failed to upsert therapy card programs for TherapyCard with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertTherapyResult.Errors));
             return upsertTherapyResult.Errors;
         }
         
-
         await _uow.Diagnoses.AddAsync(diagnosis, ct);
         await _uow.TherapyCards.AddAsync(therapyCard, ct);
         await _uow.SaveChangesAsync(ct);

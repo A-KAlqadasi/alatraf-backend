@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Hybrid;
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
@@ -9,9 +11,6 @@ using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 
 using MediatR;
-
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 
@@ -75,7 +74,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             }
         }
 
-        var upsertDiagnosisProgramsResult = updatedDiagnosis.UpsertDiagnosisPrograms(command.Programs, command.TherapyCardId);
+        var upsertDiagnosisProgramsResult = updatedDiagnosis.UpsertDiagnosisPrograms(command.Programs);
         
         if (upsertDiagnosisProgramsResult.IsError)
         {

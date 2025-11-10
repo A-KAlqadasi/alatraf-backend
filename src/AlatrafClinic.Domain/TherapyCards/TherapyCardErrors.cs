@@ -24,5 +24,7 @@ public static class TherapyCardErrors
     public static Error InvalidDiagnosisId = Error.Validation("TherapyCard.InvalidDiagnosisId", "Diagnosis Id is invalid");
     public static Error TherapyCardNotFound = Error.NotFound("TherapyCard.NotFound", "Therapy Card not found");
     public static Error DiagnosisNotIncluded = Error.Validation("TherapyCard.DiagnosisNotIncluded", "Diagnosis must be included in the Therapy Card");
+    public static Error InvalidCardStatus = Error.Validation("TherapyCard.InvalidCardStatus", "Card Status is invalid");
+    public static Error TherapyCardNotExpired = Error.Conflict("TherapyCard.NotExpired", "Therapy Card is not expired");
 
 }
