@@ -1,5 +1,6 @@
 
 using AlatrafClinic.Application.Features.People.Doctors.Dtos;
+using AlatrafClinic.Application.Features.People.Persons.Services;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
@@ -7,11 +8,7 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.People.Doctors.Commands.CreateDoctor;
 
 public sealed record CreateDoctorCommand(
-     string Fullname,
-     DateTime Birthdate,
-     string Phone,
-     string? NationalNo,
-     string Address,
+    PersonInput Person,
 
      string Specialization,
      int DepartmentId

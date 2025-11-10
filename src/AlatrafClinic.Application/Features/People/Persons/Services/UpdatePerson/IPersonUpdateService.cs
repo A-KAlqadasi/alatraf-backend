@@ -9,10 +9,6 @@ public interface IPersonUpdateService
 {
     Task<Result<Person>> UpdateAsync(
         int personId,
-        string fullname,
-        DateTime birthdate,
-        string phone,
-        string? nationalNo,
-        string address,
+        PersonInput person,
         CancellationToken ct);
 }

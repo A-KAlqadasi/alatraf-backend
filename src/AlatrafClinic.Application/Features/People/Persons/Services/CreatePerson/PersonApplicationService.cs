@@ -20,36 +20,32 @@ public class PersonCreateService : IPersonCreateService
     _logger = logger;
   }
 
-  public async Task<Result<Person>> CreateAsync(string Fullname,
-        DateTime Birthdate,
-        string Phone,
-        string? NationalNo,
-        string Address, CancellationToken cancellationToken)
+  public async Task<Result<Person>> CreateAsync(PersonInput person, CancellationToken cancellationToken)
   {
-    if (!string.IsNullOrWhiteSpace(NationalNo))
+    if (!string.IsNullOrWhiteSpace(person.NationalNo))
     {
       var existing = await _unitOfWork.Person
-          .GetByNationalNoAsync(NationalNo.Trim(), cancellationToken);
+          .GetByNationalNoAsync(person.NationalNo.Trim(), cancellationToken);
 
       if (existing is not null)
       {
-        _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", NationalNo);
+        _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", person.NationalNo);
         return PersonErrors.NationalNoExists;
       }
     }
 
     var createResult = Person.Create(
-        Fullname.Trim(),
-             Birthdate,
-             Phone.Trim(),
-             NationalNo?.Trim(),
-             Address.Trim());
+       person.Fullname.Trim(),
+            person.Birthdate,
+           person.Phone.Trim(),
+           person.NationalNo?.Trim(),
+           person.Address.Trim());
 
     if (createResult.IsError)
       return createResult.Errors;
-      
 
-        _logger.LogInformation("Person domain entity  prepered to created (not persisted yet).");
+
+    _logger.LogInformation("Person domain entity  prepered to created (not persisted yet).");
 
 
     return createResult.Value;

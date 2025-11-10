@@ -25,11 +25,8 @@ public class PersonUpdateService : IPersonUpdateService
 
   public async Task<Result<Person>> UpdateAsync(
       int personId,
-      string fullname,
-      DateTime birthdate,
-      string phone,
-      string? nationalNo,
-      string address,
+       PersonInput updatePerson,
+
       CancellationToken ct)
   {
     var person = await _unitOfWork.Person.GetByIdAsync(personId, ct);
@@ -39,23 +36,23 @@ public class PersonUpdateService : IPersonUpdateService
       return ApplicationErrors.PersonNotFound;
     }
 
-    if (!string.IsNullOrWhiteSpace(nationalNo))
+    if (!string.IsNullOrWhiteSpace(updatePerson.NationalNo))
     {
-      var existing = await _unitOfWork.Person.GetByNationalNoAsync(nationalNo.Trim(), ct);
+      var existing = await _unitOfWork.Person.GetByNationalNoAsync(updatePerson.NationalNo.Trim(), ct);
 
       if (existing is not null && existing.Id != personId)
       {
-        _logger.LogWarning("National number already exists for another person: {NationalNo}", nationalNo);
+        _logger.LogWarning("National number already exists for another person: {NationalNo}", updatePerson.NationalNo);
         return PersonErrors.NationalNoExists;
       }
     }
 
     var updateResult = person.Update(
-        fullname.Trim(),
-        birthdate,
-        phone.Trim(),
-        nationalNo?.Trim(),
-        address.Trim());
+      updatePerson. Fullname.Trim(),
+      updatePerson. Birthdate,
+      updatePerson. Phone.Trim(),
+      updatePerson. NationalNo?.Trim(),
+      updatePerson. Address.Trim());
 
     if (updateResult.IsError)
     {

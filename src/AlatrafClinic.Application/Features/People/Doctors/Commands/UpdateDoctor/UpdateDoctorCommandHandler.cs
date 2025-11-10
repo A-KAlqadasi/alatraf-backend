@@ -34,11 +34,7 @@ public class UpdateDoctorCommandHandler(
 
     var personUpdate = await _personUpdateService.UpdateAsync(
         person.Id,
-        command.Fullname,
-        command.Birthdate,
-        command.Phone,
-        command.NationalNo,
-        command.Address,
+       command.Person,
         cancellationToken);
 
     if (personUpdate.IsError)

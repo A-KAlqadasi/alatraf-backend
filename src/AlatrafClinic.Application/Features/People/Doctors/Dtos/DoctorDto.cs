@@ -2,8 +2,8 @@
 
 using AlatrafClinic.Application.Features.People.Persons.Dtos;
 
-namespace AlatrafClinic.Application.Features.People.Doctors.Dtos
-{
+namespace AlatrafClinic.Application.Features.People.Doctors.Dtos;
+
     public class DoctorDto
     {
         public int DoctorId { get; set; }
@@ -12,4 +12,3 @@ namespace AlatrafClinic.Application.Features.People.Doctors.Dtos
         public string? Specialization { get; set; }
         public int DepartmentId { get; set; }
     }
-}
