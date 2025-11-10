@@ -35,7 +35,7 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
             return Error.NotFound(code: "Department.NotFound", description: $"Department with ID {command.DepartmentId} was not found.");
         }
         
-        var serviceResult = Service.Create(command.Name, command.DepartmentId);
+        var serviceResult = Service.Create(command.Name, command.DepartmentId, command.Price);
         if (serviceResult.IsError)
         {
             _logger.LogWarning("Failed to create service: {Errors}", serviceResult.Errors);

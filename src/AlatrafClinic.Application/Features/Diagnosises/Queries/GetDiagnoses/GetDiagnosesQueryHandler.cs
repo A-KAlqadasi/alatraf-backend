@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
@@ -7,13 +8,10 @@ using AlatrafClinic.Domain.Diagnosises;
 
 using MediatR;
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
-
 namespace AlatrafClinic.Application.Features.Diagnosises.Queries.GetDiagnoses;
+
 public class GetDiagnosesQueryHandler
-    : IRequestHandler<GetDiagnosesQuery, Result<PaginatedList<DiagnosisListItemDto>>>
+    : IRequestHandler<GetDiagnosesQuery, Result<PaginatedList<DiagnosisDto>>>
 {
     private readonly IUnitOfWork _uow;
 
@@ -21,15 +19,10 @@ public class GetDiagnosesQueryHandler
     {
         _uow = uow;
     }
-    public async Task<Result<PaginatedList<DiagnosisListItemDto>>> Handle(GetDiagnosesQuery query, CancellationToken ct)
+
+    public async Task<Result<PaginatedList<DiagnosisDto>>> Handle(GetDiagnosesQuery query, CancellationToken ct)
     {
-        // var diagnosisQuery = _uow.Diagnoses.AsNoTracking()
-        //     .Include(d => d.Patient)!.ThenInclude(p => p.Person) // for PatientName
-        //     .Include(d => d.Ticket)                               // for TicketNumber
-        //     .Include(d => d.DiagnosisPrograms)!.ThenInclude(dp => dp.MedicalProgram)
-        //     .Include(d => d.DiagnosisIndustrialParts)!.ThenInclude(di => di.IndustrialPart)
-        //     .Include(d => d.TherapyCards)
-        //     .AsQueryable();
+        // Base query – no Include (server-side projection handles joins)
         var diagnosisQuery = await _uow.Diagnoses.GetDiagnosesQueryAsync();
 
         diagnosisQuery = ApplyFilters(diagnosisQuery, query);
@@ -39,51 +32,55 @@ public class GetDiagnosesQueryHandler
 
         diagnosisQuery = ApplySorting(diagnosisQuery, query.SortColumn, query.SortDirection);
 
+        // Paging guard
+        var page = query.Page < 1 ? 1 : query.Page;
+        var pageSize = query.PageSize < 1 ? 10 : query.PageSize;
+
         var count = await diagnosisQuery.CountAsync(ct);
 
+        // Project directly into DiagnosisDto (lightweight; collections left null for list)
         var items = await diagnosisQuery
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .Select(d => new DiagnosisListItemDto
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(d => new DiagnosisDto
             {
-                Id = d.Id,
+                DiagnosisId   = d.Id,
                 DiagnosisText = d.DiagnosisText,
-                InjuryDate = d.InjuryDate,
-                CreatedAtUtc = d.CreatedAtUtc,
+                InjuryDate    = d.InjuryDate,
 
-                PatientName = d.Patient != null
-                    ? (d.Patient.Person != null
-                        ? d.Patient.Person.FullName
-                        : d.Patient.ToString()) // fallback if you don’t have Person.FullName
-                    : null,
+                TicketId      = d.TicketId,
+                PatientId     = d.PatientId,
+                PatientName   = d.Patient != null && d.Patient.Person != null
+                                    ? d.Patient.Person.FullName
+                                    : string.Empty,
 
-                TicketNumber = d.Ticket != null ? d.Ticket.Id : 0,
-                Type = d.DiagnoType,
+                DiagnosisType = d.DiagnoType,
 
-                Programs = d.DiagnosisPrograms
-                    .Select(dp => dp.MedicalProgram != null ? dp.MedicalProgram.Name : string.Empty)
-                    .ToList(),
+                InjuryReasons = d.InjuryReasons.ToDtos(),
+                InjurySides   = d.InjurySides.ToDtos(),
+                InjuryTypes   = d.InjuryTypes.ToDtos(),
 
-                IndustrialParts = d.DiagnosisIndustrialParts
-                    .Select(di =>  di.IndustrialPartUnit != null? ( di.IndustrialPartUnit.IndustrialPart != null ? di.IndustrialPartUnit.IndustrialPart.Name : string.Empty) : string.Empty)
-                    .ToList(),
+                // flags (helpful in list)
+                HasRepairCard   = d.RepairCard != null,
+                HasSale         = d.Sale != null,
+                HasTherapyCards = d.TherapyCards.Any(),
 
-                HasRepairCard = d.RepairCard != null,
-                HasSale = d.Sale != null,
-                HasTherapyCards = d.TherapyCards.Any()
+                // keep heavy related collections null for list (Programs/IndustrialParts/SaleItems)
+                // Patient object also omitted here to keep list slim
             })
             .ToListAsync(ct);
 
-        return new PaginatedList<DiagnosisListItemDto>
+        return new PaginatedList<DiagnosisDto>
         {
             Items = items,
-            PageNumber = query.Page,
-            PageSize = query.PageSize,
+            PageNumber = page,
+            PageSize = pageSize,
             TotalCount = count,
-            TotalPages = (int)Math.Ceiling(count / (double)query.PageSize)
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize)
         };
     }
 
+    // -------------------- FILTERS --------------------
     private static IQueryable<Diagnosis> ApplyFilters(IQueryable<Diagnosis> query, GetDiagnosesQuery q)
     {
         if (q.Type.HasValue)
@@ -92,6 +89,24 @@ public class GetDiagnosesQueryHandler
         if (q.PatientId.HasValue && q.PatientId.Value > 0)
             query = query.Where(d => d.PatientId == q.PatientId.Value);
 
+        if (q.TicketId.HasValue && q.TicketId.Value > 0)
+            query = query.Where(d => d.TicketId == q.TicketId.Value);
+
+        if (q.HasRepairCard.HasValue)
+            query = q.HasRepairCard.Value
+                ? query.Where(d => d.RepairCard != null)
+                : query.Where(d => d.RepairCard == null);
+
+        if (q.HasSale.HasValue)
+            query = q.HasSale.Value
+                ? query.Where(d => d.Sale != null)
+                : query.Where(d => d.Sale == null);
+
+        if (q.HasTherapyCards.HasValue)
+            query = q.HasTherapyCards.Value
+                ? query.Where(d => d.TherapyCards.Any())
+                : query.Where(d => !d.TherapyCards.Any());
+
         if (q.InjuryDateFrom.HasValue)
             query = query.Where(d => d.InjuryDate >= q.InjuryDateFrom.Value);
 
@@ -99,41 +114,56 @@ public class GetDiagnosesQueryHandler
             query = query.Where(d => d.InjuryDate <= q.InjuryDateTo.Value);
 
         if (q.CreatedDateFrom.HasValue)
-            query = query.Where(d => d.CreatedAtUtc >= q.CreatedDateFrom.Value);
+            query = query.Where(d => d.CreatedAtUtc >= DateTime.SpecifyKind(q.CreatedDateFrom.Value, DateTimeKind.Utc));
 
         if (q.CreatedDateTo.HasValue)
-            query = query.Where(d => d.CreatedAtUtc <= q.CreatedDateTo.Value);
+            query = query.Where(d => d.CreatedAtUtc <= DateTime.SpecifyKind(q.CreatedDateTo.Value, DateTimeKind.Utc));
 
         return query;
     }
 
+    // -------------------- SEARCH --------------------
     private static IQueryable<Diagnosis> ApplySearchTerm(IQueryable<Diagnosis> query, string searchTerm)
     {
-        var normalized = searchTerm.Trim().ToLower();
+        var pattern = $"%{searchTerm.Trim().ToLower()}%";
 
         return query.Where(d =>
-            d.DiagnosisText.ToLower().Contains(normalized) ||
+            EF.Functions.Like(d.DiagnosisText.ToLower(), pattern) ||
+            EF.Functions.Like(d.Id.ToString(), pattern) ||
             (d.Patient != null && d.Patient.Person != null &&
-                d.Patient.Person.FullName.ToLower().Contains(normalized)) ||
-            (d.Ticket != null && d.Ticket.Id.ToString().ToLower().Contains(normalized)) ||
-            d.DiagnosisPrograms.Any(dp => dp.MedicalProgram != null && dp.MedicalProgram.Name.ToLower().Contains(normalized)) ||
-            d.DiagnosisIndustrialParts.Any(di => di.IndustrialPartUnit != null && di.IndustrialPartUnit.IndustrialPart != null && di.IndustrialPartUnit.IndustrialPart.Name.ToLower().Contains(normalized)) ||
-            d.Id.ToString().ToLower().Contains(normalized));
+                EF.Functions.Like(d.Patient.Person.FullName.ToLower(), pattern)) ||
+            (d.Ticket != null && EF.Functions.Like(d.Ticket.Id.ToString(), pattern)) ||
+            d.DiagnosisPrograms.Any(dp => dp.MedicalProgram != null &&
+                EF.Functions.Like(dp.MedicalProgram.Name.ToLower(), pattern)) ||
+            d.DiagnosisIndustrialParts.Any(di =>
+                di.IndustrialPartUnit != null &&
+                di.IndustrialPartUnit.IndustrialPart != null &&
+                EF.Functions.Like(di.IndustrialPartUnit.IndustrialPart.Name.ToLower(), pattern))
+        );
     }
 
+    // -------------------- SORTING --------------------
     private static IQueryable<Diagnosis> ApplySorting(IQueryable<Diagnosis> query, string sortColumn, string sortDirection)
     {
-        var isDesc = sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase);
+        var col = sortColumn?.Trim().ToLowerInvariant() ?? "createdat";
+        var isDesc = string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase);
 
-        return sortColumn.ToLower() switch
+        return col switch
         {
-            "createdat"   => isDesc ? query.OrderByDescending(d => d.CreatedAtUtc) : query.OrderBy(d => d.CreatedAtUtc),
-            "injurydate"  => isDesc ? query.OrderByDescending(d => d.InjuryDate)   : query.OrderBy(d => d.InjuryDate),
-            "type"        => isDesc ? query.OrderByDescending(d => d.DiagnoType)   : query.OrderBy(d => d.DiagnoType),
-            "patient"     => isDesc
-                                ? query.OrderByDescending(d => d.Patient!.Person!.FullName)
-                                : query.OrderBy(d => d.Patient!.Person!.FullName),
-            _             => query.OrderByDescending(d => d.CreatedAtUtc) // default
+            "createdat"  => isDesc ? query.OrderByDescending(d => d.CreatedAtUtc) : query.OrderBy(d => d.CreatedAtUtc),
+            "injurydate" => isDesc ? query.OrderByDescending(d => d.InjuryDate) : query.OrderBy(d => d.InjuryDate),
+            "type"       => isDesc ? query.OrderByDescending(d => d.DiagnoType) : query.OrderBy(d => d.DiagnoType),
+            "patient"    => isDesc
+                ? query.OrderByDescending(d => d.Patient != null && d.Patient.Person != null
+                    ? d.Patient.Person.FullName
+                    : string.Empty)
+                : query.OrderBy(d => d.Patient != null && d.Patient.Person != null
+                    ? d.Patient.Person.FullName
+                    : string.Empty),
+            "ticket"     => isDesc
+                ? query.OrderByDescending(d => d.Ticket != null ? d.Ticket.Id : 0)
+                : query.OrderBy(d => d.Ticket != null ? d.Ticket.Id : 0),
+            _            => query.OrderByDescending(d => d.CreatedAtUtc)
         };
     }
 }

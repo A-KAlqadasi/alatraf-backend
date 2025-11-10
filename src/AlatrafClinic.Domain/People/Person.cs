@@ -7,15 +7,14 @@ namespace AlatrafClinic.Domain.People;
 
 public sealed class Person : AuditableEntity<int>
 {
-    public string FullName { get; private set; }
+    public string FullName { get; private set; } = null!;
 
     public DateTime Birthdate { get; private set; }
 
-    public string Phone { get; private set; }
-    
+    public string Phone { get; private set; } = null!;
     public string? NationalNo { get; private set; }
 
-    public string Address { get; private set; }
+    public string Address { get; private set; } = null!;
     private Person() { }
 
     private Person(string fullname, DateTime birthdate, string phone, string? nationalNo, string address)

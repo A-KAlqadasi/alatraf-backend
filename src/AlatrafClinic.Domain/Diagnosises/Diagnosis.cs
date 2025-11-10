@@ -166,7 +166,7 @@ public class Diagnosis : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> UpsertDiagnosisPrograms(List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms)
+    public Result<Updated> UpsertDiagnosisPrograms(List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms, int? therapyCardId = null)
     {
         if (DiagnoType != DiagnosisType.Therapy)
         {
@@ -177,12 +177,12 @@ public class Diagnosis : AuditableEntity<int>
             return DiagnosisErrors.MedicalProgramsAreRequired;
         }
 
-        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId && dp.TherapyCardId == null));
+        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId && dp.TherapyCardId == therapyCardId));
 
         foreach (var (medicalProgramId, duration, notes) in diagnosisPrograms)
         {
 
-            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId && dp.TherapyCardId == null);
+            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId && dp.TherapyCardId == therapyCardId);
 
             if (existing != null)
             {

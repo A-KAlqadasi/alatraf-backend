@@ -14,11 +14,15 @@ public sealed record GetDiagnosesQuery(
     string SortDirection = "desc",
     DiagnosisType? Type = null,
     int? PatientId = null,
+    int? TicketId = null,
+    bool? HasRepairCard = null,
+    bool? HasTherapyCards = null,
+    bool? HasSale = null,
     DateTime? InjuryDateFrom = null,
     DateTime? InjuryDateTo = null,
     DateTime? CreatedDateFrom = null,
     DateTime? CreatedDateTo = null
-) : ICachedQuery<Result<PaginatedList<DiagnosisListItemDto>>>
+) : ICachedQuery<Result<PaginatedList<DiagnosisDto>>>
 {
     public string CacheKey =>
         $"diagnoses:p={Page}:ps={PageSize}" +
@@ -26,6 +30,10 @@ public sealed record GetDiagnosesQuery(
         $":sort={SortColumn}:{SortDirection}" +
         $":type={(Type?.ToString() ?? "-")}" +
         $":patient={(PatientId?.ToString() ?? "-")}" +
+        $":ticket={(TicketId?.ToString() ?? "-")}" +
+        $":repair={(HasRepairCard?.ToString() ?? "-")}" +
+        $":therapy={(HasTherapyCards?.ToString() ?? "-")}" +
+        $":sale={(HasSale?.ToString() ?? "-")}" +
         $":injFrom={(InjuryDateFrom?.ToString("yyyyMMdd") ?? "-")}" +
         $":injTo={(InjuryDateTo?.ToString("yyyyMMdd") ?? "-")}" +
         $":crFrom={(CreatedDateFrom?.ToString("yyyyMMdd") ?? "-")}" +
