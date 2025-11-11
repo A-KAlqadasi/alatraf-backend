@@ -8,6 +8,7 @@ using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards.AttendanceTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.TherapyCards.Enums;
 
 
 namespace AlatrafClinic.Domain.RepairCards;
@@ -55,6 +56,19 @@ public class RepairCard : AuditableEntity<int>
     }
 
     public bool IsEditable => IsActive && Status is not RepairCardStatus.LegalExit or RepairCardStatus.IllegalExit;
+
+    public Result<Updated> UpsertIndustrialParts(List<DiagnosisIndustrialPart> newIndustrialParts)
+    {
+        if (Status != RepairCardStatus.New)
+        {
+            return RepairCardErrors.Readonly;
+        }
+
+        _diagnosisIndustrialParts.Clear();
+        _diagnosisIndustrialParts.AddRange(newIndustrialParts);
+
+        return Result.Updated;
+    }
     public bool CanTransitionTo(RepairCardStatus newStatus)
     {
         return (Status, newStatus) switch

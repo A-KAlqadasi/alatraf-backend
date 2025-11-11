@@ -50,6 +50,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         }
 
         var updateDiagnosisResult = await _diagnosisUpdateService.UpdateAsync(currentDiagnosis.Id, command.TicketId, command.DiagnosisText, command.InjuryDate, command.InjuryReasons, command.InjurySides, command.InjuryTypes, command.PatientId, DiagnosisType.Therapy, ct);
+
         if (updateDiagnosisResult.IsError)
         {
             _logger.LogWarning("Failed to update diagnosis for TherapyCard with id {TherapyCardId}", command.TherapyCardId);
@@ -101,7 +102,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
         if (upsertTherapyResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs to TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, upsertTherapyResult.Errors);
+            _logger.LogWarning("Failed to upsert diagnosis programs to TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, string.Join(", ",upsertTherapyResult.Errors));
             return upsertTherapyResult.Errors;
         }
 

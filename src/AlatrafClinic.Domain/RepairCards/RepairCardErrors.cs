@@ -24,5 +24,6 @@ public static class RepairCardErrors
         Error.Validation("Entity.InvalidDiagnosisId", "Invalid diagnosis reference.");
     public static readonly Error InvalidOrder = Error.Validation("RepairCard.InvalidOrder", "Invalid order reference.");
     public static readonly Error ExitCardAlreadyAssigned = Error.Validation("RepairCard.ExitCardAlreadyAssigned", "Exit card is already assigned to this repair card.");
+    public static readonly Error RepairCardNotFound = Error.NotFound("RepairCard.NotFound", "Repair card not found.");
 
 }

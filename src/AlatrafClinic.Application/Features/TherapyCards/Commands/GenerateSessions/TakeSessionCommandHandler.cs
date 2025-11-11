@@ -33,8 +33,9 @@ public class TakeSessionCommandHandler : IRequestHandler<TakeSessionCommand, Res
 
             return result.Errors;
         }
-        
+
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("Session with id {SessionId} taken for therapy card with id {TherapyCardId}.", command.SessionId, command.TherapyCardId);
         return Result.Success;
     }
 }

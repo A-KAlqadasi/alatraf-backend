@@ -129,7 +129,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         //await _cache.SetAsync($"therapycard:{dto.TherapyCardId}", dto, ct: ct);
 
-        _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);
+        _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);
         
         return dto;
     }
