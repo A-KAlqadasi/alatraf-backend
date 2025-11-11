@@ -13,17 +13,17 @@ public class GetTherapyCardByIdQueryHandler
     : IRequestHandler<GetTherapyCardByIdQuery, Result<TherapyCardDto>>
 {
     private readonly ILogger<GetTherapyCardByIdQueryHandler> _logger;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetTherapyCardByIdQueryHandler(ILogger<GetTherapyCardByIdQueryHandler> logger, IUnitOfWork uow)
+    public GetTherapyCardByIdQueryHandler(ILogger<GetTherapyCardByIdQueryHandler> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<TherapyCardDto>> Handle(GetTherapyCardByIdQuery query, CancellationToken ct)
     {
-        var card = await _uow.TherapyCards.GetByIdAsync(query.TherapyCardId, ct);
+        var card = await _unitOfWork.TherapyCards.GetByIdAsync(query.TherapyCardId, ct);
 
         // var card = await therapyQuery
         //     .Include(tc => tc.Diagnosis)!

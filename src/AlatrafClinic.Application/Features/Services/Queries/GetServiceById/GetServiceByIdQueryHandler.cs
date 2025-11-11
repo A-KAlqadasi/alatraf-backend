@@ -14,17 +14,17 @@ namespace AlatrafClinic.Application.Features.Services.Queries.GetServiceById;
 public class GetServiceByIdQueryHandler : IRequestHandler<GetServiceByIdQuery, Result<ServiceDto>>
 {
     private readonly ILogger<GetServiceByIdQueryHandler> _logger;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetServiceByIdQueryHandler(ILogger<GetServiceByIdQueryHandler> logger, IUnitOfWork uow)
+    public GetServiceByIdQueryHandler(ILogger<GetServiceByIdQueryHandler> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<ServiceDto>> Handle(GetServiceByIdQuery query, CancellationToken cancellationToken)
     {
-        var service = await _uow.Services.GetByIdAsync(query.ServiceId, cancellationToken);
+        var service = await _unitOfWork.Services.GetByIdAsync(query.ServiceId, cancellationToken);
         if (service == null)
         {
             _logger.LogWarning("Service not found: {ServiceId}", query.ServiceId);

@@ -21,18 +21,18 @@ public sealed class CreateTherapyCardCommandHandler
 {
     private readonly ILogger<CreateTherapyCardCommandHandler> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IDiagnosisCreationService _diagnosisService;
 
     public CreateTherapyCardCommandHandler(
         ILogger<CreateTherapyCardCommandHandler> logger,
         HybridCache cache,
-        IUnitOfWork uow,
+        IUnitOfWork unitOfWork,
         IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
         _cache = cache;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _diagnosisService = diagnosisService;
     }
 
@@ -62,7 +62,7 @@ public sealed class CreateTherapyCardCommandHandler
         // Validate programs and add to diagnosis
         foreach (var (programId, duration, notes) in command.Programs)
         {
-            var exists = await _uow.MedicalPrograms.IsExistAsync(programId, ct);
+            var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(programId, ct);
             if (!exists)
             {
                 _logger.LogWarning("Medical program {ProgramId} not found.", programId);
@@ -74,11 +74,11 @@ public sealed class CreateTherapyCardCommandHandler
 
         if (upsertDiagnosisResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs for Diagnosis {DiagnosisId}. Errors: {Errors}", diagnosis.Id, string.Join(", ", upsertDiagnosisResult.Errors));
+            _logger.LogWarning("Failed to upsert diagnosis programs for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertDiagnosisResult.Errors));
             return upsertDiagnosisResult.Errors;
         }
         
-        decimal? price = await _uow.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
+        decimal? price = await _unitOfWork.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
 
         if(!price.HasValue)
         {
@@ -90,7 +90,7 @@ public sealed class CreateTherapyCardCommandHandler
 
         if (createTherapyCardResult.IsError)
         {
-            _logger.LogWarning("Failed to create TherapyCard for Diagnosis {DiagnosisId}. Errors: {Errors}", diagnosis.Id, string.Join(", ", createTherapyCardResult.Errors));
+           _logger.LogWarning("Failed to create TherapyCard for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", createTherapyCardResult.Errors));
             return createTherapyCardResult.Errors;
         }
 
@@ -99,14 +99,14 @@ public sealed class CreateTherapyCardCommandHandler
 
         if (upsertTherapyResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert therapy card programs for TherapyCard {TherapyCardId}. Errors: {Errors}", therapyCard.Id, string.Join(", ", upsertTherapyResult.Errors));
+            _logger.LogWarning("Failed to upsert therapy card programs for TherapyCard with ticket{TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertTherapyResult.Errors));
             return upsertTherapyResult.Errors;
         }
         
 
-        await _uow.Diagnoses.AddAsync(diagnosis, ct);
-        await _uow.TherapyCards.AddAsync(therapyCard, ct);
-        await _uow.SaveChangesAsync(ct);
+        await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
+        await _unitOfWork.TherapyCards.AddAsync(therapyCard, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
 
         // Optional cache write-through
         var dto = therapyCard.ToDto();

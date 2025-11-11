@@ -17,16 +17,16 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCard
 public class GetTherapyCardsQueryHandler
     : IRequestHandler<GetTherapyCardsQuery, Result<PaginatedList<TherapyCardDto>>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetTherapyCardsQueryHandler(IUnitOfWork uow)
+    public GetTherapyCardsQueryHandler(IUnitOfWork unitOfWork)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<PaginatedList<TherapyCardDto>>> Handle(GetTherapyCardsQuery query, CancellationToken ct)
     {
-        var therapyQuery = await _uow.TherapyCards.GetTherapyCardsQueryAsync();
+        var therapyQuery = await _unitOfWork.TherapyCards.GetTherapyCardsQueryAsync();
 
         therapyQuery = ApplyFilters(therapyQuery, query);
 
@@ -55,15 +55,8 @@ public class GetTherapyCardsQueryHandler
                 CardStatus = tc.CardStatus,
                 Notes = null, // optional: you can add notes later if stored
                 Diagnosis = tc.Diagnosis != null ? tc.Diagnosis.ToDto() : new DiagnosisDto(),
-                Programs = tc.DiagnosisPrograms
-                    .Select(dp => new DiagnosisProgramDto
-                    {
-                        DiagnosisProgramId = dp.Id,
-                        ProgramName = dp.MedicalProgram != null ? dp.MedicalProgram.Name : string.Empty,
-                        MedicalProgramId = dp.MedicalProgramId,
-                        Duration = dp.Duration,
-                        Notes = dp.Notes
-                    }).ToList()
+                Programs = tc.DiagnosisPrograms.ToDtos(),
+                Sessions = tc.Sessions.ToDtos()
             })
             .ToListAsync(ct);
 

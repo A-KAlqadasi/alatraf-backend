@@ -13,16 +13,16 @@ namespace AlatrafClinic.Application.Features.Tickets.Queries.GetTicketById;
 public class GetTicketByIdQueryHandler : IRequestHandler<GetTicketByIdQuery, Result<TicketDto>>
 {
     private readonly ILogger<GetTicketByIdQueryHandler> _logger;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetTicketByIdQueryHandler(ILogger<GetTicketByIdQueryHandler> logger ,IUnitOfWork uow)
+    public GetTicketByIdQueryHandler(ILogger<GetTicketByIdQueryHandler> logger ,IUnitOfWork unitOfWork)
     {
         _logger = logger;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
     public async Task<Result<TicketDto>> Handle(GetTicketByIdQuery query, CancellationToken ct)
     {
-        var ticket = await _uow.Tickets.GetByIdAsync(query.ticketId, ct);
+        var ticket = await _unitOfWork.Tickets.GetByIdAsync(query.ticketId, ct);
         if (ticket is null)
         {
             _logger.LogWarning("Ticket with ID {TicketId} not found.", query.ticketId);

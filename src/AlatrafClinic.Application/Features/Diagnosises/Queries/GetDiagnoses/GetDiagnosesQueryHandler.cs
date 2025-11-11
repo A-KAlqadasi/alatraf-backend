@@ -13,17 +13,17 @@ namespace AlatrafClinic.Application.Features.Diagnosises.Queries.GetDiagnoses;
 public class GetDiagnosesQueryHandler
     : IRequestHandler<GetDiagnosesQuery, Result<PaginatedList<DiagnosisDto>>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetDiagnosesQueryHandler(IUnitOfWork uow)
+    public GetDiagnosesQueryHandler(IUnitOfWork unitOfWork)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<PaginatedList<DiagnosisDto>>> Handle(GetDiagnosesQuery query, CancellationToken ct)
     {
         // Base query – no Include (server-side projection handles joins)
-        var diagnosisQuery = await _uow.Diagnoses.GetDiagnosesQueryAsync();
+        var diagnosisQuery = await _unitOfWork.Diagnoses.GetDiagnosesQueryAsync();
 
         diagnosisQuery = ApplyFilters(diagnosisQuery, query);
 
@@ -63,7 +63,7 @@ public class GetDiagnosesQueryHandler
                 // flags (helpful in list)
                 HasRepairCard   = d.RepairCard != null,
                 HasSale         = d.Sale != null,
-                HasTherapyCards = d.TherapyCards.Any(),
+                HasTherapyCards = d.TherapyCard != null,
 
                 // keep heavy related collections null for list (Programs/IndustrialParts/SaleItems)
                 // Patient object also omitted here to keep list slim
@@ -104,8 +104,8 @@ public class GetDiagnosesQueryHandler
 
         if (q.HasTherapyCards.HasValue)
             query = q.HasTherapyCards.Value
-                ? query.Where(d => d.TherapyCards.Any())
-                : query.Where(d => !d.TherapyCards.Any());
+                ? query.Where(d => d.TherapyCard != null)
+                : query.Where(d => d.TherapyCard == null);
 
         if (q.InjuryDateFrom.HasValue)
             query = query.Where(d => d.InjuryDate >= q.InjuryDateFrom.Value);

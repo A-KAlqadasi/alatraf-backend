@@ -14,14 +14,14 @@ namespace AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosi
 
 public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DiagnosisUpdateService> _logger;
     private readonly HybridCache _cache;
 
-    public DiagnosisUpdateService(ILogger<DiagnosisUpdateService> logger, HybridCache cache, IUnitOfWork uow)
+    public DiagnosisUpdateService(ILogger<DiagnosisUpdateService> logger, HybridCache cache, IUnitOfWork unitOfWork)
     {
         _logger = logger;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _cache = cache;
     }
 
@@ -37,13 +37,13 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
         DiagnosisType diagnosisType,
         CancellationToken ct)
     {
-         Diagnosis? diagnosis = await _uow.Diagnoses.GetByIdAsync(diagnosisId, ct);
+         Diagnosis? diagnosis = await _unitOfWork.Diagnoses.GetByIdAsync(diagnosisId, ct);
         if (diagnosis is null)
         {
             _logger.LogWarning("Diagnosis with id {DiagnosisId} not found", diagnosisId);
             return DiagnosisErrors.DiagnosisNotFound;
         }
-        Ticket? ticket = await _uow.Tickets.GetByIdAsync(ticketId, ct);
+        Ticket? ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId, ct);
         if (ticket is null)
         {
             _logger.LogWarning("Ticket with id {TicketId} not found", ticketId);
@@ -59,7 +59,7 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
 
         foreach (var reasonId in injuryReasons.Distinct())
         {
-            var reason = await _uow.InjuryReasons.GetByIdAsync(reasonId, ct);
+            var reason = await _unitOfWork.InjuryReasons.GetByIdAsync(reasonId, ct);
             if (reason is not null)
             {
                 reasons.Add(reason);
@@ -69,7 +69,7 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
         List<InjuryType> types = new();
         foreach (var typeId in injuryTypes.Distinct())
         {
-            var type = await _uow.InjuryTypes.GetByIdAsync(typeId, ct);
+            var type = await _unitOfWork.InjuryTypes.GetByIdAsync(typeId, ct);
             if (type is not null)
             {
                 types.Add(type);
@@ -79,7 +79,7 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
         List<InjurySide> sides = new();
         foreach (var sideId in injurySides.Distinct())
         {
-            var side = await _uow.InjurySides.GetByIdAsync(sideId, ct);
+            var side = await _unitOfWork.InjurySides.GetByIdAsync(sideId, ct);
             if (side is not null)
             {
                 sides.Add(side);

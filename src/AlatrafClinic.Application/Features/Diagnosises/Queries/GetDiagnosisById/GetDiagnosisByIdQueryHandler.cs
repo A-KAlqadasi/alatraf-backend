@@ -12,18 +12,18 @@ namespace AlatrafClinic.Application.Features.Diagnosises.Queries.GetDiagnosisByI
 public class GetDiagnosisByIdQueryHandler
     : IRequestHandler<GetDiagnosisByIdQuery, Result<DiagnosisDto>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<GetDiagnosisByIdQueryHandler> _logger;
 
-    public GetDiagnosisByIdQueryHandler(IUnitOfWork uow, ILogger<GetDiagnosisByIdQueryHandler> logger)
+    public GetDiagnosisByIdQueryHandler(IUnitOfWork unitOfWork, ILogger<GetDiagnosisByIdQueryHandler> logger)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
     public async Task<Result<DiagnosisDto>> Handle(GetDiagnosisByIdQuery query, CancellationToken ct)
     {
-        var diagnosis = await _uow.Diagnoses.GetByIdAsync(query.DiagnosisId, ct);
+        var diagnosis = await _unitOfWork.Diagnoses.GetByIdAsync(query.DiagnosisId, ct);
 
         // var diagnosis = await baseQuery
         //     .Include(d => d.Patient)!.ThenInclude(p => p.Person)

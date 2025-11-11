@@ -9,15 +9,15 @@ namespace AlatrafClinic.Application.Features.Services.Queries.GetServices;
 
 public class GetServicesQueryHandler : IRequestHandler<GetServicesQuery, Result<List<ServiceDto>>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public GetServicesQueryHandler(IUnitOfWork uow)
+    public GetServicesQueryHandler(IUnitOfWork unitOfWork)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
     public async Task<Result<List<ServiceDto>>> Handle(GetServicesQuery query, CancellationToken ct)
     {
-        var services = await _uow.Services.GetAllAsync(ct);
+        var services = await _unitOfWork.Services.GetAllAsync(ct);
         
         return services.ToDtos();
     }

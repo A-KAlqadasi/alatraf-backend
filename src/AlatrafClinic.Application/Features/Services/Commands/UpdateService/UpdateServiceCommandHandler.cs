@@ -13,18 +13,18 @@ namespace AlatrafClinic.Application.Features.Services.Commands.UpdateService;
 public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand, Result<Updated>>
 {
     private readonly ILogger<UpdateServiceCommandHandler> _logger;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly HybridCache _cache;
 
-    public UpdateServiceCommandHandler(ILogger<UpdateServiceCommandHandler> logger, IUnitOfWork uow, HybridCache cache)
+    public UpdateServiceCommandHandler(ILogger<UpdateServiceCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
     {
         _logger = logger;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _cache = cache;
     }
     public async Task<Result<Updated>> Handle(UpdateServiceCommand command, CancellationToken ct)
     {
-        var service = await _uow.Services.GetByIdAsync(command.ServiceId, ct);
+        var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
         if (service is null)
         {
             _logger.LogWarning("Service with ID {ServiceId} not found.", command.ServiceId);
@@ -39,8 +39,8 @@ public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand,
             return result.Errors;
         }
 
-        await _uow.Services.UpdateAsync(service, ct);
-        await _uow.SaveChangesAsync(ct);
+        await _unitOfWork.Services.UpdateAsync(service, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         
         return Result.Updated;
     }

@@ -11,18 +11,18 @@ namespace AlatrafClinic.Application.Features.Tickets.Commands.UpdateTicket;
 
 public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, Result<Updated>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateTicketCommandHandler> _logger;
 
-    public UpdateTicketCommandHandler(IUnitOfWork uow, ILogger<UpdateTicketCommandHandler> logger)
+    public UpdateTicketCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateTicketCommandHandler> logger)
     {
-        _uow = uow;
+        _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
     public async Task<Result<Updated>> Handle(UpdateTicketCommand command, CancellationToken ct)
     {
-        var ticket = await _uow.Tickets.GetByIdAsync(command.TicketId, ct);
+        var ticket = await _unitOfWork.Tickets.GetByIdAsync(command.TicketId, ct);
         if (ticket is null)
         {
             _logger.LogWarning("Ticket with Id {TicketId} not found.", command.TicketId);
@@ -30,14 +30,14 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             return TicketErrors.TicketNotFound;
         }
 
-        var patient = await _uow.Patients.GetByIdAsync(command.PatientId, ct);
+        var patient = await _unitOfWork.Patients.GetByIdAsync(command.PatientId, ct);
         if (patient is null)
         {
             _logger.LogWarning("Patient with Id {PatientId} not found.", command.PatientId);
             return PatientErrors.PatientNotFound;
         }
 
-        var service = await _uow.Services.GetByIdAsync(command.ServiceId, ct);
+        var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
         if (service is null)
         {
             _logger.LogWarning("Service with Id {ServiceId} not found.", command.ServiceId);
@@ -51,8 +51,8 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             return updateResult.Errors;
         }
 
-        await _uow.Tickets.UpdateAsync(ticket, ct);
-        await _uow.SaveChangesAsync(ct);
+        await _unitOfWork.Tickets.UpdateAsync(ticket, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         _logger.LogInformation("Ticket with Id {TicketId} updated successfully.", command.TicketId);
         
         return Result.Updated;

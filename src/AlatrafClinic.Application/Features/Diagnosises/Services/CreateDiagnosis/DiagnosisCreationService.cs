@@ -16,16 +16,16 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
 {
     private readonly ILogger<DiagnosisCreationService> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _uow;
+    private readonly IUnitOfWork _unitOfWork;
 
     public DiagnosisCreationService(
         ILogger<DiagnosisCreationService> logger,
         HybridCache cache,
-        IUnitOfWork uow)
+        IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _cache = cache;
-        _uow = uow;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<Diagnosis>> CreateAsync(
@@ -39,7 +39,7 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         DiagnosisType diagnosisType,
         CancellationToken ct)
     {
-        var ticket = await _uow.Tickets.GetByIdAsync(ticketId, ct);
+        var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId, ct);
         if (ticket is null)
         {
             _logger.LogWarning("Ticket {TicketId} not found.", ticketId);
@@ -56,21 +56,21 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         var reasons = new List<InjuryReason>();
         foreach (var id in injuryReasons.Distinct())
         {
-            var r = await _uow.InjuryReasons.GetByIdAsync(id, ct);
+            var r = await _unitOfWork.InjuryReasons.GetByIdAsync(id, ct);
             if (r is not null) reasons.Add(r);
         }
 
         var sides = new List<InjurySide>();
         foreach (var id in injurySides.Distinct())
         {
-            var s = await _uow.InjurySides.GetByIdAsync(id, ct);
+            var s = await _unitOfWork.InjurySides.GetByIdAsync(id, ct);
             if (s is not null) sides.Add(s);
         }
 
         var types = new List<InjuryType>();
         foreach (var id in injuryTypes.Distinct())
         {
-            var t = await _uow.InjuryTypes.GetByIdAsync(id, ct);
+            var t = await _unitOfWork.InjuryTypes.GetByIdAsync(id, ct);
             if (t is not null) types.Add(t);
         }
 
@@ -91,7 +91,7 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         }
 
         var diagnosis = diagnosisResult.Value;
-        // Note: handler will add diagnosis to UoW and SaveChanges in a single transaction.
+        // Note: handler will add diagnosis to unitOfWork and SaveChanges in a single transaction.
         // We can write-through cache the transient object id after save; for now we just log.
         _logger.LogInformation("Diagnosis entity instantiated (pending persist) for ticket {TicketId}.", ticketId);
 
