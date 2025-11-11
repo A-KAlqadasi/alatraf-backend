@@ -29,25 +29,29 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
         var therapyCard = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
         if (therapyCard is null)
         {
-            _logger.LogWarning("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
+            _logger.LogError("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
+            
             return TherapyCardErrors.TherapyCardNotFound;
         }
         if (therapyCard.IsExpired)
         {
-            _logger.LogWarning("TherapyCard with id {TherapyCardId} is expired", command.TherapyCardId);
+            _logger.LogError("TherapyCard with id {TherapyCardId} is expired", command.TherapyCardId);
+
             return TherapyCardErrors.TherapyCardExpired;
         }
         var session = therapyCard.AddSession(command.SessionProgramsData);
         
         if (session.IsError)
         {
-            _logger.LogWarning("Failed to add session to TherapyCard with id {TherapyCardId}. Error: {Error}", command.TherapyCardId, string.Join(", ", session.Errors));
+            _logger.LogError("Failed to add session to TherapyCard with id {TherapyCardId}. Error: {Error}", command.TherapyCardId, string.Join(", ", session.Errors));
 
             return session.TopError;
         }
 
         await _unitOfWork.TherapyCards.UpdateAsync(therapyCard, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+
+        _logger.LogInformation("TherapyCard {TherapyCardId} updated with new session {Number}.", therapyCard.Id, session.Value.Number);
 
         return session.Value.ToDto();
     }
