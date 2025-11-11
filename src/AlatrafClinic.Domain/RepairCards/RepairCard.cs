@@ -15,12 +15,14 @@ namespace AlatrafClinic.Domain.RepairCards;
 public class RepairCard : AuditableEntity<int>
 {
     public RepairCardStatus Status { get; private set; }
-    public bool? IsActive { get; private set; }
+    public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
     public int? PaymentId { get; private set; }
     public Payment? Payment { get; set; }
     public ExitCard? ExitCard { get; set; }
+    public string? Notes { get; private set; }
+    public decimal TotalCost => _diagnosisIndustrialParts.Sum(part => part.Price * part.Quantity);
 
     // Navigation
     public AttendanceTime? AttendanceTime { get; set; }
@@ -33,27 +35,26 @@ public class RepairCard : AuditableEntity<int>
 
     private RepairCard() { }
 
-    private RepairCard(int diagnosisId,  RepairCardStatus status, bool isActive = true)
+    private RepairCard(int diagnosisId, List<DiagnosisIndustrialPart> diagnosisIndustrialParts,  RepairCardStatus status, string? notes = null, bool isActive = true)
     {
         DiagnosisId = diagnosisId;
         IsActive = isActive;
         Status = status;
-       
+        Notes = notes;
+        _diagnosisIndustrialParts = diagnosisIndustrialParts;
     }
 
-    public static Result<RepairCard> Create(int diagnosisId)
+    public static Result<RepairCard> Create(int diagnosisId, List<DiagnosisIndustrialPart> diagnosisIndustrialParts, string? notes = null)
     {
         if (diagnosisId <= 0)
         {
             return RepairCardErrors.InvalidDiagnosisId;
         }
-        
-     
 
-        return new RepairCard(diagnosisId, RepairCardStatus.New );
+        return new RepairCard(diagnosisId, diagnosisIndustrialParts, RepairCardStatus.New, notes: notes);
     }
 
-    public bool IsEditable => Status is not RepairCardStatus.LegalExit or RepairCardStatus.IllegalExit;
+    public bool IsEditable => IsActive && Status is not RepairCardStatus.LegalExit or RepairCardStatus.IllegalExit;
     public bool CanTransitionTo(RepairCardStatus newStatus)
     {
         return (Status, newStatus) switch
