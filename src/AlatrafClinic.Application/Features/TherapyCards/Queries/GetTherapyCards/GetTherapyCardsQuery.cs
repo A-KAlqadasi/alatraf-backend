@@ -41,4 +41,6 @@ public sealed record GetTherapyCardsQuery(
 
     public string[] Tags => ["therapycard"];
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+
+
 }

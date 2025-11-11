@@ -19,6 +19,9 @@ public sealed class CreatePersonCommandValidator : AbstractValidator<CreatePerso
             .NotEmpty().WithMessage("Phone number is required.")
             .Matches(@"^(77|78|73|71)\d{7}$")
             .WithMessage("Phone number must start with 77, 78, 73, or 71 and be 9 digits long.");
+        RuleFor(x => x.Gender)
+            .NotNull()
+            .WithMessage("Gender is required (true = Male, false = Female).");
 
         RuleFor(x => x.Address)
             .NotEmpty().WithMessage("Address is required.")

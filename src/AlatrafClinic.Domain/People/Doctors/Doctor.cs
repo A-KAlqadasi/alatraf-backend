@@ -41,9 +41,9 @@ public class Doctor : AuditableEntity<int>
 
         return new Doctor(personId, departmentId, specialization);
     }
-    public Result<Updated> UpdateSpecialization( string? specialization)
+    public Result<Updated> UpdateSpecialization(string? specialization)
     {
-       
+
         Specialization = specialization;
         return Result.Updated;
     }
@@ -51,39 +51,54 @@ public class Doctor : AuditableEntity<int>
     {
         if (newDepartmentId <= 0)
             return DoctorErrors.DepartmentIdRequired;
-            
+
         if (newDepartmentId == DepartmentId)
             return DoctorErrors.SameDepartment;
 
-        if (_assignments.Any(a => a.IsActive && a.Section.DepartmentId == DepartmentId))  
+        if (_assignments.Any(a => a.IsActive && a.Section.DepartmentId == DepartmentId))
             return DoctorErrors.CannotChangeDepartmentWithActiveAssignments;
 
         DepartmentId = newDepartmentId;
         return Result.Updated;
     }
-   public Result<DoctorSectionRoom> AssignToSection(Section section, string? notes = null)
+    public Result<DoctorSectionRoom> AssignToSectionAndRoom(Section section, Room room, string? notes = null)
     {
-        //  Section must belong to Doctor’s department
         if (section.DepartmentId != DepartmentId)
             return DoctorErrors.SectionOutsideDepartment;
 
-                ActiveAssignment?.EndAssignment();
+        if (room.SectionId != section.Id)
+            return DoctorErrors.RoomOutsideSection;
 
-        var newAssignment = DoctorSectionRoom.AssignToSection(Id, section.Id, notes);
+        // End any active assignment before creating new one
+        ActiveAssignment?.EndAssignment();
+
+        var newAssignment = DoctorSectionRoom.AssignToRoom(Id, section.Id, room.Id, notes);
         _assignments.Add(newAssignment.Value);
 
         return newAssignment;
     }
+
+
+
+
     public Result<DoctorSectionRoom> AssignToRoom(Room room, string? notes = null)
     {
-        // Room must belong to section in the same department
         if (room.Section is null)
             return DoctorErrors.RoomWithoutSection;
 
         if (room.Section.DepartmentId != DepartmentId)
             return DoctorErrors.RoomOutsideDepartment;
 
-        ActiveAssignment?.EndAssignment();
+        var active = ActiveAssignment;
+        if (active is null)
+            return DoctorErrors.NoActiveAssignment;
+
+        // Ensure it's the same section
+        if (active.SectionId != room.SectionId)
+            return DoctorErrors.RoomOutsideActiveSection;
+
+        // End current assignment and create new one for new room
+        active.EndAssignment();
 
         var newAssignment = DoctorSectionRoom.AssignToRoom(Id, room.SectionId, room.Id, notes);
         _assignments.Add(newAssignment.Value);
@@ -92,5 +107,6 @@ public class Doctor : AuditableEntity<int>
     }
 
 
-    
+
+
 }

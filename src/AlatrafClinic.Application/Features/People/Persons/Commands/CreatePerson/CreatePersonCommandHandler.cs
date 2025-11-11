@@ -4,6 +4,7 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.People.Persons.Dtos;
 using AlatrafClinic.Application.Features.People.Persons.Mappers;
+using AlatrafClinic.Application.Features.People.Persons.Services;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People;
 
@@ -40,7 +41,8 @@ public  class CreatePersonCommandHandler(
         command.Birthdate,
         command.Phone.Trim(),
         command.NationalNo?.Trim(),
-        command.Address.Trim());
+        command.Address.Trim(),
+        command.Gender);
 
     if (createResult.IsError)
     {
@@ -56,3 +58,5 @@ public  class CreatePersonCommandHandler(
     return person.ToDto();
   }
 }
+
+

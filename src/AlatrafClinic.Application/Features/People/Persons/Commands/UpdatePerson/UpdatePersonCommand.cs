@@ -11,5 +11,6 @@ public sealed record UpdatePersonCommand(
   DateTime Birthdate,
   string Phone,
   string? NationalNo,
-  string Address
+  string Address,
+  bool Gender
 ) : IRequest<Result<Updated>>;
