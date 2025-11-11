@@ -8,6 +8,8 @@ public static class RepairCardMapper
 {
     public static RepairCardDto ToDto(this RepairCard repairCard)
     {
+        ArgumentNullException.ThrowIfNull(repairCard);
+
         return new RepairCardDto
         {
             RepairCardId = repairCard.Id,
@@ -15,6 +17,7 @@ public static class RepairCardMapper
             IsActive = repairCard.IsActive,
             IsLate = repairCard.IsLate,
             CardStatus = repairCard.Status,
+            DeliveryDate = repairCard.DeliveryTime?.DeliveryDate ?? repairCard.CreatedAtUtc.ToLocalTime().Date,
             DiagnosisIndustrialParts = repairCard.DiagnosisIndustrialParts.ToDtos()
         };
     }

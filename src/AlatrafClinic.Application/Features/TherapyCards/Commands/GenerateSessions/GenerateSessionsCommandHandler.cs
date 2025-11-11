@@ -26,7 +26,7 @@ public class GenerateSessionsCommandHandler : IRequestHandler<GenerateSessionsCo
         var therapyCard = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
         if (therapyCard is null)
         {
-            _logger.LogWarning("Therapy card with ID {TherapyCardId} not found.", command.TherapyCardId);
+            _logger.LogError("Therapy card with ID {TherapyCardId} not found.", command.TherapyCardId);
 
             return TherapyCardErrors.TherapyCardNotFound;
         }
@@ -41,8 +41,9 @@ public class GenerateSessionsCommandHandler : IRequestHandler<GenerateSessionsCo
         await _unitOfWork.SaveChangesAsync(ct);
 
         var sessions = therapyCard.Sessions.Where(x => DateTime.Now >= x.SessionDate).ToList();
-        
+
         _logger.LogInformation("Generated {SessionCount} sessions for Therapy Card ID {TherapyCardId}.", sessions.Count, command.TherapyCardId);
+        
         return sessions.ToDtos();
     }
 }

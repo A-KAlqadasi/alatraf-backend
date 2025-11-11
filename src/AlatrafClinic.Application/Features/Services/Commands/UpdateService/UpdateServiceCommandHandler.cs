@@ -27,20 +27,23 @@ public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand,
         var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
         if (service is null)
         {
-            _logger.LogWarning("Service with ID {ServiceId} not found.", command.ServiceId);
+            _logger.LogError("Service with ID {ServiceId} not found.", command.ServiceId);
             return ServiceErrors.ServiceNotFound;
         }
 
         var result = service.Update(command.Name, command.DepartmentId, command.Price);
+        
         if (result.IsError)
         {
-            _logger.LogWarning("Failed to update service with ID {ServiceId}. Error: {Error}", command.ServiceId, result.TopError);
+            _logger.LogError("Failed to update service with ID {ServiceId}. Error: {Error}", command.ServiceId, result.TopError);
 
             return result.Errors;
         }
 
         await _unitOfWork.Services.UpdateAsync(service, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+
+        _logger.LogInformation("Service {serviceId} updated successfully", service.Id);
         
         return Result.Updated;
     }

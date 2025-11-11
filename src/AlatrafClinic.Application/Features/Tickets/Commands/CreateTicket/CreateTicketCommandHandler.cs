@@ -30,26 +30,30 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
 
         if (patient is null)
         {
-            _logger.LogWarning("Patient with Id {PatientId} not found.", command.PatientId);
+            _logger.LogError("Patient with Id {PatientId} not found.", command.PatientId);
+
             return PatientErrors.PatientNotFound;
         }
 
         var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
         if (service is null)
         {
-            _logger.LogWarning("Service with Id {ServiceId} not found.", command.ServiceId);
+            _logger.LogError("Service with Id {ServiceId} not found.", command.ServiceId);
+
             return Domain.Services.ServiceErrors.ServiceNotFound;
         }
 
         var ticket = Ticket.Create(patient, service);
+
         if (ticket.IsError)
         {
-            _logger.LogWarning("Failed to create ticket: {Error}", ticket.Errors);
+            _logger.LogError("Failed to create ticket: {Error}", ticket.Errors);
             return ticket.Errors;
         }
         
         await _unitOfWork.Tickets.AddAsync(ticket.Value, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        
         _logger.LogInformation("Ticket with Id {TicketId} created successfully.", ticket.Value.Id);
 
         return ticket.Value.ToDto();

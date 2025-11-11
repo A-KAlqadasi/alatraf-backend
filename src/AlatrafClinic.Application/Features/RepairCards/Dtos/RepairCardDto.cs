@@ -11,4 +11,5 @@ public class RepairCardDto
     public bool IsLate { get; set; }
     public RepairCardStatus CardStatus { get; set; }
     public List<DiagnosisIndustrialPartDto>? DiagnosisIndustrialParts { get; set; }
+    public DateTime DeliveryDate { get; set; }
 }

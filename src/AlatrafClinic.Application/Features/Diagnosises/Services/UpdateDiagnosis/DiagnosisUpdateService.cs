@@ -40,21 +40,19 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
          Diagnosis? diagnosis = await _unitOfWork.Diagnoses.GetByIdAsync(diagnosisId, ct);
         if (diagnosis is null)
         {
-            _logger.LogWarning("Diagnosis with id {DiagnosisId} not found", diagnosisId);
+            _logger.LogError("Diagnosis with id {DiagnosisId} not found", diagnosisId);
+
             return DiagnosisErrors.DiagnosisNotFound;
         }
         Ticket? ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId, ct);
         if (ticket is null)
         {
-            _logger.LogWarning("Ticket with id {TicketId} not found", ticketId);
+            _logger.LogError("Ticket with id {TicketId} not found", ticketId);
+
             return TicketErrors.TicketNotFound;
         }
         
-        if (!ticket.IsEditable)
-        {
-            _logger.LogWarning("Ticket with id {TicketId} is read-only", ticketId);
-            return TicketErrors.ReadOnly;
-        }
+        
         List<InjuryReason> reasons = new();
 
         foreach (var reasonId in injuryReasons.Distinct())
@@ -96,7 +94,7 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
 
         if (updateResult.IsError)
         {
-            _logger.LogWarning("Failed to update diagnosis with id {DiagnosisId}: {Error}", diagnosisId, updateResult.TopError.Code);
+            _logger.LogError("Failed to update diagnosis with id {DiagnosisId}: {Error}", diagnosisId, updateResult.TopError);
             return updateResult.Errors;
         }
 

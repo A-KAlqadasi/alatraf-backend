@@ -1,4 +1,5 @@
 using AlatrafClinic.Domain.Diagnosises;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 
@@ -8,5 +9,6 @@ public interface IDiagnosisRepository : IGenericRepository<Diagnosis, int>
 {
     Task<IQueryable<Diagnosis>> GetDiagnosesQueryAsync(CancellationToken ct = default);
     Task<DiagnosisProgram?> GetDiagnosisProgramByIdAsync(int id, CancellationToken ct = default);
+    Task<DiagnosisIndustrialPart?> GetDiagnosisIndustrialPartByIdAsync(int id, CancellationToken ct = default);
     
 }

@@ -65,7 +65,8 @@ public sealed class CreateTherapyCardCommandHandler
             var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(programId, ct);
             if (!exists)
             {
-                _logger.LogWarning("Medical program {ProgramId} not found.", programId);
+                _logger.LogError("Medical program {ProgramId} not found.", programId);
+
                 return MedicalProgramErrors.MedicalProgramNotFound;
             }
         }
@@ -74,7 +75,7 @@ public sealed class CreateTherapyCardCommandHandler
 
         if (upsertDiagnosisResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertDiagnosisResult.Errors));
+            _logger.LogError("Failed to upsert diagnosis programs for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertDiagnosisResult.Errors));
             return upsertDiagnosisResult.Errors;
         }
         
@@ -82,7 +83,7 @@ public sealed class CreateTherapyCardCommandHandler
 
         if(!price.HasValue)
         {
-            _logger.LogWarning("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
+            _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
@@ -90,7 +91,8 @@ public sealed class CreateTherapyCardCommandHandler
 
         if (createTherapyCardResult.IsError)
         {
-           _logger.LogWarning("Failed to create TherapyCard for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", createTherapyCardResult.Errors));
+            _logger.LogError("Failed to create TherapyCard for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", createTherapyCardResult.Errors));
+           
             return createTherapyCardResult.Errors;
         }
 
@@ -99,7 +101,8 @@ public sealed class CreateTherapyCardCommandHandler
 
         if (upsertTherapyResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert therapy card programs for TherapyCard with ticket{TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertTherapyResult.Errors));
+            _logger.LogError("Failed to upsert therapy card programs for TherapyCard with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertTherapyResult.Errors));
+
             return upsertTherapyResult.Errors;
         }
         

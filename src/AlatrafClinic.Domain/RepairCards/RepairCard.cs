@@ -5,7 +5,7 @@ using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Patients.Cards.ExitCards;
 using AlatrafClinic.Domain.Payments;
-using AlatrafClinic.Domain.RepairCards.AttendanceTimes;
+using AlatrafClinic.Domain.RepairCards.DeliveryTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
 using AlatrafClinic.Domain.TherapyCards.Enums;
@@ -26,8 +26,8 @@ public class RepairCard : AuditableEntity<int>
     public decimal TotalCost => _diagnosisIndustrialParts.Sum(part => part.Price * part.Quantity);
 
     // Navigation
-    public AttendanceTime? AttendanceTime { get; set; }
-    public bool IsLate => AttendanceTime?.AttendanceDate.Date < DateTime.Now.Date;
+    public DeliveryTime? DeliveryTime { get; set; }
+    public bool IsLate => Status is RepairCardStatus.InProgress && DeliveryTime?.DeliveryDate.Date < DateTime.Now.Date;
 
     private readonly List<Order> _orders = new();
     public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
@@ -201,20 +201,20 @@ public class RepairCard : AuditableEntity<int>
         Status = RepairCardStatus.ExitForPractice;
         return Result.Updated;
     }
-    public Result<Updated> AssignAttendanceTime((DateTime attendanceDate, string? note) attendanceData)
+    public Result<Updated> AssignDeliveryTime(DateTime deliveryDate, string? note)
     {
         if (!IsEditable)
         {
             return RepairCardErrors.Readonly;
         }
 
-        var attendanceTimeResult = AttendanceTime.Create(Id, attendanceData.attendanceDate, attendanceData.note);
-        if (attendanceTimeResult.IsError)
+        var deliveryTimeResult = DeliveryTime.Create(Id, deliveryDate, note);
+        if (deliveryTimeResult.IsError)
         {
-            return attendanceTimeResult.Errors;
+            return deliveryTimeResult.Errors;
         }
 
-        AttendanceTime = attendanceTimeResult.Value;
+        DeliveryTime = deliveryTimeResult.Value;
         return Result.Updated;
     }
 

@@ -25,7 +25,7 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
         var ticket = await _unitOfWork.Tickets.GetByIdAsync(command.TicketId, ct);
         if (ticket is null)
         {
-            _logger.LogWarning("Ticket with Id {TicketId} not found.", command.TicketId);
+            _logger.LogError("Ticket with Id {TicketId} not found.", command.TicketId);
             
             return TicketErrors.TicketNotFound;
         }
@@ -33,26 +33,27 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
         var patient = await _unitOfWork.Patients.GetByIdAsync(command.PatientId, ct);
         if (patient is null)
         {
-            _logger.LogWarning("Patient with Id {PatientId} not found.", command.PatientId);
+            _logger.LogError("Patient with Id {PatientId} not found.", command.PatientId);
             return PatientErrors.PatientNotFound;
         }
 
         var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
         if (service is null)
         {
-            _logger.LogWarning("Service with Id {ServiceId} not found.", command.ServiceId);
+            _logger.LogError("Service with Id {ServiceId} not found.", command.ServiceId);
             return Domain.Services.ServiceErrors.ServiceNotFound;
         }
 
         var updateResult = ticket.Update(patient, service);
         if (updateResult.IsError)
         {
-            _logger.LogWarning("Failed to update ticket Id {TicketId}: {Error}", command.TicketId, updateResult.Errors);
+            _logger.LogError("Failed to update ticket Id {TicketId}: {Error}", command.TicketId, updateResult.Errors);
             return updateResult.Errors;
         }
 
         await _unitOfWork.Tickets.UpdateAsync(ticket, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        
         _logger.LogInformation("Ticket with Id {TicketId} updated successfully.", command.TicketId);
         
         return Result.Updated;

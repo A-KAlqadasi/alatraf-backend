@@ -56,7 +56,7 @@ public sealed class CreateRepairCardCommandHandler
 
         if (diagnosisResult.IsError)
         {
-            _logger.LogWarning("Failed to create Diagnosis for Ticket {ticketId}: {Errors}",command.TicketId, diagnosisResult.Errors);
+            _logger.LogError("Failed to create Diagnosis for Ticket {ticketId}: {Errors}", command.TicketId, string.Join(", ", diagnosisResult.Errors));
             return diagnosisResult.Errors;
         }
 
@@ -68,13 +68,13 @@ public sealed class CreateRepairCardCommandHandler
             var partUnit = await _unitOfWork.IndustrialParts.GetByIdAndUnitId(partId, unitId, ct);
             if (partUnit is null)
             {
-                _logger.LogWarning("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", partId, unitId);
+                _logger.LogError("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", partId, unitId);
                 return IndustrialPartUnitErrors.IndustrialPartUnitNotFound;
             }
             
             if (price != partUnit.PricePerUnit)
             {
-                _logger.LogWarning("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", price, partUnit.PricePerUnit);
+                _logger.LogError("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", price, partUnit.PricePerUnit);
                 return IndustrialPartUnitErrors.InconsistentPrice;
             }
             
@@ -87,7 +87,7 @@ public sealed class CreateRepairCardCommandHandler
 
         if (repairCardResult.IsError)
         {
-            _logger.LogWarning("Failed to create RepairCard for Ticket {ticketId}: {Errors}", command.TicketId, string.Join(", ", repairCardResult.Errors));
+            _logger.LogError("Failed to create RepairCard for Ticket {ticketId}: {Errors}", command.TicketId, string.Join(", ", repairCardResult.Errors));
             return repairCardResult.Errors;
         }
 

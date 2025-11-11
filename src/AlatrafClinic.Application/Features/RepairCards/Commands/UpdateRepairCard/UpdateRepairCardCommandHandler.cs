@@ -34,13 +34,15 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
         RepairCard? currentRepairCard = await _unitOfWork.RepairCards.GetByIdAsync(command.RepairCardId, ct);
         if (currentRepairCard is null)
         {
-            _logger.LogWarning("RepairCard with id {RepairCardId} not found", command.RepairCardId);
+            _logger.LogError("RepairCard with id {RepairCardId} not found", command.RepairCardId);
+            
             return RepairCardErrors.RepairCardNotFound;
         }
 
         if (currentRepairCard.Status != RepairCardStatus.New)
         {
-            _logger.LogWarning("RepairCard with id {RepairCardId} is readonly", command.RepairCardId);
+            _logger.LogError("RepairCard with id {RepairCardId} is readonly", command.RepairCardId);
+            
             return RepairCardErrors.Readonly;
         }
 
@@ -58,7 +60,8 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 
         if (updateDiagnosisResult.IsError)
         {
-            _logger.LogWarning("Failed to update diagnosis for RepairCard with id {RepairCardId}", command.RepairCardId);
+            _logger.LogError("Failed to update diagnosis for RepairCard with id {RepairCardId}", command.RepairCardId);
+
             return updateDiagnosisResult.Errors;
         }
         
@@ -76,13 +79,15 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             var partUnit = await _unitOfWork.IndustrialParts.GetByIdAndUnitId(partId, unitId, ct);
             if (partUnit is null)
             {
-                _logger.LogWarning("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", partId, unitId);
+                _logger.LogError("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", partId, unitId);
+
                 return IndustrialPartUnitErrors.IndustrialPartUnitNotFound;
             }
 
             if (price != partUnit.PricePerUnit)
             {
-                _logger.LogWarning("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", price, partUnit.PricePerUnit);
+                _logger.LogError("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", price, partUnit.PricePerUnit);
+
                 return IndustrialPartUnitErrors.InconsistentPrice;
             }
 
@@ -93,7 +98,8 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 
         if (upsertDiagnosisPartsResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs for RepairCard with id {RepairCardId}: {Errors}", command.RepairCardId, upsertDiagnosisPartsResult.Errors);
+            _logger.LogError("Failed to upsert diagnosis programs for RepairCard with id {RepairCardId}: {Errors}", command.RepairCardId, string.Join(", ", upsertDiagnosisPartsResult.Errors));
+            
             return upsertDiagnosisPartsResult.Errors;
         }
 
@@ -101,7 +107,7 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 
         if (upsertRepairResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs to RepairCard with id {RepairCardId}: {Errors}", command.RepairCardId, string.Join(", ", upsertRepairResult.Errors));
+            _logger.LogError("Failed to upsert diagnosis programs to RepairCard with id {RepairCardId}: {Errors}", command.RepairCardId, string.Join(", ", upsertRepairResult.Errors));
             return upsertRepairResult.Errors;
         }
 

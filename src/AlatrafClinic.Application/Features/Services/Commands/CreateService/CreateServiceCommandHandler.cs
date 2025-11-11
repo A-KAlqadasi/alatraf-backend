@@ -31,20 +31,23 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
 
         if (department is null)
         {
-            _logger.LogWarning("Department with ID {DepartmentId} was not found.", command.DepartmentId);
+            _logger.LogError("Department with ID {DepartmentId} was not found.", command.DepartmentId);
+
             return Error.NotFound(code: "Department.NotFound", description: $"Department with ID {command.DepartmentId} was not found.");
         }
         
         var serviceResult = Service.Create(command.Name, command.DepartmentId, command.Price);
         if (serviceResult.IsError)
         {
-            _logger.LogWarning("Failed to create service: {Errors}", serviceResult.Errors);
+            _logger.LogError("Failed to create service: {Errors}", serviceResult.Errors);
+
             return serviceResult.Errors;
         }
         var service = serviceResult.Value;
         service.Department = department;
         await _unitOfWork.Services.AddAsync(service, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        
         _logger.LogInformation("Service with ID {ServiceId} created successfully.", service.Id);
 
         return service.ToDto();
