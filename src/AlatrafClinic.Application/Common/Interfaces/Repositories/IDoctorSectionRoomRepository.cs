@@ -4,6 +4,8 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 
 public interface IDoctorSectionRoomRepository : IGenericRepository<DoctorSectionRoom,int>
 {
+  Task<bool> HasActiveAssignmentByRoomIdAsync(int roomId, CancellationToken ct);
+
   Task<DoctorSectionRoom?> GetActiveAssignmentAsync(int doctorId, CancellationToken ct);
   Task<List<DoctorSectionRoom>> GetByDoctorIdAsync(int doctorId, CancellationToken ct);
 }

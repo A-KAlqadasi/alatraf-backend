@@ -55,9 +55,12 @@ Error.NotFound(
     public static Error DepartmentAlreadyExists(string name) =>
 Error.Conflict("Department.AlreadyExists", $"Department with name '{name}' already exists.");
     // Sections related Errors
-    
+
     public static Error SectionAlreadyExists(string name) =>
     Error.Conflict("Section.AlreadyExists", $"Section with name '{name}' already exists in this department.");
+
+public static readonly Error RoomHasActiveDoctorAssignment =
+    Error.Conflict("Room.HasActiveDoctorAssignment", "Room cannot be deleted because it has active doctor assignments.");
 
 
 
