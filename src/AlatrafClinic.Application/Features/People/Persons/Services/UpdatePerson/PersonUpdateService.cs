@@ -4,6 +4,8 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People;
 
+using FluentValidation;
+
 using MechanicShop.Application.Common.Errors;
 
 using Microsoft.Extensions.Logging;
@@ -14,13 +16,17 @@ public class PersonUpdateService : IPersonUpdateService
 {
   private readonly IUnitOfWork _unitOfWork;
   private readonly ILogger<PersonUpdateService> _logger;
+  private readonly IValidator<PersonInput> _validator; // optional, same idea
 
   public PersonUpdateService(
       IUnitOfWork unitOfWork,
-      ILogger<PersonUpdateService> logger)
+      ILogger<PersonUpdateService> logger,
+        IValidator<PersonInput> validator)
   {
     _unitOfWork = unitOfWork;
     _logger = logger;
+    _validator = validator;
+
   }
 
   public async Task<Result<Person>> UpdateAsync(
@@ -48,11 +54,13 @@ public class PersonUpdateService : IPersonUpdateService
     }
 
     var updateResult = person.Update(
-      updatePerson. Fullname.Trim(),
-      updatePerson. Birthdate,
-      updatePerson. Phone.Trim(),
-      updatePerson. NationalNo?.Trim(),
-      updatePerson. Address.Trim());
+      updatePerson.Fullname.Trim(),
+      updatePerson.Birthdate,
+      updatePerson.Phone.Trim(),
+      updatePerson.NationalNo?.Trim(),
+      updatePerson.Address.Trim(),
+
+      person.Gender);
 
     if (updateResult.IsError)
     {

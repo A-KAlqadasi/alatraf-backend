@@ -8,7 +8,6 @@ public interface IDoctorRepository : IGenericRepository<Doctor, int>
   Task<IReadOnlyList<Doctor>> GetByDepartmentIdAsync(int departmentId, CancellationToken cancellationToken = default);
   Task<IReadOnlyList<Doctor>> GetWithActiveAssignmentsAsync(CancellationToken cancellationToken = default);
 
-  Task<Doctor?> GetByNationalNoOrFullnameAsync(string? nationalNo, string fullname, CancellationToken ct);
     Task<IQueryable<Doctor>> GetDoctorsQueryAsync(CancellationToken ct = default);   
 
 }

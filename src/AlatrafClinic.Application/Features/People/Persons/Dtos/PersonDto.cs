@@ -10,5 +10,6 @@ namespace AlatrafClinic.Application.Features.People.Persons.Dtos
         public string? Phone { get; set; }
         public string? NationalNo { get; set; }
         public string? Address { get; set; }
+        public bool Gender { get; set; }
     }
 }

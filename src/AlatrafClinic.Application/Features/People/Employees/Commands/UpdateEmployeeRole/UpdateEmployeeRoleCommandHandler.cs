@@ -9,21 +9,21 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.People.Employees.Commands.UpdateEmployeeRole;
 
-public class UpdateEmployeeCommandHandler(
+public class UpdateEmployeeRoleCommandHandler(
     IUnitOfWork unitWork
-) : IRequestHandler<UpdateEmployeeCommand, Result<Updated>>
+) : IRequestHandler<UpdateEmployeeRoleCommand, Result<Updated>>
 {
   private readonly IUnitOfWork _unitWork = unitWork;
 
-  public async Task<Result<Updated>> Handle(UpdateEmployeeCommand request, CancellationToken ct)
+  public async Task<Result<Updated>> Handle(UpdateEmployeeRoleCommand request, CancellationToken ct)
   {
     var employee = await _unitWork.Employees.GetByIdAsync(request.EmployeeId, ct);
     if (employee is null)
       return ApplicationErrors.EmployeeNotFound;
 
-        var updateResult = employee.UpdateRole(request.Role);
-        if (updateResult.IsError)
-            return updateResult.Errors;
+    var updateResult = employee.UpdateRole(request.Role);
+    if (updateResult.IsError)
+      return updateResult.Errors;
 
 
     await _unitWork.Employees.UpdateAsync(employee, ct);

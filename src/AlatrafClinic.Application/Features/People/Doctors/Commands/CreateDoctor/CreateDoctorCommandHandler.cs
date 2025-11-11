@@ -26,21 +26,6 @@ public class CreateDoctorCommandHandler(
 
   public async Task<Result<DoctorDto>> Handle(CreateDoctorCommand command, CancellationToken cancellationToken)
   {
-    var existingDoctor = await _unitOfWork.Doctors
-        .GetByNationalNoOrFullnameAsync(command.Person.NationalNo, command.Person.Fullname, cancellationToken);
-    if (existingDoctor is not null)
-    {
-      _logger.LogWarning("Doctor already exists with NationalNo: {NationalNo} or Fullname: {Fullname}",
-          command.Person.NationalNo, command.Person.Fullname);
-      return ApplicationErrors.DoctorAlreadyExists(existingDoctor.Person!.NationalNo!);
-    }
-    var department = await _unitOfWork.Departments.GetByIdAsync(command.DepartmentId, cancellationToken);
-    if (department is null)
-    {
-      _logger.LogWarning("Department with ID {DepartmentId} not found.", command.DepartmentId);
-      return ApplicationErrors.DepartmentNotFound;
-    }
-
     var personResult = await _personCreateService.CreateAsync(command.Person,
         cancellationToken);
 
@@ -48,6 +33,15 @@ public class CreateDoctorCommandHandler(
       return personResult.Errors;
 
     var person = personResult.Value;
+
+
+
+    var department = await _unitOfWork.Departments.GetByIdAsync(command.DepartmentId, cancellationToken);
+    if (department is null)
+    {
+      _logger.LogWarning("Department with ID {DepartmentId} not found.", command.DepartmentId);
+      return ApplicationErrors.DepartmentNotFound;
+    }
 
     var doctorResult = Doctor.Create(
         person.Id,

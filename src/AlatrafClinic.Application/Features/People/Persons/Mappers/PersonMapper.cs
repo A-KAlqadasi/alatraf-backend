@@ -17,7 +17,8 @@ namespace AlatrafClinic.Application.Features.People.Persons.Mappers;
                 Birthdate = entity.Birthdate,
                 Phone = entity.Phone,
                 NationalNo = entity.NationalNo,
-                Address = entity.Address
+                Address = entity.Address,
+                Gender=entity.Gender
             };
         }
 

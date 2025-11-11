@@ -1,3 +1,5 @@
+using FluentValidation;
+
 namespace AlatrafClinic.Application.Features.People.Doctors.Queries.GetDoctorsWithCurrentAssignment;
 
 public sealed class GetDoctorsWithCurrentAssignmentQueryValidator

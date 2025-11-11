@@ -7,5 +7,6 @@ public sealed record PersonInput(
     DateTime Birthdate,
     string Phone,
     string? NationalNo,
-    string Address
+    string Address,
+    bool Gender
 );

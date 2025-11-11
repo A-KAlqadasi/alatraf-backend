@@ -23,6 +23,9 @@ public sealed class PersonInputValidator : AbstractValidator<PersonInput>
     RuleFor(x => x.Address)
         .NotEmpty()
         .MaximumLength(250);
+    RuleFor(x => x.Gender)
+       .NotNull()
+       .WithMessage("Gender is required (true = Male, false = Female).");
 
     When(x => !string.IsNullOrWhiteSpace(x.NationalNo), () =>
     {

@@ -17,12 +17,9 @@ public sealed class Employee : AuditableEntity<Guid>
         Role = role;
     }
 
-    public static Result<Employee> Create(Guid id, int personId, Role role)
+    public static Result<Employee> Create( int personId, Role role)
     {
-        if (id == Guid.Empty)
-        {
-            return EmployeeErrors.IdRequired;
-        }
+       
         
         if (personId <= 0)
         {
@@ -33,8 +30,14 @@ public sealed class Employee : AuditableEntity<Guid>
         {
             return EmployeeErrors.RoleInvalid;
         }
+        var employeeId = Guid.NewGuid();
+
+         if (employeeId == Guid.Empty)
+        {
+            return EmployeeErrors.IdRequired;
+        }
         
-        return new Employee(id,personId, role);
+        return new Employee(employeeId,personId, role);
     }
    public Result<Updated> UpdateRole(Role newRole)
     {

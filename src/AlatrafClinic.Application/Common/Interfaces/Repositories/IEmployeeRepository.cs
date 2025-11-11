@@ -7,4 +7,7 @@ public interface IEmployeeRepository : IGenericRepository<Employee, Guid>
 {
   Task<IReadOnlyList<Employee>> GetByRoleAsync(Role role, CancellationToken cancellationToken = default);
   Task<Employee?> GetByPersonIdAsync(int personId, CancellationToken cancellationToken = default);
+  Task<Employee?> GetByIdWithPersonAsync(Guid employeeId, CancellationToken cancellationToken = default);
+
+  Task<IQueryable<Employee>> GetEmployeesWithPersonQueryAsync(CancellationToken cancellationToken = default);
 }
