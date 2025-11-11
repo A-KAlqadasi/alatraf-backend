@@ -51,9 +51,14 @@ Error.NotFound(
     public static readonly Error RoomNotFound = Error.Validation(
    code: "Room.NotFound",
    description: "The Room was not found in this Section.");
-        // Department related Errors
-        public static Error DepartmentAlreadyExists(string name) =>
-    Error.Conflict("Department.AlreadyExists", $"Department with name '{name}' already exists.");
+    // Department related Errors
+    public static Error DepartmentAlreadyExists(string name) =>
+Error.Conflict("Department.AlreadyExists", $"Department with name '{name}' already exists.");
+    // Sections related Errors
+    
+    public static Error SectionAlreadyExists(string name) =>
+    Error.Conflict("Section.AlreadyExists", $"Section with name '{name}' already exists in this department.");
+
 
 
 }
