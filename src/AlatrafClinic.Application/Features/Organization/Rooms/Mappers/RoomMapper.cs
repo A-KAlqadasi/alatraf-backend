@@ -16,7 +16,7 @@ public static class RoomMapper
 
         return new RoomDto(
             Id: entity.Id,
-            Number: entity.Number,
+            Name: entity.Name,
             SectionId: entity.SectionId
         );
     }

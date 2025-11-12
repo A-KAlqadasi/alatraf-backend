@@ -3,6 +3,7 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
+using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
@@ -47,13 +48,27 @@ public class AssignIndustrialPartToDoctorCommandHandler : IRequestHandler<Assign
 
                 return DiagnosisIndustrialPartErrors.DiagnosisIndustrialPartAlreadyAssignedToDoctor;
             }
-            // validation for doctor section room id could be added here
+            
+            var doctorSectionRoom = await _unitOfWork.DoctorSectionRooms.GetByIdAsync(doctorPart.DoctorSectionRoomId, ct);
+
+            if (doctorSectionRoom is null)
+            {
+                _logger.LogError("Doctor section room with id {DoctorSectionRoomId} not found", doctorPart.DoctorSectionRoomId);
+                return DoctorSectionRoomErrors.DoctorSectionRoomNotFound;
+            }
+
+            if (!doctorSectionRoom.IsActive)
+            {
+                _logger.LogError("Doctor section room with id {DoctorSectionRoomId} is not active", doctorPart.DoctorSectionRoomId);
+                return DoctorSectionRoomErrors.AssignmentAlreadyEnded;
+            }
 
             repairCard.AssignSpecificIndustrialPartToDoctor(doctorPart.DiagnosisIndustrialPartId, doctorPart.DoctorSectionRoomId);
         }
         
         await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        
         _logger.LogInformation("Assigned industrial parts to doctors for repair card with id {RepairCardId}", command.RepairCardId);
         
         return Result.Updated;

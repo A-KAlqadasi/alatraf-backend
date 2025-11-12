@@ -12,4 +12,5 @@ public class RepairCardDto
     public RepairCardStatus CardStatus { get; set; }
     public List<DiagnosisIndustrialPartDto>? DiagnosisIndustrialParts { get; set; }
     public DateTime DeliveryDate { get; set; }
+    public decimal TotalCost { get; set; }
 }

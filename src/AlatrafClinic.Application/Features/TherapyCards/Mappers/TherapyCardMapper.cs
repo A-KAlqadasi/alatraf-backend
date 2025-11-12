@@ -72,7 +72,7 @@ public static class TherapyCardMapper
             DiagnosisProgramId = program.DiagnosisProgramId,
             ProgramName = program.DiagnosisProgram?.MedicalProgram?.Name ?? string.Empty,
             DoctorSectionRoomId = program.DoctorSectionRoomId,
-            DoctorSectionRoomName = program.DoctorSectionRoom?.Section.Name + " - " + program.DoctorSectionRoom?.Room?.Number.ToString(),
+            DoctorSectionRoomName = program.DoctorSectionRoom?.Section.Name + " - " + program.DoctorSectionRoom?.Room?.Name.ToString(),
             DoctorName = program.DoctorSectionRoom?.Doctor?.Person?.FullName
         };
     }

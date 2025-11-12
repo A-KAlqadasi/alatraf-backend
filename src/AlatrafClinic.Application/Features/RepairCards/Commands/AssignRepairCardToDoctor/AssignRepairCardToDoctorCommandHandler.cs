@@ -1,6 +1,7 @@
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
@@ -29,8 +30,21 @@ public class AssignRepairCardToDoctorCommandHandler : IRequestHandler<AssignRepa
         }
 
         // here I will check from section room Id if active
+        var doctorSectionRoom = await _unitOfWork.DoctorSectionRooms.GetByIdAsync(command.DoctorSectionRoomId, ct);
+        if (doctorSectionRoom is null)
+        {
+            _logger.LogError("Doctor section room with id {DoctorSectionRoomId} not found", command.DoctorSectionRoomId);
+            return DoctorSectionRoomErrors.DoctorSectionRoomNotFound;
+        }
+
+        if (!doctorSectionRoom.IsActive)
+        {
+            _logger.LogError("Doctor section room with id {DoctorSectionRoomId} is not active", command.DoctorSectionRoomId);
+            return DoctorSectionRoomErrors.AssignmentAlreadyEnded;
+        }
 
         var result = repairCard.AssignRepairCardToDoctor(command.DoctorSectionRoomId);
+        
         if (result.IsError)
         {
             _logger.LogError("Failed to assign repair card with Id {repairCardId} to doctor", command.RepairCardId);

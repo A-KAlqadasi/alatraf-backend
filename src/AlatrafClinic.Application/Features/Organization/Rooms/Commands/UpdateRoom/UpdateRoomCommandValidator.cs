@@ -10,8 +10,8 @@ public sealed class UpdateRoomCommandValidator : AbstractValidator<UpdateRoomCom
         .GreaterThan(0)
         .WithMessage("RoomId must be greater than zero.");
 
-    RuleFor(x => x.NewNumber)
-        .GreaterThan(0)
-        .WithMessage("Room number must be greater than zero.");
+    RuleFor(x => x.NewName)
+        .NotEmpty()
+        .WithMessage("Room name must be provided.");
   }
 }

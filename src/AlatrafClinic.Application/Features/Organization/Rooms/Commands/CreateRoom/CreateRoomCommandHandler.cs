@@ -35,15 +35,16 @@ ICacheService cacheService
 
     var createdRooms = new List<Room>();
 
-    foreach (var number in request.RoomNumbers)
+    foreach (var name in request.RoomNames)
     {
-      var roomResult = section.AddRoom(number);
-      if (roomResult.IsError)
-      {
-        _logger.LogWarning(" Failed to create room {RoomNumber} for Section {SectionId}: {Error}",
-            number, request.SectionId, roomResult.Errors);
-        return roomResult.Errors;
-      }
+        var roomResult = section.AddRoom(name);
+      
+        if (roomResult.IsError)
+        {
+            _logger.LogWarning(" Failed to create room {RoomName} for Section {SectionId}: {Error}",
+                name, request.SectionId, roomResult.Errors);
+            return roomResult.Errors;
+        }
 
       createdRooms.Add(roomResult.Value);
     }
@@ -53,7 +54,7 @@ ICacheService cacheService
 
     _logger.LogInformation(" {Count} room(s) created successfully for Section {SectionId}.",
         createdRooms.Count, request.SectionId);
-await _cacheService.RemoveByTagAsync("room", ct);
+    await _cacheService.RemoveByTagAsync("room", ct);
 
     return createdRooms.ToDtos();
   }

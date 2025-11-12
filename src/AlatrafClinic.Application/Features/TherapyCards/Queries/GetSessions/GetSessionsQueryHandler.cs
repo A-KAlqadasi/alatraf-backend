@@ -60,7 +60,7 @@ public sealed class GetSessionsQueryHandler
                     DiagnosisProgramId = sp.DiagnosisProgramId,
                     ProgramName = sp.DiagnosisProgram!.MedicalProgram!.Name,
                     DoctorSectionRoomId = sp.DoctorSectionRoomId,
-                    DoctorSectionRoomName = sp.DoctorSectionRoom!.Section!.Name + " - " + sp.DoctorSectionRoom!.Room!.Number.ToString(),
+                    DoctorSectionRoomName = sp.DoctorSectionRoom!.Section!.Name + " - " + sp.DoctorSectionRoom!.Room!.Name.ToString(),
                     DoctorName = sp.DoctorSectionRoom!.Doctor!.Person!.FullName
                 }).ToList()
             })

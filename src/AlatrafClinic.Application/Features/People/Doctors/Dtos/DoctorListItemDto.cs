@@ -12,7 +12,7 @@ public sealed class DoctorListItemDto
   public int? CurrentSectionId { get; set; }
   public string? CurrentSectionName { get; set; }
   public int? CurrentRoomId { get; set; }
-  public int? CurrentRoomNumber { get; set; }
+  public string? CurrentRoomName { get; set; }
 
   public DateTime? AssignDate { get; set; }
   public bool IsActiveAssignment { get; set; }

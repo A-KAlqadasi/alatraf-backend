@@ -7,6 +7,6 @@ namespace AlatrafClinic.Application.Features.Organization.Rooms.Dtos;
 
 public sealed record RoomDto(
     int Id,
-    int Number,
+    string Name,
     int SectionId
 );

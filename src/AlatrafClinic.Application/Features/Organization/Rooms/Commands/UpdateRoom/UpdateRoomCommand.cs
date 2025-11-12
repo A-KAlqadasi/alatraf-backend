@@ -11,5 +11,5 @@ namespace AlatrafClinic.Application.Features.Organization.Rooms.Commands.UpdateR
 
 public sealed record UpdateRoomCommand(
     int RoomId,
-    int NewNumber
+    string NewName
 ) : IRequest<Result<Updated>>;

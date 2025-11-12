@@ -61,9 +61,9 @@ public class GetDoctorsWithCurrentAssignmentQueryHandler
                 .Where(a => a.IsActive)
                 .Select(a => a.RoomId)
                 .FirstOrDefault(),
-          CurrentRoomNumber = d.Assignments
+          CurrentRoomName = d.Assignments
                 .Where(a => a.IsActive && a.Room != null)
-                .Select(a => a.Room.Number)
+                .Select(a => a.Room!.Name ?? string.Empty)
                 .FirstOrDefault(),
           AssignDate = d.Assignments
                 .Where(a => a.IsActive)
