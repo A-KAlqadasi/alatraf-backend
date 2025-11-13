@@ -6,9 +6,11 @@ using AlatrafClinic.Domain.Organization.Sections;
 namespace AlatrafClinic.Domain.Organization.Rooms;
 
 public class Room : AuditableEntity<int>
-{  
+{
     public int Number { get; private set; }
     public int SectionId { get; private set; }
+    public bool IsDeleted { get; private set; }
+
     public Section Section { get; private set; } = default!;
     private readonly List<DoctorSectionRoom> _doctorAssignments = new();
 
@@ -20,6 +22,8 @@ public class Room : AuditableEntity<int>
     {
         Number = number;
         SectionId = sectionId;
+        IsDeleted = false;
+
     }
 
     public static Result<Room> Create(int number, int sectionId)
@@ -33,7 +37,7 @@ public class Room : AuditableEntity<int>
         return new Room(number, sectionId);
     }
 
-   public Result<Updated> UpdateNumber(int newNumber)
+    public Result<Updated> UpdateNumber(int newNumber)
     {
         if (newNumber <= 0)
             return RoomErrors.InvalidNumber;
@@ -42,6 +46,26 @@ public class Room : AuditableEntity<int>
             return RoomErrors.DuplicateRoomNumber;
 
         Number = newNumber;
+        return Result.Updated;
+    }
+
+     // ✅ Domain operation for soft delete
+    public Result<Deleted> SoftDelete()
+    {
+        if (IsDeleted)
+            return RoomErrors.AlreadyDeleted;
+
+        IsDeleted = true;
+        return Result.Deleted;
+    }
+
+    // ✅ Optional undo
+    public Result<Updated> Restore()
+    {
+        if (!IsDeleted)
+            return RoomErrors.NotDeleted;
+
+        IsDeleted = false;
         return Result.Updated;
     }
 }

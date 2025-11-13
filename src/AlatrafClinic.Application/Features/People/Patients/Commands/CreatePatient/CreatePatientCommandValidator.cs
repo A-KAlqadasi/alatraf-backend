@@ -1,3 +1,5 @@
+using AlatrafClinic.Application.Features.People.Persons.Services;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.People.Patients.Commands.CreatePatient;
@@ -6,9 +8,9 @@ public class CreatePatientCommandValidator : AbstractValidator<CreatePatientComm
 {
     public CreatePatientCommandValidator()
     {
-        RuleFor(x => x.PersonId)
-            .GreaterThan(0)
-            .WithMessage("PersonId must be greater than zero.");
+       RuleFor(x => x.Person)
+            .NotNull()
+            .SetValidator(new PersonInputValidator()); // 👈 reuse
 
         RuleFor(x => x.PatientType)
             .IsInEnum()

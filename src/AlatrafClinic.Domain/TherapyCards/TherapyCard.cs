@@ -16,25 +16,26 @@ public class TherapyCard : AuditableEntity<int>
     public int DiagnosisId { get; private set; }
     public Diagnosis? Diagnosis { get; set; }
     public TherapyCardType Type { get; private set; }
+    public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
-    public decimal? TotalPrice => NumberOfSessions * SessionPricePerType;
-    private readonly List<TherapyCardStatus> _cardStatuses = new();
-    public IReadOnlyCollection<TherapyCardStatus> CardStatuses => _cardStatuses.AsReadOnly();
-    public bool IsPaid => _cardStatuses.Any(s => s.TherapyCardId == Id && s.PaymentId is not null);
+    public decimal? TotalCost => NumberOfSessions * SessionPricePerType;
+    public bool IsPaid => true;
     public bool IsExpired => DateTime.Now > ProgramEndDate;
+    public bool IsEditable => IsActive && !IsExpired && !IsPaid && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();
     public IReadOnlyCollection<Session> Sessions => _sessions.AsReadOnly();
+    public Session? LatestSession => _sessions.OrderByDescending(s => s.SessionDate).FirstOrDefault();
+     
     private readonly List<DiagnosisProgram> _diagnosisPrograms = new();
     public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
     public int? ParentCardId { get; private set; }
     public TherapyCard? ParentCard { get; private set; }
-    public ICollection<TherapyCard> RenewalCards { get; private set; } = new List<TherapyCard>();
     public CardStatus CardStatus { get; private set; } 
     private TherapyCard()
     {
 
     }
-    private TherapyCard(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, int numberOfSessions, List<DiagnosisProgram> diagnosisPrograms, CardStatus status = CardStatus.New, int? parentCardId = null)
+    private TherapyCard(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, int numberOfSessions, List<DiagnosisProgram> diagnosisPrograms, CardStatus status = CardStatus.New, int? parentCardId = null, string? notes = null)
     {
         DiagnosisId = diagnosisId;
         ProgramStartDate = programStartDate;
@@ -44,25 +45,18 @@ public class TherapyCard : AuditableEntity<int>
         IsActive = true;
         _diagnosisPrograms = diagnosisPrograms;
         NumberOfSessions = numberOfSessions;
-
-        var cardStatus = TherapyCardStatus.Create(Id, status);
-        if (cardStatus.IsError)
-        {
-            throw new ArgumentException(cardStatus.TopError.ToString());
-        }
-        
-        _cardStatuses.Add(cardStatus.Value);
-
+        Notes = notes;
+        this.CardStatus = status;
         ParentCardId = parentCardId;
     }
 
-    public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, CardStatus status = CardStatus.New, int? parentCardId = null)
+    public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, CardStatus status, int? parentCardId = null, string? notes = null)
     {
         if (diagnosisId <= 0)
         {
             return TherapyCardErrors.InvalidDiagnosisId;
         }
-        
+
         if (programStartDate < DateTime.Now)
         {
             return TherapyCardErrors.ProgramStartDateNotInPast;
@@ -73,7 +67,41 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.InvalidTiming;
         }
 
-       int numberOfSessions = (programEndDate - programStartDate).Days + 1;
+        int numberOfSessions = (programEndDate - programStartDate).Days + 1;
+
+        if (!Enum.IsDefined(typeof(TherapyCardType), type))
+        {
+            return TherapyCardErrors.TherapyCardTypeInvalid;
+        }
+        if(!Enum.IsDefined(typeof(CardStatus), status))
+        {
+            return TherapyCardErrors.InvalidCardStatus;
+        }
+
+        if (sessionPricePerType <= 0)
+        {
+            return TherapyCardErrors.SessionPricePerTypeInvalid;
+        }
+
+        return new TherapyCard(diagnosisId, programStartDate, programEndDate, type, sessionPricePerType, numberOfSessions, diagnosisPrograms, status, parentCardId, notes);
+    }
+
+    public Result<Updated> Update(DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, string? notes = null)
+    {
+        if (!IsEditable)
+        {
+            return TherapyCardErrors.Readonly;
+        }
+
+        if (programStartDate < DateTime.Now)
+        {
+            return TherapyCardErrors.ProgramStartDateNotInPast;
+        }
+
+        if (programEndDate <= programStartDate)
+        {
+            return TherapyCardErrors.InvalidTiming;
+        }
 
         if (!Enum.IsDefined(typeof(TherapyCardType), type))
         {
@@ -81,11 +109,31 @@ public class TherapyCard : AuditableEntity<int>
         }
 
         if (sessionPricePerType <= 0)
-        {  
+        {
             return TherapyCardErrors.SessionPricePerTypeInvalid;
         }
-        
-        return new TherapyCard(diagnosisId, programStartDate, programEndDate, type, sessionPricePerType, numberOfSessions, diagnosisPrograms, status, parentCardId);
+
+        ProgramStartDate = programStartDate;
+        ProgramEndDate = programEndDate;
+        Type = type;
+        SessionPricePerType = sessionPricePerType;
+        Notes = notes;
+        NumberOfSessions = (ProgramEndDate - ProgramStartDate).Days + 1;
+
+        return Result.Updated;
+    }
+    
+    public Result<Updated> UpsertDiagnosisPrograms(List<DiagnosisProgram> diagnosisPrograms)
+    {
+        if (!IsEditable)
+        {
+            return TherapyCardErrors.Readonly;
+        }
+
+        _diagnosisPrograms.Clear();
+        _diagnosisPrograms.AddRange(diagnosisPrograms);
+
+        return Result.Updated;
     }
 
     public Result<Updated> DeActivate()
@@ -122,7 +170,7 @@ public class TherapyCard : AuditableEntity<int>
         ;
         return Result.Success;
     }
-    public Result<Updated> AddSession(List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
+    public Result<Session> AddSession(List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
     {
         var sessionValidate = SessionValidation();
         if (sessionValidate.IsError)
@@ -137,13 +185,26 @@ public class TherapyCard : AuditableEntity<int>
             return session.TopError;
         }
         var assignProgramsResult = session.Value.TakeSession(sessionProgramsData);
+
         if (assignProgramsResult.IsError)
         {
             return assignProgramsResult.TopError;
         }
 
         _sessions.Add(session.Value);
-        return Result.Updated;
+
+        return session.Value;
+    }
+    public Result<Updated> TakeSession(int sessionId, List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
+    {
+        var session = _sessions.FirstOrDefault(s => s.Id == sessionId);
+        if (session == null)
+        {
+            return TherapyCardErrors.SessionNotFound;
+        }
+        
+
+        return session.TakeSession(sessionProgramsData);
     }
 
     public Result<Updated> GenerateSessions()
@@ -173,54 +234,6 @@ public class TherapyCard : AuditableEntity<int>
 
             _sessions.Add(session.Value);
         }
-
-        return Result.Updated;
-    }
-    
-    public Result<Updated> Renew(DateTime newProgramStartDate, DateTime newProgramEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms)
-    {
-        if (!IsExpired)
-        {
-            return TherapyCardStatusErrors.CardNotExpiredToRenew;
-        }
-
-        var renewedCardResult = Create(DiagnosisId, newProgramStartDate, newProgramEndDate, type, sessionPricePerType, diagnosisPrograms, CardStatus.Renew, this.Id);
-
-        if (renewedCardResult.IsError)
-        {
-            return renewedCardResult.TopError;
-        }
-
-        RenewalCards.Add(renewedCardResult.Value);
-        IsActive = false;
-
-        return Result.Updated;
-    }
-    public TherapyCard? GetLatestRenewedCard()
-    {
-        return RenewalCards
-            .OrderByDescending(card => card.ProgramStartDate)
-            .FirstOrDefault();
-    }
-    public Result<Updated> ReplacementOfLost()
-    {
-        if (!IsActive)
-        {
-            return TherapyCardErrors.Readonly;
-        }
-
-        if (IsExpired)
-        {
-            return TherapyCardStatusErrors.CardExpiredToReplace;
-        }
-
-        var card = TherapyCardStatus.Create(Id, CardStatus.ReplacementOfLost);
-        if (card.IsError)
-        {
-            return card.TopError;
-        }
-
-        _cardStatuses.Add(card.Value);
 
         return Result.Updated;
     }

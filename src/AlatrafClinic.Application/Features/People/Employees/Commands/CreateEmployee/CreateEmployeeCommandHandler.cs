@@ -1,6 +1,8 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.People.Employees.Dtos;
 using AlatrafClinic.Application.Features.People.Employees.Mappers;
+using AlatrafClinic.Application.Features.People.Persons.Services;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People.Employees;
 
@@ -8,45 +10,41 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Logging;
+
 namespace AlatrafClinic.Application.Features.People.Employees.Commands.CreateEmployee;
 
 public class CreateEmployeeCommandHandler(
-    IUnitOfWork unitWork
+    IUnitOfWork unitOfWork,
+    ILogger<CreateEmployeeCommandHandler> logger,
+    IPersonCreateService personCreateService
 ) : IRequestHandler<CreateEmployeeCommand, Result<EmployeeDto>>
 {
-  private readonly IUnitOfWork _unitWork = unitWork;
+  private readonly IUnitOfWork _unitOfWork = unitOfWork;
+  private readonly ILogger<CreateEmployeeCommandHandler> _logger = logger;
+  private readonly IPersonCreateService _personCreateService = personCreateService;
 
   public async Task<Result<EmployeeDto>> Handle(CreateEmployeeCommand request, CancellationToken ct)
   {
-    var person = await _unitWork.Person.GetByIdAsync(request.PersonId, ct);
-    if (person is null)
-      return ApplicationErrors.PersonNotFound;
+    var personResult = await _personCreateService.CreateAsync(request.Person, ct);
+    if (personResult.IsError)
+      return personResult.Errors;
 
-    // var existingPatient = await _unitWork.Patients.GetByPersonIdAsync(request.PersonId, ct);
-    // if (existingPatient is not null)
-    //   return ApplicationErrors.PersonAlreadyAssigned(request.PersonId);
+    var person = personResult.Value;
 
-    // var existingDoctor = await _unitWork.Doctors.GetByPersonIdAsync(request.PersonId, ct);
-    // if (existingDoctor is not null)
-    //   return ApplicationErrors.PersonAlreadyAssigned(request.PersonId);
-
-    // var existingEmployee = await _unitWork.Employees.GetByPersonIdAsync(request.PersonId, ct);
-    // if (existingEmployee is not null)
-    //   return ApplicationErrors.EmployeeAlreadyExists(request.PersonId);
-
-    var employeeResult = Employee.Create(
-        id: request.EmployeeId,
-        personId: request.PersonId,
-        role: request.Role
-    );
-
+    var employeeResult = Employee.Create(person.Id, request.Role); 
     if (employeeResult.IsError)
       return employeeResult.Errors;
 
     var employee = employeeResult.Value;
 
-    await _unitWork.Employees.AddAsync(employee, ct);
-    await _unitWork.SaveChangesAsync(ct);
+    await _unitOfWork.Person.AddAsync(person, ct);
+    await _unitOfWork.Employees.AddAsync(employee, ct);
+    await _unitOfWork.SaveChangesAsync(ct);
+
+    _logger.LogInformation("✅ Employee created successfully with ID {EmployeeId}", employee.Id);
+
+
     return employee.ToDto();
   }
 }

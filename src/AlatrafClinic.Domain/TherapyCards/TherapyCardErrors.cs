@@ -22,5 +22,11 @@ public static class TherapyCardErrors
     public static Error ProgramEnded = Error.Forbidden("TherapyCard.ProgramEnded", "Therapy Card program ended");
     public static Error IsNotPaid = Error.Forbidden("TherapyCard.IsNotPaid", "Therapy Card is not paid");
     public static Error InvalidDiagnosisId = Error.Validation("TherapyCard.InvalidDiagnosisId", "Diagnosis Id is invalid");
+    public static Error TherapyCardNotFound = Error.NotFound("TherapyCard.NotFound", "Therapy Card not found");
+    public static Error DiagnosisNotIncluded = Error.Validation("TherapyCard.DiagnosisNotIncluded", "Diagnosis must be included in the Therapy Card");
+    public static Error InvalidCardStatus = Error.Validation("TherapyCard.InvalidCardStatus", "Card Status is invalid");
+    public static Error TherapyCardNotExpired = Error.Conflict("TherapyCard.NotExpired", "Therapy Card is not expired");
+    public static Error TherapyCardExpired = Error.Conflict("TherapyCard.Expired", "Therapy Card is expired");
+    public static Error SessionNotFound = Error.NotFound("TherapyCard.SessionNotFound", "Session not found");
 
 }

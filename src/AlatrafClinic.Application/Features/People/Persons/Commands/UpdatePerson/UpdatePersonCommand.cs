@@ -8,8 +8,9 @@ namespace AlatrafClinic.Application.Features.People.Persons.Commands.UpdatePerso
 public sealed record UpdatePersonCommand(
   int PersonId,
   string Fullname,
-  DateTime? Birthdate,
-  string? Phone,
+  DateTime Birthdate,
+  string Phone,
   string? NationalNo,
-  string? Address
+  string Address,
+  bool Gender
 ) : IRequest<Result<Updated>>;

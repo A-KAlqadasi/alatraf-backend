@@ -24,4 +24,8 @@ public static class SessionErrors
         Error.Validation(
             "Session.SessionProgramsAreRequired",
             "At least one session program is required.");
+    public static readonly Error SessionNotFound =
+        Error.NotFound(
+            "Session.SessionNotFound",
+            "The specified session was not found.");
 }

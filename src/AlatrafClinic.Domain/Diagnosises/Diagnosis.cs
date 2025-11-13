@@ -31,18 +31,17 @@ public class Diagnosis : AuditableEntity<int>
     public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
     private readonly List<DiagnosisIndustrialPart> _diagnosisIndustrialParts = new();
     public IReadOnlyCollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts => _diagnosisIndustrialParts.AsReadOnly();
-    public TherapyCard? TherapyCard { get; set; }
     
     public RepairCard? RepairCard { get; set; }
     public Sale? Sale { get; set; }
+    public TherapyCard? TherapyCard { get; set; }
     private readonly List<InjuryReason> _injuryReasons = new();
     public IReadOnlyCollection<InjuryReason> InjuryReasons => _injuryReasons.AsReadOnly();
     private readonly List<InjurySide> _injurySides = new();
     public IReadOnlyCollection<InjurySide> InjurySides => _injurySides.AsReadOnly();
     private readonly List<InjuryType> _injuryTypes = new();
     public IReadOnlyCollection<InjuryType> InjuryTypes => _injuryTypes.AsReadOnly();
-    private readonly List<TherapyCard> _therapyCards = new();
-    public IReadOnlyCollection<TherapyCard> TherapyCards => _therapyCards.AsReadOnly();
+   
     private Diagnosis()
     {
     }
@@ -178,12 +177,12 @@ public class Diagnosis : AuditableEntity<int>
             return DiagnosisErrors.MedicalProgramsAreRequired;
         }
 
-        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId && dp.TherapyCardId == null));
+        _diagnosisPrograms.RemoveAll(dp => diagnosisPrograms.All(d => d.medicalProgramId != dp.MedicalProgramId));
 
         foreach (var (medicalProgramId, duration, notes) in diagnosisPrograms)
         {
 
-            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId && dp.TherapyCardId == null);
+            var existing = _diagnosisPrograms.FirstOrDefault(dp => dp.MedicalProgramId == medicalProgramId);
 
             if (existing != null)
             {
@@ -245,5 +244,19 @@ public class Diagnosis : AuditableEntity<int>
             }
         }
         return Result.Updated;
-    }  
+    }
+    public Result<Updated> AssignToSale(Sale sale)
+    {
+        if (DiagnoType != DiagnosisType.Sales)
+        {
+            return DiagnosisErrors.SaleAssignOnlyForSaleDiagnosis;
+        }
+        
+        if (sale is null)
+        {
+            return DiagnosisErrors.SaleIsRequired;
+        }
+        Sale = sale;
+        return Result.Updated;
+    }
 }

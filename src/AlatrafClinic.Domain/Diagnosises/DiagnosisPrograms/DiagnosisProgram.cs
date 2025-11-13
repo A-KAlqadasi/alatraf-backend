@@ -13,8 +13,8 @@ public class DiagnosisProgram : AuditableEntity<int>
     public int MedicalProgramId { get; private set; }
     public MedicalProgram? MedicalProgram { get; set; }
     public int Duration { get; private set; }
-    public string? Notes { get; private set; }
-    public int? TherapyCardId { get; private set; }
+    public string? Notes { get; private set; } = null;
+    public int? TherapyCardId { get; private set; } = null;
     public TherapyCard? TherapyCard { get; set; }
 
     public ICollection<SessionProgram> SessionPrograms { get; set; } = new List<SessionProgram>();
@@ -89,15 +89,4 @@ public class DiagnosisProgram : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignTherapyCard(TherapyCard therapyCard)
-    {
-        if (therapyCard is null)
-        {
-            return DiagnosisProgramErrors.TherapyCardIsRequired;
-        }
-        
-        TherapyCard = therapyCard;
-        TherapyCardId = therapyCard.Id;
-        return Result.Updated;
-    }
 }

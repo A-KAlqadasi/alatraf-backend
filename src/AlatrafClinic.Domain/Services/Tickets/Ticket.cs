@@ -10,9 +10,10 @@ namespace AlatrafClinic.Domain.Services.Tickets;
 public class Ticket : AuditableEntity<int>
 {
     public int PatientId { get; private set; }
-    public Patient? Patient { get; set; }
+    public Patient Patient { get; private set; } = default!;
     public int ServiceId { get; private set; }
-    public Service? Service { get; set; }
+    public Service Service { get; private set; } = default!;
+    public decimal? ServicePrice { get; private set; } = null;
     public TicketStatus Status { get; private set; } = TicketStatus.New;
     public bool IsEditable => Status != TicketStatus.Completed && Status != TicketStatus.Cancelled;
 
@@ -20,43 +21,50 @@ public class Ticket : AuditableEntity<int>
     public Appointment? Appointment { get; set; }
     private Ticket() { }
 
-    private Ticket(int patientId, int serviceId)
+    private Ticket(Patient patient, Service service)
     {
-        PatientId = patientId;
-        ServiceId = serviceId;
+        Patient = patient;
+        PatientId = patient.Id;
+        Service = service;
+        ServicePrice = service.Price;
+        ServiceId = service.Id;
     }
-    public static Result<Ticket> Create(int patientId, int serviceId)
+    public static Result<Ticket> Create(Patient patient, Service service)
     {
-        if (patientId <= 0)
+        if (patient is null)
         {
-            return TicketErrors.PatientIdIsRequired;
+            return TicketErrors.PatientIsRequired;
         }
 
-        if (serviceId <= 0)
+        if (service is null)
         {
-            return TicketErrors.ServiceIdIsRequired;
+            return TicketErrors.ServiceIsRequired;
         }
 
-        return new Ticket(patientId, serviceId);
+        return new Ticket(patient, service);
     }
-    public Result<Updated> Update(int patientId, int serviceId)
+
+    public Result<Updated> Update(Patient patient, Service service)
     {
         if (!IsEditable)
         {
             return TicketErrors.ReadOnly;
         }
         
-        if (patientId <= 0)
+        if (patient is null)
         {
-            return TicketErrors.PatientIdIsRequired;
+            return TicketErrors.PatientIsRequired;
         }
 
-        if (serviceId <= 0)
+        if (service is null)
         {
-            return TicketErrors.ServiceIdIsRequired;
+            return TicketErrors.ServiceIsRequired;
         }
-        PatientId = patientId;
-        ServiceId = serviceId;
+        Patient = patient;
+        PatientId = patient.Id;
+        Service = service;
+        ServiceId = service.Id;
+        ServicePrice = service.Price;
 
         return Result.Updated;
     }
