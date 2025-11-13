@@ -95,15 +95,18 @@ public class Item : AuditableEntity<int>
     }
 
 
-    public Result<Updated> Deactivate()
+    public Result<Updated> Deactivate(decimal existingStock)
     {
         if (!IsActive)
             return ItemErrors.AlreadyInactive;
 
-        IsActive = false;
+        if (existingStock > 0)
+            return ItemErrors.CannotDeactivateWithExistingStock;
 
+        IsActive = false;
         return Result.Updated;
     }
+
 
     public Result<Updated> Activate()
     {
