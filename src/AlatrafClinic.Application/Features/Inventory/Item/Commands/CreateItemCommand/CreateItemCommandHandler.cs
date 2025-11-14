@@ -32,7 +32,7 @@ public class CreateItemCommandHandler : IRequestHandler<CreateItemCommand, Resul
             return ItemErrors.BaseUnitIsRequired;
 
         
-        var createResult = Item.Create(request.Name, baseUnit, request.Description);
+        var createResult =  Domain.Inventory.Items.Item.Create(request.Name, baseUnit, request.Description);
         if (createResult.IsError)
             return createResult.Errors;
 

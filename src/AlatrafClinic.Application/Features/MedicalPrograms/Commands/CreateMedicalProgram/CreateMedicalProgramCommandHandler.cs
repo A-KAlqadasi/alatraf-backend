@@ -26,11 +26,18 @@ public class CreateMedicalProgramCommandHandler : IRequestHandler<CreateMedicalP
     }
     public async Task<Result<MedicalProgramDto>> Handle(CreateMedicalProgramCommand command, CancellationToken ct)
     {
+        var isExists = await _unitOfWork.MedicalPrograms.IsExistsByName(command.Name, ct);
+        if (isExists)
+        {
+            _logger.LogWarning("Medical program {name} already exists", command.Name);
+            return MedicalProgramErrors.NameAlreadyExists;
+        }
+
         var medicalProgramResult = MedicalProgram.Create(command.Name, command.Description, command.SectionId);
 
         if (medicalProgramResult.IsError)
         {
-            _logger.LogWarning("Failed to create medical program: {Error}", medicalProgramResult.Errors);
+            _logger.LogError("Failed to create medical program: {Error}", medicalProgramResult.Errors);
             return medicalProgramResult.TopError;
         }
 

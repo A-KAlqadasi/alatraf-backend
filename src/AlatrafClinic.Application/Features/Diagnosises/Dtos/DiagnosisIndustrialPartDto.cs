@@ -9,4 +9,8 @@ public class DiagnosisIndustrialPartDto
     public string UnitName { get; set; } = string.Empty;
     public int Quantity { get; set; }
     public decimal Price { get; set; }
+    public int? DoctorSectionRoomId { get; set; }
+    public string? DoctorSectionName { get; set; }
+    public DateTime? DoctorAssignedDate { get; set; }
+    public decimal TotalPrice { get; set; }
 }

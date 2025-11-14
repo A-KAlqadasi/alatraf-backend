@@ -41,7 +41,7 @@ public class DeactivateItemCommandHandler : IRequestHandler<DeactivateItemComman
             Description = item.Description,
             IsActive = item.IsActive,
             BaseUnitId = item.BaseUnitId,
-            BaseUnitName = item.BaseUnit.Name!
+            BaseUnitName = item.BaseUnit.Name
         };
     }
 }

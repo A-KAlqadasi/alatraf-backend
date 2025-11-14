@@ -8,7 +8,7 @@ namespace AlatrafClinic.Domain.Inventory.Items;
 public class ItemUnit : AuditableEntity<int>
 {
     public int ItemId { get; private set; }
-    // public Item Item { get; private set; } = default!;
+    public Item Item { get; private set; } = default!;
     public int UnitId { get; private set; }
     public Unit Unit { get; private set; } = default!;
     public decimal Price { get; private set; }

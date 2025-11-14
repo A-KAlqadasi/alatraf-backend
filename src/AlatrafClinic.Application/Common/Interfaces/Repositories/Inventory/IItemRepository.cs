@@ -11,7 +11,4 @@ public interface IItemRepository : IGenericRepository<Item, int>
     Task<IEnumerable<Item>> GetInactiveAsync(CancellationToken cancellationToken);
     Task<Item?> GetByIdWithUnitsAsync(int id, CancellationToken cancellationToken);
     Task<PagedResult<Item>> SearchAsync(ItemSearchSpec spec, CancellationToken cancellationToken);
-
-
-
 }
