@@ -8,17 +8,17 @@ namespace AlatrafClinic.Domain.Inventory.Items;
 public class ItemUnit : AuditableEntity<int>
 {
     public int ItemId { get; private set; }
-    public Item Item { get; private set; } = default!;
+    // public Item Item { get; private set; } = default!;
     public int UnitId { get; private set; }
     public Unit Unit { get; private set; } = default!;
     public decimal Price { get; private set; }
     public decimal? MinPriceToPay { get; private set; }
     public decimal? MaxPriceToPay { get; private set; }
     public decimal ConversionFactor { get; private set; } = 1;
-    public decimal Quantity => _storeItemUnits.Sum(itu => itu.Quantity);
+    // public decimal Quantity => _storeItemUnits.Sum(itu => itu.Quantity);
 
-    private readonly List<StoreItemUnit> _storeItemUnits = new();
-    public IReadOnlyCollection<StoreItemUnit> StoreItemUnits => _storeItemUnits.AsReadOnly();
+    // private readonly List<StoreItemUnit> _storeItemUnits = new();
+    // public IReadOnlyCollection<StoreItemUnit> StoreItemUnits => _storeItemUnits.AsReadOnly();
 
     private ItemUnit() { }
 
@@ -76,5 +76,5 @@ public class ItemUnit : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public decimal ToBaseQuantity() => Quantity * ConversionFactor;
+    public decimal ToBaseQuantity(decimal quantity) => quantity * ConversionFactor;
 }

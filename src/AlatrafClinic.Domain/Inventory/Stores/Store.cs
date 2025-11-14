@@ -52,5 +52,7 @@ public class Store : AuditableEntity<int>
         _storeItemUnits.Add(newStoreItem.Value);
         return Result.Updated;
     }
+    public decimal GetTotalQuantity() => _storeItemUnits.Sum(i => i.Quantity);
+
 }
 

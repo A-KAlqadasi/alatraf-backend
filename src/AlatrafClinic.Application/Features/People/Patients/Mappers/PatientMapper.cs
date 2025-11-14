@@ -6,7 +6,7 @@ using AlatrafClinic.Domain.Patients;
 
 namespace AlatrafClinic.Application.Features.People.Patients.Mappers;
 
-public static class PatientMapper
+public static class PatientMapper 
 {
     public static PatientDto ToDto(this Patient entity)
     {
