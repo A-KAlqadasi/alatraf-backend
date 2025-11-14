@@ -17,11 +17,10 @@ public sealed class GetSectionsQueryHandler(
   {
     var sections = await _unitOfWork.Sections.GetAllSectionsFilteredAsync(
         request.DepartmentId,
+        request.IsActiveDoctors,
         request.SearchTerm,
         ct
     );
-
-    ;
 
     return sections.ToDtos();
   }

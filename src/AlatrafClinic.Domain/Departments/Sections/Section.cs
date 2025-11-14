@@ -16,7 +16,7 @@ public class Section :AuditableEntity<int>
     public IReadOnlyCollection<Room> Rooms => _rooms.AsReadOnly();
     private readonly List<DoctorSectionRoom> _doctorAssignments = new();
 
-     public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
+    public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
 
     private Section() { }
 

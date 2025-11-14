@@ -16,4 +16,5 @@ public sealed class DoctorListItemDto
 
   public DateTime? AssignDate { get; set; }
   public bool IsActiveAssignment { get; set; }
+  
 }

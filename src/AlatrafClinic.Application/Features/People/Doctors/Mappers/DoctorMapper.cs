@@ -29,18 +29,43 @@ public static class DoctorMapper
     {
         return entities.Select(e => e.ToDto()).ToList();
     }
-    public static DoctorSectionRoomDto ToDto(this DoctorSectionRoom entity)
+
+    public static TechnicianDto ToTechnicianDto(this DoctorSectionRoom entity)
     {
-        return new DoctorSectionRoomDto
+        ArgumentNullException.ThrowIfNull(entity);
+
+        return new TechnicianDto
         {
             DoctorSectionRoomId = entity.Id,
-            Doctor = entity.Doctor.ToDto(),
-            Section = entity.Section.ToDto(),
-            Room = entity.Room?.ToDto(),
-            IsActive = entity.IsActive,
-            AssignDate = entity.AssignDate,
-            EndAssignDate = entity.EndDate
+            DoctorId = entity.DoctorId,
+            DoctorName = entity.Doctor.Person?.FullName ?? string.Empty,
+            SectionId = entity.SectionId,
+            SectionName = entity.Section.Name,
+            TodayIndustrialParts = entity.Doctor.TodayIndustrialPartsCount
         };
     }
-    
+    public static List<TechnicianDto> ToTechnicianDtos(this IEnumerable<DoctorSectionRoom> entities)
+    {
+        return entities.Select(e => e.ToTechnicianDto()).ToList();
+    }
+    public static TherapistDto ToTherapistDto(this DoctorSectionRoom entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        return new TherapistDto
+        {
+            DoctorSectionRoomId = entity.Id,
+            DoctorId = entity.DoctorId,
+            DoctorName = entity.Doctor.Person?.FullName ?? string.Empty,
+            SectionId = entity.SectionId,
+            SectionName = entity.Section.Name,
+            TodaySessions = entity.Doctor.TodaySessionsCount,
+            RoomId = entity?.RoomId ?? 0,
+            RoomName = entity?.Room?.Name ?? string.Empty,
+        };
+    }
+    public static List<TherapistDto> ToTherapistDtos(this IEnumerable<DoctorSectionRoom> entities)
+    {
+        return entities.Select(e => e.ToTherapistDto()).ToList();
+    }
 }

@@ -25,7 +25,7 @@ public class GetDoctorsWithCurrentAssignmentQueryHandler
   public async Task<Result<PaginatedList<DoctorListItemDto>>> Handle(GetDoctorsWithCurrentAssignmentQuery query, CancellationToken ct)
   {
     // base query
-    var doctorQuery = await _uow.Doctors.GetDoctorsQueryAsync(); // should return IQueryable<Doctor> with includes or projection base
+    var doctorQuery = await _uow.Doctors.GetDoctorsQueryAsync();
     doctorQuery = ApplyFilters(doctorQuery, query);
 
     if (!string.IsNullOrWhiteSpace(query.Search))

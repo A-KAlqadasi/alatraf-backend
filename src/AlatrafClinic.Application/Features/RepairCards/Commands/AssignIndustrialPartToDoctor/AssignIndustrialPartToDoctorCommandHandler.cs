@@ -49,21 +49,23 @@ public class AssignIndustrialPartToDoctorCommandHandler : IRequestHandler<Assign
                 return DiagnosisIndustrialPartErrors.DiagnosisIndustrialPartAlreadyAssignedToDoctor;
             }
             
-            var doctorSectionRoom = await _unitOfWork.DoctorSectionRooms.GetByIdAsync(doctorPart.DoctorSectionRoomId, ct);
+            var doctorSectionRoom = await _unitOfWork.DoctorSectionRooms.GetActiveAssignmentByDoctorAndSectionIdsAsync(doctorPart.DoctorId, doctorPart.SectionId, ct);
 
             if (doctorSectionRoom is null)
             {
-                _logger.LogError("Doctor section room with id {DoctorSectionRoomId} not found", doctorPart.DoctorSectionRoomId);
+                _logger.LogError("Section {sectionId} doesn't have active assignement for doctor {doctorId}", doctorPart.SectionId, doctorPart.DoctorId);
+
                 return DoctorSectionRoomErrors.DoctorSectionRoomNotFound;
             }
 
             if (!doctorSectionRoom.IsActive)
             {
-                _logger.LogError("Doctor section room with id {DoctorSectionRoomId} is not active", doctorPart.DoctorSectionRoomId);
+                _logger.LogError("Doctor {doctorId}, dons't have active assignement in section {sectionId}", doctorPart.DoctorId, doctorPart.SectionId);
+
                 return DoctorSectionRoomErrors.AssignmentAlreadyEnded;
             }
 
-            repairCard.AssignSpecificIndustrialPartToDoctor(doctorPart.DiagnosisIndustrialPartId, doctorPart.DoctorSectionRoomId);
+            repairCard.AssignSpecificIndustrialPartToDoctor(doctorPart.DiagnosisIndustrialPartId, doctorSectionRoom.Id);
         }
         
         await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);

@@ -6,4 +6,4 @@ namespace AlatrafClinic.Application.Features.RepairCards.Commands.AssignIndustri
 
 public sealed record DoctorIndustrialPartCommand(
     int DiagnosisIndustrialPartId,
-    int DoctorSectionRoomId) : IRequest<Result<Success>>;
+    int DoctorId, int SectionId) : IRequest<Result<Success>>;
