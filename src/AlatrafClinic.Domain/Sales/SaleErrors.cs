@@ -22,4 +22,6 @@ public static class SaleErrors
     public static readonly Error QuantityExceedsAvailable = Error.Validation("Sale.QuantityExceedsAvailable", "One or more items exceed available quantity in store.");
     public static readonly Error ExitCardAlreadyAssigned = Error.Validation("Sale.ExitCardAlreadyAssigned", "Exit card is already assigned to this sale.");
     public static readonly Error SaleItemsAreRequired = Error.Validation("Sale.SaleItemsAreRequired", "At least one sale item is required.");
+    public static readonly Error SaleNotFound = Error.NotFound("Sale.NotFound", "Sale not found.");
+    public static readonly Error Readonly = Error.Conflict("Sale.Readonly", "Sale is read-only");
 }

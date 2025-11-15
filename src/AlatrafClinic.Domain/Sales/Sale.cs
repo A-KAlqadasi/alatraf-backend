@@ -26,7 +26,7 @@ public class Sale : AuditableEntity<int>
 
     public ExchangeOrder? ExchangeOrder { get; private set; }
     public decimal Total => _saleItems.Sum(i => i.Total);
-    public string? Notes { get; private set; }
+    public string? Notes { get; set; }
 
     private Sale() { }
 
