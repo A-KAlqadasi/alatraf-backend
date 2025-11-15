@@ -6,29 +6,29 @@ namespace AlatrafClinic.Domain.Payments.DisabledPayments;
 
 public class DisabledPayment : AuditableEntity<int>
 {
-    public int? DisabledCardId { get; set; }
+    public int DisabledCardId { get; private set; }
     public DisabledCard? DisabledCard { get; set; }
-    public int? PaymentId { get; set; }
+    public int PaymentId { get; private set; }
     public Payment? Payment { get; set; }
     private DisabledPayment()
     {
     }
 
-    private DisabledPayment(int? disabledCardId, int? paymentId)
+    private DisabledPayment(int disabledCardId, int paymentId)
     {
         DisabledCardId = disabledCardId;
         PaymentId = paymentId;
     }
 
     public static Result<DisabledPayment> Create(
-        int? disabledCardId,
-        int? paymentId)
+        int disabledCardId,
+        int paymentId)
     {
-        if (disabledCardId is null || disabledCardId <= 0)
+        if (disabledCardId <= 0)
         {
             return DisabledPaymentsErrors.DisabledCardIdIsRequired;
         }
-        if (paymentId is null || paymentId <= 0)
+        if (paymentId <= 0)
         {
             return DisabledPaymentsErrors.PaymentIdIsRequired;
         }
@@ -39,15 +39,15 @@ public class DisabledPayment : AuditableEntity<int>
     }
     
     public Result<Updated> Updated(
-        int? disabledCardId,
-        int? paymentId)
+        int disabledCardId,
+        int paymentId)
     {
-        if (disabledCardId is null || disabledCardId <= 0)
+        if (disabledCardId <= 0)
         {
             return DisabledPaymentsErrors.DisabledCardIdIsRequired;
         }
 
-        if (paymentId is null || paymentId <= 0)
+        if (paymentId <= 0)
         {
             return DisabledPaymentsErrors.PaymentIdIsRequired;
         }

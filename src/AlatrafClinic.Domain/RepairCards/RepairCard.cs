@@ -8,7 +8,6 @@ using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards.DeliveryTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
-using AlatrafClinic.Domain.TherapyCards.Enums;
 
 
 namespace AlatrafClinic.Domain.RepairCards;
@@ -19,8 +18,10 @@ public class RepairCard : AuditableEntity<int>
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
-    public int? PaymentId { get; private set; }
-    public Payment? Payment { get; set; }
+
+    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsFullyPaid);
+    public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
+
     public ExitCard? ExitCard { get; set; }
     public string? Notes { get; private set; }
     public decimal TotalCost => _diagnosisIndustrialParts.Sum(part => part.Price * part.Quantity);
@@ -218,22 +219,6 @@ public class RepairCard : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> AssignPayment(Payment payment)
-    {
-        if (!IsEditable)
-            return RepairCardErrors.Readonly;
-
-        if (payment is null)
-            return RepairCardErrors.InvalidPayment;
-
-        if (payment.Type != PaymentType.Repair)
-            return RepairCardErrors.InvalidPaymentType;
-
-        PaymentId = payment.Id;
-        Payment = payment;
-
-        return Result.Updated;
-    }
     public Result<Updated> AssignOrder(Order order)
     {
         if (!IsEditable) return RepairCardErrors.Readonly;
