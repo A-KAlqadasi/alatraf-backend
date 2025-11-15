@@ -11,4 +11,5 @@ public class SaleDto
     public DateTime SaleDate { get; set; }
     public decimal Total { get; set; }
     public List<SaleItemDto> SaleItems { get; set; } = new();
+    
 }
