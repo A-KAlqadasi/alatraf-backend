@@ -74,24 +74,24 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 
         var incoming = new List<(int industrialPartUnitId, int quantity, decimal price)>();
 
-        foreach (var (partId, unitId, quantity, price) in command.IndustrialParts)
+        foreach (var part in command.IndustrialParts)
         {
-            var partUnit = await _unitOfWork.IndustrialParts.GetByIdAndUnitId(partId, unitId, ct);
+            var partUnit = await _unitOfWork.IndustrialParts.GetByIdAndUnitId(part.IndustrialPartId, part.UnitId, ct);
             if (partUnit is null)
             {
-                _logger.LogError("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", partId, unitId);
+                _logger.LogError("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", part.IndustrialPartId, part.UnitId);
 
                 return IndustrialPartUnitErrors.IndustrialPartUnitNotFound;
             }
 
-            if (price != partUnit.PricePerUnit)
+            if (part.Price != partUnit.PricePerUnit)
             {
-                _logger.LogError("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", price, partUnit.PricePerUnit);
+                _logger.LogError("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", part.Price, partUnit.PricePerUnit);
 
                 return IndustrialPartUnitErrors.InconsistentPrice;
             }
 
-            incoming.Add((partUnit.Id, quantity, price));
+            incoming.Add((partUnit.Id, part.Quantity, part.Price));
         }
 
         var upsertDiagnosisPartsResult = updatedDiagnosis.UpsertDiagnosisIndustrialParts(incoming);

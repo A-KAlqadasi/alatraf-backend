@@ -15,4 +15,6 @@ public static class DoctorSectionRoomErrors
 
     public static readonly Error AssignmentAlreadyEnded =
         Error.Validation("DoctorSectionRoom.AssignmentAlreadyEnded", "The assignment has already ended.");
+    public static readonly Error DoctorSectionRoomNotFound =
+        Error.NotFound("DoctorSectionRoom.NotFound", "Doctor section room not found.");
 }

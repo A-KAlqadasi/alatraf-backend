@@ -10,7 +10,7 @@ public static class UnitMapper
         return new UnitDto
         {
             Id = unit.Id,
-            Name = unit.Name!
+            Name = unit.Name
         };
 
     }

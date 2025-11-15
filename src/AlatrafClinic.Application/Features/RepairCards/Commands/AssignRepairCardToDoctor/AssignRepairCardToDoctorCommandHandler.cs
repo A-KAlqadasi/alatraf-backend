@@ -1,6 +1,7 @@
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
@@ -29,8 +30,23 @@ public class AssignRepairCardToDoctorCommandHandler : IRequestHandler<AssignRepa
         }
 
         // here I will check from section room Id if active
+        var doctorSectionRoom = await _unitOfWork.DoctorSectionRooms.GetActiveAssignmentByDoctorAndSectionIdsAsync(command.DoctorId, command.SectionId, ct);
+        if (doctorSectionRoom is null)
+        {
+           _logger.LogError("Section {sectionId} doesn't have active assignement for doctor {doctorId}", command.SectionId, command.DoctorId);
 
-        var result = repairCard.AssignRepairCardToDoctor(command.DoctorSectionRoomId);
+            return DoctorSectionRoomErrors.DoctorSectionRoomNotFound;
+        }
+
+        if (!doctorSectionRoom.IsActive)
+        {
+            _logger.LogError("Doctor {doctorId}, dons't have active assignement in section {sectionId}", command.DoctorId, command.SectionId);
+
+            return DoctorSectionRoomErrors.AssignmentAlreadyEnded;
+        }
+
+        var result = repairCard.AssignRepairCardToDoctor(doctorSectionRoom.Id);
+        
         if (result.IsError)
         {
             _logger.LogError("Failed to assign repair card with Id {repairCardId} to doctor", command.RepairCardId);
@@ -41,7 +57,7 @@ public class AssignRepairCardToDoctorCommandHandler : IRequestHandler<AssignRepa
         await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
-        _logger.LogInformation("Repair card {repairCardId} assigned to doctorSectionId {doctorSectionId}", command.RepairCardId, command.DoctorSectionRoomId);
+        _logger.LogInformation("Repair card {repairCardId} assigned to doctorSectionId {doctorSectionId}", command.RepairCardId, doctorSectionRoom.Id);
 
         return Result.Updated;
     }

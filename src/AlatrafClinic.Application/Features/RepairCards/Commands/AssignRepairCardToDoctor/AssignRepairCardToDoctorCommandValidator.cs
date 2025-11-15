@@ -8,7 +8,9 @@ public class AssignRepairCardToDoctorCommandValidator : AbstractValidator<Assign
     {
         RuleFor(x => x.RepairCardId)
             .GreaterThan(0).WithMessage("Repair card is invalid");
-        RuleFor(x => x.DoctorSectionRoomId)
-            .GreaterThan(0).WithMessage("Doctor section Id is invalid");
+        RuleFor(x => x.DoctorId)
+            .GreaterThan(0).WithMessage("Doctor Id is invalid");
+        RuleFor(x => x.SectionId)
+            .GreaterThan(0).WithMessage("Section Id is invalid");
     }
 }

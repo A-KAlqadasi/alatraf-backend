@@ -23,7 +23,7 @@ public sealed class GetInactiveItemsQueryHandler : IRequestHandler<GetInactiveIt
     {
         _logger.LogInformation("Fetching inactive items...");
 
-        var inactiveItems = await _unitOfWork.Item.GetInactiveAsync(cancellationToken);
+        var inactiveItems = await _unitOfWork.Items.GetInactiveAsync(cancellationToken);
 
         if (inactiveItems is null || !inactiveItems.Any())
         {

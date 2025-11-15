@@ -1,18 +1,21 @@
 using AlatrafClinic.Domain.AccountTypes;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
 using AlatrafClinic.Domain.Payments.PatientPayments;
 using AlatrafClinic.Domain.Payments.WoundedPayments;
 
 namespace AlatrafClinic.Domain.Payments;
 
-   public sealed class Payment : AuditableEntity<int>
+public sealed class Payment : AuditableEntity<int>
 {
     public decimal TotalAmount { get; private set; }
     public decimal? PaidAmount { get; private set; }
     public decimal? Discount { get; private set; }
-
+    public int DiagnosisId { get; private set; }
+    public Diagnosis Diagnosis { get; set; } = default!;
+    
     public int AccountId { get; private set; }
     public AccountType AccountType { get; private set; } = default!;
     public PaymentType Type { get; private set; }
@@ -27,8 +30,9 @@ namespace AlatrafClinic.Domain.Payments;
 
     private Payment() { }
 
-    private Payment(decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    private Payment(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
     {
+        DiagnosisId = diagnosisId;
         TotalAmount = total;
         PaidAmount = paid;
         Discount = discount;
@@ -36,45 +40,56 @@ namespace AlatrafClinic.Domain.Payments;
         Type = type;
     }
 
- 
-    public static Result<Payment> Create(decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    public static Result<Payment> Create(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
     {
-        if (total <= 0)
-            return PaymentErrors.InvalidTotal;
+        if (diagnosisId <= 0) { return PaymentErrors.InvalidDiagnosisId; }
+        
+        if (total <= 0) { return PaymentErrors.InvalidTotal; }
+            
+        if (paid is < 0) { return PaymentErrors.InvalidPaid; }
+            
+        if (discount is < 0) { return PaymentErrors.InvalidDiscount; }
 
-        if (paid is < 0)
-            return PaymentErrors.InvalidPaid;
+        if ((paid ?? 0) + (discount ?? 0) > total) { return PaymentErrors.OverPayment; }
 
-        if (discount is < 0)
-            return PaymentErrors.InvalidDiscount;
-
-        if ((paid ?? 0) + (discount ?? 0) > total)
-            return PaymentErrors.OverPayment;
-
-        return new Payment(total, paid, discount, accountId, type);
+        return new Payment(diagnosisId, total, paid, discount, accountId, type);
     }
 
-    public Result<Updated> UpdateAmounts(decimal total, decimal? paid, decimal? discount)
+    public Result<Updated> Update(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
     {
+        if (diagnosisId <= 0)
+        {
+            return PaymentErrors.InvalidDiagnosisId;
+        }
+
         if (total <= 0)
+        {
             return PaymentErrors.InvalidTotal;
+        }
 
         if (paid is < 0)
+        {
             return PaymentErrors.InvalidPaid;
+        }
 
         if (discount is < 0)
+        {
             return PaymentErrors.InvalidDiscount;
+        }
 
         if ((paid ?? 0) + (discount ?? 0) > total)
             return PaymentErrors.OverPayment;
 
+        AccountId = accountId;
+        Type = type;
+        DiagnosisId = diagnosisId;
         TotalAmount = total;
         PaidAmount = paid;
         Discount = discount;
 
         return Result.Updated;
     }
-
+ 
     public Result<Updated> AddPaidAmount(decimal amount)
     {
         if (amount <= 0)

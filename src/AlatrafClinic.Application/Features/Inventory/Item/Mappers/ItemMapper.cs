@@ -14,7 +14,7 @@ public static class ItemMapper
             Description = item.Description,
             IsActive = item.IsActive,
             BaseUnitId = item.BaseUnitId,
-            BaseUnitName = item.BaseUnit.Name!,
+            BaseUnitName = item.BaseUnit.Name,
             Units = item.ItemUnits.Select(u => new ItemUnitDto
             {
                 UnitId = u.UnitId,

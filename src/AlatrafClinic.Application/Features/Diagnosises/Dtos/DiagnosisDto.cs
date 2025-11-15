@@ -1,6 +1,7 @@
-using System.Security.Cryptography.X509Certificates;
-
 using AlatrafClinic.Application.Features.People.Patients.Dtos;
+using AlatrafClinic.Application.Features.RepairCards.Dtos;
+using AlatrafClinic.Application.Features.Sales.Dtos;
+using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 
 namespace AlatrafClinic.Application.Features.Diagnosises.Dtos;

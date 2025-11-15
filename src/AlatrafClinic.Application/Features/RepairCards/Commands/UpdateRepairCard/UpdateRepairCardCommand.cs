@@ -13,6 +13,6 @@ public sealed record UpdateRepairCardCommand(
     List<int> InjurySides,
     List<int> InjuryTypes,
     int PatientId,
-    List<(int industrialPartId, int unitId, int quantity, decimal price)> IndustrialParts,
+    List<UpdateRepairCardIndustrialPartCommand> IndustrialParts,
     string? Notes = null
 ) : IRequest<Result<Updated>>;

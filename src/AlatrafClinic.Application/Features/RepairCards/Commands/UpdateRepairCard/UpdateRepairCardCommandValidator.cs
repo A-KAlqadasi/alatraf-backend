@@ -21,5 +21,7 @@ public class UpdateRepairCardCommandValidator : AbstractValidator<UpdateRepairCa
             .GreaterThan(0).WithMessage("InjurySides must contain valid side IDs.");
         RuleForEach(x => x.InjuryTypes)
             .GreaterThan(0).WithMessage("InjuryTypes must contain valid type IDs.");
+        RuleForEach(x => x.IndustrialParts)
+            .SetValidator(new UpdateRepairCardIndustrialPartCommandValidator());
     }
 }

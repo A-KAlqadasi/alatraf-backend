@@ -22,7 +22,7 @@ public sealed class GetItemsWithUnitsQueryHandler : IRequestHandler<GetItemsWith
         _logger.LogInformation("Fetching all items with their units...");
 
         // نفترض أن الريبو يحتوي على دالة مخصصة لجلب العناصر مع الوحدات
-        var items = await _unitOfWork.Item.GetAllWithUnitsAsync(cancellationToken);
+        var items = await _unitOfWork.Items.GetAllWithUnitsAsync(cancellationToken);
 
         if (items is null || !items.Any())
         {

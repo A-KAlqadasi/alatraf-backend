@@ -44,7 +44,7 @@ public record ActivateItemCommandHandler : IRequestHandler<ActivateItemCommand, 
             Description = item.Description,
             IsActive = item.IsActive,
             BaseUnitId = item.BaseUnitId,
-            BaseUnitName = item.BaseUnit.Name!
+            BaseUnitName = item.BaseUnit.Name
         };
     }
 }

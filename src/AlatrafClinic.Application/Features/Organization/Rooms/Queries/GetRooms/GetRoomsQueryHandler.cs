@@ -17,6 +17,7 @@ public sealed class GetRoomsQueryHandler(
   {
     var rooms = await _unitOfWork.Rooms.GetAllRoomsFilteredAsync(
         request.SectionId,
+        request.isActiveDoctor ,
         request.SearchTerm,
         ct
     );

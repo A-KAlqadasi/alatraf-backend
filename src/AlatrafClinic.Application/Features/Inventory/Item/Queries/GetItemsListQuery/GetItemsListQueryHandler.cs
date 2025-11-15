@@ -22,7 +22,7 @@ public sealed class GetItemsListQueryHandler
     {
         _logger.LogInformation("Fetching all items from database...");
 
-        var items = await _unitOfWork.Item.GetAllAsync(cancellationToken);
+        var items = await _unitOfWork.Items.GetAllAsync(cancellationToken);
 
         if (items is null || !items.Any())
         {

@@ -6,11 +6,12 @@ namespace AlatrafClinic.Application.Features.Organization.Rooms.Queries.GetRooms
 
 public sealed record GetRoomsQuery(
     int? SectionId = null,
+    bool? isActiveDoctor = null,
     string? SearchTerm = null
 ) : ICachedQuery<Result<List<RoomDto>>>
 {
     public string CacheKey =>
-        $"rooms:section={SectionId?.ToString() ?? "all"}:search={SearchTerm?.Trim().ToLower() ?? "all"}";
+        $"rooms:section={SectionId?.ToString() ?? "all"}:search={SearchTerm?.Trim().ToLower() ?? "all"}:active={isActiveDoctor?.ToString() ?? "all"}";
 
     public string[] Tags => ["room"];
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);

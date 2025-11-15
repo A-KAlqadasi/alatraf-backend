@@ -26,4 +26,6 @@ public static class PaymentErrors
 
     public static readonly Error InvalidTypeForRepair =
         Error.Validation("Payment.InvalidTypeForRepair", "Payment type must be 'Repair' to link with a Repair Card.");
+    public static readonly Error InvalidDiagnosisId =
+        Error.Validation("Payment.InvalidDiagnosisId", "Diagnosis Id is invalid.");
 }

@@ -16,7 +16,7 @@ public class Section :AuditableEntity<int>
     public IReadOnlyCollection<Room> Rooms => _rooms.AsReadOnly();
     private readonly List<DoctorSectionRoom> _doctorAssignments = new();
 
-     public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
+    public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
 
     private Section() { }
 
@@ -36,28 +36,28 @@ public class Section :AuditableEntity<int>
 
         return new Section(name, departmentId);
     }
-  public Result<Updated> UpdateName(string newName)
-{
-    if (string.IsNullOrWhiteSpace(newName))
-        return SectionErrors.NameRequired;
-
-    if (Department.Sections.Any(s => s.Id != Id && 
-                                     s.Name.Equals(newName, StringComparison.OrdinalIgnoreCase)))
-        return SectionErrors.DuplicateSectionName;
-
-    Name = newName;
-    return Result.Updated;
-}
-
-    public Result<Room> AddRoom(int number)
+    public Result<Updated> UpdateName(string newName)
     {
-        if (number <= 0)
-            return RoomErrors.InvalidNumber;
+        if (string.IsNullOrWhiteSpace(newName))
+            return SectionErrors.NameRequired;
 
-        if (_rooms.Any(r => r.Number == number))
-            return RoomErrors.DuplicateRoomNumber;
+        if (Department.Sections.Any(s => s.Id != Id && 
+                                        s.Name.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+            return SectionErrors.DuplicateSectionName;
 
-        var result = Room.Create(number, Id);
+        Name = newName;
+        return Result.Updated;
+    }
+
+    public Result<Room> AddRoom(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return RoomErrors.InvalidName;
+
+        if (_rooms.Any(r => r.Name == name))
+            return RoomErrors.DuplicateRoomName;
+
+        var result = Room.Create(name, Id);
         if (result.IsError)
             return result.Errors;
 

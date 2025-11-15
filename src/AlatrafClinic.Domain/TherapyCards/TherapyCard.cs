@@ -1,7 +1,10 @@
+using System.Collections;
+
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 
@@ -14,12 +17,14 @@ public class TherapyCard : AuditableEntity<int>
     public int NumberOfSessions { get; private set; }
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
-    public Diagnosis? Diagnosis { get; set; }
+    public Diagnosis Diagnosis { get; set; } = default!;
+    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId);
+    public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
+    
     public TherapyCardType Type { get; private set; }
     public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
     public decimal? TotalCost => NumberOfSessions * SessionPricePerType;
-    public bool IsPaid => true;
     public bool IsExpired => DateTime.Now > ProgramEndDate;
     public bool IsEditable => IsActive && !IsExpired && !IsPaid && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();

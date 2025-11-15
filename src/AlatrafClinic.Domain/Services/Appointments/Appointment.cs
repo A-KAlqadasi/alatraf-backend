@@ -1,5 +1,3 @@
-using System.Data;
-
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Enums;

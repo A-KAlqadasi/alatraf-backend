@@ -28,7 +28,7 @@ public sealed class GetItemUnitsByItemIdQueryHandler
     {
         _logger.LogInformation("Fetching units for item with ID: {ItemId}", request.ItemId);
 
-        var item = await _unitOfWork.Item.GetByIdWithUnitsAsync(request.ItemId, cancellationToken);
+        var item = await _unitOfWork.Items.GetByIdWithUnitsAsync(request.ItemId, cancellationToken);
         if (item is null)
         {
             _logger.LogWarning("Item with ID {ItemId} not found.", request.ItemId);

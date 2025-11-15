@@ -5,23 +5,23 @@ namespace AlatrafClinic.Domain.Payments.PatientPayments;
 
 public class PatientPayment : AuditableEntity<int>
 {
-    public string? CouponNumber { get; set; }
-    public int? PaymentId { get; set; }
+    public string CouponNumber { get; private set; } = default!;
+    public int PaymentId { get; private set; }
     public Payment? Payment { get; set; }
 
     private PatientPayment() { }
 
     private PatientPayment(
-        string? couponNumber,
-        int? paymentId
+        string couponNumber,
+        int paymentId
     )
     {
         CouponNumber = couponNumber;
         PaymentId = paymentId;
     }
     public static Result<PatientPayment> Create(
-        string? couponNumber,
-        int? paymentId
+        string couponNumber,
+        int paymentId
     )
     {
         if (string.IsNullOrWhiteSpace(couponNumber))
@@ -29,7 +29,7 @@ public class PatientPayment : AuditableEntity<int>
             return PatientPaymentErrors.CouponNumberIsRequired;
         }
 
-        if (paymentId == null || paymentId <= 0)
+        if (paymentId <= 0)
         {
             return PatientPaymentErrors.PaymentIdIsRequired;
         }
@@ -41,8 +41,8 @@ public class PatientPayment : AuditableEntity<int>
     }
 
     public Result<Updated> Update(
-        string? couponNumber,
-        int? paymentId
+        string couponNumber,
+        int paymentId
     )
     {
         if (string.IsNullOrWhiteSpace(couponNumber))
@@ -50,7 +50,7 @@ public class PatientPayment : AuditableEntity<int>
             return PatientPaymentErrors.CouponNumberIsRequired;
         }
 
-        if (paymentId == null || paymentId <= 0)
+        if (paymentId <= 0)
         {
             return PatientPaymentErrors.PaymentIdIsRequired;
         }

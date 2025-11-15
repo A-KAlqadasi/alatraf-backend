@@ -28,6 +28,7 @@ public class DoctorSectionRoom : AuditableEntity<int>
 
     public ICollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts { get; private set; } = new List<DiagnosisIndustrialPart>();
     public ICollection<SessionProgram> SessionPrograms { get; private set; } = new List<SessionProgram>();
+   
 
     private DoctorSectionRoom() { }
 
@@ -81,5 +82,16 @@ public class DoctorSectionRoom : AuditableEntity<int>
         IsActive = false;
         EndDate = DateTime.UtcNow;
         return Result.Updated;
+    }
+
+    public int GetTodayIndustrialPartsCount()
+    {
+        var today = DateTime.UtcNow.Date;
+        return DiagnosisIndustrialParts.Count(dip => dip.CreatedAtUtc.Date == today);
+    }
+    public int GetTodaySessionsCount()
+    {
+        var today = DateTime.UtcNow.Date;
+        return SessionPrograms.Count(sp => sp.CreatedAtUtc.Date == today);
     }
 }

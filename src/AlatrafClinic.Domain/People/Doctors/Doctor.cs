@@ -20,6 +20,10 @@ public class Doctor : AuditableEntity<int>
     public IReadOnlyCollection<DoctorSectionRoom> Assignments => _assignments.AsReadOnly();
     private DoctorSectionRoom? ActiveAssignment => _assignments.FirstOrDefault(a => a.IsActive);
     public DoctorSectionRoom? GetCurrentAssignment() => ActiveAssignment;
+    public int TodayIndustrialPartsCount => ActiveAssignment?.GetTodayIndustrialPartsCount() ?? 0;
+
+    public int TodaySessionsCount => ActiveAssignment?.GetTodaySessionsCount() ?? 0;
+
     public IReadOnlyCollection<DoctorSectionRoom> GetAssignmentHistory() => _assignments.ToList();
 
     private Doctor() { }

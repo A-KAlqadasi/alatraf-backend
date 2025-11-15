@@ -17,8 +17,9 @@ public class Sale : AuditableEntity<int>
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; private set; } = default!;
 
-    public Payment? Payment { get; set; }
-    public int? PaymentId { get; private set; }
+    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId);
+    public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
+
     public ExitCard? ExitCard { get; private set; }
 
     private readonly List<SaleItem> _saleItems = new();
@@ -26,22 +27,24 @@ public class Sale : AuditableEntity<int>
 
     public ExchangeOrder? ExchangeOrder { get; private set; }
     public decimal Total => _saleItems.Sum(i => i.Total);
+    public string? Notes { get; set; }
 
     private Sale() { }
 
-    private Sale(int diagnosisId)
+    private Sale(int diagnosisId, string? notes = null)
     {
         DiagnosisId = diagnosisId;
+        Notes = notes;
     }
 
-    public static Result<Sale> Create(int diagnosisId)
+    public static Result<Sale> Create(int diagnosisId, string? notes = null)
     {
         if (diagnosisId <= 0)
         {
             return SaleErrors.InvalidDiagnosisId;
         }
 
-        return new Sale(diagnosisId);
+        return new Sale(diagnosisId, notes);
     }
 
     public Result<Updated> UpsertItems(List<(ItemUnit itemUnit, decimal quantity)> newItems)
@@ -78,22 +81,13 @@ public class Sale : AuditableEntity<int>
 
         return Result.Updated;
     }
-    
-    public Result<Updated> AssignPayment(Payment payment)
-    {
-        if (Status != SaleStatus.Draft) return SaleErrors.NotDraft;
-        if (payment is null)            return SaleErrors.InvalidPayment;
-        Payment = payment;
-        PaymentId = payment.Id;
-        return Result.Updated;
-    }
 
     public Result<Updated> Post(string exchangeOrderNumber, List<(StoreItemUnit StoreItemUnit, decimal Quantity)> items, string? notes = null)
     {
         if (Status == SaleStatus.Posted)    return SaleErrors.AlreadyPosted;
         if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
 
-        if (Payment is null) return SaleErrors.PaymentRequired;
+        if (!IsPaid) return SaleErrors.PaymentRequired;
         if (_saleItems.Count == 0) return SaleErrors.NoItems;
 
         if (string.IsNullOrWhiteSpace(exchangeOrderNumber))

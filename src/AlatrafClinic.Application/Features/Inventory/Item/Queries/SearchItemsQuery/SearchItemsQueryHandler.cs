@@ -40,7 +40,7 @@ public sealed class SearchItemsQueryHandler : IRequestHandler<SearchItemsQuery, 
         );
 
         // ✅ تنفيذ الاستعلام عبر الـ Repository
-        var result = await _unitOfWork.Item.SearchAsync(spec, cancellationToken);
+        var result = await _unitOfWork.Items.SearchAsync(spec, cancellationToken);
 
         if (!result.Items.Any())
         {

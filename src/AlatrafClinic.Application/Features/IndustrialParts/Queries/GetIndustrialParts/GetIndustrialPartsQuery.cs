@@ -1,0 +1,22 @@
+using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Application.Common.Models;
+using AlatrafClinic.Application.Features.IndustrialParts.Dtos;
+using AlatrafClinic.Domain.Common.Results;
+
+namespace AlatrafClinic.Application.Features.IndustrialParts.Queries.GetIndustrialParts;
+public sealed record GetIndustrialPartsQuery(
+    int Page,
+    int PageSize,
+    string? SearchTerm = null,
+    string SortColumn = "name",
+    string SortDirection = "asc"
+) : ICachedQuery<Result<PaginatedList<IndustrialPartDto>>>
+{
+    public string CacheKey =>
+        $"industrialparts:p={Page}:ps={PageSize}" +
+        $":q={(SearchTerm ?? "-")}" +
+        $":sort={SortColumn}:{SortDirection}";
+
+    public string[] Tags => ["industrialpart"];
+    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+}

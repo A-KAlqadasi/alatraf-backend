@@ -1,6 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
-using AlatrafClinic.Application.Features.Inventory.Items.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 

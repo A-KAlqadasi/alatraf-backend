@@ -1,5 +1,8 @@
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.People.Patients.Mappers;
+using AlatrafClinic.Application.Features.RepairCards.Dtos;
+using AlatrafClinic.Application.Features.Sales.Dtos;
+using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
@@ -110,12 +113,16 @@ public static class DiagnosisMapper
         => parts.Select(part => new DiagnosisIndustrialPartDto
         {
             DiagnosisIndustrialPartId = part.Id,
-            IndustrialPartId          = part.IndustrialPartUnit?.IndustrialPartId ?? 0,
-            PartName                  = part.IndustrialPartUnit?.IndustrialPart?.Name ?? string.Empty,
-            UnitId                    = part.IndustrialPartUnit?.UnitId ?? 0,
-            UnitName                  = part.IndustrialPartUnit?.Unit?.Name ?? string.Empty,
-            Quantity                  = part.Quantity,
-            Price                     = part.Price
+            IndustrialPartId = part.IndustrialPartUnit?.IndustrialPartId ?? 0,
+            PartName = part.IndustrialPartUnit?.IndustrialPart?.Name ?? string.Empty,
+            UnitId = part.IndustrialPartUnit?.UnitId ?? 0,
+            UnitName = part.IndustrialPartUnit?.Unit?.Name ?? string.Empty,
+            Quantity = part.Quantity,
+            Price = part.Price,
+            DoctorSectionRoomId = part.DoctorSectionRoomId,
+            DoctorSectionName = part.DoctorSectionRoom?.Section?.Name,
+            DoctorAssignedDate = part.DoctorSectionRoom?.AssignDate,
+            TotalPrice = part.Quantity * part.Price
         }).ToList();
 
     public static List<SaleItemDto> ToDtos(this IEnumerable<SaleItem> saleItems)
