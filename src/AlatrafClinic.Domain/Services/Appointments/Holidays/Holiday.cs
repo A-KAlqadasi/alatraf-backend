@@ -9,12 +9,12 @@ public sealed class Holiday : AuditableEntity<int>
     public DateTime StartDate { get; private set; }
     public DateTime? EndDate { get; private set; }
     public string? Name { get; private set; }
-    public bool IsRecurring { get; private set; } 
-    public bool IsActive { get; private set; } 
+    public bool IsRecurring { get; private set; }
+    public bool IsActive { get; private set; }
     public HolidayType Type { get; private set; }
     private Holiday() { }
 
-   private Holiday(DateTime startDate, string? name, bool isRecurring, HolidayType type, bool isActive, DateTime? endDate = null)
+    private Holiday(DateTime startDate, string? name, bool isRecurring, HolidayType type, bool isActive, DateTime? endDate = null)
     {
         StartDate = startDate.Date;
         Name = name;
@@ -24,8 +24,8 @@ public sealed class Holiday : AuditableEntity<int>
         IsActive = isActive;
     }
 
-     
-public static Result<Holiday> CreateFixed(DateTime date, string? name)
+
+    public static Result<Holiday> CreateFixed(DateTime date, string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return HolidayErrors.HolidayNameIsRequired;
@@ -35,6 +35,9 @@ public static Result<Holiday> CreateFixed(DateTime date, string? name)
 
         return new Holiday(date, name, isRecurring: true, HolidayType.Fixed, isActive: true);
     }
+
+
+
 
     public static Result<Holiday> CreateTemporary(DateTime startDate, string? name, DateTime? endDate = null)
     {
@@ -50,7 +53,7 @@ public static Result<Holiday> CreateFixed(DateTime date, string? name)
     public bool Matches(DateTime target)
     {
         if (!IsActive)
-            return false; 
+            return false;
 
         if (IsRecurring)
         {
@@ -72,7 +75,43 @@ public static Result<Holiday> CreateFixed(DateTime date, string? name)
         }
     }
 
-public void Activate() => IsActive = true;
-public void Deactivate() => IsActive = false;
+
+
+    public Result<Updated> UpdateHoliday(
+        string name,
+        DateTime startDate,
+        DateTime? endDate,
+        bool isRecurring,
+        HolidayType type)
+    {
+
+        if (string.IsNullOrWhiteSpace(name))
+            return HolidayErrors.HolidayNameIsRequired;
+
+        if (!Enum.IsDefined(typeof(HolidayType), type))
+            return HolidayErrors.InvalidHolidayType;
+
+
+        if (type == HolidayType.Fixed && startDate.Year != 1)
+            return HolidayErrors.HolidayFixedDateYearMustBeOne;
+
+        if (endDate.HasValue && endDate.Value.Date < startDate.Date)
+            return HolidayErrors.HolidayEndDateBeforeStartDate;
+
+
+        // if (type == HolidayType.Fixed && !isRecurring)
+        //     return HolidayErrors.FixedHolidayMustBeRecurring;
+
+        Name = name;
+        StartDate = startDate.Date;
+        EndDate = endDate?.Date;
+        IsRecurring = isRecurring;
+        Type = type;
+
+        return Result.Updated;
+    }
+
+    public void Activate() => IsActive = true;
+    public void Deactivate() => IsActive = false;
 
 }

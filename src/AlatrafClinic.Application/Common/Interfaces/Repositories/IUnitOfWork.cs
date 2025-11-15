@@ -25,6 +25,7 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
         ITherapyCardRepository TherapyCards { get; }
         ITherapyCardTypePriceRepository TherapyCardTypePrices { get; }
         ISessionRepository Sessions { get; }
+        IHolidayRepository Holidays { get; }
         Task<int> SaveChangesAsync(CancellationToken ct = default);
     }
 }
