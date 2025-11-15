@@ -1,14 +1,12 @@
 using FluentValidation;
 
-namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCard;
+namespace AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
 
-public class UpdateRepairCardCommandValidator : AbstractValidator<UpdateRepairCardCommand>
+public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 {
-    public UpdateRepairCardCommandValidator()
+    public CreateSaleCommandValidator()
     {
-        RuleFor(x => x.RepairCardId)
-            .GreaterThan(0);
-        RuleFor(x => x.TicketId)
+         RuleFor(x => x.TicketId)
             .GreaterThan(0).WithMessage("TicketId must be greater than 0.");
         RuleFor(x => x.PatientId)
             .GreaterThan(0).WithMessage("PatientId must be greater than 0.");
@@ -21,7 +19,7 @@ public class UpdateRepairCardCommandValidator : AbstractValidator<UpdateRepairCa
             .GreaterThan(0).WithMessage("InjurySides must contain valid side IDs.");
         RuleForEach(x => x.InjuryTypes)
             .GreaterThan(0).WithMessage("InjuryTypes must contain valid type IDs.");
-        RuleForEach(x => x.IndustrialParts)
-            .SetValidator(new UpdateRepairCardIndustrialPartCommandValidator());
+        RuleForEach(x => x.SaleItems)
+            .SetValidator(new CreateSaleItemCommandValidator());
     }
 }

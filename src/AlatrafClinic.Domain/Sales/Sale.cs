@@ -26,22 +26,24 @@ public class Sale : AuditableEntity<int>
 
     public ExchangeOrder? ExchangeOrder { get; private set; }
     public decimal Total => _saleItems.Sum(i => i.Total);
+    public string? Notes { get; private set; }
 
     private Sale() { }
 
-    private Sale(int diagnosisId)
+    private Sale(int diagnosisId, string? notes = null)
     {
         DiagnosisId = diagnosisId;
+        Notes = notes;
     }
 
-    public static Result<Sale> Create(int diagnosisId)
+    public static Result<Sale> Create(int diagnosisId, string? notes = null)
     {
         if (diagnosisId <= 0)
         {
             return SaleErrors.InvalidDiagnosisId;
         }
 
-        return new Sale(diagnosisId);
+        return new Sale(diagnosisId, notes);
     }
 
     public Result<Updated> UpsertItems(List<(ItemUnit itemUnit, decimal quantity)> newItems)

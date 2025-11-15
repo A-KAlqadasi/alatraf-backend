@@ -21,4 +21,5 @@ public static class SaleErrors
     public static readonly Error ItemsConflictInOrderAndExchangeOrder = Error.Validation("Sale.ItemsConflictInOrderAndExchangeOrder", "Items in sale and exchange order do not match.");
     public static readonly Error QuantityExceedsAvailable = Error.Validation("Sale.QuantityExceedsAvailable", "One or more items exceed available quantity in store.");
     public static readonly Error ExitCardAlreadyAssigned = Error.Validation("Sale.ExitCardAlreadyAssigned", "Exit card is already assigned to this sale.");
+    public static readonly Error SaleItemsAreRequired = Error.Validation("Sale.SaleItemsAreRequired", "At least one sale item is required.");
 }

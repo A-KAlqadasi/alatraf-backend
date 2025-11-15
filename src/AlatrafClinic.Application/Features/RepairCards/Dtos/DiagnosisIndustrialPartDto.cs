@@ -1,4 +1,4 @@
-namespace AlatrafClinic.Application.Features.Diagnosises.Dtos;
+namespace AlatrafClinic.Application.Features.RepairCards.Dtos;
 
 public class DiagnosisIndustrialPartDto
 {

@@ -1,11 +1,11 @@
+using AlatrafClinic.Application.Features.Sales.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
 
-namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCard;
+namespace AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
 
-public sealed record UpdateRepairCardCommand(
-    int RepairCardId,
+public sealed record class CreateSaleCommand(
     int TicketId,
     string DiagnosisText,
     DateTime InjuryDate,
@@ -13,6 +13,6 @@ public sealed record UpdateRepairCardCommand(
     List<int> InjurySides,
     List<int> InjuryTypes,
     int PatientId,
-    List<UpdateRepairCardIndustrialPartCommand> IndustrialParts,
+    List<CreateSaleItemCommand> SaleItems,
     string? Notes = null
-) : IRequest<Result<Updated>>;
+) : IRequest<Result<SaleDto>>;
