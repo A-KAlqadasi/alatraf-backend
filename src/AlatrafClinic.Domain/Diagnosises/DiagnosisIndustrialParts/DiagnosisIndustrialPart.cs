@@ -17,7 +17,8 @@ public class DiagnosisIndustrialPart : AuditableEntity<int>
     public int Quantity { get; private set; }
     public decimal Price { get; private set; }
     public DateTime? DoctorAssignDate { get; private set; }
-
+    public RepairCard? RepairCard { get; set; }
+    public int RepairCardId { get; private set; }
     private DiagnosisIndustrialPart() { }
 
     private DiagnosisIndustrialPart(int diagnosisId, int industrialPartUnitId, int quantity, decimal price)

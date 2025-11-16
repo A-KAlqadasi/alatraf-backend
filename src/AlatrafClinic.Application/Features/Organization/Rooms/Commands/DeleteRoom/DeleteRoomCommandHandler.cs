@@ -25,14 +25,14 @@ public sealed class DeleteRoomCommandHandler(
         var room = await _unitOfWork.Rooms.GetByIdAsync(request.RoomId, ct);
         if (room is null)
         {
-            _logger.LogWarning(" Room {RoomId} not found for deletion.", request.RoomId);
+            _logger.LogError(" Room {RoomId} not found for deletion.", request.RoomId);
             return ApplicationErrors.RoomNotFound;
         }
 
         var hasActiveAssignment = await _unitOfWork.DoctorSectionRooms.HasActiveAssignmentByRoomIdAsync(request.RoomId, ct);
         if (hasActiveAssignment)
         {
-            _logger.LogWarning("⚠️ Room {RoomId} cannot be deleted because it has active doctor assignments.", request.RoomId);
+            _logger.LogError("Room {RoomId} cannot be deleted because it has active doctor assignments.", request.RoomId);
             return ApplicationErrors.RoomHasActiveDoctorAssignment;
         }
 

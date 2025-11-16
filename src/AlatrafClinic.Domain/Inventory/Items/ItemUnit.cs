@@ -15,10 +15,10 @@ public class ItemUnit : AuditableEntity<int>
     public decimal? MinPriceToPay { get; private set; }
     public decimal? MaxPriceToPay { get; private set; }
     public decimal ConversionFactor { get; private set; } = 1;
-    public decimal Quantity => _storeItemUnits.Sum(itu => itu.Quantity);
+    // public decimal Quantity => _storeItemUnits.Sum(itu => itu.Quantity);
 
-    private readonly List<StoreItemUnit> _storeItemUnits = new();
-    public IReadOnlyCollection<StoreItemUnit> StoreItemUnits => _storeItemUnits.AsReadOnly();
+    // private readonly List<StoreItemUnit> _storeItemUnits = new();
+    // public IReadOnlyCollection<StoreItemUnit> StoreItemUnits => _storeItemUnits.AsReadOnly();
 
     private ItemUnit() { }
 
@@ -76,5 +76,5 @@ public class ItemUnit : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public decimal ToBaseQuantity() => Quantity * ConversionFactor;
+    public decimal ToBaseQuantity(decimal quantity) => quantity * ConversionFactor;
 }

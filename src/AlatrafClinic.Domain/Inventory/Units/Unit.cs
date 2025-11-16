@@ -7,7 +7,7 @@ namespace AlatrafClinic.Domain.Inventory.Units;
 
 public class Unit : AuditableEntity<int>
 {
-    public string? Name { get; set; }
+    public string Name { get; set; } = default!;
     
     public ICollection<ItemUnit> ItemUnits { get; set; } = new List<ItemUnit>();
     public ICollection<IndustrialPartUnit> IndustrialPartUnits { get; set; } = new List<IndustrialPartUnit>();

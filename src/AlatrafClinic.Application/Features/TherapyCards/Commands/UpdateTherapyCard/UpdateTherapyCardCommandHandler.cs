@@ -34,7 +34,8 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         TherapyCard? currentTherapy = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
         if (currentTherapy is null)
         {
-            _logger.LogWarning("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
+            _logger.LogError("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
+            
             return TherapyCardErrors.TherapyCardNotFound;
         }
 
@@ -50,9 +51,11 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         }
 
         var updateDiagnosisResult = await _diagnosisUpdateService.UpdateAsync(currentDiagnosis.Id, command.TicketId, command.DiagnosisText, command.InjuryDate, command.InjuryReasons, command.InjurySides, command.InjuryTypes, command.PatientId, DiagnosisType.Therapy, ct);
+
         if (updateDiagnosisResult.IsError)
         {
-            _logger.LogWarning("Failed to update diagnosis for TherapyCard with id {TherapyCardId}", command.TherapyCardId);
+            _logger.LogError("Failed to update diagnosis for TherapyCard with id {TherapyCardId}", command.TherapyCardId);
+
             return updateDiagnosisResult.Errors;
         }
 
@@ -68,7 +71,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             var medicalProgram = await _unitOfWork.MedicalPrograms.IsExistAsync(medicalProgramId, ct);
             if (!medicalProgram)
             {
-                _logger.LogWarning("Medical program with id {MedicalProgramId} not found", medicalProgramId);
+                _logger.LogError("Medical program with id {MedicalProgramId} not found", medicalProgramId);
 
                 return MedicalProgramErrors.MedicalProgramNotFound;
             }
@@ -78,14 +81,17 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         
         if (upsertDiagnosisProgramsResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs for TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, upsertDiagnosisProgramsResult.Errors);
+            _logger.LogError("Failed to upsert diagnosis programs for TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, upsertDiagnosisProgramsResult.Errors);
+            
             return upsertDiagnosisProgramsResult.Errors;
         }
 
         var sessionPricePerType = await _unitOfWork.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
+        
         if (!sessionPricePerType.HasValue)
         {
-            _logger.LogWarning("Session price for TherapyCardType {TherapyCardType} not found", command.TherapyCardType);
+            _logger.LogError("Session price for TherapyCardType {TherapyCardType} not found", command.TherapyCardType);
+
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
@@ -93,7 +99,8 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
         if (updateTherapyResult.IsError)
         {
-            _logger.LogWarning("Failed to update TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, updateTherapyResult.TopError);
+            _logger.LogError("Failed to update TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, updateTherapyResult.TopError);
+
             return updateTherapyResult.TopError;
         }
 
@@ -101,7 +108,8 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
         if (upsertTherapyResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs to TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, upsertTherapyResult.Errors);
+            _logger.LogError("Failed to upsert diagnosis programs to TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, string.Join(", ", upsertTherapyResult.Errors));
+            
             return upsertTherapyResult.Errors;
         }
 

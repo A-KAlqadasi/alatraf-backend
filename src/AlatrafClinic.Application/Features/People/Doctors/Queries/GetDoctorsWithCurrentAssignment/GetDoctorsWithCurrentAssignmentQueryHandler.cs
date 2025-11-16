@@ -25,7 +25,7 @@ public class GetDoctorsWithCurrentAssignmentQueryHandler
   public async Task<Result<PaginatedList<DoctorListItemDto>>> Handle(GetDoctorsWithCurrentAssignmentQuery query, CancellationToken ct)
   {
     // base query
-    var doctorQuery = await _uow.Doctors.GetDoctorsQueryAsync(); // should return IQueryable<Doctor> with includes or projection base
+    var doctorQuery = await _uow.Doctors.GetDoctorsQueryAsync();
     doctorQuery = ApplyFilters(doctorQuery, query);
 
     if (!string.IsNullOrWhiteSpace(query.Search))
@@ -61,9 +61,9 @@ public class GetDoctorsWithCurrentAssignmentQueryHandler
                 .Where(a => a.IsActive)
                 .Select(a => a.RoomId)
                 .FirstOrDefault(),
-          CurrentRoomNumber = d.Assignments
+          CurrentRoomName = d.Assignments
                 .Where(a => a.IsActive && a.Room != null)
-                .Select(a => a.Room.Number)
+                .Select(a => a.Room!.Name ?? string.Empty)
                 .FirstOrDefault(),
           AssignDate = d.Assignments
                 .Where(a => a.IsActive)

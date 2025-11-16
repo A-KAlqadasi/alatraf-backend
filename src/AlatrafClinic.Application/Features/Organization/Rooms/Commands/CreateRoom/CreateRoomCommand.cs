@@ -12,5 +12,5 @@ namespace AlatrafClinic.Application.Features.Organization.Rooms.Commands.CreateR
 
 public sealed record CreateRoomCommand(
     int SectionId,
-    List<int> RoomNumbers
+    List<string> RoomNames
 ) : IRequest<Result<List<RoomDto>>>;

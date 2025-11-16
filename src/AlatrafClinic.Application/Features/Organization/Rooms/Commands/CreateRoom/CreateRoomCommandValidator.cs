@@ -10,11 +10,11 @@ public sealed class CreateRoomCommandValidator : AbstractValidator<CreateRoomCom
         .GreaterThan(0)
         .WithMessage("SectionId must be greater than zero.");
 
-    RuleFor(x => x.RoomNumbers)
-        .NotNull().WithMessage("At least one room number must be provided.")
-        .NotEmpty().WithMessage("At least one room number must be provided.");
+    RuleFor(x => x.RoomNames)
+        .NotNull().WithMessage("At least one room name must be provided.")
+        .NotEmpty().WithMessage("At least one room name must be provided.");
 
-    RuleForEach(x => x.RoomNumbers)
-        .GreaterThan(0).WithMessage("Room number must be greater than zero.");
+    RuleForEach(x => x.RoomNames)
+        .NotEmpty().WithMessage("Room name must be provided.");
   }
 }

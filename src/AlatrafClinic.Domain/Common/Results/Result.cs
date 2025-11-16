@@ -11,6 +11,7 @@ public static class Result
     public static Created Created => default;
     public static Deleted Deleted => default;
     public static Updated Updated => default;
+    
 }
 
 public sealed class Result<TValue> : IResult<TValue>

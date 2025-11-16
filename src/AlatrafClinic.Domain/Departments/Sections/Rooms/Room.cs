@@ -7,7 +7,7 @@ namespace AlatrafClinic.Domain.Organization.Rooms;
 
 public class Room : AuditableEntity<int>
 {
-    public int Number { get; private set; }
+    public string Name { get; private set; } = default!;
     public int SectionId { get; private set; }
     public bool IsDeleted { get; private set; }
 
@@ -18,34 +18,34 @@ public class Room : AuditableEntity<int>
 
     private Room() { }
 
-    private Room(int number, int sectionId)
+    private Room(string name, int sectionId)
     {
-        Number = number;
+        Name = name;
         SectionId = sectionId;
         IsDeleted = false;
 
     }
 
-    public static Result<Room> Create(int number, int sectionId)
+    public static Result<Room> Create(string name, int sectionId)
     {
-        if (number <= 0)
-            return RoomErrors.InvalidNumber;
+        if (string.IsNullOrWhiteSpace(name))
+            return RoomErrors.InvalidName;
 
         if (sectionId <= 0)
             return RoomErrors.InvalidSection;
 
-        return new Room(number, sectionId);
+        return new Room(name, sectionId);
     }
 
-    public Result<Updated> UpdateNumber(int newNumber)
+    public Result<Updated> UpdateName(string newName)
     {
-        if (newNumber <= 0)
-            return RoomErrors.InvalidNumber;
+        if (string.IsNullOrWhiteSpace(newName))
+            return RoomErrors.InvalidName;
 
-        if (Section.Rooms.Any(r => r.Id != Id && r.Number == newNumber))
-            return RoomErrors.DuplicateRoomNumber;
+        if (Section.Rooms.Any(r => r.Id != Id && r.Name == newName))
+            return RoomErrors.DuplicateRoomName;
 
-        Number = newNumber;
+        Name = newName;
         return Result.Updated;
     }
 

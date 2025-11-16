@@ -10,6 +10,6 @@ public static class SupplierErrors
     public static readonly Error PhoneRequired =
         Error.Validation("Supplier.PhoneRequired", "Supplier phone number is required.");
 
-    public static readonly Error NotFound =
+    public static readonly Error SupplierNotFound =
         Error.NotFound("Supplier.NotFound", "Supplier not found.");
 }

@@ -39,12 +39,12 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         if (currentTherapy is null)
         {
-            _logger.LogWarning("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
+            _logger.LogError("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
             return TherapyCardErrors.TherapyCardNotFound;
         }
         if (!currentTherapy.IsExpired)
         {
-            _logger.LogWarning("Therapy Card {TherapyCardId} is not expired to renew", currentTherapy.Id);
+            _logger.LogError("Therapy Card {TherapyCardId} is not expired to renew", currentTherapy.Id);
             return TherapyCardErrors.TherapyCardNotExpired;
         }
 
@@ -52,7 +52,8 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         if (currentDiagnosis is null)
         {
-            _logger.LogWarning("Diagnosis for therapy card {therapyCard} not included", currentTherapy.Id);
+            _logger.LogError("Diagnosis for therapy card {therapyCard} not included", currentTherapy.Id);
+
             return TherapyCardErrors.DiagnosisNotIncluded;
         }
         
@@ -82,7 +83,8 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(programId, ct);
             if (!exists)
             {
-                _logger.LogWarning("Medical program {ProgramId} not found.", programId);
+                _logger.LogError("Medical program {ProgramId} not found.", programId);
+
                 return MedicalProgramErrors.MedicalProgramNotFound;
             }
         }
@@ -91,7 +93,8 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         if (upsertDiagnosisResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert diagnosis programs for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertDiagnosisResult.Errors));
+            _logger.LogError("Failed to upsert diagnosis programs for Diagnosis with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertDiagnosisResult.Errors));
+
             return upsertDiagnosisResult.Errors;
         }
         
@@ -99,7 +102,8 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         if(!price.HasValue)
         {
-            _logger.LogWarning("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
+            _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
+
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
@@ -107,7 +111,8 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         if (createTherapyCardResult.IsError)
         {
-            _logger.LogWarning("Failed to create TherapyCard for Diagnosis with ticket {ticketId}. Errors: {Errors}", command.TicketId, string.Join(", ", createTherapyCardResult.Errors));
+            _logger.LogError("Failed to create TherapyCard for Diagnosis with ticket {ticketId}. Errors: {Errors}", command.TicketId, string.Join(", ", createTherapyCardResult.Errors));
+            
             return createTherapyCardResult.Errors;
         }
 
@@ -116,7 +121,8 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         if (upsertTherapyResult.IsError)
         {
-            _logger.LogWarning("Failed to upsert therapy card programs for TherapyCard with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertTherapyResult.Errors));
+            _logger.LogError("Failed to upsert therapy card programs for TherapyCard with ticket {TicketId}. Errors: {Errors}", command.TicketId, string.Join(", ", upsertTherapyResult.Errors));
+            
             return upsertTherapyResult.Errors;
         }
         
@@ -129,7 +135,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         //await _cache.SetAsync($"therapycard:{dto.TherapyCardId}", dto, ct: ct);
 
-        _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);
+        _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);
         
         return dto;
     }

@@ -7,6 +7,7 @@ using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.Patients;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Services.Tickets;
@@ -41,6 +42,10 @@ public class Diagnosis : AuditableEntity<int>
     public IReadOnlyCollection<InjurySide> InjurySides => _injurySides.AsReadOnly();
     private readonly List<InjuryType> _injuryTypes = new();
     public IReadOnlyCollection<InjuryType> InjuryTypes => _injuryTypes.AsReadOnly();
+
+    private readonly List<Payment> _payments = new();
+    public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
+
    
     private Diagnosis()
     {
@@ -251,12 +256,23 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.SaleAssignOnlyForSaleDiagnosis;
         }
-        
+
         if (sale is null)
         {
             return DiagnosisErrors.SaleIsRequired;
         }
         Sale = sale;
+        return Result.Updated;
+    }
+    
+    public Result<Updated> AssignPayment(Payment payment)
+    {
+        if (payment is null)
+        {
+            return DiagnosisErrors.PaymentIsRequired;
+        }
+        
+        _payments.Add(payment);
         return Result.Updated;
     }
 }

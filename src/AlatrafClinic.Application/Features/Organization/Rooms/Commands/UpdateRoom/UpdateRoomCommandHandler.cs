@@ -22,14 +22,14 @@ public sealed class UpdateRoomCommandHandler(
     var room = await _unitOfWork.Rooms.GetRoomByIdWithSectionAsync(request.RoomId, ct);
     if (room is null)
     {
-      _logger.LogWarning(" Room {RoomId} not found.", request.RoomId);
+      _logger.LogError(" Room {RoomId} not found.", request.RoomId);
       return ApplicationErrors.RoomNotFound;
     }
 
-    var updateResult = room.UpdateNumber(request.NewNumber);
+    var updateResult = room.UpdateName(request.NewName);
     if (updateResult.IsError)
     {
-      _logger.LogWarning(" Failed to update Room {RoomId}: {Error}", request.RoomId, updateResult.Errors);
+      _logger.LogError(" Failed to update Room {RoomId}: {Error}", request.RoomId, updateResult.Errors);
       return updateResult.Errors;
     }
 
@@ -37,7 +37,7 @@ public sealed class UpdateRoomCommandHandler(
     await _unitOfWork.SaveChangesAsync(ct);
 
     _logger.LogInformation(" Room {RoomId} number updated successfully to {NewNumber}.",
-        room.Id, room.Number);
+        room.Id, room.Name);
 
     return Result.Updated;
   }

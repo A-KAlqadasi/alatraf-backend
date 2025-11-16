@@ -2,6 +2,7 @@ using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
+using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 
@@ -65,14 +66,15 @@ public static class TherapyCardMapper
     public static SessionProgramDto ToDto(this SessionProgram program)
     {
         if (program is null) return new SessionProgramDto();
-
+        string roomSectionName = program.DoctorSectionRoom?.Section.Name + " - " + program.DoctorSectionRoom?.Room?.Name.ToString();
+        roomSectionName = roomSectionName.Trim(new char[] { ' ', '-' });
         return new SessionProgramDto
         {
             SessionProgramId = program.Id,
             DiagnosisProgramId = program.DiagnosisProgramId,
             ProgramName = program.DiagnosisProgram?.MedicalProgram?.Name ?? string.Empty,
             DoctorSectionRoomId = program.DoctorSectionRoomId,
-            DoctorSectionRoomName = program.DoctorSectionRoom?.Section.Name + " - " + program.DoctorSectionRoom?.Room?.Number.ToString(),
+            DoctorSectionRoomName = roomSectionName,
             DoctorName = program.DoctorSectionRoom?.Doctor?.Person?.FullName
         };
     }
