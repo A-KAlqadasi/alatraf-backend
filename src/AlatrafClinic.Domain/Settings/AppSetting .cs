@@ -1,101 +1,84 @@
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Settings.Enums;
 
 namespace AlatrafClinic.Domain.Settings;
 
 public sealed class AppSetting : AuditableEntity<int>
 {
-    public string Key { get; private set; }
-    public string Value { get; private set; }
-    public string? Type { get; private set; } // optional: bool, int, date, json
+   public string Key { get; private set; } = string.Empty;
+    public string Value { get; private set; } = string.Empty;
+    public AppSettingType Type { get; private set; }
     public string? Description { get; private set; }
 
-
-    // private AppSetting() { }
-
-    private AppSetting(string key, string value, string? type = null, string? description = null)
+    private AppSetting() { }
+    private AppSetting(string key, string value, AppSettingType type, string? description)
     {
-        Key = key.Trim();
-        Value = value.Trim();
-        Type = type?.Trim();
-        Description = description?.Trim();
+        Key = key;
+        Value = value;
+        Type = type;
+        Description = description;
     }
-    public static Result<AppSetting> Create(string key, string value, string? type = null, string? description = null)
+    public static Result<AppSetting> Create(string key, string value, AppSettingType type, string? description)
     {
         if (string.IsNullOrWhiteSpace(key))
-            return AppSettingErrors.KeyRequired;
+            return AppSettingErrors.InvalidKey;
 
-        if (value is null)
-            return AppSettingErrors.ValueRequired;
+        if (!IsValidType(type))
+            return AppSettingErrors.InvalidType;
 
-        if (!string.IsNullOrWhiteSpace(type))
-        {
-            switch (type.ToLower())
-            {
-                case "bool":
-                    if (!bool.TryParse(value, out _))
-                        return AppSettingErrors.InvalidBoolValue;
-                    break;
+        if (!IsValidValue(type, value))
+            return AppSettingErrors.InvalidValue;
 
-                case "int":
-                    if (!int.TryParse(value, out _))
-                        return AppSettingErrors.InvalidIntValue;
-                    break;
-                case "decimal":
-                    if (!decimal.TryParse(value, out _))
-                        return AppSettingErrors.InvalidDecimalValue;
-                    break;
-
-                case "date":
-                    if (!DateTime.TryParse(value, out _))
-                        return AppSettingErrors.InvalidDateValue;
-                    break;
-
-
-                default:
-                    // unknown type, allow any string
-                    break;
-            }
-        }
-
-        return new AppSetting(key, value, type, description);
+        return new AppSetting(key.Trim(), value.Trim(), type, description);
     }
-    public Result<Updated> UpdateValue(string newValue)
+
+    public Result<Updated> Update(string value, string? description)
     {
-        if (string.IsNullOrWhiteSpace(newValue))
-            return AppSettingErrors.ValueRequired;
+        if (!IsValidValue(Type, value))
+            return AppSettingErrors.InvalidValue;
 
-        newValue = newValue.Trim();
+        Value = value.Trim();
+        Description = description;
 
-        if (!string.IsNullOrWhiteSpace(Type))
-        {
-            switch (Type.ToLower())
-            {
-                case "bool":
-                    if (!bool.TryParse(newValue, out _))
-                        return AppSettingErrors.InvalidBoolValue;
-                    break;
-
-                case "int":
-                    if (!int.TryParse(newValue, out _))
-                        return AppSettingErrors.InvalidIntValue;
-                    break;
-
-                case "date":
-                    if (!DateTime.TryParse(newValue, out _))
-                        return AppSettingErrors.InvalidDateValue;
-                    break;
-
-
-
-                default:
-                    break;
-            }
-        }
-
-        Value = newValue;
         return Result.Updated;
     }
+    private static bool IsValidType(AppSettingType type)
+    {
+        return Enum.IsDefined(typeof(AppSettingType), type);
+    }
+     private static bool IsValidValue(AppSettingType type, string value)
+    {
+        try
+        {
+            return type switch
+            {
+                AppSettingType.String => true,
+                AppSettingType.Integer => int.TryParse(value, out _),
+                AppSettingType.Boolean => bool.TryParse(value, out _),
+                AppSettingType.Decimal => decimal.TryParse(value, out _),
+                AppSettingType.Json => IsValidJson(value),
+                _ => false
+            };
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
+    private static bool IsValidJson(string value)
+    {
+        try
+        {
+            System.Text.Json.JsonDocument.Parse(value);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    
 }
