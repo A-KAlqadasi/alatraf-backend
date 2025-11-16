@@ -2,7 +2,9 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.People.Patients.Dtos;
 using AlatrafClinic.Application.Features.People.Patients.Mappers;
 using AlatrafClinic.Domain.Common.Results;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.People.Patients.Queries.GetPatients;
@@ -17,14 +19,11 @@ public class GetPatientsQueryHandler(
     {
         var patientsQuery = await _unitOfWork.Patients.GetPatientsWithPersonQueryAsync();
 
-        // Apply filters
         patientsQuery = ApplyFilters(patientsQuery, query);
 
-        // Apply search term
         if (!string.IsNullOrWhiteSpace(query.SearchTerm))
             patientsQuery = ApplySearch(patientsQuery, query.SearchTerm!);
 
-        // Execute query
         var patients = await patientsQuery.ToListAsync(ct);
 
         return patients.ToDtos();
