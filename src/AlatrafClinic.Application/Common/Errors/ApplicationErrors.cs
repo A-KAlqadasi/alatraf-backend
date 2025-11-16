@@ -65,7 +65,11 @@ public static readonly Error RoomHasActiveDoctorAssignment =
   public static Error HolidayAlreadyExists(DateTime date) =>
     Error.Conflict("Holiday.AlreadyExists", $"Holiday with date '{date}' already exists.");
 
-  public static readonly Error HolidayNotFound = Error.Validation(
-   code: "Holiday.NotFound",
-   description: "The Holiday not found .");
+    public static readonly Error HolidayNotFound = Error.Validation(
+     code: "Holiday.NotFound",
+     description: "The Holiday not found .");
+   
+     public static readonly Error AppSettingKeyNotFound = Error.Validation(
+   code: "AppSetting.NotFound",
+   description: "The Key of the app setting  not found .");
 }
