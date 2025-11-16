@@ -12,6 +12,7 @@ using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 using MediatR;
+using AlatrafClinic.Domain.Payments;
 
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCard;
@@ -93,12 +94,24 @@ public sealed class CreateRepairCardCommandHandler
 
         var repairCard = repairCardResult.Value;
 
+        var paymentResult = Payment.Create(diagnosis.Id, repairCard.TotalCost, PaymentType.Repair);
+
+        if (paymentResult.IsError)
+        {
+            _logger.LogError("Failed to create Payment for RepairCard : {Errors}", string.Join(", ", paymentResult.Errors));
+            return paymentResult.Errors;
+        }
+
+        var payment = paymentResult.Value;
+
+        diagnosis.AssignPayment(payment);
+        
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
         await _unitOfWork.RepairCards.AddAsync(repairCard, ct);
+        await _unitOfWork.Payments.AddAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
-        //await _cache.SetAsync($"repaircard:{dto.RepairCardId}", dto, ct: ct);
-
+        
         _logger.LogInformation("Successfully created RepairCard {RepairCardId} for Diagnosis {DiagnosisId}.", repairCard.Id, diagnosis.Id);
 
         return repairCard.ToDto();

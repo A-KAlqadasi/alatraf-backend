@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Hybrid;
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
@@ -8,9 +10,8 @@ using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.Enums;
 
 using MediatR;
+using AlatrafClinic.Domain.Payments;
 
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Sales.Commands.UpdateSale;
 
@@ -43,6 +44,13 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
             _logger.LogError("Sale {saleId} cannot be modified, read-only", currentSale.Id);
             return SaleErrors.Readonly;
         }
+
+        if (currentSale.IsPaid)
+        {
+            _logger.LogError("Sale {saleId} cannot be modified, it is paid", currentSale.Id);
+            return SaleErrors.Readonly;
+        }
+
         var updateDiagnosisResult = await _diagnosisUpdate.UpdateAsync(
             diagnosisId: currentSale.DiagnosisId,
             ticketId: command.TicketId,
@@ -99,8 +107,29 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
             return assignDiagnosisResult.Errors;
         }
 
+        var currentPayment = currentSale.Payment;
+        if (currentPayment is null)
+        {
+            _logger.LogError("Payment for Sale with id {SaleId} not found", command.SaleId);
+            return SaleErrors.PaymentNotFound;
+        }
+
+        var updatePaymentResult = currentPayment.Update(
+            diagnosisId: diagnosis.Id,
+            total: currentSale.Total,
+            type: PaymentType.Sales);
+        
+        if (updatePaymentResult.IsError)
+        {
+            _logger.LogError("Failed to update payment for Sale with id {saleId}: {Errors}", command.SaleId, string.Join(", ", updatePaymentResult.Errors));
+            return updatePaymentResult.Errors;
+        }
+
+        diagnosis.AssignPayment(currentPayment);
+
         await _unitOfWork.Diagnoses.UpdateAsync(diagnosis, ct);
         await _unitOfWork.Sales.UpdateAsync(currentSale, ct);
+        await _unitOfWork.Payments.UpdateAsync(currentPayment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("Sale {saleId} updated successfully", currentSale.Id);

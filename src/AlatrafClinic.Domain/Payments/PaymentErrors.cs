@@ -13,19 +13,11 @@ public static class PaymentErrors
         Error.Validation("Payment.InvalidDiscount", "Discount cannot be negative.");
 
     public static readonly Error OverPayment =
-        Error.Validation("Payment.OverPayment", "Total of paid amount and discount cannot exceed total amount.");
-
-    public static readonly Error AlreadyLinked =
-        Error.Conflict("Payment.AlreadyLinked", "This payment is already linked to another aggregate.");
-
-    public static readonly Error InvalidTypeForSale =
-        Error.Validation("Payment.InvalidTypeForSale", "Payment type must be 'Sales' to link with a Sale.");
-
-    public static readonly Error InvalidTypeForTherapy =
-        Error.Validation("Payment.InvalidTypeForTherapy", "Payment type must be 'Therapy' to link with a Therapy Card status.");
-
-    public static readonly Error InvalidTypeForRepair =
-        Error.Validation("Payment.InvalidTypeForRepair", "Payment type must be 'Repair' to link with a Repair Card.");
+        Error.Validation("Payment.OverPayment", "Paid ammount and discount is over required total ammount");
     public static readonly Error InvalidDiagnosisId =
         Error.Validation("Payment.InvalidDiagnosisId", "Diagnosis Id is invalid.");
+    public static readonly Error InvalidPaymentType = Error.Validation("Payment.InvalidPaymentType", "Payement Type is invalid");
+    public static readonly Error PaidAmountLessThanTotal = Error.Conflict("Payment.PaidAmountLessThanTotal", "The paid ammount and discount less than total ammount");
+    public static readonly Error InvalidAccountId = Error.Validation("Payment.InvalidAccountId", "Account Id is invalid");
+
 }

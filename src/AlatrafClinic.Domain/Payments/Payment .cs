@@ -16,80 +16,100 @@ public sealed class Payment : AuditableEntity<int>
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
     
-    public int AccountId { get; private set; }
-    public AccountType AccountType { get; private set; } = default!;
+    public int? AccountId { get; private set; }
+    public AccountType? AccountType { get; private set; }
     public PaymentType Type { get; private set; }
+    public bool IsCompleted { get; private set; } = false;
 
     public PatientPayment? PatientPayment { get; private set; }
     public DisabledPayment? DisabledPayment { get; private set; }
     public WoundedPayment? WoundedPayment { get; private set; }
-
 
     public decimal Residual =>
         Math.Max(0, TotalAmount - ((PaidAmount ?? 0) + (Discount ?? 0)));
 
     private Payment() { }
 
-    private Payment(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    private Payment(int diagnosisId, decimal total, PaymentType type)
     {
         DiagnosisId = diagnosisId;
         TotalAmount = total;
-        PaidAmount = paid;
-        Discount = discount;
-        AccountId = accountId;
         Type = type;
+        IsCompleted = false;
     }
 
-    public static Result<Payment> Create(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    public static Result<Payment> Create(int diagnosisId, decimal total, PaymentType type)
     {
-        if (diagnosisId <= 0) { return PaymentErrors.InvalidDiagnosisId; }
-        
+
         if (total <= 0) { return PaymentErrors.InvalidTotal; }
-            
-        if (paid is < 0) { return PaymentErrors.InvalidPaid; }
-            
-        if (discount is < 0) { return PaymentErrors.InvalidDiscount; }
 
-        if ((paid ?? 0) + (discount ?? 0) > total) { return PaymentErrors.OverPayment; }
+        if (!Enum.IsDefined(typeof(PaymentType), type))
+        {
+            return PaymentErrors.InvalidPaymentType;
+        }
 
-        return new Payment(diagnosisId, total, paid, discount, accountId, type);
+        return new Payment(diagnosisId, total, type);
     }
-
-    public Result<Updated> Update(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    
+    public Result<Updated> Update(int diagnosisId, decimal total, PaymentType type)
     {
         if (diagnosisId <= 0)
         {
             return PaymentErrors.InvalidDiagnosisId;
         }
-
+        
         if (total <= 0)
         {
             return PaymentErrors.InvalidTotal;
         }
 
-        if (paid is < 0)
+        if (!Enum.IsDefined(typeof(PaymentType), type))
+        {
+            return PaymentErrors.InvalidPaymentType;
+        }
+
+        DiagnosisId = diagnosisId;
+        TotalAmount = total;
+        Type = type;
+
+        return Result.Updated;
+    }
+
+    public Result<Updated> Pay(decimal paid, decimal discount, int accountId)
+    {
+        if (paid < 0)
         {
             return PaymentErrors.InvalidPaid;
         }
 
-        if (discount is < 0)
+        if (discount < 0)
         {
             return PaymentErrors.InvalidDiscount;
         }
 
-        if ((paid ?? 0) + (discount ?? 0) > total)
-            return PaymentErrors.OverPayment;
+        if (accountId <= 0)
+        {
+            return PaymentErrors.InvalidAccountId;
+        }
 
-        AccountId = accountId;
-        Type = type;
-        DiagnosisId = diagnosisId;
-        TotalAmount = total;
+        if (TotalAmount > (paid + discount))
+        {
+            return PaymentErrors.PaidAmountLessThanTotal;
+        }
+
+        if ((paid + discount) > TotalAmount)
+        {
+            return PaymentErrors.OverPayment;
+        }
+
         PaidAmount = paid;
         Discount = discount;
-
+        AccountId = accountId;
+        IsCompleted = true;
         return Result.Updated;
     }
- 
+
+
     public Result<Updated> AddPaidAmount(decimal amount)
     {
         if (amount <= 0)
@@ -104,5 +124,6 @@ public sealed class Payment : AuditableEntity<int>
         PaidAmount = currentPaid + amount;
         return Result.Updated;
     }
+    
     public bool IsFullyPaid => Residual == 0;
 }

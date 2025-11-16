@@ -17,7 +17,7 @@ public class Sale : AuditableEntity<int>
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; private set; } = default!;
 
-    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId);
+    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsCompleted);
     public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
 
     public ExitCard? ExitCard { get; private set; }

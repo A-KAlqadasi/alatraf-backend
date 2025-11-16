@@ -19,6 +19,6 @@ public sealed record CreateTherapyCardCommand(
     DateTime ProgramStartDate,
     DateTime ProgramEndDate,
     TherapyCardType TherapyCardType,
-    List<(int MedicalProgramId, int Duration, string? Notes)> Programs,
+    List<CreateTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null
 ) : IRequest<Result<TherapyCardDto>>;

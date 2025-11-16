@@ -4,6 +4,7 @@ using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.Enums;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
@@ -35,8 +36,15 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
         if (currentRepairCard is null)
         {
             _logger.LogError("RepairCard with id {RepairCardId} not found", command.RepairCardId);
-            
+
             return RepairCardErrors.RepairCardNotFound;
+        }
+
+        if (currentRepairCard.IsPaid)
+        {
+            _logger.LogError("RepairCard with id {RepairCardId} is readonly because it is paid", command.RepairCardId);
+            
+            return RepairCardErrors.Readonly;
         }
 
         if (currentRepairCard.Status != RepairCardStatus.New)
@@ -111,8 +119,29 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return upsertRepairResult.Errors;
         }
 
+        var currentPayment = currentRepairCard.Payment;
+        if (currentPayment is null)
+        {
+            _logger.LogError("Payment for RepairCard with id {RepairCardId} not found", command.RepairCardId);
+            return RepairCardErrors.PaymentNotFound;
+        }
+
+        var updatePaymentResult = currentPayment.Update(
+            diagnosisId: updatedDiagnosis.Id,
+            total: currentRepairCard.TotalCost,
+            type: PaymentType.Repair);
+        
+        if (updatePaymentResult.IsError)
+        {
+            _logger.LogError("Failed to update payment for RepairCard with id {RepairCardId}: {Errors}", command.RepairCardId, string.Join(", ", updatePaymentResult.Errors));
+            return updatePaymentResult.Errors;
+        }
+
+        updatedDiagnosis.AssignPayment(currentPayment);
+
         await _unitOfWork.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
         await _unitOfWork.RepairCards.UpdateAsync(currentRepairCard, ct);
+        await _unitOfWork.Payments.UpdateAsync(currentPayment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("Repair Card with id {RepairCardId} updated successfully", command.RepairCardId);

@@ -12,6 +12,6 @@ public sealed record class RenewTherapyCardCommand(
     DateTime ProgramStartDate,
     DateTime ProgramEndDate,
     TherapyCardType TherapyCardType,
-    List<(int MedicalProgramId, int Duration, string? Notes)> Programs,
+    List<RenewTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null
 ) : IRequest<Result<TherapyCardDto>>;
