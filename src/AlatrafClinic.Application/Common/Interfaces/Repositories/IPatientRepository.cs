@@ -14,6 +14,7 @@ public interface IPatientRepository : IGenericRepository<Patient, int>
 
     // disabled cards
     Task AddDisabledCardAsync(DisabledCard disabledCard, CancellationToken ct = default);
+    Task UpdateDisabledCardAsync(DisabledCard disabledCard, CancellationToken ct = default);
     Task DeleteDisabledCardAsync(DisabledCard disabledCard, CancellationToken ct = default);
     Task<DisabledCard?> GetDisabledCardByNumber(string cardNumber, CancellationToken ct = default);
     Task<bool> IsDisabledCardExists(string cardNumber, CancellationToken ct = default);
@@ -26,6 +27,7 @@ public interface IPatientRepository : IGenericRepository<Patient, int>
     Task<bool> IsWoundedCardExists(int woundedCardId, CancellationToken ct = default);
     Task<WoundedCard?> GetWoundedCardByNumber(string cardNumber, CancellationToken ct = default);
     Task AddWoundedCardAsync(WoundedCard woundedCard, CancellationToken ct = default);
+    Task UpdateWoundedCardAsync(WoundedCard woundedCard, CancellationToken ct = default);
     Task DeleteWoundedCardAsync(WoundedCard woundedCard, CancellationToken ct = default);
     Task<IReadOnlyList<WoundedCard>> GetWoundedCardsAsync(CancellationToken ct = default);
     Task<WoundedCard?> GetWoundedCardByIdAsync(int woundedCardId, CancellationToken ct = default);
