@@ -14,7 +14,7 @@ public class PatientPayment : AuditableEntity<int>
     private PatientPayment(
         string couponNumber,
         int paymentId
-    )
+    ): base(paymentId)
     {
         CouponNumber = couponNumber;
         PaymentId = paymentId;

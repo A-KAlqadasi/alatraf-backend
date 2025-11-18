@@ -18,7 +18,7 @@ public class WoundedPayment :AuditableEntity<int>
 
     private WoundedPayment() { }
 
-    private WoundedPayment(int paymentId, decimal total, decimal minimumPriceForReportNumber, int? woundedCardId, string? reportNumber)
+    private WoundedPayment(int paymentId, decimal total, decimal minimumPriceForReportNumber, int? woundedCardId, string? reportNumber) : base(paymentId)
     {
         WoundedCardId = woundedCardId;
         PaymentId = paymentId;

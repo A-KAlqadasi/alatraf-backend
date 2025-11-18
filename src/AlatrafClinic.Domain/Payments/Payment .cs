@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.AccountTypes;
+using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
@@ -17,7 +17,7 @@ public sealed class Payment : AuditableEntity<int>
     public Diagnosis Diagnosis { get; set; } = default!;
     
     public int? AccountId { get; private set; }
-    public AccountType? AccountType { get; private set; }
+    public Account? Account { get; private set; }
     public PaymentType Type { get; private set; }
     public bool IsCompleted { get; private set; } = false;
 
@@ -75,14 +75,19 @@ public sealed class Payment : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> Pay(decimal paid, decimal discount, int accountId)
+    public Result<Updated> Pay(decimal total, decimal? paid, decimal? discount, int accountId)
     {
-        if (paid < 0)
+        if (total != TotalAmount)
+        {
+            return PaymentErrors.TotalMissmatch;
+        }
+        
+        if (paid != null && paid < 0)
         {
             return PaymentErrors.InvalidPaid;
         }
 
-        if (discount < 0)
+        if (discount != null && discount < 0)
         {
             return PaymentErrors.InvalidDiscount;
         }
@@ -90,11 +95,6 @@ public sealed class Payment : AuditableEntity<int>
         if (accountId <= 0)
         {
             return PaymentErrors.InvalidAccountId;
-        }
-
-        if (TotalAmount > (paid + discount))
-        {
-            return PaymentErrors.PaidAmountLessThanTotal;
         }
 
         if ((paid + discount) > TotalAmount)
@@ -109,19 +109,48 @@ public sealed class Payment : AuditableEntity<int>
         return Result.Updated;
     }
 
-
-    public Result<Updated> AddPaidAmount(decimal amount)
+    public Result<Updated> AssignPatientPayment(PatientPayment patientPayment)
     {
-        if (amount <= 0)
-            return PaymentErrors.InvalidPaid;
+        if (IsCompleted)
+        {
+            return PaymentErrors.PaymentAlreadyCompleted;
+        }
 
-        var currentPaid = PaidAmount ?? 0;
-        var currentDiscount = Discount ?? 0;
+        if (patientPayment == null)
+        {
+            return PaymentErrors.InvalidPatientPayment;
+        }
 
-        if (currentPaid + amount > TotalAmount - currentDiscount)
-            return PaymentErrors.OverPayment;
+        PatientPayment = patientPayment;
+        return Result.Updated;
+    }
+    public Result<Updated> AssignDisabledPayment(DisabledPayment disabledPayment)
+    {
+        if (IsCompleted)
+        {
+            return PaymentErrors.PaymentAlreadyCompleted;
+        }
+        if (DisabledPayment == null)
+        {
+            return PaymentErrors.InvalidDisabledPayment;
+        }
 
-        PaidAmount = currentPaid + amount;
+        DisabledPayment = disabledPayment;
+        return Result.Updated;
+    }
+
+    public Result<Updated> AssignWoundedPayment(WoundedPayment woundedPayment)
+    {
+        if (IsCompleted)
+        {
+            return PaymentErrors.PaymentAlreadyCompleted;
+        }
+        if (WoundedPayment == null)
+        {
+            return PaymentErrors.InvalidWoundedPayment;
+        }
+
+        WoundedPayment = woundedPayment;
         return Result.Updated;
     }
     

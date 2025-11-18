@@ -14,14 +14,15 @@ public static class DisabledCardErrors
         "Expiration date is required."
     );
 
-    public static readonly Error ExpirationMustBeInTheFuture = Error.Validation(
-        "DisabledCard.ExpirationMustBeInTheFuture",
-        "Expiration date must be in the future."
+    public static readonly Error CardIsExpired = Error.Validation(
+        "DisabledCard.CardIsExpired",
+        "Card is expired!"
     );
 
     public static readonly Error PatientIdIsRequired = Error.Validation(
         "DisabledCard.PatientIdIsRequired",
         "Patient Id is required."
     );
-
+    public static readonly Error CardNumberDuplicated = Error.Conflict("DisabledCard.CardNumberDuplicate", "Card number is already exists!");
+    public static readonly Error DisabledCardNotFound = Error.NotFound("DisabledCard.DisabledCardNotFound", "Disabled card not found!");
 }

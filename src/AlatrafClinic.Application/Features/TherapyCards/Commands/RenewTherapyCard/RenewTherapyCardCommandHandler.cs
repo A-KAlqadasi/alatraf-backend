@@ -129,7 +129,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             return upsertTherapyResult.Errors;
         }
         
-         var paymentResult = Payment.Create(diagnosis.Id, therapyCard.TotalCost, PaymentType.TherapyCardRenew);
+         var paymentResult = Payment.Create(diagnosis.Id, therapyCard.TotalCost, PaymentType.RenewTherapyCard);
 
         if (paymentResult.IsError)
         {
