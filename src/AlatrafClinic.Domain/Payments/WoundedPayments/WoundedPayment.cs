@@ -1,3 +1,4 @@
+
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Cards.WoundedCards;
@@ -6,96 +7,59 @@ namespace AlatrafClinic.Domain.Payments.WoundedPayments;
 
 public class WoundedPayment :AuditableEntity<int>
 {
-    public int? WoundedCardId { get; private set; }
+    public int WoundedCardId { get; private set; }
     public WoundedCard? WoundedCard { get; private set; }
-
-    public decimal Total { get; private set; }
-    public decimal MinimumPriceForReportNumber { get; private set; } = 30000;
-
-    public int PaymentId { get; private set; }
-    public Payment? Payment { get; private set; }
     public string? ReportNumber { get; private set; }
+    public string? Notes { get; private set; }
 
     private WoundedPayment() { }
 
-    private WoundedPayment(int paymentId, decimal total, decimal minimumPriceForReportNumber, int? woundedCardId, string? reportNumber) : base(paymentId)
+    private WoundedPayment(int paymentId, int woundedCardId, string? reportNumber, string? notes) : base(paymentId)
     {
         WoundedCardId = woundedCardId;
-        PaymentId = paymentId;
-        Total = total;
-        MinimumPriceForReportNumber = minimumPriceForReportNumber;
         ReportNumber = reportNumber;
+        Notes = notes;
     }
 
-    public static Result<WoundedPayment> Create(int paymentId, decimal total, decimal minimumPriceForReportNumber, int? woundedCardId, string? reportNumber)
+    public static Result<WoundedPayment> Create(int paymentId, decimal total, decimal minPriceForReportNumber, int woundedCardId, string? reportNumber, string? notes = null)
     {
-        
 
         if (paymentId <= 0)
         {
             return WoundedPaymentErrors.PaymentIdIsRequired;
         }
 
-        if (total <= 0)
-        {
-            return WoundedPaymentErrors.TotalIsRequired;
-        }
-
-        if (minimumPriceForReportNumber <= 0)
-        {
-            return WoundedPaymentErrors.MinimumPriceForReportNumberIsRequired;
-        }
-
-        if (woundedCardId is null || woundedCardId <= 0)
+        if (woundedCardId <= 0)
         {
             return WoundedPaymentErrors.WoundedCardIdIsRequired;
         }
 
-        if (total >= minimumPriceForReportNumber && string.IsNullOrWhiteSpace(reportNumber))
+        if (string.IsNullOrWhiteSpace(reportNumber) && total >= minPriceForReportNumber)
         {
             return WoundedPaymentErrors.ReportNumberIsRequired;
         }
 
         return new WoundedPayment(
             paymentId,
-            total,
-            minimumPriceForReportNumber,
             woundedCardId,
-            reportNumber);
+            reportNumber,
+            notes);
     }
     
-    public Result<Updated> Update(int paymentId, decimal total, decimal minimumPriceForReportNumber, int? woundedCardId, string? reportNumber)
+    public Result<Updated> Update(int woundedCardId, decimal total, decimal minPriceForReportNumber, string? reportNumber)
     {
-        
-        if (paymentId <= 0)
-        {
-            return WoundedPaymentErrors.PaymentIdIsRequired;
-        }
 
-        if (total <= 0)
-        {
-            return WoundedPaymentErrors.TotalIsRequired;
-        }
-
-        if (minimumPriceForReportNumber <= 0)
-        {
-            return WoundedPaymentErrors.MinimumPriceForReportNumberIsRequired;
-        }
-
-        if (woundedCardId is null || woundedCardId <= 0)
+        if (woundedCardId <= 0)
         {
             return WoundedPaymentErrors.WoundedCardIdIsRequired;
         }
 
-        if (total >= minimumPriceForReportNumber && string.IsNullOrWhiteSpace(reportNumber))
+        if (string.IsNullOrWhiteSpace(reportNumber) && total >= minPriceForReportNumber)
         {
             return WoundedPaymentErrors.ReportNumberIsRequired;
         }
 
         WoundedCardId = woundedCardId;
-        PaymentId = paymentId;
-        Total = total;
-        MinimumPriceForReportNumber = minimumPriceForReportNumber;
         ReportNumber = reportNumber;
         
         return Result.Updated;

@@ -19,4 +19,5 @@ public class PatientPaymentDto
     public decimal Residual { get; set; }
     public string? VoucherNumber { get; set; }
     public string? Notes { get; set; }
+    public DateTime PaymentDate { get; set; }
 }

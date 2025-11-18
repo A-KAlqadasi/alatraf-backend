@@ -1,8 +1,8 @@
 namespace AlatrafClinic.Application.Features.People.Patients.Dtos;
 
-public class DisabledCardDto
+public class WoundedCardDto
 {
-    public int DisabledCardId { get; set; }
+    public int WoundedCardId { get; set; }
     public string CardNumber { get; set; } = string.Empty;
     public DateTime ExpirationDate { get; set; }
     public int PatientId { get; set; }

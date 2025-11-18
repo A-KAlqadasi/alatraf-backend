@@ -9,18 +9,21 @@ public static class WoundedCardErrors
         "Card number is required."
     );
 
-    public static readonly Error ExpirationIsRequired = Error.Validation(
-        "WoundedCard.ExpirationIsRequired",
-        "Expiration date is required."
+    public static readonly Error CardIsExpired = Error.Validation(
+        "WoundedCard.CardIsExpired",
+        "The card is expired."
     );
 
-    public static readonly Error ExpirationMustBeInTheFuture = Error.Validation(
-        "WoundedCard.ExpirationMustBeInTheFuture",
-        "Expiration date must be in the future."
+    public static readonly Error PatientIdInvalid = Error.Validation(
+        "WoundedCard.PatientIdInvalid",
+        "Patient Id is invalid."
     );
-
-    public static readonly Error PatientIdIsRequired = Error.Validation(
-        "WoundedCard.PatientIdIsRequired",
-        "Patient Id is required."
+    public static readonly Error CardNumberDuplicated = Error.Conflict(
+        "WoundedCard.CardNumberDuplicated",
+        "Card number is already exists."
+    );
+    public static readonly Error WoundedCardNotFound = Error.NotFound(
+        "WoundedCard.WoundedCardNotFound",
+        "Wounded card not found."
     );
 }

@@ -6,8 +6,6 @@ namespace AlatrafClinic.Domain.Payments.PatientPayments;
 public class PatientPayment : AuditableEntity<int>
 {
     public string VoucherNumber { get; private set; } = default!;
-    public int PaymentId { get; private set; }
-    public Payment? Payment { get; set; }
     public string? Notes { get; private set; }
 
     private PatientPayment() { }
@@ -19,7 +17,6 @@ public class PatientPayment : AuditableEntity<int>
     ) : base(paymentId)
     {
         VoucherNumber = couponNumber;
-        PaymentId = paymentId;
         Notes = notes;
     }
     public static Result<PatientPayment> Create(
@@ -47,7 +44,6 @@ public class PatientPayment : AuditableEntity<int>
 
     public Result<Updated> Update(
         string voucherNumber,
-        int paymentId,
         string? notes = null
     )
     {
@@ -56,13 +52,7 @@ public class PatientPayment : AuditableEntity<int>
             return PatientPaymentErrors.VoucherNumberIsRequired;
         }
 
-        if (paymentId <= 0)
-        {
-            return PatientPaymentErrors.PaymentIdIsRequired;
-        }
-
         VoucherNumber = voucherNumber;
-        PaymentId = paymentId;
         Notes = notes;
 
         return Result.Updated;

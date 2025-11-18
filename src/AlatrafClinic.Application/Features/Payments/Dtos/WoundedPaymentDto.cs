@@ -3,10 +3,11 @@ using AlatrafClinic.Domain.Payments;
 
 namespace AlatrafClinic.Application.Features.Payments.Dtos;
 
-public class DisabledPaymentDto
+public class WoundedPaymentDto
 {
     public int Id { get; set; }
     public string? CardNumber { get; set; }
+    public string? ReportNumber { get; set; }
     public decimal TotalAmount { get; set; }
     public int DiagnosisId { get; set; }
     public DiagnosisDto Diagnosis { get; set; } = default!;

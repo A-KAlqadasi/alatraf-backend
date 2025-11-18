@@ -6,61 +6,56 @@ namespace AlatrafClinic.Domain.Patients.Cards.WoundedCards;
 
 public class WoundedCard : AuditableEntity<int>
 {
-    public string? CardNumber { get; set; }
-    public DateTime? Expiration { get; set; }
-    public string? CardImagePath { get; set; }
-    public int? PatientId { get; set; }
+    public string CardNumber { get; private set; } = default!;
+    public DateTime Expiration { get; private set; }
+    public string? CardImagePath { get; private set; }
+    public int PatientId { get; private set; }
     public Patient? Patient { get; set; }
-    public ICollection<WoundedPayment> DisabledPayments { get; set; } = new List<WoundedPayment>();
+    public bool IsExpired => Expiration < DateTime.Now.Date;
+    public ICollection<WoundedPayment> WoundedPayments { get; set; } = new List<WoundedPayment>();
 
     private WoundedCard() { }
-    private WoundedCard(string? cardNumber, DateTime? expiration, string? cardImagePath, int? patientId)
+    private WoundedCard(string cardNumber, DateTime expiration, int patientId, string? cardImagePath)
     {
         CardNumber = cardNumber;
         Expiration = expiration;
-        CardImagePath = cardImagePath;
         PatientId = patientId;
+        CardImagePath = cardImagePath;
     }
 
-    public static Result<WoundedCard> Create(string? cardNumber, DateTime? expiration, string? cardImagePath, int? patientId)
+    public static Result<WoundedCard> Create(string cardNumber, DateTime expiration,  int patientId,string? cardImagePath)
     {
         if (string.IsNullOrWhiteSpace(cardNumber))
         {
             return WoundedCardErrors.CardNumberIsRequired;
         }
-        if (!expiration.HasValue)
+        
+        if (expiration < DateTime.Now.Date)
         {
-            return WoundedCardErrors.ExpirationIsRequired;
+            return WoundedCardErrors.CardIsExpired;
         }
-        if (expiration.Value <= DateTime.UtcNow)
+        if (patientId <= 0)
         {
-            return WoundedCardErrors.ExpirationMustBeInTheFuture;
-        }
-        if (!patientId.HasValue)
-        {
-            return WoundedCardErrors.PatientIdIsRequired;
+            return WoundedCardErrors.PatientIdInvalid;
         }
 
-        return new WoundedCard(cardNumber, expiration, cardImagePath, patientId);
+        return new WoundedCard(cardNumber, expiration, patientId, cardImagePath);
     }
 
-    public Result<Updated> Update(string? cardNumber, DateTime? expiration, string? cardImagePath, int? patientId)
+    public Result<Updated> Update(string cardNumber, DateTime expiration, int patientId, string? cardImagePath)
     {
         if (string.IsNullOrWhiteSpace(cardNumber))
         {
             return WoundedCardErrors.CardNumberIsRequired;
         }
-        if (!expiration.HasValue)
+        
+        if (expiration < DateTime.Now.Date)
         {
-            return WoundedCardErrors.ExpirationIsRequired;
+            return WoundedCardErrors.CardIsExpired;
         }
-        if (expiration.Value <= DateTime.UtcNow)
+        if (patientId <= 0)
         {
-            return WoundedCardErrors.ExpirationMustBeInTheFuture;
-        }
-        if (!patientId.HasValue)
-        {
-            return WoundedCardErrors.PatientIdIsRequired;
+            return WoundedCardErrors.PatientIdInvalid;
         }
         
         CardNumber = cardNumber;
