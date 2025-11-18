@@ -8,7 +8,6 @@ EFCoreConfiguration.txt
 domainStructure.txt
 gitcommand.txt
 myPayment/
-CreatePatientPayment
 # dotenv files
 .env
 

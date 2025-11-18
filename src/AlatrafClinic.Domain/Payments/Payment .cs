@@ -97,7 +97,7 @@ public sealed class Payment : AuditableEntity<int>
             return PaymentErrors.InvalidAccountId;
         }
 
-        if ((paid + discount) > TotalAmount)
+        if ((paid ?? 0 + discount ?? 0) > TotalAmount)
         {
             return PaymentErrors.OverPayment;
         }

@@ -21,7 +21,8 @@ public static class PaymentMapper
             AccountName = payment.Account?.AccountName,
             PaymentType = payment.Type,
             IsCompleted = payment.IsCompleted,
-            Residual = payment.Residual
+            Residual = payment.Residual,
+            Notes = payment.DisabledPayment?.Notes
         };
     }
     public static List<DisabledPaymentDto> ToDisabledPaymentDtos(this IEnumerable<Payment> payments)
@@ -29,5 +30,27 @@ public static class PaymentMapper
         ArgumentNullException.ThrowIfNull(payments);
 
         return payments.Select(p => p.ToDisabledPaymentDto()).ToList();
+    }
+    public static PatientPaymentDto ToPatientPaymentDto(this Payment payment)
+    {
+        ArgumentNullException.ThrowIfNull(payment);
+
+        return new PatientPaymentDto
+        {
+            Id = payment.Id,
+            TotalAmount = payment.TotalAmount,
+            PaidAmmount = payment.PaidAmount,
+            DiscountAmount = payment.Discount,
+            DiagnosisId = payment.DiagnosisId,
+            Diagnosis = payment.Diagnosis.ToDto(),
+            PatientName = payment.Diagnosis?.Patient?.Person?.FullName ?? string.Empty,
+            AccountId = payment.AccountId,
+            AccountName = payment.Account?.AccountName,
+            PaymentType = payment.Type,
+            IsCompleted = payment.IsCompleted,
+            Residual = payment.Residual,
+            VoucherNumber = payment.PatientPayment?.VoucherNumber,
+            Notes = payment.PatientPayment?.Notes
+        };
     }
 }
