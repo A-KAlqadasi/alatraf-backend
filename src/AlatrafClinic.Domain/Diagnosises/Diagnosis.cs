@@ -276,7 +276,7 @@ public class Diagnosis : AuditableEntity<int>
         
         if (existingPayment != null)
         {
-            return existingPayment.Update(payment.DiagnosisId, payment.TotalAmount, payment.Type);
+            return existingPayment.UpdateCore(payment.DiagnosisId, payment.TotalAmount, payment.PaymentReference);
         }
         else
         {

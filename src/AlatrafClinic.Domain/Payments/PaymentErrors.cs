@@ -16,7 +16,7 @@ public static class PaymentErrors
         Error.Validation("Payment.OverPayment", "Paid ammount and discount is over required total ammount");
     public static readonly Error InvalidDiagnosisId =
         Error.Validation("Payment.InvalidDiagnosisId", "Diagnosis Id is invalid.");
-    public static readonly Error InvalidPaymentType = Error.Validation("Payment.InvalidPaymentType", "Payement Type is invalid");
+    public static readonly Error InvalidPaymentReference = Error.Validation("Payment.InvalidPaymentReference", "Payement Reference is invalid");
     public static readonly Error PaidAmountLessThanTotal = Error.Conflict("Payment.PaidAmountLessThanTotal", "The paid ammount and discount less than total ammount");
     public static readonly Error InvalidAccountId = Error.Validation("Payment.InvalidAccountId", "Account Id is invalid");
     public static readonly Error PaymentAlreadyCompleted = Error.Conflict("Payment.PaymentAlreadyCompleted", "The payment is already completed");
@@ -26,5 +26,5 @@ public static class PaymentErrors
     public static readonly Error PaymentNotFound = Error.NotFound("Payment.PaymentNotFound", "Payment not found");
     public static readonly Error DiagnosisMissmatch = Error.Conflict("Payment.DiagnosisMismatch", "Payment diagnosis does not match");
     public static readonly Error TotalMissmatch = Error.Conflict("Payment.TotalMismatch", "Payment total does not match");
-
+    public static readonly Error InvalidAccountKind = Error.Validation("Payment.InvalidAccountKind", "Invalid account kind");
 }

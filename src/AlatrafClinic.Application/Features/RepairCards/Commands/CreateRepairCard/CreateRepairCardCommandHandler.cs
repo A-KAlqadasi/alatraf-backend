@@ -94,7 +94,7 @@ public sealed class CreateRepairCardCommandHandler
 
         var repairCard = repairCardResult.Value;
 
-        var paymentResult = Payment.Create(diagnosis.Id, repairCard.TotalCost, PaymentType.Repair);
+        var paymentResult = Payment.Create(diagnosis.Id, repairCard.TotalCost, PaymentReference.Repair);
 
         if (paymentResult.IsError)
         {

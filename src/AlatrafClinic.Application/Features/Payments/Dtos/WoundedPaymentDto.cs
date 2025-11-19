@@ -5,18 +5,8 @@ namespace AlatrafClinic.Application.Features.Payments.Dtos;
 
 public class WoundedPaymentDto
 {
-    public int Id { get; set; }
-    public string? CardNumber { get; set; }
-    public string? ReportNumber { get; set; }
-    public decimal TotalAmount { get; set; }
-    public int DiagnosisId { get; set; }
-    public DiagnosisDto Diagnosis { get; set; } = default!;
-    public string PatientName { get; set; } = default!;
     public int? AccountId { get; set; }
-    public string? AccountName { get; set; }
-    public PaymentType PaymentType { get; set; } = default!;
-    public bool IsCompleted { get; set; }
-    public decimal Residual { get; set; }
+    public int WoundedCardId { get; set; }
+    public string? ReportNumber { get; set; }
     public string? Notes { get; set; }
-    public DateTime PaymentDate { get; set; }
 }

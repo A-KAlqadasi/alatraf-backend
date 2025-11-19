@@ -98,7 +98,7 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
             return assignDiagnosisResult.Errors;
         }
 
-        var paymentResult = Payment.Create(diagnosis.Id, sale.Total, PaymentType.Sales);
+        var paymentResult = Payment.Create(diagnosis.Id, sale.Total, PaymentReference.Sales);
 
         if (paymentResult.IsError)
         {

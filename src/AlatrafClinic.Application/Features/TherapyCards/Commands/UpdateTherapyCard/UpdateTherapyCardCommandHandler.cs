@@ -126,12 +126,12 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             return TherapyCardErrors.PaymentNotFound;
         }
 
-        PaymentType paymentType = currentTherapy.CardStatus == CardStatus.New ? PaymentType.NewTherapyCard : PaymentType.RenewTherapyCard;
+        PaymentReference paymentReference = currentTherapy.CardStatus == CardStatus.New ? PaymentReference.TherapyCardNew : PaymentReference.TherapyCardRenew;
 
-        var updatePaymentResult = currentPayment.Update(
+        var updatePaymentResult = currentPayment.UpdateCore(
             diagnosisId: updatedDiagnosis.Id,
             total: currentTherapy.TotalCost,
-            type: paymentType);
+            reference: paymentReference);
         
         if (updatePaymentResult.IsError)
         {

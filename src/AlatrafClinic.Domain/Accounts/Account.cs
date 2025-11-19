@@ -7,6 +7,7 @@ public sealed class Account : AuditableEntity<int>
 {
     public string AccountName { get; private set; } = string.Empty;
     public string Code { get; private set; } = string.Empty;
+    public AccountKind? AccountKind { get; private set; }
     private Account() { }
 
     private Account(string name)

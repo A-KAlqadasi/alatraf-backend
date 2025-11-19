@@ -126,10 +126,10 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return RepairCardErrors.PaymentNotFound;
         }
 
-        var updatePaymentResult = currentPayment.Update(
+        var updatePaymentResult = currentPayment.UpdateCore(
             diagnosisId: updatedDiagnosis.Id,
             total: currentRepairCard.TotalCost,
-            type: PaymentType.Repair);
+            reference: PaymentReference.Repair);
         
         if (updatePaymentResult.IsError)
         {

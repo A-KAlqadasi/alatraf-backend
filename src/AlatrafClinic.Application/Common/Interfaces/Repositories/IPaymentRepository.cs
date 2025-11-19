@@ -19,5 +19,7 @@ public interface IPaymentRepository : IGenericRepository<Payment, int>
     Task AddWoundedPaymentAsync(WoundedPayment woundedPayment, CancellationToken ct);
     Task<WoundedPayment?> GetWoundedPaymentByIdAsync(int id, CancellationToken ct);
     Task UpdateWoundedPaymentAsync(WoundedPayment woundedPayment, CancellationToken ct);
+
+    Task<IQueryable<Payment>> GetPaymentsQueryAsync(CancellationToken ct = default);
     
 }

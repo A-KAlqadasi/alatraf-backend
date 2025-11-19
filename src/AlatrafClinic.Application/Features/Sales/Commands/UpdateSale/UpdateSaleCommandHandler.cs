@@ -114,10 +114,10 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
             return SaleErrors.PaymentNotFound;
         }
 
-        var updatePaymentResult = currentPayment.Update(
+        var updatePaymentResult = currentPayment.UpdateCore(
             diagnosisId: diagnosis.Id,
             total: currentSale.Total,
-            type: PaymentType.Sales);
+            reference: PaymentReference.Sales);
         
         if (updatePaymentResult.IsError)
         {
