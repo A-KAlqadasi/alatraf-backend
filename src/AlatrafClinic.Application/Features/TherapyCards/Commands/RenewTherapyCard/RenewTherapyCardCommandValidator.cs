@@ -19,15 +19,7 @@ public class RenewTherapyCardCommandValidator : AbstractValidator<RenewTherapyCa
             .NotEmpty()
             .WithMessage("At least one medical program must be specified.");
 
-        RuleForEach(x => x.Programs).ChildRules(program =>
-        {
-            program.RuleFor(p => p.MedicalProgramId)
-                .GreaterThan(0)
-                .WithMessage("Medical program ID must be greater than zero.");
-
-            program.RuleFor(p => p.Duration)
-                .GreaterThan(0)
-                .WithMessage("Duration must be greater than zero.");
-        });
+        RuleForEach(x => x.Programs)
+            .SetValidator(new RenewTherapyCardMedicalProgramCommandValidator());
     }
 }

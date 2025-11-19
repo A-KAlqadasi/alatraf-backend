@@ -1,8 +1,8 @@
 namespace AlatrafClinic.Domain.Payments;
 
-public enum PaymentType : byte
+public enum PaymentReference : byte
 {
-    TherapyCardNew = 1,
+    TherapyCardNew,
     TherapyCardRenew,
     TherapyCardDamagedReplacement,
     Repair,

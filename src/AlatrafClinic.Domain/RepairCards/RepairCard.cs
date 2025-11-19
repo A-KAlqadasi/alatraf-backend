@@ -19,7 +19,7 @@ public class RepairCard : AuditableEntity<int>
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
 
-    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsFullyPaid);
+    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsCompleted);
     public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
 
     public ExitCard? ExitCard { get; set; }

@@ -11,6 +11,8 @@ using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 
 using MediatR;
+using AlatrafClinic.Domain.Payments;
+using AlatrafClinic.Domain.TherapyCards.Enums;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 
@@ -66,18 +68,21 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             return DiagnosisErrors.MedicalProgramsAreRequired;
         }
 
-        foreach (var (medicalProgramId, duration, notes) in command.Programs)
+        List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms = new();
+
+        foreach (var program in command.Programs)
         {
-            var medicalProgram = await _unitOfWork.MedicalPrograms.IsExistAsync(medicalProgramId, ct);
+            var medicalProgram = await _unitOfWork.MedicalPrograms.IsExistAsync(program.MedicalProgramId, ct);
             if (!medicalProgram)
             {
-                _logger.LogError("Medical program with id {MedicalProgramId} not found", medicalProgramId);
+                _logger.LogError("Medical program with id {MedicalProgramId} not found", program.MedicalProgramId);
 
                 return MedicalProgramErrors.MedicalProgramNotFound;
             }
+            diagnosisPrograms.Add((program.MedicalProgramId, program.Duration, program.Notes));
         }
 
-        var upsertDiagnosisProgramsResult = updatedDiagnosis.UpsertDiagnosisPrograms(command.Programs);
+        var upsertDiagnosisProgramsResult = updatedDiagnosis.UpsertDiagnosisPrograms(diagnosisPrograms);
         
         if (upsertDiagnosisProgramsResult.IsError)
         {
@@ -109,12 +114,36 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         if (upsertTherapyResult.IsError)
         {
             _logger.LogError("Failed to upsert diagnosis programs to TherapyCard with id {TherapyCardId}: {Errors}", command.TherapyCardId, string.Join(", ", upsertTherapyResult.Errors));
-            
+
             return upsertTherapyResult.Errors;
         }
 
+        var currentPayment = currentTherapy.Payment;
+        
+        if (currentPayment is null)
+        {
+            _logger.LogError("Payment for TherapyCard with id {therapyId} not found", command.TherapyCardId);
+            return TherapyCardErrors.PaymentNotFound;
+        }
+
+        PaymentReference paymentReference = currentTherapy.CardStatus == CardStatus.New ? PaymentReference.TherapyCardNew : PaymentReference.TherapyCardRenew;
+
+        var updatePaymentResult = currentPayment.UpdateCore(
+            diagnosisId: updatedDiagnosis.Id,
+            total: currentTherapy.TotalCost,
+            reference: paymentReference);
+        
+        if (updatePaymentResult.IsError)
+        {
+            _logger.LogError("Failed to update payment for TherapyCard with id {therapyId}: {Errors}", command.TherapyCardId, string.Join(", ", updatePaymentResult.Errors));
+            return updatePaymentResult.Errors;
+        }
+
+        updatedDiagnosis.AssignPayment(currentPayment);
+
         await _unitOfWork.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
         await _unitOfWork.TherapyCards.UpdateAsync(currentTherapy, ct);
+        await _unitOfWork.Payments.UpdateAsync(currentPayment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("TherapyCard with id {TherapyCardId} updated successfully", command.TherapyCardId);

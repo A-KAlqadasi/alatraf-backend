@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.AccountTypes;
+using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
@@ -11,98 +11,114 @@ namespace AlatrafClinic.Domain.Payments;
 public sealed class Payment : AuditableEntity<int>
 {
     public decimal TotalAmount { get; private set; }
-    public decimal? PaidAmount { get; private set; }
-    public decimal? Discount { get; private set; }
+    public decimal? PaidAmount { get; private set; }        // nullable when not applicable
+    public decimal? Discount { get; private set; }          // nullable when not applicable
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
-    
-    public int AccountId { get; private set; }
-    public AccountType AccountType { get; private set; } = default!;
-    public PaymentType Type { get; private set; }
+
+    public int? AccountId { get; private set; }
+    public Account? Account { get; private set; }
+    public PaymentReference PaymentReference { get; private set; }
+    public AccountKind AccountKind { get; private set; }
+    public bool IsCompleted { get; private set; } = false;
 
     public PatientPayment? PatientPayment { get; private set; }
     public DisabledPayment? DisabledPayment { get; private set; }
     public WoundedPayment? WoundedPayment { get; private set; }
 
-
     public decimal Residual =>
-        Math.Max(0, TotalAmount - ((PaidAmount ?? 0) + (Discount ?? 0)));
+        Math.Max(0, TotalAmount - ((PaidAmount ?? 0m) + (Discount ?? 0m)));
 
     private Payment() { }
 
-    private Payment(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    private Payment(int diagnosisId, decimal total, PaymentReference reference)
     {
         DiagnosisId = diagnosisId;
         TotalAmount = total;
-        PaidAmount = paid;
-        Discount = discount;
-        AccountId = accountId;
-        Type = type;
+        PaymentReference = reference;
+        IsCompleted = false;
     }
 
-    public static Result<Payment> Create(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    public static Result<Payment> Create(int diagnosisId, decimal total, PaymentReference reference)
     {
-        if (diagnosisId <= 0) { return PaymentErrors.InvalidDiagnosisId; }
-        
-        if (total <= 0) { return PaymentErrors.InvalidTotal; }
-            
-        if (paid is < 0) { return PaymentErrors.InvalidPaid; }
-            
-        if (discount is < 0) { return PaymentErrors.InvalidDiscount; }
+        if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
+        if (total <= 0) return PaymentErrors.InvalidTotal;
+        if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
 
-        if ((paid ?? 0) + (discount ?? 0) > total) { return PaymentErrors.OverPayment; }
-
-        return new Payment(diagnosisId, total, paid, discount, accountId, type);
+        return new Payment(diagnosisId, total, reference);
     }
 
-    public Result<Updated> Update(int diagnosisId, decimal total, decimal? paid, decimal? discount, int accountId, PaymentType type)
+    public Result<Updated> UpdateCore(int diagnosisId, decimal total, PaymentReference reference)
     {
-        if (diagnosisId <= 0)
-        {
-            return PaymentErrors.InvalidDiagnosisId;
-        }
+        if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
+        if (total <= 0) return PaymentErrors.InvalidTotal;
+        if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
 
-        if (total <= 0)
-        {
-            return PaymentErrors.InvalidTotal;
-        }
-
-        if (paid is < 0)
-        {
-            return PaymentErrors.InvalidPaid;
-        }
-
-        if (discount is < 0)
-        {
-            return PaymentErrors.InvalidDiscount;
-        }
-
-        if ((paid ?? 0) + (discount ?? 0) > total)
-            return PaymentErrors.OverPayment;
-
-        AccountId = accountId;
-        Type = type;
         DiagnosisId = diagnosisId;
         TotalAmount = total;
-        PaidAmount = paid;
-        Discount = discount;
-
+        PaymentReference = reference;
         return Result.Updated;
     }
- 
-    public Result<Updated> AddPaidAmount(decimal amount)
+
+    public Result<Updated> Pay(decimal? paid, decimal? discount, int? accountId)
     {
-        if (amount <= 0)
-            return PaymentErrors.InvalidPaid;
+        // paid and discount must be non-negative if provided
+        if (paid != null && paid < 0m) return PaymentErrors.InvalidPaid;
+        if (discount != null && discount < 0m) return PaymentErrors.InvalidDiscount;
 
-        var currentPaid = PaidAmount ?? 0;
-        var currentDiscount = Discount ?? 0;
-
-        if (currentPaid + amount > TotalAmount - currentDiscount)
+        // Overpayment check
+        if (((paid ?? 0m) + (discount ?? 0m)) > TotalAmount)
             return PaymentErrors.OverPayment;
 
-        PaidAmount = currentPaid + amount;
+        // Assign
+        PaidAmount = paid;
+        Discount = discount;
+        AccountId = accountId;
+
+        IsCompleted = true;
+
         return Result.Updated;
     }
-    public bool IsFullyPaid => Residual == 0;
+
+    public void ClearPaymentType()
+    {
+        PatientPayment = null;
+        DisabledPayment = null;
+        WoundedPayment = null;
+    }
+
+    public void MarkAccountKind(AccountKind kind)
+    {
+        AccountKind = kind;
+    }
+
+    public Result<Updated> AssignPatientPayment(PatientPayment patientPayment)
+    {
+        if (patientPayment == null) return PaymentErrors.InvalidPatientPayment;
+        // Clear other types to ensure single-type invariant
+        ClearPaymentType();
+        PatientPayment = patientPayment;
+        AccountKind = AccountKind.Patient;
+        return Result.Updated;
+    }
+
+    public Result<Updated> AssignDisabledPayment(DisabledPayment disabledPayment)
+    {
+        if (disabledPayment == null) return PaymentErrors.InvalidDisabledPayment;
+        ClearPaymentType();
+        DisabledPayment = disabledPayment;
+        AccountKind = AccountKind.Disabled;
+        return Result.Updated;
+    }
+
+    public Result<Updated> AssignWoundedPayment(WoundedPayment woundedPayment)
+    {
+        if (woundedPayment == null) return PaymentErrors.InvalidWoundedPayment;
+        ClearPaymentType();
+        WoundedPayment = woundedPayment;
+        AccountKind = AccountKind.Wounded;
+        return Result.Updated;
+    }
+
+    public bool IsFullyPaid => Residual == 0m;
 }

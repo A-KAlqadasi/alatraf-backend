@@ -27,5 +27,7 @@ public class UpdateTherapyCardCommandValidator : AbstractValidator<UpdateTherapy
             .GreaterThan(x => x.ProgramStartDate).WithMessage("ProgramEndDate must be later than ProgramStartDate.");
         RuleFor(x => x.ProgramStartDate)
             .LessThan(x => x.ProgramEndDate).WithMessage("ProgramStartDate must be earlier than ProgramEndDate.");
+        RuleForEach(x => x.Programs)
+            .SetValidator(new UpdateTherapyCardMedicalProgramCommandValidator());
     }
 }

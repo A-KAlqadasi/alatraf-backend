@@ -13,6 +13,7 @@ using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
+using AlatrafClinic.Domain.Payments;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 
@@ -60,18 +61,20 @@ public sealed class CreateTherapyCardCommandHandler
         var diagnosis = diagnosisResult.Value;
 
         // Validate programs and add to diagnosis
-        foreach (var (programId, duration, notes) in command.Programs)
+        List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms = new();
+        foreach (var program in command.Programs)
         {
-            var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(programId, ct);
+            var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(program.MedicalProgramId, ct);
             if (!exists)
             {
-                _logger.LogError("Medical program {ProgramId} not found.", programId);
+                _logger.LogError("Medical program {ProgramId} not found.", program.MedicalProgramId);
 
                 return MedicalProgramErrors.MedicalProgramNotFound;
             }
+            diagnosisPrograms.Add((program.MedicalProgramId, program.Duration, program.Notes));
         }
 
-        var upsertDiagnosisResult = diagnosis.UpsertDiagnosisPrograms(command.Programs);
+        var upsertDiagnosisResult = diagnosis.UpsertDiagnosisPrograms(diagnosisPrograms);
 
         if (upsertDiagnosisResult.IsError)
         {
@@ -97,6 +100,7 @@ public sealed class CreateTherapyCardCommandHandler
         }
 
         var therapyCard = createTherapyCardResult.Value;
+
         var upsertTherapyResult = therapyCard.UpsertDiagnosisPrograms(diagnosis.DiagnosisPrograms.ToList());
 
         if (upsertTherapyResult.IsError)
@@ -105,19 +109,27 @@ public sealed class CreateTherapyCardCommandHandler
 
             return upsertTherapyResult.Errors;
         }
-        
+
+        var paymentResult = Payment.Create(diagnosis.Id, therapyCard.TotalCost, PaymentReference.TherapyCardNew);
+
+        if (paymentResult.IsError)
+        {
+            _logger.LogError("Failed to create Payment for TherapyCard : {Errors}", string.Join(", ", paymentResult.Errors));
+            return paymentResult.Errors;
+        }
+
+        var payment = paymentResult.Value;
+
+        diagnosis.AssignPayment(payment);
 
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
         await _unitOfWork.TherapyCards.AddAsync(therapyCard, ct);
+        await _unitOfWork.Payments.AddAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
-        // Optional cache write-through
-        var dto = therapyCard.ToDto();
-
-        //await _cache.SetAsync($"therapycard:{dto.TherapyCardId}", dto, ct: ct);
-
+        
         _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);
         
-        return dto;
+        return therapyCard.ToDto();
     }
 }

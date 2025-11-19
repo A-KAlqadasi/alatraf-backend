@@ -5,28 +5,29 @@ namespace AlatrafClinic.Domain.Payments.PatientPayments;
 
 public class PatientPayment : AuditableEntity<int>
 {
-    public string CouponNumber { get; private set; } = default!;
-    public int PaymentId { get; private set; }
-    public Payment? Payment { get; set; }
+    public string VoucherNumber { get; private set; } = default!;
+    public string? Notes { get; private set; }
 
     private PatientPayment() { }
 
     private PatientPayment(
         string couponNumber,
-        int paymentId
-    )
+        int paymentId,
+        string? notes
+    ) : base(paymentId)
     {
-        CouponNumber = couponNumber;
-        PaymentId = paymentId;
+        VoucherNumber = couponNumber;
+        Notes = notes;
     }
     public static Result<PatientPayment> Create(
-        string couponNumber,
-        int paymentId
+        string voucherNumber,
+        int paymentId,
+        string? notes = null
     )
     {
-        if (string.IsNullOrWhiteSpace(couponNumber))
+        if (string.IsNullOrWhiteSpace(voucherNumber))
         {
-            return PatientPaymentErrors.CouponNumberIsRequired;
+            return PatientPaymentErrors.VoucherNumberIsRequired;
         }
 
         if (paymentId <= 0)
@@ -35,28 +36,24 @@ public class PatientPayment : AuditableEntity<int>
         }
 
         return new PatientPayment(
-            couponNumber,
-            paymentId
+            voucherNumber,
+            paymentId,
+            notes
         );
     }
 
     public Result<Updated> Update(
-        string couponNumber,
-        int paymentId
+        string voucherNumber,
+        string? notes = null
     )
     {
-        if (string.IsNullOrWhiteSpace(couponNumber))
+        if (string.IsNullOrWhiteSpace(voucherNumber))
         {
-            return PatientPaymentErrors.CouponNumberIsRequired;
+            return PatientPaymentErrors.VoucherNumberIsRequired;
         }
 
-        if (paymentId <= 0)
-        {
-            return PatientPaymentErrors.PaymentIdIsRequired;
-        }
-
-        CouponNumber = couponNumber;
-        PaymentId = paymentId;
+        VoucherNumber = voucherNumber;
+        Notes = notes;
 
         return Result.Updated;
     }

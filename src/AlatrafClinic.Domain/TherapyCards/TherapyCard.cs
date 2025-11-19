@@ -18,13 +18,13 @@ public class TherapyCard : AuditableEntity<int>
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
-    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId);
+    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsCompleted);
     public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
     
     public TherapyCardType Type { get; private set; }
     public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
-    public decimal? TotalCost => NumberOfSessions * SessionPricePerType;
+    public decimal TotalCost => NumberOfSessions * SessionPricePerType;
     public bool IsExpired => DateTime.Now > ProgramEndDate;
     public bool IsEditable => IsActive && !IsExpired && !IsPaid && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();

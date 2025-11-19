@@ -6,6 +6,7 @@ using AlatrafClinic.Application.Features.Sales.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Inventory.Items;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Sales;
 
 using MediatR;
@@ -97,9 +98,23 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
             return assignDiagnosisResult.Errors;
         }
 
+        var paymentResult = Payment.Create(diagnosis.Id, sale.Total, PaymentReference.Sales);
+
+        if (paymentResult.IsError)
+        {
+            _logger.LogError("Failed to create Payment for Sales : {Errors}", string.Join(", ", paymentResult.Errors));
+            return paymentResult.Errors;
+        }
+
+        var payment = paymentResult.Value;
+
+        diagnosis.AssignPayment(payment);
+
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
         await _unitOfWork.Sales.AddAsync(sale, ct);
+        await _unitOfWork.Payments.AddAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        
         _logger.LogInformation("Created Sale {saleId} for Diagnosis {diagnosisId} and ticket {ticketId}.", sale.Id, diagnosis.Id, command.TicketId);
         
         return sale.ToDto();

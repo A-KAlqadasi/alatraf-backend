@@ -4,13 +4,21 @@ namespace AlatrafClinic.Domain.Payments.PatientPayments;
 
 public static class PatientPaymentErrors
 {
-    public static readonly Error CouponNumberIsRequired = Error.Validation(
-        "PatientPayment.CouponNumberIsRequired",
-        "Coupon number is required."
+    public static readonly Error VoucherNumberIsRequired = Error.Validation(
+        "PatientPayment.VoucherNumberIsRequired",
+        "Voucher number is required."
     );
 
     public static readonly Error PaymentIdIsRequired = Error.Validation(
         "PatientPayment.PaymentIdIsRequired",
         "Payment Id is required."
+    );
+    public static readonly Error PatientPaymentNotFound = Error.NotFound(
+        "PatientPayment.NotFound",
+        "Patient payment not found."
+    );
+    public static readonly Error VoucherNumberAlreadyExists = Error.Validation(
+        "PatientPayment.VoucherNumberAlreadyExists",
+        "Voucher number already exists."
     );
 }

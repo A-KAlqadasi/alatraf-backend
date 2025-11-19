@@ -271,8 +271,18 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.PaymentIsRequired;
         }
+
+        var existingPayment = _payments.FirstOrDefault(p => p.Id == payment.Id);
         
-        _payments.Add(payment);
+        if (existingPayment != null)
+        {
+            return existingPayment.UpdateCore(payment.DiagnosisId, payment.TotalAmount, payment.PaymentReference);
+        }
+        else
+        {
+            _payments.Add(payment);
+        }
+        
         return Result.Updated;
     }
 }
