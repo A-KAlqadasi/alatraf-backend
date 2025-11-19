@@ -111,11 +111,6 @@ public sealed class Payment : AuditableEntity<int>
 
     public Result<Updated> AssignPatientPayment(PatientPayment patientPayment)
     {
-        if (IsCompleted)
-        {
-            return PaymentErrors.PaymentAlreadyCompleted;
-        }
-
         if (patientPayment == null)
         {
             return PaymentErrors.InvalidPatientPayment;
@@ -126,11 +121,7 @@ public sealed class Payment : AuditableEntity<int>
     }
     public Result<Updated> AssignDisabledPayment(DisabledPayment disabledPayment)
     {
-        if (IsCompleted)
-        {
-            return PaymentErrors.PaymentAlreadyCompleted;
-        }
-        if (DisabledPayment == null)
+        if (disabledPayment == null)
         {
             return PaymentErrors.InvalidDisabledPayment;
         }
@@ -141,11 +132,7 @@ public sealed class Payment : AuditableEntity<int>
 
     public Result<Updated> AssignWoundedPayment(WoundedPayment woundedPayment)
     {
-        if (IsCompleted)
-        {
-            return PaymentErrors.PaymentAlreadyCompleted;
-        }
-        if (WoundedPayment == null)
+        if (woundedPayment == null)
         {
             return PaymentErrors.InvalidWoundedPayment;
         }

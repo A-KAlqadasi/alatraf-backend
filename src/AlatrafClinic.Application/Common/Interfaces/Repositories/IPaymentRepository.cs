@@ -13,6 +13,7 @@ public interface IPaymentRepository : IGenericRepository<Payment, int>
 
     Task AddPatientPaymentAsync(PatientPayment patientPayment, CancellationToken ct);
     Task<PatientPayment?> GetPatientPaymentByIdAsync(int id, CancellationToken ct);
+    Task<bool> IsVoucherNumberExistsAsync(string voucherNumber, CancellationToken ct);
     Task UpdatePatientPaymentAsync(PatientPayment patientPayment, CancellationToken ct);
 
     Task AddWoundedPaymentAsync(WoundedPayment woundedPayment, CancellationToken ct);

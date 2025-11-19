@@ -1,8 +1,5 @@
-
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
-using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Application.Features.Payments.Mappers;
 using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
@@ -12,21 +9,22 @@ using MediatR;
 
 using Microsoft.Extensions.Logging;
 
-namespace AlatrafClinic.Application.Features.Payments.Commands.CreatePatientPayment;
+namespace AlatrafClinic.Application.Features.Payments.Commands.UpdatePatientPayment;
 
-public class CreatePatientPaymentCommandHandler : IRequestHandler<CreatePatientPaymentCommand, Result<PatientPaymentDto>>
+public class UpdatePatientPaymentCommandHandler : IRequestHandler<UpdatePatientPaymentCommand, Result<Updated>>
 {
-    private readonly ILogger<CreatePatientPaymentCommandHandler> _logger;
+    private readonly ILogger<UpdatePatientPaymentCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICacheService _cache;
 
-    public CreatePatientPaymentCommandHandler(ILogger<CreatePatientPaymentCommandHandler> logger, IUnitOfWork unitOfWork, ICacheService cache)
+    public UpdatePatientPaymentCommandHandler(ILogger<UpdatePatientPaymentCommandHandler> logger, IUnitOfWork unitOfWork, ICacheService cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _cache = cache;
     }
-    public async Task<Result<PatientPaymentDto>> Handle(CreatePatientPaymentCommand command, CancellationToken ct)
+
+    public async Task<Result<Updated>> Handle(UpdatePatientPaymentCommand command, CancellationToken ct)
     {
         var payment = await _unitOfWork.Payments.GetByIdAsync(command.PaymentId, ct);
 
@@ -34,12 +32,6 @@ public class CreatePatientPaymentCommandHandler : IRequestHandler<CreatePatientP
         {
             _logger.LogError("Payment with id {PaymentId} not found", command.PaymentId);
             return PaymentErrors.PaymentNotFound;
-        }
-
-        if (payment.IsCompleted)
-        {
-            _logger.LogError("Payment with id {PaymentId} is already completed", command.PaymentId);
-            return PaymentErrors.PaymentAlreadyCompleted;
         }
 
         if (payment.DiagnosisId != command.DiagnosisId)
@@ -66,20 +58,35 @@ public class CreatePatientPaymentCommandHandler : IRequestHandler<CreatePatientP
             _logger.LogError("Total amount missmatch for payment id {PaymentId}: command total {CommandTotal} does not match payment total {PaymentTotal}", payment.Id, command.TotalAmount, payment.TotalAmount);
             return PaymentErrors.TotalMissmatch;
         }
+        
         if(command.TotalAmount > (command.PaidAmount + command.DiscountAmount))
         {
             _logger.LogError("Paid amount and discount are less than total for payment id {PaymentId}: total {Total} paid {Paid} discount {Discount}", payment.Id, command.TotalAmount, command.PaidAmount, command.DiscountAmount);
             return PaymentErrors.PaidAmountLessThanTotal;
         }
 
-        var patientPaymentResult = PatientPayment.Create(command.VoucherNumber, payment.Id, command.Notes);
+        var patientPayment = await _unitOfWork.Payments.GetPatientPaymentByIdAsync(payment.Id, ct);
+        if (patientPayment is null)
+        {
+            _logger.LogError("Patient payment for payment id {PaymentId} not found", payment.Id);
+            return PatientPaymentErrors.PatientPaymentNotFound;
+        }
+
+        bool isVoucherExists = await _unitOfWork.Payments.IsVoucherNumberExistsAsync(command.VoucherNumber, ct);
+        
+        if (isVoucherExists && patientPayment.VoucherNumber != command.VoucherNumber)
+        {
+            _logger.LogError("Voucher number {VoucherNumber} already exists", command.VoucherNumber);
+            return PatientPaymentErrors.VoucherNumberAlreadyExists;
+        }
+
+        var patientPaymentResult = patientPayment.Update(command.VoucherNumber, command.Notes);
 
         if (patientPaymentResult.IsError)
         {
-            _logger.LogError("Failed to create patient payment for payment id {PaymentId}: {Error}", payment.Id, patientPaymentResult.TopError);
+            _logger.LogError("Failed to update patient payment for payment id {PaymentId}: {Error}", payment.Id, patientPaymentResult.TopError);
             return patientPaymentResult.Errors;
         }
-        var patientPayment = patientPaymentResult.Value;
 
         var assignResult = payment.AssignPatientPayment(patientPayment);
 
@@ -96,11 +103,11 @@ public class CreatePatientPaymentCommandHandler : IRequestHandler<CreatePatientP
             _logger.LogError("Failed to pay payment id {PaymentId}: {Error}", payment.Id, payResult.TopError);
             return payResult.Errors;
         }
-        await _unitOfWork.Payments.AddPatientPaymentAsync(patientPayment, ct);
+        await _unitOfWork.Payments.UpdatePatientPaymentAsync(patientPayment, ct);
         await _unitOfWork.Payments.UpdateAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
-        _logger.LogInformation("Successfully created patient payment for payment id {PaymentId}", payment.Id);
+        _logger.LogInformation("Successfully updated patient payment for payment id {PaymentId}", payment.Id);
 
-        return payment.ToPatientPaymentDto();
+        return Result.Updated;
     }
 }

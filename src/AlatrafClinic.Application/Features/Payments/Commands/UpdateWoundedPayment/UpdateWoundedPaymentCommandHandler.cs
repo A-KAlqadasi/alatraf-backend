@@ -1,7 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
-using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Application.Features.Payments.Mappers;
 using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Cards.WoundedCards;
@@ -12,21 +10,22 @@ using MediatR;
 
 using Microsoft.Extensions.Logging;
 
-namespace AlatrafClinic.Application.Features.Payments.Commands.CreateWoundedPayment;
+namespace AlatrafClinic.Application.Features.Payments.Commands.UpdateWoundedPayment;
 
-public class CreateWoundedPaymentCommandHandler : IRequestHandler<CreateWoundedPaymentCommand, Result<WoundedPaymentDto>>
+public class UpdateWoundedPaymentCommandHandler : IRequestHandler<UpdateWoundedPaymentCommand, Result<Updated>>
 {
-    private readonly ILogger<CreateWoundedPaymentCommandHandler> _logger;
+    private readonly ILogger<UpdateWoundedPaymentCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICacheService _cache;
 
-    public CreateWoundedPaymentCommandHandler(ILogger<CreateWoundedPaymentCommandHandler> logger, IUnitOfWork unitOfWork, ICacheService cache)
+    public UpdateWoundedPaymentCommandHandler(ILogger<UpdateWoundedPaymentCommandHandler> logger, IUnitOfWork unitOfWork, ICacheService cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _cache = cache;
     }
-    public async Task<Result<WoundedPaymentDto>> Handle(CreateWoundedPaymentCommand command, CancellationToken ct)
+
+    public async Task<Result<Updated>> Handle(UpdateWoundedPaymentCommand command, CancellationToken ct)
     {
         var woundedCard = await _unitOfWork.Patients.GetWoundedCardByNumber(command.CardNumber, ct);
 
@@ -50,12 +49,6 @@ public class CreateWoundedPaymentCommandHandler : IRequestHandler<CreateWoundedP
             return PaymentErrors.PaymentNotFound;
         }
 
-        if (payment.IsCompleted)
-        {
-            _logger.LogError("Payment with id {PaymentId} is already completed", command.PaymentId);
-            return PaymentErrors.PaymentAlreadyCompleted;
-        }
-
         if (payment.DiagnosisId != command.DiagnosisId)
         {
             _logger.LogError("Payment diagnosis id {PaymentDiagnosisId} does not match command diagnosis id {CommandDiagnosisId}", payment.DiagnosisId, command.DiagnosisId);
@@ -75,14 +68,21 @@ public class CreateWoundedPaymentCommandHandler : IRequestHandler<CreateWoundedP
             return PaymentErrors.InvalidAccountId;
         }
 
-        var woundedPaymentResult = WoundedPayment.Create(command.PaymentId, command.TotalAmount,30000, woundedCard.Id, command.ReportNumber, command.Notes);
+        var woundedPayment = await _unitOfWork.Payments.GetWoundedPaymentByIdAsync(command.PaymentId, ct);
+
+        if (woundedPayment is null)
+        {
+            _logger.LogError("Wounded payment for payment id {PaymentId} not found", command.PaymentId);
+            return WoundedPaymentErrors.WoundedPaymentNotFound;
+        }
+
+        var woundedPaymentResult = woundedPayment.Update(woundedCard.Id, command.TotalAmount,30000, command.ReportNumber, command.Notes);
 
         if (woundedPaymentResult.IsError)
         {
-            _logger.LogError("Failed to create wounded payment for payment id {PaymentId}: {Error}", payment.Id, woundedPaymentResult.TopError);
+            _logger.LogError("Failed to update wounded payment for payment id {PaymentId}: {Error}", payment.Id, woundedPaymentResult.TopError);
             return woundedPaymentResult.Errors;
         }
-        var woundedPayment = woundedPaymentResult.Value;
 
         var assignResult = payment.AssignWoundedPayment(woundedPayment);
 
@@ -100,12 +100,12 @@ public class CreateWoundedPaymentCommandHandler : IRequestHandler<CreateWoundedP
             return payResult.Errors;
         }
 
-        await _unitOfWork.Payments.AddWoundedPaymentAsync(woundedPayment, ct);
+        await _unitOfWork.Payments.UpdateWoundedPaymentAsync(woundedPayment, ct);
         await _unitOfWork.Payments.UpdateAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
-        
-        _logger.LogInformation("Wounded payment created successfully for payment id {PaymentId}", payment.Id);
 
-        return payment.ToWoundedPaymentDto();
+        _logger.LogInformation("Wounded payment updated successfully for payment id {PaymentId}", payment.Id);
+        
+        return Result.Updated;
     }
 }

@@ -13,4 +13,12 @@ public static class PatientPaymentErrors
         "PatientPayment.PaymentIdIsRequired",
         "Payment Id is required."
     );
+    public static readonly Error PatientPaymentNotFound = Error.NotFound(
+        "PatientPayment.NotFound",
+        "Patient payment not found."
+    );
+    public static readonly Error VoucherNumberAlreadyExists = Error.Validation(
+        "PatientPayment.VoucherNumberAlreadyExists",
+        "Voucher number already exists."
+    );
 }

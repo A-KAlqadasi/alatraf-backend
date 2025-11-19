@@ -33,4 +33,9 @@ public static class WoundedPaymentErrors
             "WoundedPayment.MinimumPriceForReportNumberIsRequired",
             "Minimum Price For Report Number is required."
         );
+    public static readonly Error WoundedPaymentNotFound =
+        Error.NotFound(
+            "WoundedPayment.NotFound",
+            "Wounded Payment not found."
+        );
 }

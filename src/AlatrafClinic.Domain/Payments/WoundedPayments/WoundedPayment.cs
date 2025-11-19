@@ -46,7 +46,7 @@ public class WoundedPayment :AuditableEntity<int>
             notes);
     }
     
-    public Result<Updated> Update(int woundedCardId, decimal total, decimal minPriceForReportNumber, string? reportNumber)
+    public Result<Updated> Update(int woundedCardId, decimal total, decimal minPriceForReportNumber, string? reportNumber, string? notes = null)
     {
 
         if (woundedCardId <= 0)
@@ -61,6 +61,7 @@ public class WoundedPayment :AuditableEntity<int>
 
         WoundedCardId = woundedCardId;
         ReportNumber = reportNumber;
+        Notes = notes;
         
         return Result.Updated;
     }

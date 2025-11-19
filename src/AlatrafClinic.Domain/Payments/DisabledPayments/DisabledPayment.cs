@@ -40,7 +40,7 @@ public class DisabledPayment : AuditableEntity<int>
             paymentId, notes);
     }
     
-    public Result<Updated> Updated(
+    public Result<Updated> Update(
         int disabledCardId,
         string? notes = null)
     {
