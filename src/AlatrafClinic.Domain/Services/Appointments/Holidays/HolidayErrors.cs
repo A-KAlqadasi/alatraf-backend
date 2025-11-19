@@ -10,4 +10,14 @@ public static class HolidayErrors
     public static readonly Error HolidayFixedDateYearMustBeOne = Error.Validation(
         code: "Holiday.FixedDateYearMustBeOne",
         description: "Fixed holiday date must have year set to 1.");
+
+
+    public static readonly Error HolidayEndDateBeforeStartDate = Error.Failure("Holiday end date cannot be before the start date.");
+
+ public static readonly Error FixedHolidayMustBeRecurring =
+        Error.Validation("FixedHolidayMustBeRecurring", "Fixed holidays must be recurring.");
+
+    public static readonly Error InvalidHolidayType =
+       Error.Validation("InvalidHolidayType", "The holiday type is invalid.");
+
 }
