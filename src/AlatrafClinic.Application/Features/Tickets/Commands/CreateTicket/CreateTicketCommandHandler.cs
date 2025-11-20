@@ -1,6 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Mappers;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Services.Tickets;
@@ -36,6 +37,7 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
         }
 
         var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
+
         if (service is null)
         {
             _logger.LogError("Service with Id {ServiceId} not found.", command.ServiceId);
@@ -44,6 +46,7 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
         }
 
         var ticket = Ticket.Create(patient, service);
+        
 
         if (ticket.IsError)
         {

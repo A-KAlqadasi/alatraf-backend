@@ -8,7 +8,6 @@ using AlatrafClinic.Domain.Payments.DisabledPayments;
 
 namespace AlatrafClinic.Application.Features.Payments.Commands;
 
-// DisabledPaymentHandler.cs
 public class DisabledPaymentHandler : IPaymentTypeHandler
 {
     public AccountKind Kind => AccountKind.Disabled;

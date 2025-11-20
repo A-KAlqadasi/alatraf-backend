@@ -24,30 +24,29 @@ public class CreateHolidayCommandHandler(
   private readonly ILogger<CreateHolidayCommandHandler> _logger = logger;
   private readonly ICacheService _cache = cache;
 
-  public async Task<Result<HolidayDto>> Handle(CreateHolidayCommand req, CancellationToken ct)
+  public async Task<Result<HolidayDto>> Handle(CreateHolidayCommand command, CancellationToken ct)
   {
 
-    var alreadyExists = await _unitOfWork.Holidays.HasSameHoliday(req.StartDate, ct);
+    var alreadyExists = await _unitOfWork.Holidays.HasSameHoliday(command.StartDate, ct);
 
     if (alreadyExists)
     {
-      return ApplicationErrors.HolidayAlreadyExists(req.StartDate);
-
+      return ApplicationErrors.HolidayAlreadyExists(command.StartDate);
     }
 
 
     Result<Holiday> holidayResult;
 
-    if (req.Type == HolidayType.Fixed)
+    if (command.Type == HolidayType.Fixed)
     {
-      holidayResult = Holiday.CreateFixed(req.StartDate, req.Name);
+      holidayResult = Holiday.CreateFixed(command.StartDate, command.Name);
     }
     else
     {
       holidayResult = Holiday.CreateTemporary(
-          req.StartDate,
-          req.Name,
-          req.EndDate
+          command.StartDate,
+          command.Name,
+          command.EndDate
       );
     }
 
@@ -56,7 +55,7 @@ public class CreateHolidayCommandHandler(
 
     var holiday = holidayResult.Value;
 
-    if (req.IsActive)
+    if (command.IsActive)
       holiday.Activate();
     else
       holiday.Deactivate();

@@ -5,6 +5,7 @@ using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
+using AlatrafClinic.Domain.Services.Enums;
 using AlatrafClinic.Domain.Services.Tickets;
 
 using Microsoft.Extensions.Caching.Hybrid;
@@ -46,6 +47,18 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
             return TicketErrors.TicketNotFound;
         }
 
+        if (!ticket.IsEditable)
+        {
+            _logger.LogError("Ticket {TicketId} is not editable.", ticketId);
+            return TicketErrors.ReadOnly;
+        }
+
+        if (ticket.Status == TicketStatus.Pause)
+        {
+            _logger.LogError("Ticket {ticketId} is paused and cannot accept a diagnosis. change it to continue first!", ticketId);
+            return TicketErrors.TicketPaused;
+        }
+
         var reasons = new List<InjuryReason>();
         foreach (var id in injuryReasons.Distinct())
         {
@@ -84,8 +97,9 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         }
 
         var diagnosis = diagnosisResult.Value;
-        
+
         _logger.LogInformation("Diagnosis entity instantiated (pending persist) for ticket {TicketId}.", ticketId);
+        ticket.Complete();
 
         return diagnosis;
     }

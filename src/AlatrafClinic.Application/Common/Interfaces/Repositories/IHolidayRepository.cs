@@ -6,6 +6,6 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 
 public interface IHolidayRepository : IGenericRepository<Holiday, int>
 {
-      Task<IQueryable<Holiday>> GetHolidaysQueryAsync(CancellationToken ct = default);
+    Task<IQueryable<Holiday>> GetHolidaysQueryAsync(CancellationToken ct = default);
    Task< bool> HasSameHoliday(DateTime startDate, CancellationToken ct);
 }

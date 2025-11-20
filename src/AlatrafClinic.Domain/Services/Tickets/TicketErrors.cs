@@ -20,5 +20,7 @@ public static class TicketErrors
     public static readonly Error DiagnosisTicketMismatch = Error.Validation("Ticket.DiagnosisTicketMismatch", "The diagnosis does not belong to this ticket");
     public static readonly Error AppointmentTicketMismatch = Error.Validation("Ticket.AppointmentTicketMismatch", "The appointment does not belong to this ticket");
     public static readonly Error TicketNotFound = Error.NotFound("Ticket.NotFound", "Ticket not found");
+    public static readonly Error TicketAlreadHasAppointment = Error.Conflict("Ticket.AlreadHasAppointment", "Ticket already has appointment");
+    public static readonly Error TicketPaused = Error.Conflict("Ticket.Paused", "Ticket is paused and cannot accept this operation");
     
 }
