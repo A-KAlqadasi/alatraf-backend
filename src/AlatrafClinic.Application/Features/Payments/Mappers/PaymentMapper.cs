@@ -28,7 +28,6 @@ public static class PaymentMapper
             PatientPayment = p.PatientPayment != null
                     ? new PatientPaymentDto
                     {
-                        AccountId = p.AccountId,
                         VoucherNumber = p.PatientPayment.VoucherNumber,
                         Notes = p.PatientPayment.Notes
                     }
@@ -36,7 +35,6 @@ public static class PaymentMapper
             DisabledPayment = p.DisabledPayment != null
                     ? new DisabledPaymentDto
                     {
-                        AccountId = p.AccountId,
                         DisabledCardId = p.DisabledPayment.DisabledCardId,
                         Notes = p.DisabledPayment.Notes
                     }
@@ -44,7 +42,6 @@ public static class PaymentMapper
             WoundedPayment = p.WoundedPayment != null
                     ? new WoundedPaymentDto
                     {
-                        AccountId = p.AccountId,
                         WoundedCardId = p.WoundedPayment.WoundedCardId,
                         ReportNumber = p.WoundedPayment.ReportNumber,
                         Notes = p.WoundedPayment.Notes

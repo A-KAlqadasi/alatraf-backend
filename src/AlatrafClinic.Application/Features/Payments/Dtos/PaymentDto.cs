@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
-using AlatrafClinic.Domain.Accounts;
+using AlatrafClinic.Domain.Payments;
 
 namespace AlatrafClinic.Application.Features.Payments.Dtos;
 

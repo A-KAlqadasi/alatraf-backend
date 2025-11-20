@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
-using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 

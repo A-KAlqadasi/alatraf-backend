@@ -1,8 +1,8 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Payments;
 
 namespace AlatrafClinic.Application.Features.Payments.Queries.GetPayments;
 

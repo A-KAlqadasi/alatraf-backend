@@ -1,6 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Cards.DisabledCards;
 using AlatrafClinic.Domain.Payments;
@@ -18,7 +17,7 @@ public class DisabledPaymentHandler : IPaymentTypeHandler
         var exists = await uow.Patients.IsDisabledCardExists(dto.DisabledCardId, ct);
         if (!exists) return DisabledCardErrors.DisabledCardNotFound;
 
-        payment.Pay(null, null, dto.AccountId);
+        payment.Pay(null, null);
 
         var result = DisabledPayment.Create(dto.DisabledCardId, payment.Id, dto.Notes);
         if (result.IsError) return result.Errors;
@@ -32,7 +31,7 @@ public class DisabledPaymentHandler : IPaymentTypeHandler
         var exists = await uow.Patients.IsDisabledCardExists(dto.DisabledCardId, ct);
         if (!exists) return DisabledCardErrors.DisabledCardNotFound;
 
-        payment.Pay(null, null, dto.AccountId);
+        payment.Pay(null, null);
 
         if (payment.DisabledPayment == null)
         {

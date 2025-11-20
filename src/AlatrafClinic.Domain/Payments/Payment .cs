@@ -1,4 +1,3 @@
-using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
@@ -15,9 +14,6 @@ public sealed class Payment : AuditableEntity<int>
     public decimal? Discount { get; private set; }          // nullable when not applicable
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
-
-    public int? AccountId { get; private set; }
-    public Account? Account { get; private set; }
     public PaymentReference PaymentReference { get; private set; }
     public AccountKind AccountKind { get; private set; }
     public bool IsCompleted { get; private set; } = false;
@@ -60,7 +56,7 @@ public sealed class Payment : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> Pay(decimal? paid, decimal? discount, int? accountId)
+    public Result<Updated> Pay(decimal? paid, decimal? discount)
     {
         // paid and discount must be non-negative if provided
         if (paid != null && paid < 0m) return PaymentErrors.InvalidPaid;
@@ -73,7 +69,6 @@ public sealed class Payment : AuditableEntity<int>
         // Assign
         PaidAmount = paid;
         Discount = discount;
-        AccountId = accountId;
 
         IsCompleted = true;
 

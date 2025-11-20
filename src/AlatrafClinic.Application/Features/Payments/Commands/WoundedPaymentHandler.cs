@@ -1,6 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Cards.WoundedCards;
 using AlatrafClinic.Domain.Payments;
@@ -19,7 +18,7 @@ public class WoundedPaymentHandler : IPaymentTypeHandler
         var exists = await uow.Patients.IsWoundedCardExists(dto.WoundedCardId, ct);
         if (!exists) return WoundedCardErrors.WoundedCardNotFound;
 
-        payment.Pay(null, null, dto.AccountId);
+        payment.Pay(null, null);
 
         var minPrice = 0m; // configurable
         var result = WoundedPayment.Create(payment.Id, payment.TotalAmount, minPrice, dto.WoundedCardId, dto.ReportNumber, dto.Notes);
@@ -34,7 +33,7 @@ public class WoundedPaymentHandler : IPaymentTypeHandler
         var exists = await uow.Patients.IsWoundedCardExists(dto.WoundedCardId, ct);
         if (!exists) return WoundedCardErrors.WoundedCardNotFound;
 
-        payment.Pay(null, null, dto.AccountId);
+        payment.Pay(null, null);
 
         var minPrice = 0m; // configurable
         if (payment.WoundedPayment == null)

@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Accounts;
+using AlatrafClinic.Domain.Payments;
 
 using FluentValidation;
 
@@ -10,7 +10,6 @@ public class PayPaymentCommandValidator : AbstractValidator<PayPaymentCommand>
     {
         RuleFor(x => x.PaymentId).GreaterThan(0);
         RuleFor(x => x.AccountKind).IsInEnum();
-        RuleFor(x => x.AccountId).GreaterThan(0).WithMessage("AccountId is required.");
         When(x => x.AccountKind == AccountKind.Patient, () =>
         {
             RuleFor(x => x.PaidAmount).NotNull().WithMessage("PaidAmount is required for patient payments.");

@@ -1,10 +1,8 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Common.Models;
-using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Application.Features.Payments.Mappers;
-using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 
