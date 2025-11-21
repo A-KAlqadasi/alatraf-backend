@@ -1,4 +1,4 @@
-namespace AlatrafClinic.Domain.Accounts;
+namespace AlatrafClinic.Domain.Payments;
 
 public enum AccountKind : byte
 {

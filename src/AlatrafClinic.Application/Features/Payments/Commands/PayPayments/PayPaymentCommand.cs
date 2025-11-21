@@ -1,6 +1,6 @@
 using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Domain.Accounts;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Payments;
 
 using MediatR;
 
@@ -13,7 +13,6 @@ public class PayPaymentCommand : IRequest<Result<Updated>>
     public decimal? PaidAmount { get; init; }
     public decimal? Discount { get; init; }
     public AccountKind AccountKind { get; init; }
-    public int? AccountId { get; init; }
 
     public PatientPaymentDto? PatientPayment { get; init; }
     public DisabledPaymentDto? DisabledPayment { get; init; }

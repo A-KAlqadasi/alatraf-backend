@@ -10,38 +10,30 @@ using Microsoft.EntityFrameworkCore;
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetNextValidAppointmentDate;
 
 public class GetNextValidAppointmentDateQueryHandler(
-    IUnitOfWork unitOfWork
-) : IRequestHandler<GetNextValidAppointmentDateQuery, Result<DateTime>>
+    IUnitOfWork unitOfWork,
+    AppointmentScheduleRules rules,
+    HolidayCalendar holidayCalendar) : IRequestHandler<GetNextValidAppointmentDateQuery, Result<DateTime>>
 {
-  private readonly IUnitOfWork _uow = unitOfWork;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly AppointmentScheduleRules _rules = rules;
+    private readonly HolidayCalendar _holidayCalendar = holidayCalendar;
 
-  public async Task<Result<DateTime>> Handle(GetNextValidAppointmentDateQuery request, CancellationToken ct)
-  {
-    var holidays = await _uow.Holidays.GetHolidaysQueryAsync(ct);
-    var holidayList = await holidays.ToListAsync(ct);
-    var holidayCalendar = new HolidayCalendar(holidayList);
-
-    // 2️⃣ Get allowed appointment days (example: Mon-Thu)
-    // You can also fetch doctor/patient-specific rules if needed
-    var allowedDays = new AppointmentScheduleRules(new[]
+    public async Task<Result<DateTime>> Handle(GetNextValidAppointmentDateQuery query, CancellationToken ct)
     {
-            DayOfWeek.Saturday,
-            DayOfWeek.Sunday,
-            DayOfWeek.Monday,
-            DayOfWeek.Tuesday,
-            DayOfWeek.Wednesday,
-            DayOfWeek.Thursday
-        });
+        DateTime lastScheduleDate = await _unitOfWork.Appointments.GetLastAppointmentDate(ct);
 
-    // 3️⃣ Start from today (or tomorrow if needed)
-    var baseDate = DateTime.UtcNow.Date;
+        DateTime baseDate = lastScheduleDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastScheduleDate.Date;
 
-    // 4️⃣ Find next allowed date
-    while (!allowedDays.IsAllowedDay(baseDate.DayOfWeek) || holidayCalendar.IsHoliday(baseDate))
-    {
-      baseDate = baseDate.AddDays(1);
+        if (query.RequestedDate.Date > baseDate)
+        {
+            baseDate = query.RequestedDate.Date;
+        }
+
+        while (!_rules.IsAllowedDay(baseDate.DayOfWeek) || _holidayCalendar.IsHoliday(baseDate))
+        {
+            baseDate = baseDate.AddDays(1);
+        }
+
+        return baseDate;
     }
-
-    return baseDate;
-  }
 }

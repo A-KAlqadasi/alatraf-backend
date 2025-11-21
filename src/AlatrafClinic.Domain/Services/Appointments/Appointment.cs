@@ -39,7 +39,7 @@ public class Appointment : AuditableEntity<int>
         PatientType patientType,
         DateTime? requestedDate,
         string? notes,
-        DateTime? lastScheduledDate,
+        DateTime lastScheduledDate,
         AppointmentScheduleRules rules,
         HolidayCalendar holidays)
     {
@@ -47,6 +47,7 @@ public class Appointment : AuditableEntity<int>
         {
             return AppointmentErrors.TicketIdRequired;
         }
+        
         if (!Enum.IsDefined(typeof(PatientType), patientType))
         {
             return AppointmentErrors.PatientTypeInvalid;
@@ -62,7 +63,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.HolidaysAreRequired;
         }
 
-        DateTime baseDate = lastScheduledDate?.Date.AddDays(1) ?? DateTime.UtcNow.Date;
+        DateTime baseDate = lastScheduledDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastScheduledDate.Date;
 
         if (requestedDate.HasValue && requestedDate.Value.Date > baseDate)
         {
@@ -74,7 +75,7 @@ public class Appointment : AuditableEntity<int>
             baseDate = baseDate.AddDays(1);
         }
 
-        if (baseDate < DateTime.UtcNow.Date)
+        if (baseDate < DateTime.Now.Date)
             return AppointmentErrors.AttendDateMustBeInFuture;
 
         return new Appointment(ticketId, patientType, baseDate, AppointmentStatus.Scheduled, notes);
@@ -84,11 +85,12 @@ public class Appointment : AuditableEntity<int>
         HolidayCalendar holidays)
     {
         if (!IsEditable) return AppointmentErrors.Readonly;
-        
+
         if (rules is null)
         {
             return AppointmentErrors.AllowedDaysAreRequired;
         }
+        
         if(holidays is null)
         {
             return AppointmentErrors.HolidaysAreRequired;
@@ -104,7 +106,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.AppointmentOnHoliday(newDate);
         }
 
-        if (newDate < DateTime.UtcNow.Date)
+        if (newDate < DateTime.Now.Date)
             return AppointmentErrors.AttendDateMustBeInFuture;
 
         AttendDate = newDate;
@@ -142,7 +144,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Today);
         }
 
-        if (AttendDate.Date != DateTime.UtcNow.Date)
+        if (AttendDate.Date != DateTime.Now.Date)
         {
             return AppointmentErrors.InvalidTodayMark(AttendDate);
         }
@@ -151,6 +153,7 @@ public class Appointment : AuditableEntity<int>
         Ticket?.Continue();
         return Result.Updated;
     }
+
     public Result<Updated> MarkAsAttended()
     {
         if (!CanTransitionTo(AppointmentStatus.Attended))
@@ -158,7 +161,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Attended);
         }
 
-        if (AttendDate.Date > DateTime.UtcNow.Date)
+        if (AttendDate.Date > DateTime.Now.Date)
         {
             return AppointmentErrors.CannotMarkFutureAsAttended(AttendDate);
         }
@@ -174,7 +177,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Absent);
         }
 
-        if (AttendDate.Date >= DateTime.UtcNow.Date)
+        if (AttendDate.Date >= DateTime.Now.Date)
         {
             return AppointmentErrors.CannotMarkFutureAsAbsent(AttendDate);
         }
@@ -184,8 +187,20 @@ public class Appointment : AuditableEntity<int>
         return Result.Updated;
     }
 
+    public Result<Updated> MarkAsScheduled()
+    {
+        if (!CanTransitionTo(AppointmentStatus.Scheduled))
+        {
+            return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Scheduled);
+        }
+
+        Status = AppointmentStatus.Scheduled;
+        return Result.Updated;
+    }
+    
+
     public bool IsAppointmentTomorrow()
     {
-        return AttendDate.Date == DateTime.UtcNow.Date.AddDays(1);
+        return AttendDate.Date == DateTime.Now.Date.AddDays(1);
     }
 }

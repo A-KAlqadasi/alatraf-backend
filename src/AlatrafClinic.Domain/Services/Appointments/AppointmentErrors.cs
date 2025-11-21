@@ -27,4 +27,5 @@ public static class AppointmentErrors
     description: "Appointment is read-only.");
 
     public static Error HolidaysAreRequired = Error.Validation("Appointment.HolidaysAreRequired", "Holiday calendar must be provided.");
+    public static readonly Error AppointmentNotFound = Error.NotFound("Appointment.NotFound", "Appointment not found.");
 }
