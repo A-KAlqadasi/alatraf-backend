@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using AlatrafClinic.Application.Features.People.Persons.Services;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Identity;

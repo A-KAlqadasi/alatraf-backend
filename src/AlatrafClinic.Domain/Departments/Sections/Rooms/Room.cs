@@ -9,7 +9,6 @@ public class Room : AuditableEntity<int>
 {
     public string Name { get; private set; } = default!;
     public int SectionId { get; private set; }
-    public bool IsDeleted { get; private set; }
 
     public Section Section { get; private set; } = default!;
     private readonly List<DoctorSectionRoom> _doctorAssignments = new();
@@ -22,7 +21,6 @@ public class Room : AuditableEntity<int>
     {
         Name = name;
         SectionId = sectionId;
-        IsDeleted = false;
 
     }
 
@@ -46,26 +44,6 @@ public class Room : AuditableEntity<int>
             return RoomErrors.DuplicateRoomName;
 
         Name = newName;
-        return Result.Updated;
-    }
-
-     // ✅ Domain operation for soft delete
-    public Result<Deleted> SoftDelete()
-    {
-        if (IsDeleted)
-            return RoomErrors.AlreadyDeleted;
-
-        IsDeleted = true;
-        return Result.Deleted;
-    }
-
-    // ✅ Optional undo
-    public Result<Updated> Restore()
-    {
-        if (!IsDeleted)
-            return RoomErrors.NotDeleted;
-
-        IsDeleted = false;
         return Result.Updated;
     }
 }

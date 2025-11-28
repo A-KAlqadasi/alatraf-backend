@@ -39,4 +39,12 @@ public static class DoctorErrors
         code: "Doctor.NoActiveAssignment",
         description: "The doctor has no active assignment to update or modify.");
 
+    public static readonly Error DoctorHasIndustrialPartsToday = Error.Validation(
+        code: "Doctor.DoctorHasIndustrialPartsToday",
+        description: "The doctor has industrial parts recorded for today and cannot be unassigned from the section.");
+    
+    public static readonly Error DoctorHasSessionsToday = Error.Validation(
+        code: "Doctor.DoctorHasSessionsToday",
+        description: "The doctor has sessions scheduled for today and cannot be unassigned from the section/room.");
+
 }

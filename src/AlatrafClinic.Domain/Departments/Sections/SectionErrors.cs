@@ -16,5 +16,7 @@ public static class SectionErrors
     public static readonly Error DuplicateSectionName = Error.Validation(
         code: "Section.DuplicateSectionName",
         description: "Another section with the same name already exists in this department.");
-   
+    public static readonly Error SectionNotFound = Error.NotFound(
+        code: "Section.NotFound",
+        description: "Section is not found.");
 }

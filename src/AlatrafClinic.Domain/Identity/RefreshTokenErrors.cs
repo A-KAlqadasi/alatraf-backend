@@ -14,4 +14,5 @@ public static class RefreshTokenErrors
 
     public static readonly Error ExpiryInvalid =
         Error.Validation("RefreshToken.ExpiryInvalid", "Expiry must be in the future.");
+    
 }

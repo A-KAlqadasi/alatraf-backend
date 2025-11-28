@@ -9,8 +9,8 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.People.Doctors.Commands.AssignDoctorToRoom;
 
-public sealed record AssignDoctorToRoomCommand(
+public sealed record AssignDoctorToSectionCommand(
     int DoctorId,
-    int RoomId,
+    int SectionId,
     string? Notes
 ) : IRequest<Result<Updated>>;

@@ -8,6 +8,8 @@ public class PatientPayment : AuditableEntity<int>
     public string VoucherNumber { get; private set; } = default!;
     public string? Notes { get; private set; }
 
+    public Payment Payment { get; set; } = default!;
+
     private PatientPayment() { }
 
     private PatientPayment(

@@ -2,17 +2,17 @@ using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.People.Doctors.Commands.AssignDoctorToRoom;
 
-public sealed class AssignDoctorToRoomCommandValidator
-    : AbstractValidator<AssignDoctorToRoomCommand>
+public sealed class AssignDoctorToSectionCommandValidator
+    : AbstractValidator<AssignDoctorToSectionCommand>
 {
-  public AssignDoctorToRoomCommandValidator()
+  public AssignDoctorToSectionCommandValidator()
   {
     RuleFor(x => x.DoctorId)
         .GreaterThan(0)
         .WithMessage("DoctorId must be greater than zero.");
 
-    RuleFor(x => x.RoomId)
+    RuleFor(x => x.SectionId)
         .GreaterThan(0)
-        .WithMessage("RoomId must be greater than zero.");
+        .WithMessage("Section Id must be greater than zero.");
   }
 }

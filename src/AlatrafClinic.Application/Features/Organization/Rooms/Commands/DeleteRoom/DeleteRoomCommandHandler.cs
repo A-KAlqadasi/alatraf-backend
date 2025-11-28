@@ -29,21 +29,10 @@ public sealed class DeleteRoomCommandHandler(
             return ApplicationErrors.RoomNotFound;
         }
 
-        var hasActiveAssignment = await _unitOfWork.DoctorSectionRooms.HasActiveAssignmentByRoomIdAsync(request.RoomId, ct);
-        if (hasActiveAssignment)
-        {
-            _logger.LogError("Room {RoomId} cannot be deleted because it has active doctor assignments.", request.RoomId);
-            return ApplicationErrors.RoomHasActiveDoctorAssignment;
-        }
-
-        var deleteResult = room.SoftDelete();
-        if (deleteResult.IsError)
-            return deleteResult.Errors;
-
-        await _unitOfWork.Rooms.UpdateAsync(room, ct);
+        await _unitOfWork.Rooms.DeleteAsync(room, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
-        _logger.LogInformation(" Room {RoomId} soft-deleted successfully.", room.Id);
+        _logger.LogInformation("Room {RoomId} deleted successfully.", room.Id);
 
         await _cacheService.RemoveByTagAsync("room", ct);
 
