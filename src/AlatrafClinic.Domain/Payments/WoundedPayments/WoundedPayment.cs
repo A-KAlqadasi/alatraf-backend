@@ -12,6 +12,8 @@ public class WoundedPayment :AuditableEntity<int>
     public string? ReportNumber { get; private set; }
     public string? Notes { get; private set; }
 
+    public Payment Payment { get; set; } = default!;
+
     private WoundedPayment() { }
 
     private WoundedPayment(int paymentId, int woundedCardId, string? reportNumber, string? notes) : base(paymentId)

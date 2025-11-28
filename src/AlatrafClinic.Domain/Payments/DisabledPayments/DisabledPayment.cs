@@ -9,7 +9,8 @@ public class DisabledPayment : AuditableEntity<int>
     public int DisabledCardId { get; private set; }
     public DisabledCard? DisabledCard { get; set; }
     public string? Notes { get; private set; }
-    
+
+    public Payment Payment { get; set; } = default!;
     
     private DisabledPayment()
     {
