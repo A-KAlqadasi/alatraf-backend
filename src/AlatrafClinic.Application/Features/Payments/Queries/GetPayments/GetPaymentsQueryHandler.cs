@@ -4,11 +4,9 @@ using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Application.Features.Payments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Payments;
 
 using MediatR;
 
-using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Payments.Queries.GetPayments;
 
@@ -24,82 +22,25 @@ public sealed class GetPaymentsQueryHandler
 
     public async Task<Result<PaginatedList<PaymentDto>>> Handle(GetPaymentsQuery query, CancellationToken ct)
     {
-        var paymentsQuery = await _unitOfWork.Payments.GetPaymentsQueryAsync();
+        var spec = new PaymentsFilter(query);
 
-        paymentsQuery = ApplyFilters(paymentsQuery, query);
+        var totalCount = await _unitOfWork.Payments.CountAsync(spec, ct);
 
-        if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-            paymentsQuery = ApplySearch(paymentsQuery, query.SearchTerm!);
+        // page data
+        var payments = await _unitOfWork.Payments
+            .ListAsync(spec, spec.Page, spec.PageSize, ct);
 
-        paymentsQuery = ApplySorting(paymentsQuery, query.SortColumn, query.SortDirection);
-
-        // Paging guards
-        var page = query.Page < 1 ? 1 : query.Page;
-        var size = query.PageSize < 1 ? 10 : query.PageSize;
-
-        var count = await paymentsQuery.CountAsync(ct);
-
-        var items = await paymentsQuery
-            .Skip((page - 1) * size)
-            .Take(size)
+        var items = payments
             .Select(p => p.ToDto())
-            .ToListAsync(ct);
+            .ToList();
 
         return new PaginatedList<PaymentDto>
         {
-            Items = items,
-            PageNumber = page,
-            PageSize = size,
-            TotalCount = count,
-            TotalPages = (int)Math.Ceiling(count / (double)size)
-        };
-    }
-
-    // ---------------- FILTERS ----------------
-    private static IQueryable<Payment> ApplyFilters(IQueryable<Payment> query, GetPaymentsQuery q)
-    {
-        if (q.AccountKind.HasValue)
-            query = query.Where(p => p.AccountKind == q.AccountKind.Value);
-
-        if (q.IsCompleted.HasValue)
-            query = query.Where(p => p.IsCompleted == q.IsCompleted.Value);
-
-        if (q.DiagnosisId.HasValue && q.DiagnosisId > 0)
-            query = query.Where(p => p.DiagnosisId == q.DiagnosisId);
-
-        if (q.PatientId.HasValue && q.PatientId > 0)
-            query = query.Where(p => p.Diagnosis != null && p.Diagnosis.PatientId == q.PatientId);
-
-        return query;
-    }
-
-    // ---------------- SEARCH ----------------
-    private static IQueryable<Payment> ApplySearch(IQueryable<Payment> query, string term)
-    {
-        var pattern = $"%{term.Trim().ToLower()}%";
-
-        return query.Where(p =>
-            (p.Diagnosis != null &&
-             (EF.Functions.Like(p.Diagnosis.DiagnosisText.ToLower(), pattern) ||
-              (p.Diagnosis.Patient != null && p.Diagnosis.Patient.Person != null &&
-               EF.Functions.Like(p.Diagnosis.Patient.Person.FullName.ToLower(), pattern)))));
-    }
-
-    // ---------------- SORTING ----------------
-    private static IQueryable<Payment> ApplySorting(IQueryable<Payment> query, string sortColumn, string sortDirection)
-    {
-        var col = sortColumn?.Trim().ToLowerInvariant() ?? "createdatutc";
-        var isDesc = string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase);
-
-        return col switch
-        {
-            "totalamount" => isDesc ? query.OrderByDescending(p => p.TotalAmount) : query.OrderBy(p => p.TotalAmount),
-            "paidamount" => isDesc ? query.OrderByDescending(p => p.PaidAmount) : query.OrderBy(p => p.PaidAmount),
-            "patient" => isDesc
-                ? query.OrderByDescending(p => p.Diagnosis!.Patient!.Person!.FullName)
-                : query.OrderBy(p => p.Diagnosis!.Patient!.Person!.FullName),
-            "completed" => isDesc ? query.OrderByDescending(p => p.IsCompleted) : query.OrderBy(p => p.IsCompleted),
-            _ => isDesc ? query.OrderByDescending(p => p.CreatedAtUtc) : query.OrderBy(p => p.CreatedAtUtc)
+            Items      = items,
+            PageNumber = spec.Page,
+            PageSize   = spec.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)spec.PageSize)
         };
     }
 }

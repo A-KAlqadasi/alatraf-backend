@@ -2,8 +2,13 @@ using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.Payments;
+using AlatrafClinic.Domain.Payments.PatientPayments;
+using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Services.Appointments;
+using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Infrastructure.Identity;
 
 using Microsoft.AspNetCore.Identity;
@@ -27,8 +32,12 @@ public class ApplicationDbContext
 
     public DbSet<IndustrialPart> IndustrialParts => Set<IndustrialPart>();
     public DbSet<IndustrialPartUnit> IndustrialPartUnits => Set<IndustrialPartUnit>();
+    public DbSet<Holiday> Holidays => Set<Holiday>();
+    public DbSet<RepairCard> RepairCards => Set<RepairCard>();
+    public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<PatientPayment> PatientPayments => Set<PatientPayment>();
     
-
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
 

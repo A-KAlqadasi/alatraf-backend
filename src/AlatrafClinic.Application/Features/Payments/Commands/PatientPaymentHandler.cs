@@ -16,6 +16,11 @@ public class PatientPaymentHandler : IPaymentTypeHandler
         var dto = typeDto as PatientPaymentDto ?? throw new InvalidOperationException();
 
         payment.Pay(payment.PaidAmount, payment.Discount);
+
+        if (await uow.Payments.IsVoucherNumberExistsAsync(dto.VoucherNumber, ct))
+        {
+            return PatientPaymentErrors.VoucherNumberAlreadyExists;
+        }
         
         var patientPaymentResult = PatientPayment.Create(dto.VoucherNumber, payment.Id, dto.Notes);
         if (patientPaymentResult.IsError) return patientPaymentResult.Errors;
@@ -32,9 +37,19 @@ public class PatientPaymentHandler : IPaymentTypeHandler
 
         if (payment.PatientPayment == null)
         {
+            if (await uow.Payments.IsVoucherNumberExistsAsync(dto.VoucherNumber, ct))
+            {
+                return PatientPaymentErrors.VoucherNumberAlreadyExists;
+            }
+
             var createResult = PatientPayment.Create(dto.VoucherNumber, payment.Id, dto.Notes);
             if (createResult.IsError) return createResult.Errors;
             return payment.AssignPatientPayment(createResult.Value);
+        }
+
+        if (await uow.Payments.IsVoucherNumberExistsAsync(dto.VoucherNumber, ct) && payment.PatientPayment.VoucherNumber != dto.VoucherNumber)
+        {
+            return PatientPaymentErrors.VoucherNumberAlreadyExists;
         }
 
         return payment.PatientPayment.Update(dto.VoucherNumber, dto.Notes);

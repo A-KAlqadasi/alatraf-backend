@@ -47,7 +47,9 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IUnitRepository Units => throw new NotImplementedException();
 
-    public ISaleRepository Sales => throw new NotImplementedException();
+    private ISaleRepository? _sale;
+
+    public ISaleRepository Sales => _sale ??= new SaleRepository(_dbContext);
 
     public ITherapyCardRepository TherapyCards => throw new NotImplementedException();
 
@@ -55,11 +57,17 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public ISessionRepository Sessions => throw new NotImplementedException();
 
-    public IHolidayRepository Holidays => throw new NotImplementedException();
+    private IHolidayRepository? _holiday;
 
-    public IRepairCardRepository RepairCards => throw new NotImplementedException();
+    public IHolidayRepository Holidays => _holiday ??= new HolidayRepository(_dbContext);
 
-    public IPaymentRepository Payments => throw new NotImplementedException();
+    private IRepairCardRepository? _repairCard;
+
+    public IRepairCardRepository RepairCards => _repairCard ??= new RepairCardRepository(_dbContext);
+
+    private IPaymentRepository? _payment;
+
+    public IPaymentRepository Payments => _payment ??= new PaymentRepository(_dbContext);
 
     public IAppSettingRepository AppSettings => throw new NotImplementedException();
 

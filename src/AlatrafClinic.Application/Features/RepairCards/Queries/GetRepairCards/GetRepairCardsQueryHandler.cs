@@ -3,6 +3,7 @@ using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
+using AlatrafClinic.Application.Features.RepairCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.RepairCards;
 
@@ -24,113 +25,26 @@ public sealed class GetRepairCardsQueryHandler
 
     public async Task<Result<PaginatedList<RepairCardDto>>> Handle(GetRepairCardsQuery query, CancellationToken ct)
     {
-        var repairQuery = await _unitOfWork.RepairCards.GetRepairCardsQueryAsync();
+        var spec = new RepairCardsFilter(query);
 
-        repairQuery = ApplyFilters(repairQuery, query);
+        // total count
+        var totalCount = await _unitOfWork.RepairCards.CountAsync(spec, ct);
 
-        if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-            repairQuery = ApplySearch(repairQuery, query.SearchTerm!);
+        // entities for current page
+        var cards = await _unitOfWork.RepairCards
+            .ListAsync(spec, spec.Page, spec.PageSize, ct);
 
-        repairQuery = ApplySorting(repairQuery, query.SortColumn, query.SortDirection);
+        var items = cards.Select(rc => rc.ToDto()).ToList();
 
-        // Paging guards
-        var page = query.Page < 1 ? 1 : query.Page;
-        var size = query.PageSize < 1 ? 10 : query.PageSize;
-
-        var count = await repairQuery.CountAsync(ct);
-
-        var items = await repairQuery
-            .Skip((page - 1) * size)
-            .Take(size)
-            .Select(rc => new RepairCardDto
-            {
-                RepairCardId = rc.Id,
-                Diagnosis = rc.Diagnosis != null ? rc.Diagnosis.ToDto() : new DiagnosisDto(),
-                IsActive = rc.IsActive,
-                IsLate = rc.IsLate,
-                CardStatus = rc.Status,
-                DeliveryDate = rc.DeliveryTime != null ? rc.DeliveryTime.DeliveryDate : default,
-                DiagnosisIndustrialParts = rc.DiagnosisIndustrialParts.Select(dip => new DiagnosisIndustrialPartDto
-                {
-                    DiagnosisIndustrialPartId = dip.Id,
-                    IndustrialPartId = dip.IndustrialPartUnit!.IndustrialPartId,
-                    PartName = dip.IndustrialPartUnit.IndustrialPart!.Name,
-                    UnitId = dip.IndustrialPartUnit.UnitId,
-                    UnitName = dip.IndustrialPartUnit.Unit!.Name ?? string.Empty,
-                    Quantity = dip.Quantity,
-                    Price = dip.Price
-                }).ToList(),
-                TotalCost = rc.DiagnosisIndustrialParts.Sum(dip => dip.Price * dip.Quantity)
-            })
-            .ToListAsync(ct);
-
-        return new PaginatedList<RepairCardDto>
+        var paged = new PaginatedList<RepairCardDto>
         {
             Items = items,
-            PageNumber = page,
-            PageSize = size,
-            TotalCount = count,
-            TotalPages = (int)Math.Ceiling(count / (double)size)
+            PageNumber = spec.Page,
+            PageSize = spec.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)spec.PageSize)
         };
-    }
 
-    // ---------------- FILTERS ----------------
-    private static IQueryable<RepairCard> ApplyFilters(IQueryable<RepairCard> query, GetRepairCardsQuery q)
-    {
-        if (q.IsActive.HasValue)
-            query = query.Where(rc => rc.IsActive == q.IsActive.Value);
-
-        if (q.IsLate.HasValue)
-            query = query.Where(rc => rc.IsLate == q.IsLate.Value);
-
-        if (q.Status.HasValue)
-            query = query.Where(rc => rc.Status == q.Status.Value);
-
-        if (q.DiagnosisId.HasValue && q.DiagnosisId > 0)
-            query = query.Where(rc => rc.DiagnosisId == q.DiagnosisId);
-
-        if (q.PatientId.HasValue && q.PatientId > 0)
-            query = query.Where(rc => rc.Diagnosis != null && rc.Diagnosis.PatientId == q.PatientId);
-
-        return query;
-    }
-
-    // ---------------- SEARCH ----------------
-    private static IQueryable<RepairCard> ApplySearch(IQueryable<RepairCard> query, string term)
-    {
-        var pattern = $"%{term.Trim().ToLower()}%";
-
-        return query.Where(rc =>
-            (rc.Diagnosis != null &&
-                (EF.Functions.Like(rc.Diagnosis.DiagnosisText.ToLower(), pattern) ||
-                 (rc.Diagnosis.Patient != null && rc.Diagnosis.Patient.Person != null &&
-                  EF.Functions.Like(rc.Diagnosis.Patient.Person.FullName.ToLower(), pattern)))) ||
-            rc.DiagnosisIndustrialParts.Any(p =>
-                EF.Functions.Like(p.IndustrialPartUnit!.IndustrialPart!.Name.ToLower(), pattern))
-        );
-    }
-
-    // ---------------- SORTING ----------------
-    private static IQueryable<RepairCard> ApplySorting(IQueryable<RepairCard> query, string sortColumn, string sortDirection)
-    {
-        var col = sortColumn?.Trim().ToLowerInvariant() ?? "deliverydate";
-        var isDesc = string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase);
-
-        return col switch
-        {
-            "deliverydate" => isDesc
-                ? query.OrderByDescending(rc => rc.DeliveryTime!.DeliveryDate)
-                : query.OrderBy(rc => rc.DeliveryTime!.DeliveryDate),
-
-            "status" => isDesc
-                ? query.OrderByDescending(rc => rc.Status)
-                : query.OrderBy(rc => rc.Status),
-
-            "patient" => isDesc
-                ? query.OrderByDescending(rc => rc.Diagnosis!.Patient!.Person!.FullName)
-                : query.OrderBy(rc => rc.Diagnosis!.Patient!.Person!.FullName),
-
-            _ => query.OrderByDescending(rc => rc.CreatedAtUtc)
-        };
+        return paged;
     }
 }
