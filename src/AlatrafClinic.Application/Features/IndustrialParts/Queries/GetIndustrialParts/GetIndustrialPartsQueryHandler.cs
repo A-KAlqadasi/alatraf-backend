@@ -22,22 +22,16 @@ public sealed class GetIndustrialPartsQueryHandler
 
     public async Task<Result<PaginatedList<IndustrialPartDto>>> Handle(GetIndustrialPartsQuery query, CancellationToken ct)
     {
-        var partsQuery = await _unitOfWork.IndustrialParts.GetIndustrialPartsQueryAsync(ct);
+        var spec = new IndustrialPartsFilter(query);
 
-        if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-            partsQuery = ApplySearch(partsQuery, query.SearchTerm!);
+        // Count for pagination
+        var totalCount = await _unitOfWork.IndustrialParts.CountAsync(spec, ct);
 
-        partsQuery = ApplySorting(partsQuery, query.SortColumn, query.SortDirection);
+        // Data for current page
+        var parts = await _unitOfWork.IndustrialParts
+            .ListAsync(spec, spec.Page, spec.PageSize, ct);
 
-        // Paging guards
-        var page = query.Page < 1 ? 1 : query.Page;
-        var size = query.PageSize < 1 ? 10 : query.PageSize;
-
-        var count = await partsQuery.CountAsync(ct);
-
-        var items = await partsQuery
-            .Skip((page - 1) * size)
-            .Take(size)
+        var items = parts
             .Select(p => new IndustrialPartDto
             {
                 IndustrialPartId = p.Id,
@@ -45,50 +39,15 @@ public sealed class GetIndustrialPartsQueryHandler
                 Description = p.Description,
                 IndustrialPartUnits = p.IndustrialPartUnits.ToDtos()
             })
-            .ToListAsync(ct);
+            .ToList();
 
         return new PaginatedList<IndustrialPartDto>
         {
             Items = items,
-            PageNumber = page,
-            PageSize = size,
-            TotalCount = count,
-            TotalPages = (int)Math.Ceiling(count / (double)size)
-        };
-    }
-
-    // ---------------- SEARCH ----------------
-    private static IQueryable<IndustrialPart> ApplySearch(IQueryable<IndustrialPart> query, string term)
-    {
-        var pattern = $"%{term.Trim().ToLower()}%";
-
-        return query.Where(p =>
-            EF.Functions.Like(p.Name.ToLower(), pattern) ||
-            (p.Description != null && EF.Functions.Like(p.Description.ToLower(), pattern)) ||
-            p.IndustrialPartUnits.Any(u =>
-                EF.Functions.Like(u.Unit!.Name.ToLower(), pattern))
-        );
-    }
-
-    // ---------------- SORTING ----------------
-    private static IQueryable<IndustrialPart> ApplySorting(IQueryable<IndustrialPart> query, string sortColumn, string sortDirection)
-    {
-        var col = sortColumn?.Trim().ToLowerInvariant() ?? "name";
-        var isDesc = string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase);
-
-        return col switch
-        {
-            "name" => isDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
-
-            "description" => isDesc
-                ? query.OrderByDescending(p => p.Description)
-                : query.OrderBy(p => p.Description),
-
-            "unitcount" => isDesc
-                ? query.OrderByDescending(p => p.IndustrialPartUnits.Count)
-                : query.OrderBy(p => p.IndustrialPartUnits.Count),
-
-            _ => query.OrderBy(p => p.Name)
+            PageNumber = spec.Page,
+            PageSize = spec.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)spec.PageSize)
         };
     }
 }

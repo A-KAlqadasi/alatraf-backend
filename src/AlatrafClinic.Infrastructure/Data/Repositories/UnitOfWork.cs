@@ -1,4 +1,3 @@
-
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Common.Interfaces.Repositories.Inventory;
 
@@ -16,9 +15,13 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IDoctorRepository Doctors => throw new NotImplementedException();
 
-    public IDiagnosisRepository Diagnoses => throw new NotImplementedException();
+    private IDiagnosisRepository? _diagnosis ;
 
-    public ITicketRepository Tickets => throw new NotImplementedException();
+    public IDiagnosisRepository Diagnoses => _diagnosis ??= new DiagnosisRepository(_dbContext);
+
+    private ITicketRepository? _ticket;
+
+    public ITicketRepository Tickets => _ticket ??= new TicketRepository(_dbContext);
 
     public IInjuryReasonRepository InjuryReasons => throw new NotImplementedException();
 
@@ -26,7 +29,9 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IInjuryTypeRepository InjuryTypes => throw new NotImplementedException();
 
-    public IServiceRepository Services => throw new NotImplementedException();
+    private IServiceRepository? _service;
+
+    public IServiceRepository Services => _service ??= new ServiceRepository(_dbContext);
 
     public IDepartmentRepository Departments => throw new NotImplementedException();
 
@@ -46,23 +51,36 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IUnitRepository Units => throw new NotImplementedException();
 
-    public ISaleRepository Sales => throw new NotImplementedException();
+    private ISaleRepository? _sale;
 
-    public ITherapyCardRepository TherapyCards => throw new NotImplementedException();
+    public ISaleRepository Sales => _sale ??= new SaleRepository(_dbContext);
+
+    private ITherapyCardRepository? _therapyCard;
+
+    public ITherapyCardRepository TherapyCards => _therapyCard ??= new TherapyCardRepository(_dbContext);
 
     public ITherapyCardTypePriceRepository TherapyCardTypePrices => throw new NotImplementedException();
 
-    public ISessionRepository Sessions => throw new NotImplementedException();
+    private ISessionRepository? _session;
 
-    public IHolidayRepository Holidays => throw new NotImplementedException();
+    public ISessionRepository Sessions => _session ??= new SessionRepository(_dbContext);
 
-    public IRepairCardRepository RepairCards => throw new NotImplementedException();
+    private IHolidayRepository? _holiday;
 
-    public IPaymentRepository Payments => throw new NotImplementedException();
+    public IHolidayRepository Holidays => _holiday ??= new HolidayRepository(_dbContext);
+
+    private IRepairCardRepository? _repairCard;
+
+    public IRepairCardRepository RepairCards => _repairCard ??= new RepairCardRepository(_dbContext);
+
+    private IPaymentRepository? _payment;
+
+    public IPaymentRepository Payments => _payment ??= new PaymentRepository(_dbContext);
 
     public IAppSettingRepository AppSettings => throw new NotImplementedException();
 
-    public IAppointmentRepository Appointments => throw new NotImplementedException();
+    private IAppointmentRepository? _appointments;
+    public IAppointmentRepository Appointments => _appointments ??= new AppointmentRepository(_dbContext);
 
     public async ValueTask DisposeAsync()
     {

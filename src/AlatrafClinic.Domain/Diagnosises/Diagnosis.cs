@@ -25,7 +25,7 @@ public class Diagnosis : AuditableEntity<int>
     public int TicketId { get; private set; }
     public Ticket? Ticket { get; set; }
     public int PatientId { get; private set; }
-    public Patient? Patient { get; set; }
+    public Patient Patient { get; set; } = default!;
     public DiagnosisType DiagnoType { get; private set; }
 
     private readonly List<DiagnosisProgram> _diagnosisPrograms = new();

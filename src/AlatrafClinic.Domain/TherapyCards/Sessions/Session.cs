@@ -8,7 +8,7 @@ public class Session : AuditableEntity<int>
     public bool IsTaken { get; private set; } = false;
     public int Number { get; private set; }
     public int TherapyCardId { get; private set; }
-    public TherapyCard? TherapyCard { get; private set; }
+    public TherapyCard TherapyCard { get; private set; } = default!;
     public DateTime SessionDate { get; private set; }
 
     private readonly List<SessionProgram> _sessionPrograms = new();

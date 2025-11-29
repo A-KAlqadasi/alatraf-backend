@@ -8,7 +8,7 @@ namespace AlatrafClinic.Domain.Patients;
 public class Patient : AuditableEntity<int>
 {
     public int PersonId { get; private set; }
-    public Person? Person { get; set; }
+    public Person Person { get; set; } = default!;
     public PatientType PatientType { get; private set; }
     public string? AutoRegistrationNumber { get; set; }
 
