@@ -10,11 +10,8 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class DiagnosisRepository : GenericRepository<Diagnosis, int>, IDiagnosisRepository
 {
-    private readonly ApplicationDbContext _dbContext;
-
     public DiagnosisRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
-        _dbContext = dbContext;
     }
 
     public async Task<DiagnosisIndustrialPart?> GetDiagnosisIndustrialPartByIdAsync(int id, CancellationToken ct = default)

@@ -8,7 +8,7 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId> where TEntity : Entity<TId>
 {
-    private readonly ApplicationDbContext _dbContext;
+    protected readonly ApplicationDbContext _dbContext;
 
     public GenericRepository(ApplicationDbContext dbContext)
     {

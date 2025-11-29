@@ -8,11 +8,9 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class AppointmentRepository : GenericRepository<Appointment, int>, IAppointmentRepository
 {
-    private readonly ApplicationDbContext _dbContext;
 
     public AppointmentRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
-        _dbContext = dbContext;
     }
 
     public async Task<int> GetAppointmentCountByDate(DateTime date, CancellationToken ct = default)

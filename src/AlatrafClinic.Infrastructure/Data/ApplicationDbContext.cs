@@ -2,6 +2,7 @@ using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Infrastructure.Identity;
 
@@ -23,6 +24,9 @@ public class ApplicationDbContext
     public DbSet<Diagnosis> Diagnoses => Set<Diagnosis>();
     public DbSet<DiagnosisIndustrialPart> DiagnosisIndustrialParts => Set<DiagnosisIndustrialPart>();
     public DbSet<DiagnosisProgram> DiagnosisPrograms => Set<DiagnosisProgram>();
+
+    public DbSet<IndustrialPart> IndustrialParts => Set<IndustrialPart>();
+    public DbSet<IndustrialPartUnit> IndustrialPartUnits => Set<IndustrialPartUnit>();
     
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

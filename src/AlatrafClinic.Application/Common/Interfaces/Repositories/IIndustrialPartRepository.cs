@@ -6,5 +6,4 @@ public interface IIndustrialPartRepository : IGenericRepository<IndustrialPart, 
 {
     Task<IndustrialPartUnit?> GetByIdAndUnitId(int Id, int unitId, CancellationToken ct);
     Task<bool> IsExistsByName(string name, CancellationToken ct);
-    Task<IQueryable<IndustrialPart>> GetIndustrialPartsQueryAsync(CancellationToken ct);
 }

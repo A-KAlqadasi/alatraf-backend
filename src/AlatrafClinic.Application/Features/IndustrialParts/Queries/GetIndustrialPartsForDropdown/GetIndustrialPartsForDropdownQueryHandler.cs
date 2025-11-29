@@ -22,12 +22,12 @@ public sealed class GetIndustrialPartsForDropdownQueryHandler
         GetIndustrialPartsForDropdownQuery query,
         CancellationToken ct)
     {
-        var data = await _unitOfWork.IndustrialParts.GetIndustrialPartsQueryAsync(ct);
+        var data = await _unitOfWork.IndustrialParts.GetAllAsync(ct);
         if(data is null || !data.Any())
         {
             return IndustrialPartErrors.NoIndustrialPartsFound;
         }
-        data.OrderBy(x => x.Name);
+        data = data.OrderBy(x => x.Name).ToList();
 
         return data.ToDtos();
     }
