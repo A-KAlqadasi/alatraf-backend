@@ -20,7 +20,7 @@ public sealed class GetAppointmentsQueryHandler
 
     public async Task<Result<PaginatedList<AppointmentDto>>> Handle(GetAppointmentsQuery query, CancellationToken ct)
     {
-         var spec = new AppointmentsWithFilters(query);
+         var spec = new AppointmentsFilter(query);
 
         var page = spec.Page;
         var pageSize = spec.PageSize;

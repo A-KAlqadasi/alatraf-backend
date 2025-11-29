@@ -1,4 +1,3 @@
-
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Common.Interfaces.Repositories.Inventory;
 
@@ -16,7 +15,9 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IDoctorRepository Doctors => throw new NotImplementedException();
 
-    public IDiagnosisRepository Diagnoses => throw new NotImplementedException();
+    private IDiagnosisRepository? _diagnosis ;
+
+    public IDiagnosisRepository Diagnoses => _diagnosis ??= new DiagnosisRepository(_dbContext); 
 
     public ITicketRepository Tickets => throw new NotImplementedException();
 

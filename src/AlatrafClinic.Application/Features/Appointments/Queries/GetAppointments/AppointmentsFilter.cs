@@ -5,18 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetAppointments;
 
-public sealed class AppointmentsWithFilters : Specification<Appointment>
+public sealed class AppointmentsFilter : FilterSpecification<Appointment>
 {
     private readonly GetAppointmentsQuery _q;
 
-    public int Page { get; }
-    public int PageSize { get; }
-
-    public AppointmentsWithFilters(GetAppointmentsQuery q)
+    public AppointmentsFilter(GetAppointmentsQuery q) : base(q.Page, q.PageSize)
     {
         _q = q;
-        Page = q.Page < 1 ? 1 : q.Page;
-        PageSize = q.PageSize < 1 ? 10 : q.PageSize;
     }
 
     public override IQueryable<Appointment> Apply(IQueryable<Appointment> query)

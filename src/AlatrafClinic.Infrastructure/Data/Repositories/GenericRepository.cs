@@ -1,5 +1,3 @@
-
-
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Common.Specifications;
 using AlatrafClinic.Domain.Common;

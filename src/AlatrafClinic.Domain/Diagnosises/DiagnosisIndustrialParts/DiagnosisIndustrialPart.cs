@@ -11,7 +11,7 @@ public class DiagnosisIndustrialPart : AuditableEntity<int>
     public int DiagnosisId { get; private set; }
     public Diagnosis? Diagnosis { get; set; }
     public int IndustrialPartUnitId { get; private set; }
-    public IndustrialPartUnit? IndustrialPartUnit { get; private set; }
+    public IndustrialPartUnit IndustrialPartUnit { get; private set; } = default!;
     public int? DoctorSectionRoomId { get; private set; }
     public DoctorSectionRoom? DoctorSectionRoom { get; set; }
     public int Quantity { get; private set; }

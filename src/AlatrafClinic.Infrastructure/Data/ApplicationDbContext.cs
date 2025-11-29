@@ -1,3 +1,6 @@
+using AlatrafClinic.Domain.Diagnosises;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
 using AlatrafClinic.Domain.Identity;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Infrastructure.Identity;
@@ -11,11 +14,16 @@ namespace AlatrafClinic.Infrastructure.Data;
 public class ApplicationDbContext
     : IdentityDbContext<AppUser, IdentityRole, string>
 {
-    public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<UserPermission> UserPermissions => Set<UserPermission>();
+
+    public DbSet<Appointment> Appointments => Set<Appointment>();
+    public DbSet<Diagnosis> Diagnoses => Set<Diagnosis>();
+    public DbSet<DiagnosisIndustrialPart> DiagnosisIndustrialParts => Set<DiagnosisIndustrialPart>();
+    public DbSet<DiagnosisProgram> DiagnosisPrograms => Set<DiagnosisProgram>();
+    
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
