@@ -16,4 +16,10 @@ public interface IIdentityService
 
     Task<string?> GetUserNameAsync(string userId);
     Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId);
+    
+    Task<Result<bool>> AddPermissionToRoleAsync(string roleName, string permissionName, CancellationToken ct = default);
+    Task<Result<bool>> RemovePermissionFromRoleAsync(string roleName, string permissionName, CancellationToken ct = default);
+
+    Task<Result<bool>> AddPermissionToUserAsync(string userId, string permissionName, CancellationToken ct = default);
+    Task<Result<bool>> RemovePermissionFromUserAsync(string userId, string permissionName, CancellationToken ct = default);
 }

@@ -10,5 +10,4 @@ public interface IGenericRepository<TEntity, TId> where TEntity : Entity<TId>
     Task UpdateAsync(TEntity entity, CancellationToken ct = default);
     Task DeleteAsync(TEntity entity, CancellationToken ct = default);
     Task<bool> IsExistAsync(TId id, CancellationToken ct = default);
-    Task<bool> HasAssociationsAsync(TId id, CancellationToken ct = default);
 }

@@ -26,11 +26,6 @@ public class DeleteIndustrialPartCommandHandler : IRequestHandler<DeleteIndustri
             return Result.Deleted;
         }
 
-        if (await _unitOfWork.IndustrialParts.HasAssociationsAsync(command.IndustrialPartId, ct))
-        {
-            _logger.LogError("Industrial Part with Id {IndustrialPartId} has associated records and cannot be deleted.", command.IndustrialPartId);
-            return Error.Conflict("IndustrialPartCannotBeDeleted", "Industrial Part has associated records and cannot be deleted.");
-        }
         await _unitOfWork.IndustrialParts.DeleteAsync(industrialPart, ct);
         await _unitOfWork.SaveChangesAsync(ct);
         _logger.LogInformation("Industrial Part with Id {IndustrialPartId} deleted successfully.", command.IndustrialPartId);

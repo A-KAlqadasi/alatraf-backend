@@ -32,13 +32,6 @@ public class DeleteServiceCommandHandler : IRequestHandler<DeleteServiceCommand,
             return ServiceErrors.ServiceNotFound;
         }
 
-        if(await _unitOfWork.Services.HasAssociationsAsync(command.ServiceId, ct))
-        {
-            _logger.LogWarning("Service with id {Id} has associated records and cannot be deleted", command.ServiceId);
-
-            return Error.Conflict(code: "Service.HasAssociations", description: $"Service with Id {command.ServiceId} has associations and cannot be deleted.");
-        }
-
         await _unitOfWork.Services.DeleteAsync(service);
         await _unitOfWork.SaveChangesAsync(ct);
 
