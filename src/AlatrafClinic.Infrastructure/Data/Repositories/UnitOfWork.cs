@@ -51,11 +51,15 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public ISaleRepository Sales => _sale ??= new SaleRepository(_dbContext);
 
-    public ITherapyCardRepository TherapyCards => throw new NotImplementedException();
+    private ITherapyCardRepository? _therapyCard;
+
+    public ITherapyCardRepository TherapyCards => _therapyCard ??= new TherapyCardRepository(_dbContext);
 
     public ITherapyCardTypePriceRepository TherapyCardTypePrices => throw new NotImplementedException();
 
-    public ISessionRepository Sessions => throw new NotImplementedException();
+    private ISessionRepository? _session;
+
+    public ISessionRepository Sessions => _session ??= new SessionRepository(_dbContext);
 
     private IHolidayRepository? _holiday;
 

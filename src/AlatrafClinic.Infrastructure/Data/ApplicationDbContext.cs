@@ -9,6 +9,9 @@ using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Domain.Services.Appointments.Holidays;
+using AlatrafClinic.Domain.TherapyCards;
+using AlatrafClinic.Domain.TherapyCards.Sessions;
+using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Infrastructure.Identity;
 
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +40,9 @@ public class ApplicationDbContext
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<PatientPayment> PatientPayments => Set<PatientPayment>();
+    public DbSet<TherapyCard> TherapyCards => Set<TherapyCard>();
+    public DbSet<Session> Sessions => Set<Session>();
+    public DbSet<TherapyCardTypePrice> TherapyCardTypePrices => Set<TherapyCardTypePrice>();
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }

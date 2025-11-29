@@ -23,8 +23,11 @@ public sealed class SalesFilter : FilterSpecification<Sale>
                     .ThenInclude(p => p.Person)
             .Include(s => s.SaleItems)
                 .ThenInclude(si => si.ItemUnit)
-                    .ThenInclude(iu => iu.Item);
-        
+                    .ThenInclude(iu => iu.Item)
+            .Include(s => s.SaleItems)
+                .ThenInclude(si => si.ItemUnit)
+                    .ThenInclude(u=> u.Unit);
+
         query = ApplyFilters(query);
         query = ApplySearch(query);
         query = ApplySorting(query);

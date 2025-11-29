@@ -10,7 +10,7 @@ namespace AlatrafClinic.Domain.TherapyCards.Sessions;
 public class SessionProgram : AuditableEntity<int>
 {
     public int DiagnosisProgramId { get; private set; }
-    public DiagnosisProgram? DiagnosisProgram { get; set; }
+    public DiagnosisProgram DiagnosisProgram { get; set; } = default!;
     public int SessionId { get; private set; }
     public Session? Session { get; set; }
     public int DoctorSectionRoomId { get; private set; }
