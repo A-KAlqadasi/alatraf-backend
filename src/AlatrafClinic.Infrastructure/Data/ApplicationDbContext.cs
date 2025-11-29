@@ -7,8 +7,10 @@ using AlatrafClinic.Domain.Payments.PatientPayments;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Sales;
+using AlatrafClinic.Domain.Services;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Domain.Services.Appointments.Holidays;
+using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
@@ -43,6 +45,9 @@ public class ApplicationDbContext
     public DbSet<TherapyCard> TherapyCards => Set<TherapyCard>();
     public DbSet<Session> Sessions => Set<Session>();
     public DbSet<TherapyCardTypePrice> TherapyCardTypePrices => Set<TherapyCardTypePrice>();
+    public DbSet<Service> Services => Set<Service>();
+
+    public DbSet<Ticket> Tickets => Set<Ticket>();
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }

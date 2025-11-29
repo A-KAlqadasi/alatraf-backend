@@ -17,9 +17,11 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     private IDiagnosisRepository? _diagnosis ;
 
-    public IDiagnosisRepository Diagnoses => _diagnosis ??= new DiagnosisRepository(_dbContext); 
+    public IDiagnosisRepository Diagnoses => _diagnosis ??= new DiagnosisRepository(_dbContext);
 
-    public ITicketRepository Tickets => throw new NotImplementedException();
+    private ITicketRepository? _ticket;
+
+    public ITicketRepository Tickets => _ticket ??= new TicketRepository(_dbContext);
 
     public IInjuryReasonRepository InjuryReasons => throw new NotImplementedException();
 
@@ -27,7 +29,9 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IInjuryTypeRepository InjuryTypes => throw new NotImplementedException();
 
-    public IServiceRepository Services => throw new NotImplementedException();
+    private IServiceRepository? _service;
+
+    public IServiceRepository Services => _service ??= new ServiceRepository(_dbContext);
 
     public IDepartmentRepository Departments => throw new NotImplementedException();
 
