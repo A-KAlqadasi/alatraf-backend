@@ -5,6 +5,8 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Enums;
 using AlatrafClinic.Domain.Services.Enums;
 
+namespace AlatrafClinic.Application.Features.Appointments.Queries.GetAppointments;
+
 public sealed record GetAppointmentsQuery(
     int Page,
     int PageSize,

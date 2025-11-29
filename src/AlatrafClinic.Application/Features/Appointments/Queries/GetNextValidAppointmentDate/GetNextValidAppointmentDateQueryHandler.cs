@@ -20,7 +20,7 @@ public class GetNextValidAppointmentDateQueryHandler(
 
     public async Task<Result<DateTime>> Handle(GetNextValidAppointmentDateQuery query, CancellationToken ct)
     {
-        DateTime lastScheduleDate = await _unitOfWork.Appointments.GetLastAppointmentDate(ct);
+        DateTime lastScheduleDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
 
         DateTime baseDate = lastScheduleDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastScheduleDate.Date;
 

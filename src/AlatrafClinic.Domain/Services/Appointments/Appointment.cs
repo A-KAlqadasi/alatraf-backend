@@ -14,7 +14,7 @@ public class Appointment : AuditableEntity<int>
     public AppointmentStatus Status { get; private set; } 
     public string? Notes { get; private set; }
     public int TicketId { get; private set; }
-    public Ticket? Ticket { get; set; }
+    public Ticket Ticket { get; set; } = default!;
     public static IReadOnlyCollection<DayOfWeek>? AllowedDays { get; private set; }
 
 

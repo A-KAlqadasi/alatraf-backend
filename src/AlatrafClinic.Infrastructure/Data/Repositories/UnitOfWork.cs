@@ -62,7 +62,8 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IAppSettingRepository AppSettings => throw new NotImplementedException();
 
-    public IAppointmentRepository Appointments => throw new NotImplementedException();
+    private IAppointmentRepository? _appointments;
+    public IAppointmentRepository Appointments => _appointments ??= new AppointmentRepository(_dbContext);
 
     public async ValueTask DisposeAsync()
     {

@@ -1,4 +1,5 @@
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Infrastructure.Identity;
 
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,7 @@ namespace AlatrafClinic.Infrastructure.Data;
 public class ApplicationDbContext
     : IdentityDbContext<AppUser, IdentityRole, string>
 {
-    
+    public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();

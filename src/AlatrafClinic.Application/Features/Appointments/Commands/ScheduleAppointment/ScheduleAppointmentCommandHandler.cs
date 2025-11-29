@@ -53,7 +53,7 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
             return TicketErrors.TicketAlreadHasAppointment;
         }
 
-        DateTime lastAppointmentDate = await _unitOfWork.Appointments.GetLastAppointmentDate(ct);
+        DateTime lastAppointmentDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
         
 
         var appointmentResult = Appointment.Schedule(
