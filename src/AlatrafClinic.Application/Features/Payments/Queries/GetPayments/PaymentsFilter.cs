@@ -47,6 +47,12 @@ public sealed class PaymentsFilter : FilterSpecification<Payment>
                 p.Diagnosis != null &&
                 p.Diagnosis.PatientId == _q.PatientId.Value);
 
+        if (_q.TicketId.HasValue && _q.TicketId.Value > 0)
+            query = query.Where(p => p.TicketId == _q.TicketId.Value);
+
+        if (_q.PaymentReference.HasValue)
+            query = query.Where(p => p.PaymentReference == _q.PaymentReference.Value);
+
         return query;
     }
 

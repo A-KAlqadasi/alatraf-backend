@@ -10,9 +10,9 @@ using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.Payments;
 
 using MediatR;
-using AlatrafClinic.Domain.Payments;
 
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCard;
@@ -94,7 +94,7 @@ public sealed class CreateRepairCardCommandHandler
 
         var repairCard = repairCardResult.Value;
 
-        var paymentResult = Payment.Create(diagnosis.Id, repairCard.TotalCost, PaymentReference.Repair);
+        var paymentResult = Payment.Create(diagnosis.TicketId, diagnosis.Id, repairCard.TotalCost, PaymentReference.Repair);
 
         if (paymentResult.IsError)
         {

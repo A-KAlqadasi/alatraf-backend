@@ -9,7 +9,6 @@ namespace AlatrafClinic.Application.Features.Payments.Commands.PayPayments;
 public class PayPaymentCommand : IRequest<Result<Updated>>
 {
     public int PaymentId { get; init; }
-    public decimal? ClientTotal { get; init; }
     public decimal? PaidAmount { get; init; }
     public decimal? Discount { get; init; }
     public AccountKind AccountKind { get; init; }

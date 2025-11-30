@@ -27,4 +27,5 @@ public static class PaymentErrors
     public static readonly Error DiagnosisMissmatch = Error.Conflict("Payment.DiagnosisMismatch", "Payment diagnosis does not match");
     public static readonly Error TotalMissmatch = Error.Conflict("Payment.TotalMismatch", "Payment total does not match");
     public static readonly Error InvalidAccountKind = Error.Validation("Payment.InvalidAccountKind", "Invalid account kind");
+    public static readonly Error InvalidTicketId = Error.Validation("Payment.InvalidTicketId", "Ticket Id is invalid");
 }

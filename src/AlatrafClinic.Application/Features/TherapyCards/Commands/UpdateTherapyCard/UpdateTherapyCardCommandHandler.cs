@@ -9,10 +9,10 @@ using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
-
-using MediatR;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.TherapyCards.Enums;
+
+using MediatR;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 
@@ -129,6 +129,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         PaymentReference paymentReference = currentTherapy.CardStatus == CardStatus.New ? PaymentReference.TherapyCardNew : PaymentReference.TherapyCardRenew;
 
         var updatePaymentResult = currentPayment.UpdateCore(
+            ticketId: updatedDiagnosis.TicketId,
             diagnosisId: updatedDiagnosis.Id,
             total: currentTherapy.TotalCost,
             reference: paymentReference);

@@ -25,7 +25,7 @@ public class TherapyCard : AuditableEntity<int>
     public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
     public decimal TotalCost => NumberOfSessions * SessionPricePerType;
-    public bool IsExpired => DateTime.Now > ProgramEndDate;
+    public bool IsExpired => DateTime.Now.Date > ProgramEndDate.Date;
     public bool IsEditable => IsActive && !IsExpired && !IsPaid && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();
     public IReadOnlyCollection<Session> Sessions => _sessions.AsReadOnly();

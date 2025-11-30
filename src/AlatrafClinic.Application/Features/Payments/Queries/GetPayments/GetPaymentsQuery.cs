@@ -10,9 +10,11 @@ public sealed record GetPaymentsQuery(
     int Page,
     int PageSize,
     string? SearchTerm = null,
+    PaymentReference? PaymentReference = null,
     AccountKind? AccountKind = null,
     bool? IsCompleted = null,
     int? DiagnosisId = null,
+    int? TicketId = null,
     int? PatientId = null,
     string SortColumn = "CreatedAtUtc",
     string SortDirection = "desc"
@@ -22,8 +24,10 @@ public sealed record GetPaymentsQuery(
         $"payments:p={Page}:ps={PageSize}" +
         $":q={(SearchTerm ?? "-")}" +
         $":kind={(AccountKind?.ToString() ?? "-")}" +
+        $":ref={(PaymentReference?.ToString() ?? "-")}" +
         $":completed={(IsCompleted?.ToString() ?? "-")}" +
         $":diag={(DiagnosisId?.ToString() ?? "-")}" +
+        $":ticket={(TicketId?.ToString() ?? "-")}" +
         $":pat={(PatientId?.ToString() ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 

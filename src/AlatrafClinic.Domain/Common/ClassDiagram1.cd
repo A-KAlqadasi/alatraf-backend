@@ -1,517 +1,382 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="AlatrafClinic.Domain.Common.Entity&lt;TId&gt;" Collapsed="true">
-    <Position X="64.5" Y="1" Width="1.5" />
+  <Class Name="AlatrafClinic.Domain.Common.Entity&lt;TId&gt;">
+    <Position X="70.75" Y="6" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAACAAgAAAAAAAAAAAAAAAAAAAAAAAEEAAABAAACAAA=</HashCode>
       <FileName>Common\Entity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Common.AuditableEntity&lt;TId&gt;" Collapsed="true">
-    <Position X="64.5" Y="2.25" Width="1.5" />
+    <Position X="68.75" Y="6" Width="1.5" />
+    <InheritanceLine Type="AlatrafClinic.Domain.Common.Entity&lt;TId&gt;" ManuallyRouted="true">
+      <Path>
+        <Point X="70.75" Y="6.346" />
+        <Point X="70.25" Y="6.346" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAQAAAAAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAE=</HashCode>
+      <HashCode>AEAAAAQAAAAAAAAAAAAAAEQAAAAAAAAAAAAAAVAAAAE=</HashCode>
       <FileName>Common\AuditableEntity.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="AlatrafClinic.Domain.Organization.DoctorSectionRooms.DoctorSectionRoom">
-    <Position X="2.75" Y="3.75" Width="2.25" />
-    <Members>
-      <Method Name="DoctorSectionRoom" Hidden="true" />
-    </Members>
+    <Position X="13.25" Y="9.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAgAACCABAAAAAAEBAAAAAgIAADAAQAACAQAJAQAAA=</HashCode>
       <FileName>Departments\DoctorSectionRooms\DoctorSectionRoom.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Organization.Rooms.Room">
-    <Position X="5.75" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="Room" Hidden="true" />
-    </Members>
+    <Position X="16.25" Y="14.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAgAASAAQAAAAAAEAAAAAAAYAQAAQ=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAgAAQAAQAAAAAAEAAAAAAAIAQAAQ=</HashCode>
       <FileName>Departments\Sections\Rooms\Room.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Organization.Sections.Section">
-    <Position X="8.25" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="Section" Hidden="true" />
-    </Members>
+    <Position X="18.25" Y="9.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAgACAgAAQAAQCEAAAAkAAAAAAAAAAAAQ=</HashCode>
       <FileName>Departments\Sections\Section.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Organization.Departments.Department">
-    <Position X="10.75" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Department" Hidden="true" />
-    </Members>
+    <Position X="20.5" Y="14.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>gAAEAAAAAAAAAAAQAAAAAAQAAAAAQEAAAEAAACAAgAA=</HashCode>
       <FileName>Departments\Department.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts.DiagnosisIndustrialPart">
-    <Position X="13" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="DiagnosisIndustrialPart" Hidden="true" />
-    </Members>
+    <Position X="23" Y="9.25" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AgQAAAAAAQgAABACAABAAABEAACAEEAAAAAAgAAAAAI=</HashCode>
       <FileName>Diagnosises\DiagnosisIndustrialParts\DiagnosisIndustrialPart.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms.DiagnosisProgram">
-    <Position X="15.75" Y="3.75" Width="2.5" />
-    <Members>
-      <Method Name="DiagnosisProgram" Hidden="true" />
-    </Members>
+    <Position X="26" Y="14.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>CAQgAAAAABACABACAwAAAAAAABAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Diagnosises\DiagnosisPrograms\DiagnosisProgram.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Diagnosises.InjuryReasons.InjuryReason">
-    <Position X="19" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="InjuryReason" Hidden="true" />
-    </Members>
+    <Position X="28.75" Y="9.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAAAAAAAAAQAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Diagnosises\InjuryReasons\InjuryReason.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Diagnosises.InjurySides.InjurySide">
-    <Position X="21.25" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="InjurySide" Hidden="true" />
-    </Members>
+    <Position X="31.25" Y="12.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAAAAAAAAAQAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Diagnosises\InjurySides\InjurySide.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Diagnosises.InjuryTypes.InjuryType">
-    <Position X="23.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="InjuryType" Hidden="true" />
-    </Members>
+    <Position X="33.5" Y="9.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAAAAAAAAAQAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Diagnosises\InjuryTypes\InjuryType.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Diagnosises.Diagnosis">
-    <Position X="25.75" Y="3.75" Width="2.25" />
-    <Members>
-      <Method Name="Diagnosis" Hidden="true" />
-    </Members>
+    <Position X="35.75" Y="12.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAQAAIYACQLAAVBCCgIAIARAAAAAAFAAIAAUgAAACQI=</HashCode>
       <FileName>Diagnosises\Diagnosis.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="AlatrafClinic.Domain.DisabledCards.DisabledCard">
+    <Position X="38.25" Y="8.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>IAQAAABIAQAAAAAAAAAAIAAAQAAAAEAAAAAAAAAACAA=</HashCode>
+      <FileName>DisabledCards\DisabledCard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AlatrafClinic.Domain.ExitCards.ExitCard">
+    <Position X="41" Y="12.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IAQAAIAAAQAAAAAAAAAAAAAEAAAAAEAAAAAAAAEAOAI=</HashCode>
+      <FileName>ExitCards\ExitCard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="AlatrafClinic.Domain.Identity.RefreshToken">
-    <Position X="28.75" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="RefreshToken" Hidden="true" />
-    </Members>
+    <Position X="43.25" Y="9.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAEAAAAAAAAABCAA=</HashCode>
       <FileName>Identity\RefreshToken.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder">
-    <Position X="31" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="ExchangeOrder" Hidden="true" />
-    </Members>
+    <Position X="45.5" Y="13" Width="2.25" />
     <TypeIdentifier>
       <HashCode>EAkgEIAAAAAACAAAAEAAEAAAABAAAEACAAAAAQCAMAA=</HashCode>
       <FileName>Inventory\ExchangeOrders\ExchangeOrder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrderItem">
-    <Position X="33.25" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="ExchangeOrderItem" Hidden="true" />
-    </Members>
+    <Position X="47.75" Y="9.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>ABQAAAAAAAAAAAgAAgAAAAEAAAAAAEAAAAAAgAAAAAA=</HashCode>
       <FileName>Inventory\ExchangeOrders\ExchangeOrderItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Items.Item">
-    <Position X="35.75" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="Item" Hidden="true" />
-    </Members>
+    <Position X="50.25" Y="14" Width="2" />
     <TypeIdentifier>
       <HashCode>AAYAAAABQBBwAABAEAAAAAQAAAAAAEAAAAEAAAAAAAA=</HashCode>
       <FileName>Inventory\Items\Item.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Items.ItemUnit">
-    <Position X="38.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="ItemUnit" Hidden="true" />
-    </Members>
+    <Position X="52.25" Y="9.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AQQAAAAAAQAAAAAAoAAAAAAEAAAAAEAAAQAEEAAAABA=</HashCode>
       <FileName>Inventory\Items\ItemUnit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Purchases.PurchaseInvoice">
-    <Position X="40.75" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="PurchaseInvoice" Hidden="true" />
-    </Members>
+    <Position X="54" Y="13.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>BAAAQAAEQAAAGIAAAEAAEAAAyBAAQkAFAIAAAQAgEAA=</HashCode>
       <FileName>Inventory\Purchases\PurchaseInvoice.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Purchases.PurchaseItem">
-    <Position X="43" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="PurchaseItem" Hidden="true" />
-    </Members>
+    <Position X="56.25" Y="9.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>IBQgAAAEAAAAAAAAEgAAAAAAAACAQEAAAAQAgAAAAAA=</HashCode>
       <FileName>Inventory\Purchases\PurchaseItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Stores.Store">
-    <Position X="45.75" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Store" Hidden="true" />
-    </Members>
+    <Position X="58.75" Y="13.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAQAAEAAAAAAAAAAAAAAAAQAAAAAIEgAAAAAAAAAAAA=</HashCode>
       <FileName>Inventory\Stores\Store.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit">
-    <Position X="48" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="StoreItemUnit" Hidden="true" />
-    </Members>
+    <Position X="60.25" Y="9.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAEAABAAABAAAAAAAAEAAAAAAAAEAQAAAAgQAAAAA=</HashCode>
       <FileName>Inventory\Stores\StoreItemUnit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Suppliers.Supplier">
-    <Position X="50.25" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Supplier" Hidden="true" />
-    </Members>
+    <Position X="62.5" Y="14" Width="2" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAIAAIAAAAAA=</HashCode>
       <FileName>Inventory\Suppliers\Suplier.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Inventory.Units.Unit">
-    <Position X="52.5" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="Unit" Hidden="true" />
-    </Members>
+    <Position X="64.25" Y="9.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAQAAAABAAAAAAAAAAAAAAQAEAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Inventory\Units\Unit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Payments.DisabledPayments.DisabledPayment">
-    <Position X="55" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="DisabledPayment" Hidden="true" />
-    </Members>
+    <Position X="65.5" Y="14.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAQgAIAAAAAAAAAQAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQgAIAAAAAAAAAQAIAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Payments\DisabledPayments\DisabledPayment.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Payments.PatientPayments.PatientPayment">
-    <Position X="57.25" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="PatientPayment" Hidden="true" />
-    </Members>
+    <Position X="67.5" Y="9.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAQgAAAAAAAIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQgAAAAAAAIAAAAAIAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Payments\PatientPayments\PatientPayment.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Payments.WoundedPayments.WoundedPayment">
-    <Position X="59.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="WoundedPayment" Hidden="true" />
-    </Members>
+    <Position X="71" Y="12.25" Width="2.5" />
+    <InheritanceLine Type="AlatrafClinic.Domain.Common.AuditableEntity&lt;TId&gt;" ManuallyRouted="true">
+      <Path>
+        <Point X="69.5" Y="6.691" />
+        <Point X="69.5" Y="8.831" />
+        <Point X="72.25" Y="8.831" />
+        <Point X="72.25" Y="12.25" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAQgACAAgAAAAAAABAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQgACAAgAAAAAAABIAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Payments\WoundedPayments\WoundedPayment.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Payments.Payment">
-    <Position X="61.75" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="Payment" Hidden="true" />
-    </Members>
+    <Position X="74.25" Y="15.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAEAAAAAACQApAGAAAEIggAAkBAAFAAAgAAACgAAAA=</HashCode>
       <FileName>Payments\Payment .cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Organization.Doctors.Doctor">
-    <Position X="64.5" Y="3.75" Width="2.25" />
-    <Members>
-      <Method Name="Doctor" Hidden="true" />
-    </Members>
+    <Position X="76.5" Y="9.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AIIQAAAAQAAQgAAGABAAAAAAMAAAAEAAAAQIBAAAAMA=</HashCode>
+      <HashCode>AIIQAACAQAAQgAAGABAAAAAAEAAAAEAAAAQIBAAAAMA=</HashCode>
       <FileName>People\Doctors\Doctor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.People.Employees.Employee">
-    <Position X="67.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Employee" Hidden="true" />
-    </Members>
+    <Position X="79.25" Y="15.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AIAQAAAAAAAAAAAEEAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>People\Employees\Employee.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="AlatrafClinic.Domain.Patients.Cards.DisabledCards.DisabledCard">
-    <Position X="69.75" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="DisabledCard" Hidden="true" />
-    </Members>
-    <TypeIdentifier>
-      <HashCode>IAQAAABIAQAAAAAAAAAAIAAAQAAAAEAAAAAAAAAACAA=</HashCode>
-      <FileName>People\Patients\Cards\DisabledCards\DisabledCard.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="AlatrafClinic.Domain.Patients.Cards.ExitCards.ExitCard">
-    <Position X="72.25" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="ExitCard" Hidden="true" />
-    </Members>
-    <TypeIdentifier>
-      <HashCode>IAQAAIAAAQAAAAAAAAAAAAAEAAAAAEAAAAAAAAEAOAI=</HashCode>
-      <FileName>People\Patients\Cards\ExitCards\ExitCard.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="AlatrafClinic.Domain.Patients.Cards.WoundedCards.WoundedCard">
-    <Position X="75" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="WoundedCard" Hidden="true" />
-    </Members>
-    <TypeIdentifier>
-      <HashCode>IIQEAABIAQAAAAAAAAAAAAAAAAAAAEAAAAAAAAAACAA=</HashCode>
-      <FileName>People\Patients\Cards\WoundedCards\WoundedCard.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="AlatrafClinic.Domain.Patients.Patient">
-    <Position X="77.5" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="Patient" Hidden="true" />
-    </Members>
+    <Position X="81" Y="10.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AISAAAAAAAAAAAAEAAAAAQAAAAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>People\Patients\Patient.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.People.Person">
-    <Position X="80.25" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Person" Hidden="true" />
-    </Members>
+    <Position X="82.75" Y="15.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAQAAACAAAAAAICAAAAAAAQAAAAAAEACAAAAIAAAAAA=</HashCode>
       <FileName>People\Person.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.RepairCards.DeliveryTimes.DeliveryTime">
-    <Position X="82.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="DeliveryTime" Hidden="true" />
-    </Members>
+    <Position X="85" Y="10.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAABAAAAAAEAAAAAEAAAAAAAAEAAAI=</HashCode>
       <FileName>RepairCards\DeliveryTimes\DeliveryTime.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPart">
-    <Position X="84.75" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="IndustrialPart" Hidden="true" />
-    </Members>
+    <Position X="87.75" Y="14.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AARAAAAAAAAgAAgAAAAAAAQAEACAAEAAAAAQAAAAAAA=</HashCode>
       <FileName>RepairCards\IndustrialParts\IndustrialPart.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPartUnit">
-    <Position X="87.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="IndustrialPartUnit" Hidden="true" />
-    </Members>
+    <Position X="89.5" Y="10.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAABAYAAAAAAAAAAAAEAAAAAEAAAEAAA=</HashCode>
       <FileName>RepairCards\IndustrialParts\IndustrialPartUnit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.RepairCards.Orders.Order">
-    <Position X="89.75" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="Order" Hidden="true" />
-    </Members>
+    <Position X="92.25" Y="14.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAgAAAAEQAEAAAAAAgAAIAEEEAAAAAACQAAAAISQAAI=</HashCode>
       <FileName>RepairCards\Orders\Order.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.RepairCards.Orders.OrderItem">
-    <Position X="92.25" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="OrderItem" Hidden="true" />
-    </Members>
+    <Position X="94.25" Y="9.25" Width="2" />
     <TypeIdentifier>
       <HashCode>EAUAAAABAQAAAAAAAAAAAAAAAAAAQEAQAAAAgAAAAAA=</HashCode>
       <FileName>RepairCards\Orders\OrderItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.RepairCards.RepairCard">
-    <Position X="95" Y="3.75" Width="2.75" />
-    <Members>
-      <Method Name="RepairCard" Hidden="true" />
-    </Members>
+    <Position X="96.75" Y="16.5" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AIEoEAAFAAEgABADGIAAIAAAAIABAUBAAAIQQQAAAIA=</HashCode>
       <FileName>RepairCards\RepairCard.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Sales.SalesItems.SaleItem">
-    <Position X="98.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="SaleItem" Hidden="true" />
-    </Members>
+    <Position X="99" Y="10.75" Width="2" />
     <TypeIdentifier>
       <HashCode>ABQAAIABAQAAAAAAEgAAAAAAAAAAQEAQAAAAgAAAMAA=</HashCode>
       <FileName>Sales\SalesItems\SaleItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Sales.Sale">
-    <Position X="100.75" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Sale" Hidden="true" />
-    </Members>
+    <Position X="101.75" Y="16.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AABggAAEQAAAABACAIAAAAEACAAAQUAAAAAQAQCAAAA=</HashCode>
       <FileName>Sales\Sale.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Services.Appointments.Holidays.Holiday">
-    <Position X="103" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Holiday" Hidden="true" />
-    </Members>
+    <Position X="103" Y="10.25" Width="2" />
     <TypeIdentifier>
       <HashCode>ABAAACAAAABABABAEAAAAAQgAAAAAAAAAQAAAEACIAA=</HashCode>
       <FileName>Services\Appointments\Holidays\Holiday.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Services.Appointments.Appointment">
-    <Position X="105.25" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="Appointment" Hidden="true" />
-    </Members>
+    <Position X="105.25" Y="16.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAgAAAEQCAAACECAAAAIQAAAEQAAhBAAAQQABAAAAA=</HashCode>
       <FileName>Services\Appointments\Appointment.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Services.Tickets.Ticket">
-    <Position X="108" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="Ticket" Hidden="true" />
-    </Members>
+    <Position X="107.5" Y="10.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAQgCCAEQQAAABIAAAAEIAAAQAAAQEBBAAAEAAAACAA=</HashCode>
       <FileName>Services\Tickets\Ticket.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Services.Service">
-    <Position X="110.5" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="Service" Hidden="true" />
-    </Members>
+    <Position X="110.25" Y="16.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAQAAgAAAAAAgAAQAEAAAAEAAAAAAAAAAAAA=</HashCode>
       <FileName>Services\Service.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.Settings.AppSetting">
-    <Position X="112.75" Y="3.75" Width="1.5" />
-    <Members>
-      <Method Name="AppSetting" Hidden="true" />
-    </Members>
+    <Position X="112" Y="10.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAQAgAAQAAAAAAAAAAAAQAEAAAQAgAAQAAAA=</HashCode>
       <FileName>Settings\AppSetting .cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.TherapyCards.MedicalPrograms.MedicalProgram">
-    <Position X="115" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="MedicalProgram" Hidden="true" />
-    </Members>
+    <Position X="114.75" Y="16.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAACgAAAAAAAAAAQAAAAAAEAAAAAAAIAQAAA=</HashCode>
       <FileName>TherapyCards\MedicalPrograms\MedicalProgram.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.TherapyCards.Sessions.Session">
-    <Position X="117.5" Y="3.75" Width="1.75" />
-    <Members>
-      <Method Name="Session" Hidden="true" />
-    </Members>
+    <Position X="116.5" Y="11.75" Width="2" />
     <TypeIdentifier>
       <HashCode>CAAAAEAAABAAAAAAAkAAAIAAEAAAAEAAAAAEAAAAAAA=</HashCode>
       <FileName>TherapyCards\Sessions\Session.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.TherapyCards.Sessions.SessionProgram">
-    <Position X="120" Y="3.75" Width="2.25" />
-    <Members>
-      <Method Name="SessionProgram" Hidden="true" />
-    </Members>
+    <Position X="119.25" Y="16.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AgAAgAAAAAgAAQAAAAAAAAAIAABAAEAAgAAAAAAAAAA=</HashCode>
       <FileName>TherapyCards\Sessions\SessionProgram.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices.TherapyCardTypePrice">
-    <Position X="123" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="TherapyCardTypePrice" Hidden="true" />
-    </Members>
+    <Position X="121" Y="11.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAQABAAAAABA=</HashCode>
       <FileName>TherapyCards\TherapyCardTypePrices\TherapyCardTypePrice.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="AlatrafClinic.Domain.TherapyCards.TherapyCard">
-    <Position X="125.75" Y="3.75" Width="2" />
-    <Members>
-      <Method Name="TherapyCard" Hidden="true" />
-    </Members>
+    <Position X="124.25" Y="16.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAQgAEAJBADAEBCDOKAAIAAIgAACAUAwAQAAgAIAAAA=</HashCode>
       <FileName>TherapyCards\TherapyCard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AlatrafClinic.Domain.WoundedCards.WoundedCard">
+    <Position X="126.5" Y="9.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>IIQEAABIAQAAAAAAAAAAAAAAAAAAAEAAAAAAAAAACAA=</HashCode>
+      <FileName>WoundedCards\WoundedCard.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
