@@ -19,6 +19,8 @@ public static class PaymentMapper
         return new PaymentDto
         {
             PaymentId = p.Id,
+            TicketId = p.TicketId,
+            PaymentReference = p.PaymentReference,
             Diagnosis = p.Diagnosis != null ? p.Diagnosis.ToDto() : new DiagnosisDto(),
             AccountKind = p.AccountKind,
             IsCompleted = p.IsCompleted,

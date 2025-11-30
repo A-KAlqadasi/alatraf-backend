@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Logging;
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
@@ -11,8 +13,6 @@ using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCard;
 
@@ -127,6 +127,7 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
         }
 
         var updatePaymentResult = currentPayment.UpdateCore(
+            ticketId: updatedDiagnosis.TicketId,
             diagnosisId: updatedDiagnosis.Id,
             total: currentRepairCard.TotalCost,
             reference: PaymentReference.Repair);

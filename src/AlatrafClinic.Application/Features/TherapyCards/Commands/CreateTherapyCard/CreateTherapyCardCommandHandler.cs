@@ -110,7 +110,7 @@ public sealed class CreateTherapyCardCommandHandler
             return upsertTherapyResult.Errors;
         }
 
-        var paymentResult = Payment.Create(diagnosis.Id, therapyCard.TotalCost, PaymentReference.TherapyCardNew);
+        var paymentResult = Payment.Create(diagnosis.TicketId, diagnosis.Id, therapyCard.TotalCost, PaymentReference.TherapyCardNew);
 
         if (paymentResult.IsError)
         {

@@ -1,10 +1,10 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
+using AlatrafClinic.Domain.ExitCards;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Stores;
-using AlatrafClinic.Domain.Patients.Cards.ExitCards;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Sales.Enums;
 using AlatrafClinic.Domain.Sales.SalesItems;

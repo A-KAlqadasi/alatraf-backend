@@ -30,5 +30,7 @@ public static class TherapyCardErrors
     public static Error SessionNotFound = Error.NotFound("TherapyCard.SessionNotFound", "Session not found");
     public static readonly Error PaymentNotFound =
     Error.NotFound("TherapyCard.PaymentNotFound", "Payment for this therapy card not found");
+    public static readonly Error NoActiveTherapyCardFound =
+    Error.NotFound("TherapyCard.NoActiveTherapyCardFound", "No active therapy card found for the patient");
 
 }

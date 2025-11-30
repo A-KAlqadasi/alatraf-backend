@@ -4,16 +4,19 @@ using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
 using AlatrafClinic.Domain.Payments.PatientPayments;
 using AlatrafClinic.Domain.Payments.WoundedPayments;
+using AlatrafClinic.Domain.Services.Tickets;
 
 namespace AlatrafClinic.Domain.Payments;
 
 public sealed class Payment : AuditableEntity<int>
 {
     public decimal TotalAmount { get; private set; }
-    public decimal? PaidAmount { get; private set; }        // nullable when not applicable
-    public decimal? Discount { get; private set; }          // nullable when not applicable
+    public decimal? PaidAmount { get; private set; }
+    public decimal? Discount { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
+    public int TicketId {get; private set;}
+    public Ticket Ticket { get; set; } = default!;
     public PaymentReference PaymentReference { get; private set; }
     public AccountKind AccountKind { get; private set; }
     public bool IsCompleted { get; private set; } = false;
@@ -27,29 +30,33 @@ public sealed class Payment : AuditableEntity<int>
 
     private Payment() { }
 
-    private Payment(int diagnosisId, decimal total, PaymentReference reference)
+    private Payment(int ticketId, int diagnosisId, decimal total, PaymentReference reference)
     {
+        TicketId = ticketId;
         DiagnosisId = diagnosisId;
         TotalAmount = total;
         PaymentReference = reference;
         IsCompleted = false;
     }
 
-    public static Result<Payment> Create(int diagnosisId, decimal total, PaymentReference reference)
+    public static Result<Payment> Create(int ticketId, int diagnosisId, decimal total, PaymentReference reference)
     {
+        if (ticketId <= 0) return PaymentErrors.InvalidTicketId;
         if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
         if (total <= 0) return PaymentErrors.InvalidTotal;
         if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
 
-        return new Payment(diagnosisId, total, reference);
+        return new Payment(ticketId, diagnosisId, total, reference);
     }
 
-    public Result<Updated> UpdateCore(int diagnosisId, decimal total, PaymentReference reference)
+    public Result<Updated> UpdateCore(int ticketId, int diagnosisId, decimal total, PaymentReference reference)
     {
+        if (ticketId <= 0) return PaymentErrors.InvalidTicketId;
         if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
         if (total <= 0) return PaymentErrors.InvalidTotal;
         if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
-
+        
+        TicketId = ticketId;
         DiagnosisId = diagnosisId;
         TotalAmount = total;
         PaymentReference = reference;

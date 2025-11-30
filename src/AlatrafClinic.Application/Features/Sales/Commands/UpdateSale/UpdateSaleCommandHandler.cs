@@ -8,9 +8,9 @@ using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.Enums;
+using AlatrafClinic.Domain.Payments;
 
 using MediatR;
-using AlatrafClinic.Domain.Payments;
 
 
 namespace AlatrafClinic.Application.Features.Sales.Commands.UpdateSale;
@@ -115,6 +115,7 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
         }
 
         var updatePaymentResult = currentPayment.UpdateCore(
+            ticketId: diagnosis.TicketId,
             diagnosisId: diagnosis.Id,
             total: currentSale.Total,
             reference: PaymentReference.Sales);

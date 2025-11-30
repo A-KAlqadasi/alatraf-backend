@@ -12,7 +12,6 @@ using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.TherapyCards;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 
 namespace AlatrafClinic.Domain.Diagnosises;
 
@@ -276,7 +275,7 @@ public class Diagnosis : AuditableEntity<int>
         
         if (existingPayment != null)
         {
-            return existingPayment.UpdateCore(payment.DiagnosisId, payment.TotalAmount, payment.PaymentReference);
+            return existingPayment.UpdateCore(payment.TicketId, payment.DiagnosisId, payment.TotalAmount, payment.PaymentReference);
         }
         else
         {

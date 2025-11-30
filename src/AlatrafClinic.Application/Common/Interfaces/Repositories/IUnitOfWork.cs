@@ -34,6 +34,8 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
         IPaymentRepository Payments { get; }
         IAppSettingRepository AppSettings { get; }
         IAppointmentRepository Appointments { get; }
+        IDisabledCardRepository DisabledCards { get; }
+        IWoundedCardRepository WoundedCards { get; }
         
         Task<int> SaveChangesAsync(CancellationToken ct = default);
     }

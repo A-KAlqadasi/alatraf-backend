@@ -1,7 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Patients.Cards.DisabledCards;
+using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
 
@@ -14,7 +14,7 @@ public class DisabledPaymentHandler : IPaymentTypeHandler
     public async Task<Result<Updated>> HandleCreateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
     {
         var dto = typeDto as DisabledPaymentDto ?? throw new InvalidOperationException();
-        var exists = await uow.Patients.IsDisabledCardExists(dto.DisabledCardId, ct);
+        var exists = await uow.DisabledCards.IsExistAsync(dto.DisabledCardId, ct);
         if (!exists) return DisabledCardErrors.DisabledCardNotFound;
 
         payment.Pay(null, null);
@@ -28,7 +28,7 @@ public class DisabledPaymentHandler : IPaymentTypeHandler
     public async Task<Result<Updated>> HandleUpdateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
     {
         var dto = typeDto as DisabledPaymentDto ?? throw new InvalidOperationException();
-        var exists = await uow.Patients.IsDisabledCardExists(dto.DisabledCardId, ct);
+        var exists = await uow.DisabledCards.IsExistAsync(dto.DisabledCardId, ct);
         if (!exists) return DisabledCardErrors.DisabledCardNotFound;
 
         payment.Pay(null, null);
