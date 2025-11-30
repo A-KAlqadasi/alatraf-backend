@@ -82,6 +82,10 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
     private IAppointmentRepository? _appointments;
     public IAppointmentRepository Appointments => _appointments ??= new AppointmentRepository(_dbContext);
 
+    public IDisabledCardRepository DisabledCards => throw new NotImplementedException();
+
+    public IWoundedCardRepository WoundedCards => throw new NotImplementedException();
+
     public async ValueTask DisposeAsync()
     {
         await _dbContext.DisposeAsync();

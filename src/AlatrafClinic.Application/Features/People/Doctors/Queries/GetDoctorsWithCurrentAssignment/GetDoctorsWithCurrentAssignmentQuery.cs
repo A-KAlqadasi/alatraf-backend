@@ -1,5 +1,3 @@
-
-
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.People.Doctors.Dtos;
 using AlatrafClinic.Domain.Common.Results;
@@ -17,6 +15,6 @@ public sealed record GetDoctorsWithCurrentAssignmentQuery(
     string? Search = null,
     string? Specialization = null,
     bool? HasActiveAssignment = null,
-    string SortBy = "AssignDate",
+    string SortBy = "assigndate",
     string SortDir = "desc"
 ) : IRequest<Result<PaginatedList<DoctorListItemDto>>>;

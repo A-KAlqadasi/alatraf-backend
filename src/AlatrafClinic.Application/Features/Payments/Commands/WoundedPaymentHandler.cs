@@ -1,9 +1,9 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Patients.Cards.WoundedCards;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.WoundedPayments;
+using AlatrafClinic.Domain.WoundedCards;
 
 namespace AlatrafClinic.Application.Features.Payments.Commands;
 
@@ -15,7 +15,7 @@ public class WoundedPaymentHandler : IPaymentTypeHandler
     public async Task<Result<Updated>> HandleCreateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
     {
         var dto = typeDto as WoundedPaymentDto ?? throw new InvalidOperationException();
-        var exists = await uow.Patients.IsWoundedCardExists(dto.WoundedCardId, ct);
+        var exists = await uow.WoundedCards.IsExistAsync(dto.WoundedCardId, ct);
         if (!exists) return WoundedCardErrors.WoundedCardNotFound;
 
         payment.Pay(null, null);
@@ -30,7 +30,7 @@ public class WoundedPaymentHandler : IPaymentTypeHandler
     public async Task<Result<Updated>> HandleUpdateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
     {
         var dto = typeDto as WoundedPaymentDto ?? throw new InvalidOperationException();
-        var exists = await uow.Patients.IsWoundedCardExists(dto.WoundedCardId, ct);
+        var exists = await uow.WoundedCards.IsExistAsync(dto.WoundedCardId, ct);
         if (!exists) return WoundedCardErrors.WoundedCardNotFound;
 
         payment.Pay(null, null);
