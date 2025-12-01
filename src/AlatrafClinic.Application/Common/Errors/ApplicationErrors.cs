@@ -98,4 +98,16 @@ public static readonly Error RoomHasActiveDoctorAssignment =
     public static readonly Error TokenGenerationFailed = Error.Failure(
         code: "Auth.TokenGeneration.Failed",
         description: "Failed to generate new JWT token.");
+    public static readonly Error IdentityUserCreationFailed = Error.Failure(
+        code: "Identity.UserCreation.Failed",
+        description: "Failed to create identity user.");
+    public static readonly Error UsernameAlreadyExists = Error.Conflict(
+        code: "Identity.Username.AlreadyExists",
+        description: "The username is already taken.");
+    public static readonly Error AuthenticationFailed = Error.Unauthorized(
+        code: "Identity.Authentication.Failed",
+        description: "Authentication failed. Invalid username or password.");
+    public static readonly Error UserIsNotFound = Error.NotFound(
+        code: "Identity.User.NotFound",
+        description: "The user is not found.");
 }

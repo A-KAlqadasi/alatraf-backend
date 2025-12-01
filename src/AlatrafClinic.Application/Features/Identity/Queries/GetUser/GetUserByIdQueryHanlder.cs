@@ -6,15 +6,15 @@ using MediatR;
 
 using Microsoft.Extensions.Logging;
 
-namespace AlatrafClinic.Application.Features.Identity.Queries.GetUserInfo;
+namespace AlatrafClinic.Application.Features.Identity.Queries.GetUser;
 
 public class GetUserByIdQueryHanlder(ILogger<GetUserByIdQueryHanlder> logger, IIdentityService identityService)
-    : IRequestHandler<GetUserByIdQuery, Result<AppUserDto>>
+    : IRequestHandler<GetUserByIdQuery, Result<UserDto>>
 {
     private readonly ILogger<GetUserByIdQueryHanlder> _logger = logger;
     private readonly IIdentityService _identityService = identityService;
 
-    public async Task<Result<AppUserDto>> Handle(GetUserByIdQuery request, CancellationToken ct)
+    public async Task<Result<UserDto>> Handle(GetUserByIdQuery request, CancellationToken ct)
     {
         var getUserByIdResult = await _identityService.GetUserByIdAsync(request.UserId!);
 

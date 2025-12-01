@@ -28,6 +28,7 @@ public class PersonCreateService : IPersonCreateService
 
   public async Task<Result<Person>> CreateAsync(PersonInput person, CancellationToken cancellationToken)
   {
+    
     if (!string.IsNullOrWhiteSpace(person.NationalNo))
     {
       var existing = await _unitOfWork.Person

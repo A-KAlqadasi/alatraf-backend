@@ -6,15 +6,16 @@ namespace AlatrafClinic.Application.Common.Interfaces;
 
 public interface IIdentityService
 {
-     Task<bool> IsInRoleAsync(string userId, string role);
+    Task<bool> IsInRoleAsync(string userId, string role);
 
     Task<bool> AuthorizeAsync(string userId, string? policyName);
 
     Task<Result<AppUserDto>> AuthenticateAsync(string userName, string password);
 
-    Task<Result<AppUserDto>> GetUserByIdAsync(string userId);
+    Task<Result<UserDto>> GetUserByIdAsync(string userId);
 
     Task<string?> GetUserNameAsync(string userId);
+    Task<bool> IsUserNameExistsAsync(string userName);
     Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId);
     
     Task<Result<bool>> AddPermissionToRoleAsync(string roleName, string permissionName, CancellationToken ct = default);
@@ -22,4 +23,13 @@ public interface IIdentityService
 
     Task<Result<bool>> AddPermissionToUserAsync(string userId, string permissionName, CancellationToken ct = default);
     Task<Result<bool>> RemovePermissionFromUserAsync(string userId, string permissionName, CancellationToken ct = default);
+
+    Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions);
+
+    Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword);
+
+    Task<IQueryable<UserDto>> GetUsersAsync();
+    
+    public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive);
+
 }

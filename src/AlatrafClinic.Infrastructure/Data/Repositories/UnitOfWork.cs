@@ -9,8 +9,6 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 
     public IPersonRepository Person => throw new NotImplementedException();
 
-    public IEmployeeRepository Employees => throw new NotImplementedException();
-
     public IPatientRepository Patients => throw new NotImplementedException();
 
     public IDoctorRepository Doctors => throw new NotImplementedException();

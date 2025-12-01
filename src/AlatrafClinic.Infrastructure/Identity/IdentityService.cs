@@ -77,6 +77,7 @@ public class IdentityService(
         var dto = new AppUserDto(
             user.Id,
             user.UserName!,
+            user.IsActive,
             roles,
             permissions);
 
@@ -100,6 +101,7 @@ public class IdentityService(
         var dto = new AppUserDto(
             user.Id,
             user.UserName!,
+            user.IsActive,
             roles,
             permissions);
 
@@ -320,5 +322,40 @@ public class IdentityService(
             .Concat(userPermissions)
             .Distinct()
             .ToList();
+    }
+
+    public Task<bool> IsUserNameExistsAsync(string userName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> CreateUserAsync(Guid userId, string userName, string password, IList<string> roles, IList<string> permissions)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<Result<UserDto>> IIdentityService.GetUserByIdAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<IQueryable<UserDto>> IIdentityService.GetUsersAsync()
+    {
+        throw new NotImplementedException();
     }
 }

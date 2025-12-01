@@ -40,6 +40,7 @@ public class UpdatePersonCommandHandler(
         return PersonErrors.NationalNoExists;
       }
     }
+    
     var updateResult = person.Update(
         command.Fullname.Trim(),
         command.Birthdate,

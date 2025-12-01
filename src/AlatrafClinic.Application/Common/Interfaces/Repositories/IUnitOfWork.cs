@@ -7,7 +7,6 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
     public interface IUnitOfWork : IAsyncDisposable
     {
         IPersonRepository Person { get; }
-        IEmployeeRepository Employees { get; }
         IPatientRepository Patients { get; }
         IDoctorRepository Doctors { get; }
         IDiagnosisRepository Diagnoses { get; }

@@ -10,5 +10,4 @@ namespace AlatrafClinic.Application.Features.People.Patients.Commands.CreatePati
 public sealed record CreatePatientCommand(
  PersonInput Person,
      PatientType PatientType
-// string? AutoRegistrationNumber
 ) : IRequest<Result<PatientDto>>;

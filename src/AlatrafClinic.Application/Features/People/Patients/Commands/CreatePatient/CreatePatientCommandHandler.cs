@@ -38,7 +38,6 @@ IPersonCreateService personCreateService,
         var patientResult = Patient.Create(
             personId: person.Id,
             patientType: request.PatientType
-        // autoRegistrationNumber: request.AutoRegistrationNumber
         );
 
         if (patientResult.IsError)
@@ -49,6 +48,7 @@ IPersonCreateService personCreateService,
         await _unitWork.Person.AddAsync(person, ct);
         await _unitWork.Patients.AddAsync(patient, ct);
         await _unitWork.SaveChangesAsync(ct);
+
         _logger.LogInformation("Patient created successfully with ID: {patient}", patient.Id);
         await _cache.RemoveByTagAsync("patient", ct);
 
