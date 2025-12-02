@@ -23,7 +23,7 @@ public class UpdatePersonCommandHandler(
   public async Task<Result<Updated>> Handle(UpdatePersonCommand command, CancellationToken cancellationToken)
   {
 
-    var person = await _unitWork.Person.GetByIdAsync(command.PersonId, cancellationToken);
+    var person = await _unitWork.People.GetByIdAsync(command.PersonId, cancellationToken);
     if (person is null)
     {
       _logger.LogWarning("Person {PersonId} not found for update.", command.PersonId);
@@ -32,7 +32,7 @@ public class UpdatePersonCommandHandler(
 
     if (!string.IsNullOrWhiteSpace(command.NationalNo))
     {
-      var existing = await _unitWork.Person.GetByNationalNoAsync(command.NationalNo, cancellationToken);
+      var existing = await _unitWork.People.GetByNationalNoAsync(command.NationalNo, cancellationToken);
 
       if (existing is not null && existing.Id != command.PersonId)
       {
@@ -53,7 +53,7 @@ public class UpdatePersonCommandHandler(
       _logger.LogWarning("Update failed for Person {PersonId}: {Error}", command.PersonId, updateResult.Errors);
       return updateResult.Errors;
     }
-    await _unitWork.Person.UpdateAsync(person, cancellationToken);
+    await _unitWork.People.UpdateAsync(person, cancellationToken);
     await _unitWork.SaveChangesAsync(cancellationToken);
 
     _logger.LogInformation("Person updated successfully with ID: {PersonId}", person.Id);

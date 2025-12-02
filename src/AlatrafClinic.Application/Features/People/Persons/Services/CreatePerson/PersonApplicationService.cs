@@ -31,7 +31,7 @@ public class PersonCreateService : IPersonCreateService
     
     if (!string.IsNullOrWhiteSpace(person.NationalNo))
     {
-      var existing = await _unitOfWork.Person
+      var existing = await _unitOfWork.People
           .GetByNationalNoAsync(person.NationalNo.Trim(), cancellationToken);
 
       if (existing is not null)

@@ -35,7 +35,7 @@ public class PersonUpdateService : IPersonUpdateService
 
       CancellationToken ct)
   {
-    var person = await _unitOfWork.Person.GetByIdAsync(personId, ct);
+    var person = await _unitOfWork.People.GetByIdAsync(personId, ct);
     if (person is null)
     {
       _logger.LogWarning("Person {personId} not found for update.", personId);
@@ -44,7 +44,7 @@ public class PersonUpdateService : IPersonUpdateService
 
     if (!string.IsNullOrWhiteSpace(updatePerson.NationalNo))
     {
-      var existing = await _unitOfWork.Person.GetByNationalNoAsync(updatePerson.NationalNo.Trim(), ct);
+      var existing = await _unitOfWork.People.GetByNationalNoAsync(updatePerson.NationalNo.Trim(), ct);
 
       if (existing is not null && existing.Id != personId)
       {

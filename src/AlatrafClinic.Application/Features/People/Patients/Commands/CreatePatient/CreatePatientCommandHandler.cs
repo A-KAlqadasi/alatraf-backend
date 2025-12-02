@@ -45,7 +45,7 @@ IPersonCreateService personCreateService,
 
         var patient = patientResult.Value;
 
-        await _unitWork.Person.AddAsync(person, ct);
+        await _unitWork.People.AddAsync(person, ct);
         await _unitWork.Patients.AddAsync(patient, ct);
         await _unitWork.SaveChangesAsync(ct);
 

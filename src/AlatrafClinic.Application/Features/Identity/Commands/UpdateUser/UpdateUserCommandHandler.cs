@@ -32,14 +32,14 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             return ApplicationErrors.UserIsNotFound;
         }
         var user = userResult.Value;
-        var person = await _unitOfWork.Person.GetByIdAsync(user.PersonId, ct);
+        var person = await _unitOfWork.People.GetByIdAsync(user.PersonId, ct);
         if(person is null)
         {
             _logger.LogError("Person {personId}, is not found for user {userId}", user.PersonId, user.UserId);
             return PersonErrors.NotFound;
         }
         
-        bool isNationalNoExist = await _unitOfWork.Person
+        bool isNationalNoExist = await _unitOfWork.People
             .IsNationalNumberExistAsync(command.NationalNo.Trim(), ct);
 
         if (isNationalNoExist && person.NationalNo?.Trim() != command.NationalNo.Trim())
@@ -48,14 +48,14 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             return PersonErrors.NationalNoExists;
         }
 
-        bool isPhoneNumberExist = await _unitOfWork.Person.IsPhoneNumberExistAsync(command.Phone.Trim(), ct);
+        bool isPhoneNumberExist = await _unitOfWork.People.IsPhoneNumberExistAsync(command.Phone.Trim(), ct);
 
         if (isPhoneNumberExist && person.Phone.Trim() != command.Phone.Trim())
         {
             _logger.LogWarning("Phone number already exists: {Phone}", command.Phone);
             return PersonErrors.PhoneExists;
         }
-        bool isNameExist = await _unitOfWork.Person.IsNameExistAsync(command.Fullname.Trim(), ct);
+        bool isNameExist = await _unitOfWork.People.IsNameExistAsync(command.Fullname.Trim(), ct);
 
         if (isNameExist && person.FullName.Trim() != command.Fullname.Trim())
         {
@@ -70,7 +70,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             return updateResult.Errors;
         }
 
-        await _unitOfWork.Person.UpdateAsync(person, ct);
+        await _unitOfWork.People.UpdateAsync(person, ct);
         await _unitOfWork.SaveChangesAsync();
 
         await _identityService.ChangeUserActivationAsync(user.UserId, command.IsActive);

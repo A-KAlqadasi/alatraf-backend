@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Identity;
 using AlatrafClinic.Application.Features.Identity.Dtos;
+using AlatrafClinic.Application.Features.People.Persons.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Identity;
 using AlatrafClinic.Infrastructure.Data;
@@ -17,14 +18,14 @@ public class IdentityService(
     RoleManager<IdentityRole> roleManager,
     IUserClaimsPrincipalFactory<AppUser> userClaimsPrincipalFactory,
     IAuthorizationService authorizationService,
-    ApplicationDbContext context)
+    ApplicationDbContext dbContext)
     : IIdentityService
 {
     private readonly UserManager<AppUser> _userManager = userManager;
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
     private readonly IUserClaimsPrincipalFactory<AppUser> _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService = authorizationService;
-    private readonly ApplicationDbContext _context = context;
+    private readonly ApplicationDbContext _dbContext = dbContext;
 
     public async Task<bool> IsInRoleAsync(string userId, string role)
     {
@@ -84,30 +85,6 @@ public class IdentityService(
         return dto;
     }
 
-    public async Task<Result<AppUserDto>> GetUserByIdAsync(string userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-
-        if (user is null)
-        {
-            return Error.NotFound(
-                "User_Not_Found",
-                $"User with id '{userId}' not found");
-        }
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var permissions = await GetPermissionsForUserAsync(user, roles);
-
-        var dto = new AppUserDto(
-            user.Id,
-            user.UserName!,
-            user.IsActive,
-            roles,
-            permissions);
-
-        return dto;
-    }
-
     public async Task<string?> GetUserNameAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -116,7 +93,7 @@ public class IdentityService(
 
     public async Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId)
     {
-        var token = await _context.RefreshTokens
+        var token = await _dbContext.RefreshTokens
             .AsNoTracking()
             .FirstOrDefaultAsync(rt => rt.Token == refreshToken && rt.UserId == userId);
 
@@ -145,7 +122,7 @@ public class IdentityService(
                 $"Role '{roleName}' not found.");
         }
 
-        var permission = await _context.Permissions
+        var permission = await _dbContext.Permissions
             .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
 
         if (permission is null)
@@ -155,26 +132,25 @@ public class IdentityService(
                 Name = permissionName
             };
 
-            _context.Permissions.Add(permission);
-            await _context.SaveChangesAsync(ct);
+            _dbContext.Permissions.Add(permission);
+            await _dbContext.SaveChangesAsync(ct);
         }
 
-        var exists = await _context.RolePermissions
+        var exists = await _dbContext.RolePermissions
             .AnyAsync(rp => rp.RoleId == role.Id && rp.PermissionId == permission.Id, ct);
 
         if (exists)
         {
-            // idempotent
             return true;
         }
 
-        _context.RolePermissions.Add(new RolePermission
+        _dbContext.RolePermissions.Add(new RolePermission
         {
             RoleId = role.Id,
             PermissionId = permission.Id
         });
 
-        await _context.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         return true;
     }
@@ -190,7 +166,7 @@ public class IdentityService(
                 $"Role '{roleName}' not found.");
         }
 
-        var permission = await _context.Permissions
+        var permission = await _dbContext.Permissions
             .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
 
         if (permission is null)
@@ -199,7 +175,7 @@ public class IdentityService(
             return true;
         }
 
-        var existing = await _context.RolePermissions
+        var existing = await _dbContext.RolePermissions
             .FirstOrDefaultAsync(rp => rp.RoleId == role.Id && rp.PermissionId == permission.Id, ct);
 
         if (existing is null)
@@ -207,15 +183,11 @@ public class IdentityService(
             return true;
         }
 
-        _context.RolePermissions.Remove(existing);
-        await _context.SaveChangesAsync(ct);
+        _dbContext.RolePermissions.Remove(existing);
+        await _dbContext.SaveChangesAsync(ct);
 
         return true;
     }
-
-    // ------------------------
-    // NEW: Permissions for users
-    // ------------------------
 
     public async Task<Result<bool>> AddPermissionToUserAsync(string userId, string permissionName, CancellationToken ct = default)
     {
@@ -228,7 +200,7 @@ public class IdentityService(
                 $"User with id '{userId}' not found.");
         }
 
-        var permission = await _context.Permissions
+        var permission = await _dbContext.Permissions
             .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
 
         if (permission is null)
@@ -238,11 +210,11 @@ public class IdentityService(
                 Name = permissionName
             };
 
-            _context.Permissions.Add(permission);
-            await _context.SaveChangesAsync(ct);
+            _dbContext.Permissions.Add(permission);
+            await _dbContext.SaveChangesAsync(ct);
         }
 
-        var exists = await _context.UserPermissions
+        var exists = await _dbContext.UserPermissions
             .AnyAsync(up => up.UserId == user.Id && up.PermissionId == permission.Id, ct);
 
         if (exists)
@@ -250,13 +222,13 @@ public class IdentityService(
             return true;
         }
 
-        _context.UserPermissions.Add(new UserPermission
+        _dbContext.UserPermissions.Add(new UserPermission
         {
             UserId = user.Id,
             PermissionId = permission.Id
         });
 
-        await _context.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         return true;
     }
@@ -272,7 +244,7 @@ public class IdentityService(
                 $"User with id '{userId}' not found.");
         }
 
-        var permission = await _context.Permissions
+        var permission = await _dbContext.Permissions
             .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
 
         if (permission is null)
@@ -280,7 +252,7 @@ public class IdentityService(
             return true;
         }
 
-        var existing = await _context.UserPermissions
+        var existing = await _dbContext.UserPermissions
             .FirstOrDefaultAsync(up => up.UserId == user.Id && up.PermissionId == permission.Id, ct);
 
         if (existing is null)
@@ -288,32 +260,25 @@ public class IdentityService(
             return true;
         }
 
-        _context.UserPermissions.Remove(existing);
-        await _context.SaveChangesAsync(ct);
+        _dbContext.UserPermissions.Remove(existing);
+        await _dbContext.SaveChangesAsync(ct);
 
         return true;
     }
 
-    // ------------------------
-    // Helpers
-    // ------------------------
-
     private async Task<IList<string>> GetPermissionsForUserAsync(AppUser user, IList<string> roleNames)
     {
-        // Get role IDs
         var roleIds = await _roleManager.Roles
             .Where(r => roleNames.Contains(r.Name!))
             .Select(r => r.Id)
             .ToListAsync();
 
-        // Permissions from roles
-        var rolePermissions = await _context.RolePermissions
+        var rolePermissions = await _dbContext.RolePermissions
             .Where(rp => roleIds.Contains(rp.RoleId))
             .Select(rp => rp.Permission.Name)
             .ToListAsync();
 
-        // Direct user permissions
-        var userPermissions = await _context.UserPermissions
+        var userPermissions = await _dbContext.UserPermissions
             .Where(up => up.UserId == user.Id)
             .Select(up => up.Permission.Name)
             .ToListAsync();
@@ -326,36 +291,208 @@ public class IdentityService(
 
     public Task<bool> IsUserNameExistsAsync(string userName)
     {
-        throw new NotImplementedException();
+        return _userManager.Users.AnyAsync(u => u.UserName == userName);
     }
 
-    public Task<bool> CreateUserAsync(Guid userId, string userName, string password, IList<string> roles, IList<string> permissions)
+    public async Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions)
     {
-        throw new NotImplementedException();
+        var isPersonExists = await _dbContext.People.AnyAsync(p => p.Id == pesonId);
+        if (!isPersonExists)
+        {
+            return Error.NotFound(
+                "Person_Not_Found",
+                $"Person with id '{pesonId}' not found.");
+        }
+
+        var user = new AppUser
+        {
+            UserName = userName,
+            NormalizedUserName = _userManager.NormalizeName(userName),
+            PersonId = pesonId,
+            IsActive = isActive,
+            EmailConfirmed = true
+        };
+        var result = await _userManager.CreateAsync(user, password);
+        
+        if (!result.Succeeded)
+        {
+            return Error.Conflict(
+                "User_Creation_Failed",
+                string.Join("; ", result.Errors.Select(e => e.Description)));
+        }
+
+        foreach (var role in roles)
+        {
+            var roleResult = await _userManager.AddToRoleAsync(user, role);
+            if (!roleResult.Succeeded)
+            {
+                return Error.Conflict(
+                    "Add_Role_Failed",
+                    string.Join("; ", roleResult.Errors.Select(e => e.Description)));
+            }
+        }
+
+        foreach (var permission in permissions)
+        {
+            var permissionResult = await AddPermissionToUserAsync(user.Id, permission);
+            if (!permissionResult.IsSuccess)
+            {
+                return permissionResult.Errors;
+            }
+        }
+
+        var dto = new AppUserDto(
+            user.Id,
+            user.UserName!,
+            user.IsActive,
+            roles,
+            permissions);
+        return dto;
     }
 
-    Task<Result<UserDto>> IIdentityService.GetUserByIdAsync(string userId)
+    public async Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return Error.NotFound(
+                "User_Not_Found",
+                $"User with id '{userId}' not found.");
+        }
+        
+        user.UserName = newUsername;
+        user.NormalizedUserName = _userManager.NormalizeName(newUsername);
+
+        var usernameResult = await _userManager.UpdateAsync(user);
+        if (!usernameResult.Succeeded)
+        {
+            return Error.Conflict(
+                "Update_Username_Failed",
+                string.Join("; ", usernameResult.Errors.Select(e => e.Description)));
+        }
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var passwordResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        
+        if (!passwordResult.Succeeded)
+        {
+            return Error.Conflict(
+                "Update_Password_Failed",
+                string.Join("; ", passwordResult.Errors.Select(e => e.Description)));
+        }
+
+        return true;
     }
 
-    public Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions)
+    public async Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return Error.NotFound(
+                "User_Not_Found",
+                $"User with id '{userId}' not found.");
+        }
+        user.IsActive = isActive;
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            return Error.Conflict(
+                "Update_User_Activation_Failed",
+                string.Join("; ", result.Errors.Select(e => e.Description)));
+        }
+        return true;
     }
 
-    public Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword)
+    public async Task<IQueryable<UserDto>> GetUsersAsync()
     {
-        throw new NotImplementedException();
+        var usersQuery =  _userManager.Users
+            .SelectMany(u => _dbContext.People
+                .Where(p => p.Id == u.PersonId)
+                .Select(p => new { User = u, Person = p }))
+            .Select(up => new UserDto
+            {
+                UserId = up.User.Id,
+                PersonId = up.Person.Id,
+                Person = up.Person.ToDto(),
+                IsActive = up.User.IsActive,
+                UserName = up.User.UserName,
+                Roles = _userManager.GetRolesAsync(up.User).Result.ToList(),
+                Permissions = GetPermissionsForUserAsync(up.User, _userManager.GetRolesAsync(up.User).Result).Result.ToList()
+            });
+
+        return usersQuery;
     }
 
-    public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive)
+    public async Task<Result<UserDto>> GetUserByIdAsync(string userId)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user is null)
+        {
+            return Error.NotFound(
+                "User_Not_Found",
+                $"User with id '{userId}' not found");
+        }
+
+        var person = await _dbContext.People
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == user.PersonId);
+        var roles = await _userManager.GetRolesAsync(user);
+        var permissions = await GetPermissionsForUserAsync(user, roles);
+
+
+        var dto = new UserDto
+        {
+            UserId = user.Id,
+            PersonId = user.PersonId,
+            Person = person != null ? person.ToDto() : null,
+            IsActive = user.IsActive,
+            UserName = user.UserName,
+            Roles = roles.ToList(),
+            Permissions = permissions.ToList()
+        };
+        
+        return dto;
     }
 
-    Task<IQueryable<UserDto>> IIdentityService.GetUsersAsync()
+    public async Task<Result<bool>> ChangeUserNameAndPasswordAsync(
+    string userId,
+    string newUsername,
+    string oldPassword,
+    string newPassword)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return Error.NotFound(
+                "User_Not_Found",
+                $"User with id '{userId}' not found.");
+        }
+
+        if (user.UserName != newUsername)
+        {
+            user.UserName = newUsername;
+            user.NormalizedUserName = _userManager.NormalizeName(newUsername);
+
+            var usernameResult = await _userManager.UpdateAsync(user);
+            if (!usernameResult.Succeeded)
+            {
+                return Error.Conflict(
+                    "Update_Username_Failed",
+                    string.Join("; ", usernameResult.Errors.Select(e => e.Description)));
+            }
+        }
+
+        var passwordResult = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+
+        if (!passwordResult.Succeeded)
+        {
+            return Error.Conflict(
+                "Update_Password_Failed",
+                string.Join("; ", passwordResult.Errors.Select(e => e.Description)));
+        }
+
+        return true;
     }
+
 }

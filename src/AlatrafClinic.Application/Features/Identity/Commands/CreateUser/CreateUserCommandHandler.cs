@@ -27,7 +27,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
     public async Task<Result<UserDto>> Handle(CreateUserCommand command, CancellationToken ct)
     {
         
-        bool isNationalNoExist = await _unitOfWork.Person
+        bool isNationalNoExist = await _unitOfWork.People
             .IsNationalNumberExistAsync(command.NationalNo.Trim(), ct);
 
         if (isNationalNoExist)
@@ -36,14 +36,14 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             return PersonErrors.NationalNoExists;
         }
 
-        bool isPhoneNumberExist = await _unitOfWork.Person.IsPhoneNumberExistAsync(command.Phone.Trim(), ct);
+        bool isPhoneNumberExist = await _unitOfWork.People.IsPhoneNumberExistAsync(command.Phone.Trim(), ct);
 
         if (isPhoneNumberExist)
         {
             _logger.LogWarning("Phone number already exists: {Phone}", command.Phone);
             return PersonErrors.PhoneExists;
         }
-        bool isNameExist = await _unitOfWork.Person.IsNameExistAsync(command.Fullname.Trim(), ct);
+        bool isNameExist = await _unitOfWork.People.IsNameExistAsync(command.Fullname.Trim(), ct);
 
         if (isNameExist)
         {
@@ -75,7 +75,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             return ApplicationErrors.UsernameAlreadyExists;
         }
 
-        await _unitOfWork.Person.AddAsync(person, ct);
+        await _unitOfWork.People.AddAsync(person, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
        

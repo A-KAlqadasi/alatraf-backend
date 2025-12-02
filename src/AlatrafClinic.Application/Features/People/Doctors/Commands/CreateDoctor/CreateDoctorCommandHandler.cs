@@ -53,7 +53,7 @@ public class CreateDoctorCommandHandler(
 
     var doctor = doctorResult.Value;
 
-    await _unitOfWork.Person.AddAsync(person, cancellationToken);
+    await _unitOfWork.People.AddAsync(person, cancellationToken);
     await _unitOfWork.Doctors.AddAsync(doctor, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 

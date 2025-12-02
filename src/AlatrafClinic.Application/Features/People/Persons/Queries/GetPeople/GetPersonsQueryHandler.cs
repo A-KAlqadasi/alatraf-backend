@@ -16,7 +16,7 @@ public class GetPeopleQueryHandler(
 
   public async Task<Result<List<PersonDto>>> Handle(GetPersonsQuery query, CancellationToken ct)
   {
-    var persons = await _unitWork.Person.GetAllAsync(ct);
+    var persons = await _unitWork.People.GetAllAsync(ct);
     return persons.ToDtos();
   }
 }

@@ -12,7 +12,7 @@ public interface IIdentityService
 
     Task<Result<AppUserDto>> AuthenticateAsync(string userName, string password);
 
-    Task<Result<UserDto>> GetUserByIdAsync(string userId);
+    public Task<Result<UserDto>> GetUserByIdAsync(string userId);
 
     Task<string?> GetUserNameAsync(string userId);
     Task<bool> IsUserNameExistsAsync(string userName);
@@ -27,8 +27,9 @@ public interface IIdentityService
     Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions);
 
     Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword);
+    Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string oldPassword, string newPassword);
 
-    Task<IQueryable<UserDto>> GetUsersAsync();
+    public Task<IQueryable<UserDto>> GetUsersAsync();
     
     public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive);
 

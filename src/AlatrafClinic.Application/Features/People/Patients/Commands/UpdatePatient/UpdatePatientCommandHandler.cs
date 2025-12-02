@@ -34,7 +34,7 @@ public class UpdatePatientCommandHandler(
             return ApplicationErrors.PatientNotFound;
         }
 
-        var person = await _unitWork.Person.GetByIdAsync(patient.PersonId, ct);
+        var person = await _unitWork.People.GetByIdAsync(patient.PersonId, ct);
         if (person is null)
         {
             _logger.LogWarning("Person for Patient {PatientId} not found.", request.PatientId);
@@ -49,7 +49,7 @@ public class UpdatePatientCommandHandler(
         if (patientUpdate.IsError)
             return patientUpdate.Errors;
 
-        await _unitWork.Person.UpdateAsync(person, ct);
+        await _unitWork.People.UpdateAsync(person, ct);
         await _unitWork.Patients.UpdateAsync(patient, ct);
         await _unitWork.SaveChangesAsync(ct);
 

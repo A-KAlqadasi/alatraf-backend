@@ -27,7 +27,7 @@ public  class CreatePersonCommandHandler(
 
     if (!string.IsNullOrWhiteSpace(command.NationalNo))
     {
-      var existing = await _unitWork.Person
+      var existing = await _unitWork.People
           .GetByNationalNoAsync(command.NationalNo, cancellationToken);
 
       if (existing is  null)
@@ -50,7 +50,7 @@ public  class CreatePersonCommandHandler(
     }
     var person = createResult.Value;
 
-    await _unitWork.Person.AddAsync(person, cancellationToken);
+    await _unitWork.People.AddAsync(person, cancellationToken);
     await _unitWork.SaveChangesAsync(cancellationToken);
 
     _logger.LogInformation("Person created successfully with ID: {PersonId}", person.Id);

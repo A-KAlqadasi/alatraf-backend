@@ -22,23 +22,14 @@ public class RemovePersonCommandHandler(
   {
     _logger.LogInformation("Attempting to delete Person with ID: {PersonId}", command.PersonId);
 
-    var person = await _unitWork.Person.GetByIdAsync(command.PersonId, ct);
+    var person = await _unitWork.People.GetByIdAsync(command.PersonId, ct);
     if (person is null)
     {
       _logger.LogWarning("Person with ID {PersonId} not found for deletion.", command.PersonId);
       return ApplicationErrors.PersonNotFound;
     }
-
-    var hasReferences = await _unitWork.Person.HasReferencesAsync(command.PersonId, ct);
-    if (hasReferences)
-    {
-      _logger.LogWarning(
-                "Person {PersonId} cannot be deleted because they are referenced by another entity (Doctor, Patient, or Employee).",
-                command.PersonId);
-      return ApplicationErrors.CannotDeleteReferencedPerson;
-    }
-
-    await _unitWork.Person.DeleteAsync(person, ct);
+    
+    await _unitWork.People.DeleteAsync(person, ct);
     await _unitWork.SaveChangesAsync(ct);
 
     await _cache.RemoveByTagAsync("person", ct);

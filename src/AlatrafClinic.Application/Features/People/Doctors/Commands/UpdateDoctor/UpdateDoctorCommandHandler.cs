@@ -28,7 +28,7 @@ public class UpdateDoctorCommandHandler(
     if (doctor is null)
       return ApplicationErrors.DoctorNotFound;
 
-    var person = await _unitOfWork.Person.GetByIdAsync(doctor.PersonId, cancellationToken);
+    var person = await _unitOfWork.People.GetByIdAsync(doctor.PersonId, cancellationToken);
     if (person is null)
       return ApplicationErrors.PersonNotFound;
 
@@ -46,7 +46,7 @@ public class UpdateDoctorCommandHandler(
 
 
 
-    await _unitOfWork.Person.UpdateAsync(person, cancellationToken);
+    await _unitOfWork.People.UpdateAsync(person, cancellationToken);
     await _unitOfWork.Doctors.UpdateAsync(doctor, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 

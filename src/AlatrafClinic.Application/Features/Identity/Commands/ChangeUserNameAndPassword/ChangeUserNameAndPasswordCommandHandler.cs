@@ -46,7 +46,7 @@ public class ChangeUserNameAndPasswordCommandHandler : IRequestHandler<ChangeUse
             return ApplicationErrors.UsernameAlreadyExists;
         }
 
-        var changeResult = await _identityService.ChangeUserNameAndPasswordAsync(command.UserId.ToString(), command.Username, command.NewPassword);
+        var changeResult = await _identityService.ChangeUserNameAndPasswordAsync(command.UserId.ToString(), command.Username, command.CurrentPassword, command.NewPassword);
 
         if (!changeResult.IsSuccess)
         {

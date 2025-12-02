@@ -7,7 +7,7 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
 
-    public IPersonRepository Person => throw new NotImplementedException();
+    public IPersonRepository People => throw new NotImplementedException();
 
     public IPatientRepository Patients => throw new NotImplementedException();
 

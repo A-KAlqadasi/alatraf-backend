@@ -19,7 +19,7 @@ public class GetPersonByIdQueryHandler(
   public async Task<Result<PersonDto>> Handle(GetPersonByIdQuery query, CancellationToken ct)
   {
     // Load the Person entity
-    var person = await _unitWork.Person.GetByIdAsync(query.PersonId, ct);
+    var person = await _unitWork.People.GetByIdAsync(query.PersonId, ct);
     if (person is null)
     {
       return ApplicationErrors.PersonNotFound;
