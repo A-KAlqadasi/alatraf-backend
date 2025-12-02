@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

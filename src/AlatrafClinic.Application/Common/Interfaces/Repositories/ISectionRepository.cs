@@ -1,13 +1,9 @@
-using AlatrafClinic.Domain.Organization.Sections;
+using AlatrafClinic.Domain.Departments.Sections;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 
 public interface ISectionRepository : IGenericRepository<Section, int>
 {
-  Task<List<Section>> GetAllSectionsFilteredAsync(int? departmentId, bool? isActiveDoctors, string? searchTerm, CancellationToken ct);
-  Task<Section?> GetByNameInDepartmentAsync(string name, int departmentId, CancellationToken ct);
-  Task AddRangeAsync(IEnumerable<Section> sections, CancellationToken ct);
-
-  Task<Section?> GetSectionByIdWithDepartmentAsync(int id, CancellationToken ct);
-
+    Task<bool> IsSectionHasRoomNameAsync(int sectionId, string roomName, CancellationToken ct);
+    
 }

@@ -1,11 +1,8 @@
-
-using AlatrafClinic.Application.Features.Organization.Rooms.Mappers;
-using AlatrafClinic.Application.Features.Organization.Sections.Mappers;
 using AlatrafClinic.Application.Features.People.Doctors.Dtos;
 using AlatrafClinic.Application.Features.People.Persons.Mappers;
-using AlatrafClinic.Domain.Organization.Doctors;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.People;
+using AlatrafClinic.Domain.People.Doctors;
 
 namespace AlatrafClinic.Application.Features.People.Doctors.Mappers;
 

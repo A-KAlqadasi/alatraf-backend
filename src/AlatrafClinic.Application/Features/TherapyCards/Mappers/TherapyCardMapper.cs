@@ -1,8 +1,6 @@
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
-using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 

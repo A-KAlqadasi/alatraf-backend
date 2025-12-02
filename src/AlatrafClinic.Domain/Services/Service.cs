@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Departments;
+using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Services.Tickets;
 
 namespace AlatrafClinic.Domain.Services;

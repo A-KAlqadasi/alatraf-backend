@@ -1,9 +1,6 @@
-
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.People.Persons.Services.UpdatePerson;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Doctors;
-
 using MechanicShop.Application.Common.Errors;
 
 using MediatR;

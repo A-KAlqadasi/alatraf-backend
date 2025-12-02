@@ -1,12 +1,9 @@
-using System.Reflection.Metadata;
-
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments.Sections;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Stores;
-using AlatrafClinic.Domain.Organization.Departments;
-using AlatrafClinic.Domain.Organization.Sections;
 using AlatrafClinic.Domain.RepairCards.Enums;
 
 namespace AlatrafClinic.Domain.RepairCards.Orders;

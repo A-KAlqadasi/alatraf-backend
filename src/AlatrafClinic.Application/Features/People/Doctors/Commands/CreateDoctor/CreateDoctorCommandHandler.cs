@@ -4,7 +4,7 @@ using AlatrafClinic.Application.Features.People.Doctors.Dtos;
 using AlatrafClinic.Application.Features.People.Doctors.Mappers;
 using AlatrafClinic.Application.Features.People.Persons.Services;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Doctors;
+using AlatrafClinic.Domain.People.Doctors;
 
 using MechanicShop.Application.Common.Errors;
 

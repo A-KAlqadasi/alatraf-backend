@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Common.Specifications;
-using AlatrafClinic.Domain.Organization.Doctors;
+using AlatrafClinic.Domain.People.Doctors;
 
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Organization.Doctors;
+using AlatrafClinic.Domain.People.Doctors;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

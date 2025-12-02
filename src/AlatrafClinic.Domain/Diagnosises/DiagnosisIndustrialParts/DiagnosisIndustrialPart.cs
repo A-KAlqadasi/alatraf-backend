@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 

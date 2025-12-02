@@ -1,8 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Rooms;
-using AlatrafClinic.Domain.Organization.Sections;
-
 using MechanicShop.Application.Common.Errors;
 
 using MediatR;

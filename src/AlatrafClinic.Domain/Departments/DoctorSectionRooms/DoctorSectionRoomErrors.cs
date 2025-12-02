@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
 
-namespace AlatrafClinic.Domain.Organization.DoctorSectionRooms;
+namespace AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 
 public static class DoctorSectionRoomErrors
 {

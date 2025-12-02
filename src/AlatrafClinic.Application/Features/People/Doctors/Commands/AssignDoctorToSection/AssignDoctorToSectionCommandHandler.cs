@@ -1,6 +1,6 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Sections;
+using AlatrafClinic.Domain.Departments.Sections;
 
 using MechanicShop.Application.Common.Errors;
 

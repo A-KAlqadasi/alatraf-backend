@@ -2,8 +2,8 @@ using System.Security.Cryptography.X509Certificates;
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 
 namespace AlatrafClinic.Domain.TherapyCards.Sessions;
 
