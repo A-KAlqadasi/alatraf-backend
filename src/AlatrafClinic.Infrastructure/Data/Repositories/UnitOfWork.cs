@@ -7,42 +7,52 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
 {
     private readonly AlatrafClinicDbContext _dbContext = dbContext;
 
-    public IPersonRepository People => throw new NotImplementedException();
+    private IPersonRepository? _person;
+    public IPersonRepository People => _person ??= new PersonRepository(_dbContext);
 
-    public IPatientRepository Patients => throw new NotImplementedException();
+    private IPatientRepository? _patient;
+    public IPatientRepository Patients => _patient ??= new PatientRepository(_dbContext);
 
-    public IDoctorRepository Doctors => throw new NotImplementedException();
+    private IDoctorRepository? _doctor;
+    public IDoctorRepository Doctors => _doctor ??= new DoctorRepository(_dbContext);
 
     private IDiagnosisRepository? _diagnosis ;
-
     public IDiagnosisRepository Diagnoses => _diagnosis ??= new DiagnosisRepository(_dbContext);
 
     private ITicketRepository? _ticket;
-
     public ITicketRepository Tickets => _ticket ??= new TicketRepository(_dbContext);
 
-    public IInjuryReasonRepository InjuryReasons => throw new NotImplementedException();
+    private IInjuryReasonRepository? _injuryReason;
+    public IInjuryReasonRepository InjuryReasons => _injuryReason ??= new InjuryReasonRepository(_dbContext);
 
-    public IInjurySideRepository InjurySides => throw new NotImplementedException();
+    private IInjurySideRepository? _injurySide;
+    public IInjurySideRepository InjurySides => _injurySide ??= new InjurySideRepository(_dbContext);
 
-    public IInjuryTypeRepository InjuryTypes => throw new NotImplementedException();
+    private IInjuryTypeRepository? _injuryType;
+    public IInjuryTypeRepository InjuryTypes => _injuryType ??= new InjuryTypeRepository(_dbContext);
 
     private IServiceRepository? _service;
-
     public IServiceRepository Services => _service ??= new ServiceRepository(_dbContext);
 
-    public IDepartmentRepository Departments => throw new NotImplementedException();
+    private IDepartmentRepository? _department;
+    public IDepartmentRepository Departments => _department ??= new DepartmentRepository(_dbContext);
 
-    public ISectionRepository Sections => throw new NotImplementedException();
+    private ISectionRepository? _section;
+    public ISectionRepository Sections => _section ??= new SectionRepository(_dbContext);
 
-    public IRoomRepository Rooms => throw new NotImplementedException();
+    private IRoomRepository? _room;
+    public IRoomRepository Rooms => _room ??= new RoomRepository(_dbContext);
 
-    public IDoctorSectionRoomRepository DoctorSectionRooms => throw new NotImplementedException();
+    private IDoctorSectionRoomRepository? _doctorSectionRoom;
+    public IDoctorSectionRoomRepository DoctorSectionRooms => _doctorSectionRoom ??= new DoctorSectionRoomRepository(_dbContext);
 
-    public IMedicalProgramRepository MedicalPrograms => throw new NotImplementedException();
+    private IMedicalProgramRepository? _medicalProgram;
+    public IMedicalProgramRepository MedicalPrograms => _medicalProgram ??= new MedicalProgramRepository(_dbContext);
 
-    public IIndustrialPartRepository IndustrialParts => throw new NotImplementedException();
+    private IIndustrialPartRepository? _industrialPart;
+    public IIndustrialPartRepository IndustrialParts => _industrialPart ??= new IndustrialPartRepository(_dbContext);
 
+    
     public IItemRepository Items => throw new NotImplementedException();
 
     public ISupplierRepository Suppliers => throw new NotImplementedException();
@@ -50,29 +60,25 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
     public IUnitRepository Units => throw new NotImplementedException();
 
     private ISaleRepository? _sale;
-
     public ISaleRepository Sales => _sale ??= new SaleRepository(_dbContext);
 
     private ITherapyCardRepository? _therapyCard;
 
     public ITherapyCardRepository TherapyCards => _therapyCard ??= new TherapyCardRepository(_dbContext);
 
-    public ITherapyCardTypePriceRepository TherapyCardTypePrices => throw new NotImplementedException();
+    private ITherapyCardTypePriceRepository? _therapyCardTypePrices;
+    public ITherapyCardTypePriceRepository TherapyCardTypePrices => _therapyCardTypePrices ??= new TherapyCardTypePriceRepository(_dbContext);
 
     private ISessionRepository? _session;
-
     public ISessionRepository Sessions => _session ??= new SessionRepository(_dbContext);
 
     private IHolidayRepository? _holiday;
-
     public IHolidayRepository Holidays => _holiday ??= new HolidayRepository(_dbContext);
 
     private IRepairCardRepository? _repairCard;
-
     public IRepairCardRepository RepairCards => _repairCard ??= new RepairCardRepository(_dbContext);
 
     private IPaymentRepository? _payment;
-
     public IPaymentRepository Payments => _payment ??= new PaymentRepository(_dbContext);
 
     public IAppSettingRepository AppSettings => throw new NotImplementedException();
@@ -80,9 +86,11 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
     private IAppointmentRepository? _appointments;
     public IAppointmentRepository Appointments => _appointments ??= new AppointmentRepository(_dbContext);
 
-    public IDisabledCardRepository DisabledCards => throw new NotImplementedException();
+    private IDisabledCardRepository? _disabledCards;
+    public IDisabledCardRepository DisabledCards => _disabledCards ??= new DisabledCardRepository(_dbContext);
 
-    public IWoundedCardRepository WoundedCards => throw new NotImplementedException();
+    private IWoundedCardRepository? _woundedCards;
+    public IWoundedCardRepository WoundedCards => _woundedCards ??= new WoundedCardRepository(_dbContext);
 
     public async ValueTask DisposeAsync()
     {

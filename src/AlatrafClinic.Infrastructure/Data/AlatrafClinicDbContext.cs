@@ -26,6 +26,7 @@ using AlatrafClinic.Domain.Services;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
@@ -93,6 +94,8 @@ public class AlatrafClinicDbContext
 
     public DbSet<DisabledCard> DisabledCards => Set<DisabledCard>();
     public DbSet<WoundedCard> WoundedCards => Set<WoundedCard>();
+
+    public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     
     
     public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
