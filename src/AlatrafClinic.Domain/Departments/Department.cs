@@ -1,10 +1,9 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Doctors;
-using AlatrafClinic.Domain.Organization.Sections;
+using AlatrafClinic.Domain.Departments.Sections;
 using AlatrafClinic.Domain.Services;
 
-namespace AlatrafClinic.Domain.Organization.Departments;
+namespace AlatrafClinic.Domain.Departments;
 
 public class Department : AuditableEntity<int>
 {
@@ -30,7 +29,7 @@ public class Department : AuditableEntity<int>
         return new Department(name);
     }
 
-    public Result<Updated> Rename(string newName)
+    public Result<Updated> Update(string newName)
     {
         if (string.IsNullOrWhiteSpace(newName))
             return DepartmentErrors.NameRequired;

@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
 
-namespace AlatrafClinic.Domain.Organization.Sections;
+namespace AlatrafClinic.Domain.Departments.Sections;
 
 public static class SectionErrors
 {

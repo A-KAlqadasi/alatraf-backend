@@ -1,9 +1,9 @@
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;

@@ -2,6 +2,7 @@ using System.Security.Claims;
 
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
 using MechanicShop.Application.Common.Errors;
@@ -57,7 +58,16 @@ public class RefreshTokenQueryHandler(ILogger<RefreshTokenQueryHandler> logger, 
             return ApplicationErrors.RefreshTokenExpired;
         }
 
-        var generateTokenResult = await _tokenProvider.GenerateJwtTokenAsync(getUserResult.Value, ct);
+        var user = new AppUserDto
+        (
+            getUserResult.Value.UserId,
+            getUserResult.Value.UserName!,
+            getUserResult.Value.IsActive,
+            getUserResult.Value.Roles!,
+            getUserResult.Value.Permissions!
+        );
+
+        var generateTokenResult = await _tokenProvider.GenerateJwtTokenAsync(user, ct);
 
         if (generateTokenResult.IsError)
         {

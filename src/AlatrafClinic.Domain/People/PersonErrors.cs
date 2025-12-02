@@ -22,9 +22,10 @@ public static class PersonErrors
         Error.Validation("Person.BirthdateRequired", "Birthdate is required.");
     public static readonly Error InvalidBirthdate =
         Error.Validation("Person.InvalidBirthdate", "Birthdate cannot be in the future.");
-
-    public static readonly Error CannotDeletePersonWithWorkOrders =
-        Error.Conflict("Person.CannotDelete", "Person cannot be deleted due to existing relations with other services.");
     public static readonly Error AddressRequired =
         Error.Validation("Person.AddressRequired", "Address is required.");
+    public static readonly Error NameIsExist = Error.Conflict("Person.NameIsExist", "Name is already exists");
+
+    public static readonly Error NotFound = Error.NotFound("Person.NotFound", "Person is not found");
+    
 }

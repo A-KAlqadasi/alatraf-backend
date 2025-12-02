@@ -6,8 +6,7 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
     // Ensures save and  commits all  tracked changes as a single  transaction. 
     public interface IUnitOfWork : IAsyncDisposable
     {
-        IPersonRepository Person { get; }
-        IEmployeeRepository Employees { get; }
+        IPersonRepository People { get; }
         IPatientRepository Patients { get; }
         IDoctorRepository Doctors { get; }
         IDiagnosisRepository Diagnoses { get; }

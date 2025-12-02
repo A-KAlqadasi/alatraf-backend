@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Features.People.Patients.Dtos;
+using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.Sales.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;

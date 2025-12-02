@@ -5,7 +5,7 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class TicketRepository : GenericRepository<Ticket, int>, ITicketRepository
 {
-    public TicketRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public TicketRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {
     }
 }

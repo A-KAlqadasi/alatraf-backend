@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
 
-namespace AlatrafClinic.Domain.Organization.Doctors;
+namespace AlatrafClinic.Domain.People.Doctors;
 
 
 public static class DoctorErrors

@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Features.People.Patients.Mappers;
+using AlatrafClinic.Application.Features.Patients.Mappers;
 using AlatrafClinic.Application.Features.Services.Mappers;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Domain.Services.Tickets;

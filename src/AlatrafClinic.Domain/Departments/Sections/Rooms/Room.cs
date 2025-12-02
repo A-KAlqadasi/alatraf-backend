@@ -1,9 +1,8 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
-using AlatrafClinic.Domain.Organization.Sections;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 
-namespace AlatrafClinic.Domain.Organization.Rooms;
+namespace AlatrafClinic.Domain.Departments.Sections.Rooms;
 
 public class Room : AuditableEntity<int>
 {

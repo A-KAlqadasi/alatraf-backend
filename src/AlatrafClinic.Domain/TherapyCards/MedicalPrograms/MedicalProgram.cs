@@ -1,7 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments.Sections;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
-using AlatrafClinic.Domain.Organization.Sections;
 
 namespace AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 

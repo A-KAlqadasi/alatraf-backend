@@ -8,13 +8,13 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class SaleRepository : GenericRepository<Sale, int>, ISaleRepository
 {
-    public SaleRepository(ApplicationDbContext dbContext): base(dbContext)
+    public SaleRepository(AlatrafClinicDbContext dbContext): base(dbContext)
     {
         
     }
     public async Task<Sale?> GetByDiagnosisIdAsync(int diagnosisId, CancellationToken ct)
     {
-        return await _dbContext.Sales
+        return await dbContext.Sales
             .SingleOrDefaultAsync(s => s.DiagnosisId == diagnosisId, ct);
     }
 }

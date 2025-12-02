@@ -1,14 +1,13 @@
-using System.Net.Http.Headers;
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments.Sections;
+using AlatrafClinic.Domain.Departments.Sections.Rooms;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
-using AlatrafClinic.Domain.Organization.Doctors;
-using AlatrafClinic.Domain.Organization.Rooms;
-using AlatrafClinic.Domain.Organization.Sections;
+using AlatrafClinic.Domain.People.Doctors;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 
-namespace AlatrafClinic.Domain.Organization.DoctorSectionRooms;
+namespace AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 
 public class DoctorSectionRoom : AuditableEntity<int>
 {

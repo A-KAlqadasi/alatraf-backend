@@ -1,10 +1,9 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Departments;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
-using AlatrafClinic.Domain.Organization.Rooms;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
+using AlatrafClinic.Domain.Departments.Sections.Rooms;
 
-namespace AlatrafClinic.Domain.Organization.Sections;
+namespace AlatrafClinic.Domain.Departments.Sections;
 
 
 public class Section :AuditableEntity<int>
@@ -47,22 +46,5 @@ public class Section :AuditableEntity<int>
 
         Name = newName;
         return Result.Updated;
-    }
-
-    public Result<Room> AddRoom(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return RoomErrors.InvalidName;
-
-        if (_rooms.Any(r => r.Name == name))
-            return RoomErrors.DuplicateRoomName;
-
-        var result = Room.Create(name, Id);
-        if (result.IsError)
-            return result.Errors;
-
-        var room = result.Value;
-        _rooms.Add(room);
-        return room;
     }
 }

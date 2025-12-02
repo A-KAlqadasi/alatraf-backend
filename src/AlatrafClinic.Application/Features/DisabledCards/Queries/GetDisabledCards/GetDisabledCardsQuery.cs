@@ -3,8 +3,6 @@ using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.DisabledCards.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
-using MediatR;
-
 namespace AlatrafClinic.Application.Features.DisabledCards.Queries.GetDisabledCards;
 
 public sealed record GetDisabledCardsQuery(

@@ -8,14 +8,14 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class TherapyCardRepository : GenericRepository<TherapyCard, int>, ITherapyCardRepository
 {
-    public TherapyCardRepository(ApplicationDbContext dbContext)
+    public TherapyCardRepository(AlatrafClinicDbContext dbContext)
         : base(dbContext)
     {
     }
 
     public async Task<TherapyCard?> GetLastActiveTherapyCardByPatientIdAsync(int patientId, CancellationToken ct)
     {
-        return await _dbContext.TherapyCards
+        return await dbContext.TherapyCards
             .OrderByDescending(tc => tc.CreatedAtUtc.DateTime)
             .FirstOrDefaultAsync(tc => tc.Diagnosis.PatientId == patientId && tc.IsActive, ct);
     }

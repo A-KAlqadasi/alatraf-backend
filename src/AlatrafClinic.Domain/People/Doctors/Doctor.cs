@@ -1,12 +1,12 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Organization.Departments;
-using AlatrafClinic.Domain.Organization.DoctorSectionRooms;
-using AlatrafClinic.Domain.Organization.Rooms;
-using AlatrafClinic.Domain.Organization.Sections;
+using AlatrafClinic.Domain.Departments;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
+using AlatrafClinic.Domain.Departments.Sections;
+using AlatrafClinic.Domain.Departments.Sections.Rooms;
 using AlatrafClinic.Domain.People;
 
-namespace AlatrafClinic.Domain.Organization.Doctors;
+namespace AlatrafClinic.Domain.People.Doctors;
 
 public class Doctor : AuditableEntity<int>
 {
