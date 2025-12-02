@@ -5,7 +5,7 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class SessionRepository : GenericRepository<Session, int>, ISessionRepository
 {
-    public SessionRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public SessionRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {
     }
 }

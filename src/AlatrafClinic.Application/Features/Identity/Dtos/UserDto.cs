@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Features.People.Persons.Dtos;
+using AlatrafClinic.Application.Features.People.Dtos;
 
 namespace AlatrafClinic.Application.Features.Identity.Dtos;
 

@@ -2,8 +2,8 @@ using System.Reflection;
 using FluentValidation;
 using AlatrafClinic.Application.Common.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
-using AlatrafClinic.Application.Features.People.Persons.Services;
-using AlatrafClinic.Application.Features.People.Persons.Services.UpdatePerson;
+using AlatrafClinic.Application.Features.People.Services.CreatePerson;
+using AlatrafClinic.Application.Features.People.Services.UpdatePerson;
 
 namespace AlatrafClinic.Application;
 
@@ -22,9 +22,6 @@ public static class DependencyInjection
         });
         services.AddScoped<IPersonCreateService, PersonCreateService>();
         services.AddScoped<IPersonUpdateService, PersonUpdateService>();
-
-        // 🧩 Validators
-        services.AddScoped<IValidator<PersonInput>, PersonInputValidator>();
 
         return services;
     }

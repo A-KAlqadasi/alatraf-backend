@@ -8,13 +8,13 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class TherapyCardTypePriceRepository : GenericRepository<TherapyCardTypePrice, int>, ITherapyCardTypePriceRepository
 {
-    public TherapyCardTypePriceRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public TherapyCardTypePriceRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<decimal?> GetSessionPriceByTherapyCardTypeAsync(TherapyCardType type, CancellationToken ct)
     {
-        var therapyCardTypePrice = await _dbContext.TherapyCardTypePrices
+        var therapyCardTypePrice = await dbContext.TherapyCardTypePrices
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Type == type, ct);
 

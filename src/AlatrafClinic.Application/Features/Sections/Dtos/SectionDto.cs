@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Features.People.Doctors.Dtos;
+using AlatrafClinic.Application.Features.Doctors.Dtos;
 using AlatrafClinic.Application.Features.Rooms.Dtos;
 
 namespace AlatrafClinic.Application.Features.Sections.Dtos;

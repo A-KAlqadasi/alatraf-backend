@@ -12,14 +12,14 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class PaymentRepository : GenericRepository<Payment, int>, IPaymentRepository
 {
-    public PaymentRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public PaymentRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {
         
     }
 
     public async Task<bool> IsVoucherNumberExistsAsync(string voucherNumber, CancellationToken ct)
     {
-        return await _dbContext.PatientPayments
+        return await dbContext.PatientPayments
             .AnyAsync(p => p.VoucherNumber == voucherNumber, ct);
     }
 }

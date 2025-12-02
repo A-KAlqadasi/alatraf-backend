@@ -5,7 +5,7 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class ServiceRepository : GenericRepository<Service, int>, IServiceRepository
 {
-    public ServiceRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public ServiceRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {
     }
 }

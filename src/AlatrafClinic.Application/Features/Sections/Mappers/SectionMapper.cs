@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Features;
-using AlatrafClinic.Application.Features.People.Doctors.Mappers;
+using AlatrafClinic.Application.Features.Doctors.Mappers;
 using AlatrafClinic.Application.Features.Rooms.Mappers;
 using AlatrafClinic.Application.Features.Sections.Dtos;
 using AlatrafClinic.Application.Features.Sections.Mappers;

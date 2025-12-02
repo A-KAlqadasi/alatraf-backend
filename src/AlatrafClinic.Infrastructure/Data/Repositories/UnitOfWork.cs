@@ -3,9 +3,9 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories.Inventory;
 
 namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
-public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
+public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
 {
-    private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly AlatrafClinicDbContext _dbContext = dbContext;
 
     public IPersonRepository People => throw new NotImplementedException();
 

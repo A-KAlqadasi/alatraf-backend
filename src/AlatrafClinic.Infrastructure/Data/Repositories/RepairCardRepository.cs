@@ -5,7 +5,7 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class RepairCardRepository : GenericRepository<RepairCard, int>, IRepairCardRepository
 {
-    public RepairCardRepository(ApplicationDbContext context) : base(context)
+    public RepairCardRepository(AlatrafClinicDbContext context) : base(context)
     {
         
     }

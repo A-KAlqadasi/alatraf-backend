@@ -7,13 +7,13 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class DepartmentRepository : GenericRepository<Department, int>, IDepartmentRepository
 {
-    public DepartmentRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public DepartmentRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {
         
     }
 
     public async Task<bool> IsExistAsync(string name, CancellationToken ct = default)
     {
-       return await _dbContext.Departments.AnyAsync(d=> d.Name.Trim() == name.Trim());
+       return await dbContext.Departments.AnyAsync(d=> d.Name.Trim() == name.Trim());
     }
 }

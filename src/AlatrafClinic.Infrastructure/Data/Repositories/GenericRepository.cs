@@ -8,22 +8,22 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId> where TEntity : Entity<TId>
 {
-    protected readonly ApplicationDbContext _dbContext;
+    protected readonly AlatrafClinicDbContext dbContext;
 
-    public GenericRepository(ApplicationDbContext dbContext)
+    public GenericRepository(AlatrafClinicDbContext dbContext)
     {
-        _dbContext = dbContext;
+        this.dbContext = dbContext;
     }
 
     public async Task<int> CountAsync(ISpecification<TEntity> spec, CancellationToken ct = default)
     {
-        var query = spec.Apply(_dbContext.Set<TEntity>().AsQueryable());
+        var query = spec.Apply(dbContext.Set<TEntity>().AsQueryable());
         return await query.CountAsync(ct);
     }
 
     public async Task<List<TEntity>> ListAsync(ISpecification<TEntity> spec, int page, int pageSize, CancellationToken ct = default)
     {
-        var query = spec.Apply(_dbContext.Set<TEntity>().AsQueryable());
+        var query = spec.Apply(dbContext.Set<TEntity>().AsQueryable());
 
         var skip = (page - 1) * pageSize;
 
@@ -35,32 +35,32 @@ public class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId> 
 
     public async Task AddAsync(TEntity entity, CancellationToken ct = default)
     {
-        await _dbContext.Set<TEntity>().AddAsync(entity, ct);
+        await dbContext.Set<TEntity>().AddAsync(entity, ct);
     }
 
     public async Task DeleteAsync(TEntity entity, CancellationToken ct = default)
     {
-        _dbContext.Set<TEntity>().Remove(entity);
+        dbContext.Set<TEntity>().Remove(entity);
     }
 
     public async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default)
     {
-        return await _dbContext.Set<TEntity>().ToListAsync(ct);
+        return await dbContext.Set<TEntity>().ToListAsync(ct);
     }
 
     public async Task<TEntity?> GetByIdAsync(TId id, CancellationToken ct = default)
     {
-        return await _dbContext.Set<TEntity>().FindAsync(new object?[] { id }, ct);
+        return await dbContext.Set<TEntity>().FindAsync(new object?[] { id }, ct);
     }
 
     public async Task<bool> IsExistAsync(TId id, CancellationToken ct = default)
     {
-        return await _dbContext.Set<TEntity>().AnyAsync(e => e.Id!.Equals(id), ct);
+        return await dbContext.Set<TEntity>().AnyAsync(e => e.Id!.Equals(id), ct);
     }
 
     public Task UpdateAsync(TEntity entity, CancellationToken ct = default)
     {
-        _dbContext.Set<TEntity>().Update(entity);
+        dbContext.Set<TEntity>().Update(entity);
 
         return Task.CompletedTask;
     }

@@ -15,10 +15,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AlatrafClinic.Infrastructure.Identity;
 
-public class TokenProvider(IConfiguration configuration, ApplicationDbContext context) : ITokenProvider
+public class TokenProvider(IConfiguration configuration, AlatrafClinicDbContext context) : ITokenProvider
 {
     private readonly IConfiguration _configuration = configuration;
-    private readonly ApplicationDbContext _context = context;
+    private readonly AlatrafClinicDbContext _context = context;
 
     public async Task<Result<TokenResponse>> GenerateJwtTokenAsync(AppUserDto user, CancellationToken ct = default)
     {

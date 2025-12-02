@@ -10,17 +10,17 @@ namespace AlatrafClinic.Infrastructure.Data.Repositories;
 
 public class DiagnosisRepository : GenericRepository<Diagnosis, int>, IDiagnosisRepository
 {
-    public DiagnosisRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public DiagnosisRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<DiagnosisIndustrialPart?> GetDiagnosisIndustrialPartByIdAsync(int id, CancellationToken ct = default)
     {
-        return await _dbContext.DiagnosisIndustrialParts.FirstOrDefaultAsync(dip=> dip.Id == id);
+        return await dbContext.DiagnosisIndustrialParts.FirstOrDefaultAsync(dip=> dip.Id == id);
     }
 
     public async Task<DiagnosisProgram?> GetDiagnosisProgramByIdAsync(int id, CancellationToken ct = default)
     {
-        return await _dbContext.DiagnosisPrograms.FirstOrDefaultAsync(dp => dp.Id == id);
+        return await dbContext.DiagnosisPrograms.FirstOrDefaultAsync(dp => dp.Id == id);
     }
 }

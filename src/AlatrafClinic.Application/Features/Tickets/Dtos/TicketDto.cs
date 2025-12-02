@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Features.People.Patients.Dtos;
+using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.Services.Dtos;
 using AlatrafClinic.Domain.Services.Enums;
 

@@ -1,8 +1,9 @@
 using System.Security.Claims;
+
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Identity;
 using AlatrafClinic.Application.Features.Identity.Dtos;
-using AlatrafClinic.Application.Features.People.Persons.Mappers;
+using AlatrafClinic.Application.Features.People.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Identity;
 using AlatrafClinic.Infrastructure.Data;
@@ -18,14 +19,14 @@ public class IdentityService(
     RoleManager<IdentityRole> roleManager,
     IUserClaimsPrincipalFactory<AppUser> userClaimsPrincipalFactory,
     IAuthorizationService authorizationService,
-    ApplicationDbContext dbContext)
+    AlatrafClinicDbContext dbContext)
     : IIdentityService
 {
     private readonly UserManager<AppUser> _userManager = userManager;
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
     private readonly IUserClaimsPrincipalFactory<AppUser> _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService = authorizationService;
-    private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly AlatrafClinicDbContext _dbContext = dbContext;
 
     public async Task<bool> IsInRoleAsync(string userId, string role)
     {

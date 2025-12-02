@@ -1,7 +1,6 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features;
-using AlatrafClinic.Application.Features.People.Patients.Mappers;
 using AlatrafClinic.Application.Features.WoundedCards.Dtos;
 using AlatrafClinic.Application.Features.WoundedCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;

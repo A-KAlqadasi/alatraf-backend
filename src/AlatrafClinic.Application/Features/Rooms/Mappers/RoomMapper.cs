@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Features;
-using AlatrafClinic.Application.Features.People.Doctors.Mappers;
+using AlatrafClinic.Application.Features.Doctors.Mappers;
 using AlatrafClinic.Application.Features.Rooms.Dtos;
 using AlatrafClinic.Application.Features.Rooms.Mappers;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
@@ -8,19 +8,27 @@ namespace AlatrafClinic.Application.Features.Rooms.Mappers;
 
 public static class RoomMapper
 {
-    public static RoomDto ToDto(this Room entity)
+    public static RoomDto ToDto(this Room room)
     {
-        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(room);
+
+         var section = room.Section;
+        var department = section?.Department;
 
         return new RoomDto
         {
-            Id = entity.Id,
-            Name = entity.Name,
-            SectionId = entity.SectionId,
-            SectionName = entity.Section.Name,
-            Doctors = entity.DoctorAssignments
-                        .Select(da => da.Doctor.ToDto())
-                        .ToList()
+            Id              = room.Id,
+            Name            = room.Name,
+            SectionId       = room.SectionId,
+            SectionName     = section?.Name ?? string.Empty,
+            DepartmentId    = section?.DepartmentId ?? 0,
+            DepartmentName  = department?.Name ?? string.Empty,
+            Doctors         = room.DoctorAssignments
+                .Select(dsr => dsr.Doctor)
+                .Where(d => d != null)
+                .Distinct()
+                .Select(d => d.ToDto())
+                .ToList()
         };
     }
 
