@@ -20,17 +20,20 @@ public sealed class Payment : AuditableEntity<int>
     public PaymentReference PaymentReference { get; private set; }
     public AccountKind AccountKind { get; private set; }
     public bool IsCompleted { get; private set; } = false;
+    public string? Notes { get; private set; }
+    public DateTime? PaymentDate {get; private set;}
 
     public PatientPayment? PatientPayment { get; private set; }
     public DisabledPayment? DisabledPayment { get; private set; }
     public WoundedPayment? WoundedPayment { get; private set; }
+    
 
     public decimal Residual =>
         Math.Max(0, TotalAmount - ((PaidAmount ?? 0m) + (Discount ?? 0m)));
 
     private Payment() { }
 
-    private Payment(int ticketId, int diagnosisId, decimal total, PaymentReference reference)
+    private Payment(int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
     {
         TicketId = ticketId;
         DiagnosisId = diagnosisId;
@@ -39,17 +42,17 @@ public sealed class Payment : AuditableEntity<int>
         IsCompleted = false;
     }
 
-    public static Result<Payment> Create(int ticketId, int diagnosisId, decimal total, PaymentReference reference)
+    public static Result<Payment> Create(int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
     {
         if (ticketId <= 0) return PaymentErrors.InvalidTicketId;
         if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
         if (total <= 0) return PaymentErrors.InvalidTotal;
         if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
 
-        return new Payment(ticketId, diagnosisId, total, reference);
+        return new Payment(ticketId, diagnosisId, total, reference, notes);
     }
 
-    public Result<Updated> UpdateCore(int ticketId, int diagnosisId, decimal total, PaymentReference reference)
+    public Result<Updated> UpdateCore(int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
     {
         if (ticketId <= 0) return PaymentErrors.InvalidTicketId;
         if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
@@ -60,6 +63,7 @@ public sealed class Payment : AuditableEntity<int>
         DiagnosisId = diagnosisId;
         TotalAmount = total;
         PaymentReference = reference;
+        Notes = notes;
         return Result.Updated;
     }
 
@@ -78,6 +82,7 @@ public sealed class Payment : AuditableEntity<int>
         Discount = discount;
 
         IsCompleted = true;
+        PaymentDate = DateTime.Now;
 
         return Result.Updated;
     }

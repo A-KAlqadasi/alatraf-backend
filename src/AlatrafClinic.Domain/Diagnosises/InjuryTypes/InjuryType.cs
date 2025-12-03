@@ -6,6 +6,8 @@ namespace AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 public class InjuryType : AuditableEntity<int>
 {
     public string Name { get; private set; } = string.Empty;
+    public ICollection<Diagnosis> Diagnoses { get; private set; } = new List<Diagnosis>();
+
 
     private InjuryType()
     {

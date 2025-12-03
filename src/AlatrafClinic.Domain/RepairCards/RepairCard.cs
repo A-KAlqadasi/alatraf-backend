@@ -27,7 +27,7 @@ public class RepairCard : AuditableEntity<int>
     public decimal TotalCost => _diagnosisIndustrialParts.Sum(part => part.Price * part.Quantity);
 
     // Navigation
-    public DeliveryTime? DeliveryTime { get; set; }
+    public DeliveryTime? DeliveryTime { get;  set; }
     public bool IsLate => Status is RepairCardStatus.InProgress && DeliveryTime?.DeliveryDate.Date < DateTime.Now.Date;
 
     private readonly List<Order> _orders = new();

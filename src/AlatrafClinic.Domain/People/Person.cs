@@ -2,6 +2,8 @@ using System.Text.RegularExpressions;
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Patients;
+using AlatrafClinic.Domain.People.Doctors;
 
 namespace AlatrafClinic.Domain.People;
 
@@ -13,6 +15,10 @@ public sealed class Person : AuditableEntity<int>
     public string? NationalNo { get; private set; }
     public bool Gender { get; private set; } // Added: true = Male, false = Female
     public string Address { get; private set; } = null!;
+    public string? AutoRegistrationNumber { get; set; }
+
+    public Patient? Patient { get; private set; }
+    public Doctor? Doctor { get; private set; }
 
     private Person() { }
 

@@ -1,6 +1,7 @@
 ﻿using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
+using AlatrafClinic.Domain.Sales.SalesItems;
 
 namespace AlatrafClinic.Domain.Inventory.Stores;
 
@@ -11,6 +12,8 @@ public class StoreItemUnit : AuditableEntity<int>
     public int ItemUnitId { get; private set; }
     public ItemUnit ItemUnit { get; private set; } = default!;
     public decimal Quantity { get; private set; }
+
+    public ICollection<SaleItem> SaleItems { get; private set; } = new List<SaleItem>();
 
     private StoreItemUnit() { }
 

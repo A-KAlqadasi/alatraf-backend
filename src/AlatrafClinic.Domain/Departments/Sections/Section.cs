@@ -2,6 +2,7 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
+using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 
 namespace AlatrafClinic.Domain.Departments.Sections;
 
@@ -16,6 +17,8 @@ public class Section :AuditableEntity<int>
     private readonly List<DoctorSectionRoom> _doctorAssignments = new();
 
     public IReadOnlyCollection<DoctorSectionRoom> DoctorAssignments => _doctorAssignments.AsReadOnly();
+
+    public ICollection<MedicalProgram> MedicalPrograms { get; set; } = new List<MedicalProgram>();
 
     private Section() { }
 

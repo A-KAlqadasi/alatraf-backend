@@ -3,6 +3,7 @@ using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.Patients.Mappers;
 using AlatrafClinic.Application.Features.People.Mappers;
 using AlatrafClinic.Domain.Patients;
+using AlatrafClinic.Domain.People;
 
 namespace AlatrafClinic.Application.Features.Patients.Mappers;
 
@@ -18,7 +19,7 @@ public static class PatientMapper
             PersonId = entity.PersonId,
             PersonDto = entity.Person!.ToDto(),
             PatientType = entity.PatientType,
-            AutoRegistrationNumber = entity.AutoRegistrationNumber
+            AutoRegistrationNumber = entity.Person.AutoRegistrationNumber
         };
     }
 

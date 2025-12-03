@@ -82,7 +82,7 @@ public sealed class PatientsFilter : FilterSpecification<Patient>
         var pattern = $"%{_q.SearchTerm!.Trim().ToLower()}%";
 
         return query.Where(p =>
-            EF.Functions.Like(p.AutoRegistrationNumber!.ToLower(), pattern) ||
+            EF.Functions.Like(p.Person!.AutoRegistrationNumber!.ToLower(), pattern) ||
             (p.Person != null &&
              (EF.Functions.Like(p.Person.FullName.ToLower(), pattern) ||
               (p.Person.NationalNo != null &&
@@ -116,8 +116,8 @@ public sealed class PatientsFilter : FilterSpecification<Patient>
                 : query.OrderBy(p => p.PatientType),
 
             "autoregistrationnumber" or "autoreg" => isDesc
-                ? query.OrderByDescending(p => p.AutoRegistrationNumber)
-                : query.OrderBy(p => p.AutoRegistrationNumber),
+                ? query.OrderByDescending(p => p.Person!.AutoRegistrationNumber)
+                : query.OrderBy(p => p.Person!.AutoRegistrationNumber),
 
             _ => isDesc
                 ? query.OrderByDescending(p => p.Person!.FullName)
