@@ -2,6 +2,7 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Patients;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Domain.Services.Enums;
 
@@ -17,8 +18,11 @@ public class Ticket : AuditableEntity<int>
     public TicketStatus Status { get; private set; } = TicketStatus.New;
     public bool IsEditable => Status != TicketStatus.Completed && Status != TicketStatus.Cancelled;
 
+    // navigations
     public Diagnosis? Diagnosis { get; set; }
     public Appointment? Appointment { get; set; }
+    public Payment? Payment { get; private set; }
+
     private Ticket() { }
 
     private Ticket(Patient patient, Service service)

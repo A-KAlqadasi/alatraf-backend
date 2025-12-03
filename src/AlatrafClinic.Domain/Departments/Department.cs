@@ -1,6 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.Sections;
+using AlatrafClinic.Domain.People.Doctors;
 using AlatrafClinic.Domain.Services;
 
 namespace AlatrafClinic.Domain.Departments;
@@ -13,6 +14,9 @@ public class Department : AuditableEntity<int>
     public string Name { get; private set; } = default!;
     private readonly List<Section> _sections = new();
     public IReadOnlyCollection<Section> Sections => _sections.AsReadOnly();
+
+    // navigation
+    public ICollection<Doctor> Doctors = new List<Doctor>();
 
     private Department() { }
 

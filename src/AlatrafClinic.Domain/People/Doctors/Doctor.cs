@@ -10,13 +10,13 @@ namespace AlatrafClinic.Domain.People.Doctors;
 
 public class Doctor : AuditableEntity<int>
 {
-    private readonly List<DoctorSectionRoom> _assignments = [];
     public int PersonId { get; private set; }
     public Person? Person { get; set; }
-
     public string? Specialization { get; set; }
     public int DepartmentId { get; private set; }
     public Department Department { get; private set; } = default!;
+    public bool IsActive { get; private set; } = true; 
+    private readonly List<DoctorSectionRoom> _assignments = [];
     public IReadOnlyCollection<DoctorSectionRoom> Assignments => _assignments.AsReadOnly();
     private DoctorSectionRoom? ActiveAssignment => _assignments.SingleOrDefault(a => a.IsActive);
     public DoctorSectionRoom? GetCurrentAssignment() => ActiveAssignment;
@@ -108,5 +108,14 @@ public class Doctor : AuditableEntity<int>
         _assignments.Add(newAssignment.Value);
 
         return newAssignment;
+    }
+
+    public void Activate()
+    {
+        IsActive = true;
+    }
+    public void DeActivate()
+    {
+        IsActive = false;
     }
 }

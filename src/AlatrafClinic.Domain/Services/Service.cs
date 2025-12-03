@@ -1,6 +1,3 @@
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments;
