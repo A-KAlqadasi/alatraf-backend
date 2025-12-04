@@ -13,7 +13,7 @@ public class TherapyCardDto
     public DateTime? ProgramStartDate { get; set; }
     public DateTime? ProgramEndDate { get; set; }
     public TherapyCardType TherapyCardType { get; set; }
-    public CardStatus CardStatus { get; set; }
+    public TherapyCardStatus CardStatus { get; set; }
     public string? Notes { get; set; }
     public List<DiagnosisProgramDto>? Programs { get; set; }
     public List<SessionDto>? Sessions { get; set; }

@@ -90,7 +90,7 @@ public sealed class CreateTherapyCardCommandHandler
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
-        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), CardStatus.New, null, command.Notes);
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.New, null, command.Notes);
 
         if (createTherapyCardResult.IsError)
         {

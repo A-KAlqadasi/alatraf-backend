@@ -35,12 +35,12 @@ public class TherapyCard : AuditableEntity<int>
     public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
     public int? ParentCardId { get; private set; }
     public TherapyCard? ParentCard { get; private set; }
-    public CardStatus CardStatus { get; private set; } 
+    public TherapyCardStatus CardStatus { get; private set; } 
     private TherapyCard()
     {
 
     }
-    private TherapyCard(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, int numberOfSessions, List<DiagnosisProgram> diagnosisPrograms, CardStatus status = CardStatus.New, int? parentCardId = null, string? notes = null)
+    private TherapyCard(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, int numberOfSessions, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status = TherapyCardStatus.New, int? parentCardId = null, string? notes = null)
     {
         DiagnosisId = diagnosisId;
         ProgramStartDate = programStartDate;
@@ -55,7 +55,7 @@ public class TherapyCard : AuditableEntity<int>
         ParentCardId = parentCardId;
     }
 
-    public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, CardStatus status, int? parentCardId = null, string? notes = null)
+    public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status, int? parentCardId = null, string? notes = null)
     {
         if (diagnosisId <= 0)
         {
@@ -78,7 +78,7 @@ public class TherapyCard : AuditableEntity<int>
         {
             return TherapyCardErrors.TherapyCardTypeInvalid;
         }
-        if(!Enum.IsDefined(typeof(CardStatus), status))
+        if(!Enum.IsDefined(typeof(TherapyCardStatus), status))
         {
             return TherapyCardErrors.InvalidCardStatus;
         }
