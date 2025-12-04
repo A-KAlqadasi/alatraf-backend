@@ -24,7 +24,9 @@ public static class StoreErrors
 
     public static readonly Error StoreNotFound =
         Error.NotFound("Store.NotFound", "The specified store could not be found.");
-    
+
     public static readonly Error ItemUnitIsRequired =
         Error.Validation("Store.ItemUnitIsRequired", "Item unit is required.");
+    public static readonly Error CannotDelete =
+        Error.Conflict("Store.CannotDelete", "Store cannot be deleted because it contains items or linked records.");
 }

@@ -38,8 +38,6 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
 
         await _unitOfWork.SaveChangesAsync(ct);
 
-        await _cache.RemoveAsync("suppliers_list", ct);
-
         _logger.LogInformation("Supplier {Name} created successfully with ID {Id}.", supplier.SupplierName, supplier.Id);
 
         return supplierResult.Value.ToDto();
