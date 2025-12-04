@@ -19,6 +19,10 @@ public class PurchaseInvoice : AuditableEntity<int>
 
     public PurchaseInvoiceStatus Status { get; private set; } = PurchaseInvoiceStatus.Draft;
     public DateTime? PostedAtUtc { get; private set; }
+    public DateTime? PaidAtUtc { get; private set; }
+    public decimal? PaymentAmount { get; private set; }
+    public string? PaymentMethod { get; private set; }
+    public string? PaymentReference { get; private set; }
 
     private readonly List<PurchaseItem> _items = new();
     public IReadOnlyCollection<PurchaseItem> Items => _items.AsReadOnly();
@@ -224,9 +228,26 @@ public class PurchaseInvoice : AuditableEntity<int>
     public Result<Updated> Cancel()
     {
         if (Status == PurchaseInvoiceStatus.Cancelled) return PurchaseInvoiceErrors.AlreadyCancelled;
-        if (Status == PurchaseInvoiceStatus.Posted) return PurchaseInvoiceErrors.AlreadyPosted; // business choice: forbid cancelling posted
+        if (Status == PurchaseInvoiceStatus.Posted || Status == PurchaseInvoiceStatus.Paid) return PurchaseInvoiceErrors.CannotCancelPostedOrPaid;
 
         Status = PurchaseInvoiceStatus.Cancelled;
+        return Result.Updated;
+    }
+
+    public Result<Updated> MarkPaid(decimal amount, string paymentMethod, string? paymentReference = null)
+    {
+        if (Status == PurchaseInvoiceStatus.Paid) return PurchaseInvoiceErrors.AlreadyPaid;
+        if (Status == PurchaseInvoiceStatus.Cancelled) return PurchaseInvoiceErrors.AlreadyCancelled;
+        if (Status != PurchaseInvoiceStatus.Posted) return PurchaseInvoiceErrors.NotPosted;
+
+        if (amount <= 0) return AlatrafClinic.Domain.Inventory.Purchases.PurchaseItemErrors.InvalidQuantity; // reuse an error? better create Payment errors but keep simple
+
+        Status = PurchaseInvoiceStatus.Paid;
+        PaidAtUtc = DateTime.UtcNow;
+        PaymentAmount = amount;
+        PaymentMethod = paymentMethod;
+        PaymentReference = paymentReference;
+
         return Result.Updated;
     }
 }

@@ -24,12 +24,16 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories
         IItemRepository Items { get; }
         ISupplierRepository Suppliers { get; }
         IUnitRepository Units { get; }
+        IStoreRepository Stores { get; }
+        IExchangeOrderRepository ExchangeOrders { get; }
+        IPurchaseInvoiceRepository PurchaseInvoices { get; }
         ISaleRepository Sales { get; }
         ITherapyCardRepository TherapyCards { get; }
         ITherapyCardTypePriceRepository TherapyCardTypePrices { get; }
         ISessionRepository Sessions { get; }
         IHolidayRepository Holidays { get; }
         IRepairCardRepository RepairCards { get; }
+        IOrderRepository Orders { get; }
         IPaymentRepository Payments { get; }
         IAppSettingRepository AppSettings { get; }
         IAppointmentRepository Appointments { get; }

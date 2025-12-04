@@ -13,4 +13,6 @@ public static class PurchaseInvoiceErrors
     public static readonly Error AlreadyPosted = Error.Validation("PurchaseInvoice.AlreadyPosted", "Invoice is already posted.");
     public static readonly Error NotPosted = Error.Validation("PurchaseInvoice.NotPosted", "Invoice is not posted.");
     public static readonly Error AlreadyCancelled = Error.Validation("PurchaseInvoice.AlreadyCancelled", "Invoice is already cancelled.");
+    public static readonly Error AlreadyPaid = Error.Validation("PurchaseInvoice.AlreadyPaid", "Invoice is already marked as paid.");
+    public static readonly Error CannotCancelPostedOrPaid = Error.Validation("PurchaseInvoice.CannotCancelPostedOrPaid", "Cannot cancel an invoice that is posted or paid.");
 }
