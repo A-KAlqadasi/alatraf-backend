@@ -1,3 +1,5 @@
+using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
@@ -34,6 +36,8 @@ using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Domain.WoundedCards;
 using AlatrafClinic.Infrastructure.Identity;
 
+using MediatR;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -41,8 +45,10 @@ using Microsoft.EntityFrameworkCore;
 namespace AlatrafClinic.Infrastructure.Data;
 
 public class AlatrafClinicDbContext
-    : IdentityDbContext<AppUser, IdentityRole, string>
+    : IdentityDbContext<AppUser, IdentityRole, string>, IAlatrafClinicDbContext
 {
+    private readonly IMediator _mediator;
+
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
@@ -98,12 +104,17 @@ public class AlatrafClinicDbContext
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     
     
-    public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
-        : base(options) { }
+    public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options, IMediator mediator)
+        : base(options)
+    {
+        _mediator = mediator;
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(typeof(AlatrafClinicDbContext).Assembly);
+
 
         builder.Entity<ApplicationPermission>(b =>
         {
@@ -157,4 +168,6 @@ public class AlatrafClinicDbContext
                 .HasMaxLength(450);
         });
     }
+
+
 }
