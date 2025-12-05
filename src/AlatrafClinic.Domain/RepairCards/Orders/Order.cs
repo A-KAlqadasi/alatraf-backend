@@ -7,6 +7,7 @@ using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.RepairCards.Enums;
 
 namespace AlatrafClinic.Domain.RepairCards.Orders;
+
 public class Order : AuditableEntity<int>
 {
     public int? RepairCardId { get; private set; }
@@ -17,7 +18,6 @@ public class Order : AuditableEntity<int>
 
     public OrderType OrderType { get; private set; } = OrderType.Raw;
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
-    public ExchangeOrder? ExchangeOrder { get; private set; }
 
     private readonly List<OrderItem> _orderItems = new();
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
@@ -95,7 +95,7 @@ public class Order : AuditableEntity<int>
 
         return Result.Updated;
     }
-    
+
     public Result<Updated> Cancel()
     {
         if (!IsEditable) return OrderErrors.ReadOnly;
@@ -104,65 +104,14 @@ public class Order : AuditableEntity<int>
     }
 
     // ---------- Exchange Order (approval) ----------
-    public Result<Updated> Approve(string exchangeOrderNumber, List<(StoreItemUnit StoreItemUnit, decimal Quantity)> items, string? notes = null)
+    public Result<Updated> Approve()
     {
         if (!IsEditable) return OrderErrors.ReadOnly;
         if (_orderItems.Count == 0) return OrderErrors.NoItems;
 
-        if (string.IsNullOrWhiteSpace(exchangeOrderNumber))
-        {
-            return OrderErrors.ExchangeOrderNumberRequired;
-        }
 
-        if (items.Count != _orderItems.Count)
-        {
-            return OrderErrors.ItemsConflictInOrderAndExchangeOrder;
-        }
 
-        foreach (var orderItem in _orderItems)
-        {
-            var matchingItem = items.FirstOrDefault(i => i.StoreItemUnit.ItemUnitId == orderItem.ItemUnitId);
 
-            if (matchingItem.StoreItemUnit is null)
-            {
-                return OrderErrors.ItemsConflictInOrderAndExchangeOrder;
-            }
-
-            if (matchingItem.Quantity != orderItem.Quantity)
-            {
-                return OrderErrors.ItemsConflictInOrderAndExchangeOrder;
-            }
-            if (matchingItem.Quantity > matchingItem.StoreItemUnit.Quantity)
-            {
-                return OrderErrors.QuantityExceedsAvailable;
-            }
-        }
-
-        var exchangeOrderResult = ExchangeOrder.Create(items.FirstOrDefault().StoreItemUnit.StoreId, notes);
-        if (exchangeOrderResult.IsError)
-        {
-            return exchangeOrderResult.Errors;
-        }
-        var exchangeOrder = exchangeOrderResult.Value;
-
-        // create exchange order lines from order items
-        var exchangeOrderItems = items
-            .Select(i => ExchangeOrderItem.Create(exchangeOrder.Id, i.StoreItemUnit.Id, i.Quantity).Value)
-            .ToList();
-        var upsertResult = exchangeOrder.UpsertItems(exchangeOrderItems);
-        if (upsertResult.IsError)
-        {
-            return upsertResult.Errors;
-        }
-
-        exchangeOrder.AssignOrder(this, exchangeOrderNumber);
-
-        // approve exchange order (decrease stock)
-        var approval = exchangeOrder.Approve();
-        if (approval.IsError)
-            return approval.Errors;
-
-        ExchangeOrder = exchangeOrder;
         Status = OrderStatus.Posted;
         return Result.Updated;
     }

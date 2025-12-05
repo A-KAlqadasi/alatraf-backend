@@ -13,11 +13,13 @@ public class ExchangeOrder : AuditableEntity<int>
     public bool IsApproved { get; private set; }
     public string? Notes { get; private set; }
 
-    public int? SaleId { get; private set; }
-    public Sale? Sale { get; private set; }
+    // public int? SaleId { get; private set; }
+    // public Sale? Sale { get; private set; }
 
-    public int? OrderId { get; private set; }
-    public Order? Order { get; set; }
+    // public int? OrderId { get; private set; }
+    // public Order? Order { get; set; }
+    public int? RelatedOrderId { get; private set; }        // optional link to Order by id
+    public int? RelatedSaleId { get; private set; }         // optional link to Sale by id
 
     // store reference (which store released the items)
     public int StoreId { get; private set; }
@@ -73,18 +75,12 @@ public class ExchangeOrder : AuditableEntity<int>
     {
         if (IsApproved)
             return ExchangeOrderErrors.AlreadyApproved;
-
-        // decrease stock
-        foreach (var line in _items)
-        {
-            var dec = line.StoreItemUnit.Decrease(line.Quantity);
-            if (dec.IsError) return dec.Errors;
-        }
-
+        // Mark approved - the actual stock mutation must be handled by the Store aggregate
+        // so the application layer can coordinate cross-aggregate changes.
         IsApproved = true;
         return Result.Updated;
     }
-    public Result<Updated> AssignOrder(Order order, string number)
+    public Result<Updated> AssignOrder(int orderId, string number)
     {
         if (IsApproved)
         {
@@ -94,21 +90,13 @@ public class ExchangeOrder : AuditableEntity<int>
         {
             return ExchangeOrderErrors.ExchangeOrderNumberRequired;
         }
-        if(Sale is not null)
-        {
-            return ExchangeOrderErrors.ExchangeOrderAlreadyAssignedToSales;
-        }
 
-        if (order is null)
-        {
-            return ExchangeOrderErrors.OrderIsRequired;
-        }
-        Order = order;
-        OrderId = order.Id;
+
+        RelatedOrderId = orderId;
         Number = number;
         return Result.Updated;
     }
-    public Result<Updated> AssignSale(Sale sale, string number)
+    public Result<Updated> AssignSale(int saleId, string number)
     {
         if (IsApproved)
         {
@@ -119,18 +107,7 @@ public class ExchangeOrder : AuditableEntity<int>
         {
             return ExchangeOrderErrors.ExchangeOrderNumberRequired;
         }
-        
-        if(Order is not null)
-        {
-            return ExchangeOrderErrors.ExchangeOrderAlreadyAssignedToOrder;
-        }
-
-        if (sale is null)
-        {
-            return ExchangeOrderErrors.SaleIsRequired;
-        }
-        Sale = sale;
-        SaleId = sale.Id;
+        RelatedSaleId = saleId;
         Number = number;
         return Result.Updated;
     }

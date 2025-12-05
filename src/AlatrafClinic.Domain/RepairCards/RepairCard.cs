@@ -8,6 +8,7 @@ using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards.DeliveryTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Inventory.Items;
 
 
 namespace AlatrafClinic.Domain.RepairCards;
@@ -229,6 +230,34 @@ public class RepairCard : AuditableEntity<int>
 
 
         _orders.Add(order);
+
+        return Result.Updated;
+    }
+
+    public Result<Updated> UpdateOrderSection(int orderId, int sectionId)
+    {
+        if (!IsEditable) return RepairCardErrors.Readonly;
+
+        if (sectionId <= 0) return OrderErrors.InvalidSection;
+
+        var order = _orders.FirstOrDefault(o => o.Id == orderId);
+        if (order is null) return RepairCardErrors.InvalidOrder;
+
+        var result = order.UpdateSection(sectionId);
+        if (result.IsError) return result.Errors;
+
+        return Result.Updated;
+    }
+
+    public Result<Updated> UpsertOrderItems(int orderId, List<(ItemUnit itemUnit, decimal quantity)> newItems)
+    {
+        if (!IsEditable) return RepairCardErrors.Readonly;
+
+        var order = _orders.FirstOrDefault(o => o.Id == orderId);
+        if (order is null) return RepairCardErrors.InvalidOrder;
+
+        var result = order.UpsertItems(newItems);
+        if (result.IsError) return result.Errors;
 
         return Result.Updated;
     }

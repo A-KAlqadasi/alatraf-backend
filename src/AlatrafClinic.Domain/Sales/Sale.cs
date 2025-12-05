@@ -84,7 +84,7 @@ public class Sale : AuditableEntity<int>
 
     public Result<Updated> Post(string exchangeOrderNumber, List<(StoreItemUnit StoreItemUnit, decimal Quantity)> items, string? notes = null)
     {
-        if (Status == SaleStatus.Posted)    return SaleErrors.AlreadyPosted;
+        if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
         if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
 
         if (!IsPaid) return SaleErrors.PaymentRequired;
@@ -127,9 +127,13 @@ public class Sale : AuditableEntity<int>
         }
         var exchangeOrder = exchangeOrderResult.Value;
 
-        // create exchange order lines from order items
+        // create exchange order lines from sale items and set StoreItemUnit navigation
         var exchangeOrderItems = items
-            .Select(i => ExchangeOrderItem.Create(exchangeOrder.Id, i.StoreItemUnit.Id, i.Quantity).Value)
+            .Select(i => {
+                var created = ExchangeOrderItem.Create(exchangeOrder.Id, i.StoreItemUnit.Id, i.Quantity).Value;
+                created.StoreItemUnit = i.StoreItemUnit;
+                return created;
+            })
             .ToList();
         var upsertResult = exchangeOrder.UpsertItems(exchangeOrderItems);
         if (upsertResult.IsError)
@@ -137,11 +141,13 @@ public class Sale : AuditableEntity<int>
             return upsertResult.Errors;
         }
 
-        exchangeOrder.AssignSale(this, exchangeOrderNumber);
+        var assignResult = exchangeOrder.AssignSale(this.Id, exchangeOrderNumber);
+        if (assignResult.IsError)
+            return assignResult.Errors;
 
         // approve exchange order (decrease stock)
         var approval = exchangeOrder.Approve();
-        
+
         if (approval.IsError)
             return approval.Errors;
 
@@ -150,6 +156,13 @@ public class Sale : AuditableEntity<int>
         return Result.Updated;
     }
 
+ public Result<Updated> MarkPosted()
+    {
+        if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
+        if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
+        Status = SaleStatus.Posted;
+        return Result.Updated;
+    }
     public Result<Updated> Cancel()
     {
         if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
@@ -177,4 +190,5 @@ public class Sale : AuditableEntity<int>
 
         return Result.Updated;
     }
+
 }

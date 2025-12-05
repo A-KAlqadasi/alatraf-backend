@@ -13,4 +13,5 @@ public static class OrderErrors
     public static readonly Error ExchangeOrderNumberRequired = Error.Validation("Order.ExchangeOrderNumberRequired", "Exchange order number is required.");
     public static readonly Error ItemsConflictInOrderAndExchangeOrder = Error.Conflict("Order.ItemsConflictInOrderAndExchangeOrder", "The items in the order do not match the items in the exchange order.");
     public static readonly Error QuantityExceedsAvailable = Error.Conflict("Order.QuantityExceedsAvailable", "Requested quantity exceeds available stock.");
+    public static readonly Error OrderNotFound = Error.NotFound("Order.NotFound", "Order not found.");
 }
