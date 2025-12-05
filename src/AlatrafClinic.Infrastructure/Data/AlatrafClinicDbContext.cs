@@ -1,3 +1,5 @@
+using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
@@ -10,6 +12,8 @@ using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
@@ -34,6 +38,8 @@ using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Domain.WoundedCards;
 using AlatrafClinic.Infrastructure.Identity;
 
+using MediatR;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -41,8 +47,9 @@ using Microsoft.EntityFrameworkCore;
 namespace AlatrafClinic.Infrastructure.Data;
 
 public class AlatrafClinicDbContext
-    : IdentityDbContext<AppUser, IdentityRole, string>
+    : IdentityDbContext<AppUser, IdentityRole, string>, IAlatrafClinicDbContext
 {
+
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
@@ -99,62 +106,20 @@ public class AlatrafClinicDbContext
     
     
     public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
-        : base(options) { }
+        : base(options)
+    {
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        builder.Entity<ApplicationPermission>(b =>
-        {
-            b.ToTable("Permissions");
-            b.HasKey(p => p.Id);
-            b.Property(p => p.Name)
-                .IsRequired()
-                .HasMaxLength(200);
-            b.HasIndex(p => p.Name).IsUnique();
-        });
-
-        builder.Entity<RolePermission>(b =>
-        {
-            b.ToTable("RolePermissions");
-            b.HasKey(rp => new { rp.RoleId, rp.PermissionId });
-
-            b.HasOne(rp => rp.Role)
-                .WithMany()
-                .HasForeignKey(rp => rp.RoleId);
-
-            b.HasOne(rp => rp.Permission)
-                .WithMany(p => p.RolePermissions)
-                .HasForeignKey(rp => rp.PermissionId);
-        });
-
-        builder.Entity<UserPermission>(b =>
-        {
-            b.ToTable("UserPermissions");
-            b.HasKey(up => new { up.UserId, up.PermissionId });
-
-            b.HasOne(up => up.User)
-                .WithMany()
-                .HasForeignKey(up => up.UserId);
-
-            b.HasOne(up => up.Permission)
-                .WithMany(p => p.UserPermissions)
-                .HasForeignKey(up => up.PermissionId);
-        });
-
-        builder.Entity<RefreshToken>(b =>
-        {
-            b.ToTable("RefreshTokens");
-            b.HasKey(rt => rt.Id);
-
-            b.Property(rt => rt.Token)
-                .IsRequired()
-                .HasMaxLength(512);
-
-            b.Property(rt => rt.UserId)
-                .IsRequired()
-                .HasMaxLength(450);
-        });
+        builder.ApplyConfigurationsFromAssembly(typeof(AlatrafClinicDbContext).Assembly);
+        AlatrafClinicDbContextInitializer.Seed(builder);
+        builder.Ignore<StoreItemUnit>(); // To be implemented later
+        builder.Ignore<Store>(); // To be implemented later
+        builder.Ignore<ExchangeOrderItem>(); // To be implemented later
+        builder.Ignore<ExchangeOrder>(); // To be implemented later
+                
     }
+
 }

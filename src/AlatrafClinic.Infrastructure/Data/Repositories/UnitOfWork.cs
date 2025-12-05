@@ -92,6 +92,14 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
     private IWoundedCardRepository? _woundedCards;
     public IWoundedCardRepository WoundedCards => _woundedCards ??= new WoundedCardRepository(_dbContext);
 
+    public IStoreRepository Stores => throw new NotImplementedException();
+
+    public IExchangeOrderRepository ExchangeOrders => throw new NotImplementedException();
+
+    public IPurchaseInvoiceRepository PurchaseInvoices => throw new NotImplementedException();
+
+    public IOrderRepository Orders => throw new NotImplementedException();
+
     public async ValueTask DisposeAsync()
     {
         await _dbContext.DisposeAsync();

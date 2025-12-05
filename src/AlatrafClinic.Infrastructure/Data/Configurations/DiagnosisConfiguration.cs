@@ -24,6 +24,8 @@ public sealed class DiagnosisConfiguration : IEntityTypeConfiguration<Diagnosis>
             .HasColumnType("date");
 
         builder.Property(d => d.DiagnoType)
+            .HasColumnName("DiagnosisType")
+            .HasConversion<string>()
             .IsRequired();
 
         builder.HasOne(d => d.Ticket)
@@ -47,7 +49,7 @@ public sealed class DiagnosisConfiguration : IEntityTypeConfiguration<Diagnosis>
 
 
         builder.HasIndex(d => d.TicketId)
-            .IsUnique(); // reinforces the 1:1
+            .IsUnique();
 
         builder.HasIndex(d => d.PatientId);
 

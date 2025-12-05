@@ -26,12 +26,6 @@ public class DeleteStoreCommandHandler : IRequestHandler<DeleteStoreCommand, Res
             return StoreErrors.StoreNotFound;
         }
 
-        if (await _unitOfWork.Stores.HasAssociationsAsync(command.StoreId, ct))
-        {
-            _logger.LogWarning("Store {StoreId} has associations and cannot be deleted", command.StoreId);
-            return StoreErrors.CannotDelete;
-        }
-
         await _unitOfWork.Stores.DeleteAsync(store);
         await _unitOfWork.SaveChangesAsync(ct);
 

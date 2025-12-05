@@ -14,7 +14,7 @@ public class TherapyCard : AuditableEntity<int>
 {
     public DateTime ProgramStartDate { get; private set; }
     public DateTime ProgramEndDate { get; private set; }
-    public int NumberOfSessions { get; private set; }
+    public int NumberOfSessions => _sessions.Where(s=> s.IsTaken == true).Count();
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
@@ -35,12 +35,12 @@ public class TherapyCard : AuditableEntity<int>
     public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
     public int? ParentCardId { get; private set; }
     public TherapyCard? ParentCard { get; private set; }
-    public CardStatus CardStatus { get; private set; } 
+    public TherapyCardStatus CardStatus { get; private set; } 
     private TherapyCard()
     {
 
     }
-    private TherapyCard(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, int numberOfSessions, List<DiagnosisProgram> diagnosisPrograms, CardStatus status = CardStatus.New, int? parentCardId = null, string? notes = null)
+    private TherapyCard(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status = TherapyCardStatus.New, int? parentCardId = null, string? notes = null)
     {
         DiagnosisId = diagnosisId;
         ProgramStartDate = programStartDate;
@@ -49,13 +49,12 @@ public class TherapyCard : AuditableEntity<int>
         SessionPricePerType = sessionPricePerType;
         IsActive = true;
         _diagnosisPrograms = diagnosisPrograms;
-        NumberOfSessions = numberOfSessions;
         Notes = notes;
         this.CardStatus = status;
         ParentCardId = parentCardId;
     }
 
-    public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, CardStatus status, int? parentCardId = null, string? notes = null)
+    public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status, int? parentCardId = null, string? notes = null)
     {
         if (diagnosisId <= 0)
         {
@@ -72,13 +71,11 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.InvalidTiming;
         }
 
-        int numberOfSessions = (programEndDate - programStartDate).Days + 1;
-
         if (!Enum.IsDefined(typeof(TherapyCardType), type))
         {
             return TherapyCardErrors.TherapyCardTypeInvalid;
         }
-        if(!Enum.IsDefined(typeof(CardStatus), status))
+        if(!Enum.IsDefined(typeof(TherapyCardStatus), status))
         {
             return TherapyCardErrors.InvalidCardStatus;
         }
@@ -88,7 +85,7 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.SessionPricePerTypeInvalid;
         }
 
-        return new TherapyCard(diagnosisId, programStartDate, programEndDate, type, sessionPricePerType, numberOfSessions, diagnosisPrograms, status, parentCardId, notes);
+        return new TherapyCard(diagnosisId, programStartDate, programEndDate, type, sessionPricePerType, diagnosisPrograms, status, parentCardId, notes);
     }
 
     public Result<Updated> Update(DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, string? notes = null)
@@ -123,8 +120,6 @@ public class TherapyCard : AuditableEntity<int>
         Type = type;
         SessionPricePerType = sessionPricePerType;
         Notes = notes;
-        NumberOfSessions = (ProgramEndDate - ProgramStartDate).Days + 1;
-
         return Result.Updated;
     }
     
