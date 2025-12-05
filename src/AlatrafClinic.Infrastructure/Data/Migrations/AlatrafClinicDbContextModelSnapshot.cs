@@ -68,21 +68,21 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8670), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8671), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "العلاج الطبيعي"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8674), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8674), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "إدارة فنية"
                         });
                 });
@@ -199,33 +199,33 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(1057), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(1058), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "غرفة ١٠١",
                             SectionId = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2776), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2776), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "غرفة ١٠٢",
                             SectionId = 1
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2778), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2778), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "غرفة ٢٠١",
                             SectionId = 2
                         });
@@ -281,34 +281,34 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8894), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8894), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "القسم الاول"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(657), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(660), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "القسم الثاني"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(662), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 2,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(663), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "القسم الثالث"
                         });
                 });
@@ -374,42 +374,42 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2005), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnoType = "Limbs",
                             DiagnosisText = "Lower back pain due to muscle strain",
-                            InjuryDate = new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2006), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 1,
                             TicketId = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2981), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnoType = "Therapy",
                             DiagnosisText = "Right knee ligament sprain",
-                            InjuryDate = new DateTime(2025, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2982), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 2,
                             TicketId = 2
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2983), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnoType = "Sales",
                             DiagnosisText = "Neck pain caused by whiplash injury",
-                            InjuryDate = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2983), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 3,
                             TicketId = 3
                         });
@@ -488,14 +488,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(6046), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IndustrialPartUnitId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(6047), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Price = 80m,
                             Quantity = 1,
                             RepairCardId = 1
@@ -503,14 +503,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7118), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Utc).AddTicks(7117),
+                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IndustrialPartUnitId = 2,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7118), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Price = 120m,
                             Quantity = 1,
                             RepairCardId = 1
@@ -518,14 +518,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7120), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Utc).AddTicks(7119),
+                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IndustrialPartUnitId = 3,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7120), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Price = 90m,
                             Quantity = 1,
                             RepairCardId = 1
@@ -593,39 +593,39 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(9213), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 2,
                             Duration = 10,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(9213), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             MedicalProgramId = 1,
                             Notes = "خطة علاج لآلام أسفل الظهر لمدة عشرة جلسات"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(114), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 2,
                             Duration = 8,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(115), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             MedicalProgramId = 2,
                             Notes = "برنامج تأهيل للركبة بعد إصابة رياضية"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(116), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 2,
                             Duration = 12,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(116), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             MedicalProgramId = 3,
                             Notes = "تأهيل للرقبة والكتف بعد إصابة حادة"
                         });
@@ -677,31 +677,31 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(5549), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(5552), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "حادث مروري"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6434), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6435), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "إصابة عمل"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6436), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6437), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "إصابة رياضية"
                         });
                 });
@@ -751,31 +751,31 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2658), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2658), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "الجانب الأيسر"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2661), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2661), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "الجانب الأيمن"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2662), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2662), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "الجانبين"
                         });
                 });
@@ -825,31 +825,31 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2811), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2811), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "كسر"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2813), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2813), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "حرق"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2814), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2814), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "التواء"
                         });
                 });
@@ -914,36 +914,36 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             CardNumber = "DC-0001",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4825), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4825), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 1
                         },
                         new
                         {
                             Id = 2,
                             CardNumber = "DC-0002",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5588), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5589), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 2
                         },
                         new
                         {
                             Id = 3,
                             CardNumber = "DC-0003",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5590), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5590), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 3
                         });
                 });
@@ -1055,116 +1055,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("RefreshTokens", (string)null);
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SaleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
-
-                    b.HasIndex("SaleId")
-                        .IsUnique()
-                        .HasFilter("[SaleId] IS NOT NULL");
-
-                    b.HasIndex("StoreId");
-
-                    b.ToTable("ExchangeOrder");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ExchangeOrderId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("StoreItemUnitId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExchangeOrderId");
-
-                    b.HasIndex("StoreItemUnitId");
-
-                    b.ToTable("ExchangeOrderItem");
-                });
-
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Items.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -1270,91 +1160,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("ItemUnit");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.Store", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Store");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ItemUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemUnitId");
-
-                    b.HasIndex("StoreId");
-
-                    b.ToTable("StoreItemUnit");
-                });
-
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Units.Unit", b =>
                 {
                     b.Property<int>("Id")
@@ -1400,41 +1205,41 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4700), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4700), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "قطعة"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4702), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4703), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "زوج"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4727), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4727), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "يمين"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4728), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4728), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "يسار"
                         });
                 });
@@ -1499,22 +1304,22 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientType = (byte)1,
                             PersonId = 2
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientType = (byte)2,
                             PersonId = 3
                         });
@@ -1605,11 +1410,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(3914), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(3914), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             VoucherNumber = "VOU-0001"
                         });
                 });
@@ -1695,16 +1500,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 10,
                             AccountKind = "Patient",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(639), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
                             IsCompleted = true,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(639), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "دفع كامل مقابل جلسة علاج",
                             PaidAmount = 200m,
-                            PaymentDate = new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PaymentDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PaymentReference = "TherapyCardNew",
                             TicketId = 1,
                             TotalAmount = 200m
@@ -1713,17 +1518,17 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 11,
                             AccountKind = "Wounded",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(1876), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 2,
                             Discount = 50m,
                             IsCompleted = false,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(1877), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "دفع جزئي مع خصم",
                             PaidAmount = 250m,
-                            PaymentDate = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PaymentDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PaymentReference = "TherapyCardRenew",
                             TicketId = 2,
                             TotalAmount = 300m
@@ -1732,13 +1537,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 12,
                             AccountKind = "Disabled",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(2846), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 3,
                             IsCompleted = false,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(2847), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "لم يتم الدفع بعد",
                             PaymentReference = "Sales",
                             TicketId = 3,
@@ -1792,11 +1597,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(4759), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(4760), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             WoundedCardId = 1
                         });
                 });
@@ -1915,8 +1720,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AutoRegistrationNumber")
-                        .IsUnique()
-                        .HasFilter("[AutoRegistrationNumber] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("Birthdate");
 
@@ -1934,7 +1738,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             Address = "صنعاء",
-                            Birthdate = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "علي أحمد",
@@ -1949,14 +1753,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 2,
                             Address = "عدن",
-                            Birthdate = new DateTime(1985, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "محمد صالح",
                             Gender = true,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             NationalNo = "NAT-0002",
                             Phone = "781234568"
                         },
@@ -1964,14 +1768,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 3,
                             Address = "تعز",
-                            Birthdate = new DateTime(1995, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "سارة علي",
                             Gender = false,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             NationalNo = "NAT-0003",
                             Phone = "731234569"
                         },
@@ -1979,14 +1783,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 4,
                             Address = "تعز",
-                            Birthdate = new DateTime(1995, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "عبدالكريم شوقي يوسف أحمد",
                             Gender = true,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             NationalNo = "NAT-0004",
                             Phone = "782422822"
                         });
@@ -2087,34 +1891,34 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1786), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             Description = "تستخدم لتثبيت ودعم مفصل الركبة",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1787), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "دعامة الركبة"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1790), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             Description = "يساعد على دعم أسفل الظهر وتخفيف الألم",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1790), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "حزام الظهر الطبي"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1792), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             Description = "تستخدم لتثبيت الرقبة في حالات الإصابات",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1793), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = " كولار رقبة طبية"
                         });
                 });
@@ -2170,36 +1974,36 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1856), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IndustrialPartId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1856), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PricePerUnit = 80m,
                             UnitId = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2742), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IndustrialPartId = 2,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2743), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PricePerUnit = 120m,
                             UnitId = 1
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2744), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IndustrialPartId = 3,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2744), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PricePerUnit = 90m,
                             UnitId = 1
                         });
@@ -2361,13 +2165,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(4929), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
                             IsActive = true,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(4929), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "بطاقة صيانة جديدة للحالة الأولى",
                             Status = "New"
                         });
@@ -2473,8 +2277,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("SaleId");
 
-                    b.HasIndex("StoreItemUnitId");
-
                     b.ToTable("SaleItems", (string)null);
                 });
 
@@ -2545,12 +2347,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            AttendDate = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(6641), new TimeSpan(0, 0, 0, 0, 0)),
+                            AttendDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(6641), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "موعد متابعة للمريض",
                             PatientType = "Normal",
                             Status = "Scheduled",
@@ -2620,13 +2422,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(7706), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsActive = true,
                             IsDeleted = false,
                             IsRecurring = true,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(7707), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "عيد العمال العالمي",
                             StartDate = new DateTime(1, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Type = "Fixed"
@@ -2634,13 +2436,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8566), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsActive = true,
                             IsDeleted = false,
                             IsRecurring = true,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8566), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "عيد الوحدة اليمنية",
                             StartDate = new DateTime(1, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Type = "Fixed"
@@ -2648,13 +2450,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8568), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsActive = true,
                             IsDeleted = false,
                             IsRecurring = true,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8568), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "ثورة 26 سبتمبر",
                             StartDate = new DateTime(1, 9, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Type = "Fixed"
@@ -2662,13 +2464,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8569), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsActive = true,
                             IsDeleted = false,
                             IsRecurring = true,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8569), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "ثورة 14 أكتوبر",
                             StartDate = new DateTime(1, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Type = "Fixed"
@@ -2676,13 +2478,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8570), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsActive = true,
                             IsDeleted = false,
                             IsRecurring = true,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8571), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "عيد الجلاء",
                             StartDate = new DateTime(1, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Type = "Fixed"
@@ -2752,107 +2554,107 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             Code = "SRV-CONS",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8760), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8761), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "استشارة"
                         },
                         new
                         {
                             Id = 2,
                             Code = "SRV-THER",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9433), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9433), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "علاج طبيعي"
                         },
                         new
                         {
                             Id = 3,
                             Code = "SRV-PRO",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9435), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 2,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9435), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "اطراف صناعية"
                         },
                         new
                         {
                             Id = 4,
                             Code = "SRV-SAL",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9436), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 2,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9436), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "مبيعات"
                         },
                         new
                         {
                             Id = 5,
                             Code = "SRV-REP",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9437), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 2,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9437), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "إصلاحات"
                         },
                         new
                         {
                             Id = 6,
                             Code = "SRV-BON",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9438), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9438), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "عظام"
                         },
                         new
                         {
                             Id = 7,
                             Code = "SRV-NER",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9439), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9439), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "أعصاب"
                         },
                         new
                         {
                             Id = 8,
                             Code = "SRV-REN",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9440), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9441), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "تجديد كروت علاج"
                         },
                         new
                         {
                             Id = 9,
                             Code = "SRV-DMG",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9441), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DepartmentId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9442), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "إصدار بدل فاقد لكرت علاج"
                         });
                 });
@@ -2915,11 +2717,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 5, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 5, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 1,
                             ServiceId = 2,
                             Status = "New"
@@ -2927,11 +2729,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7649), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7650), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 1,
                             ServiceId = 3,
                             Status = "Pause"
@@ -2939,11 +2741,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7651), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7651), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 2,
                             ServiceId = 5,
                             Status = "New"
@@ -3053,34 +2855,34 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(7850), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             Description = "برنامج مخصص لعلاج آلام الظهر",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(7851), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "برنامج آلام الظهر"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8650), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             Description = "برنامج مخصص لتأهيل إصابات الركبة",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8651), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "برنامج تأهيل الركبة"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8652), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             Description = "برنامج تأهيلي للمرضى بعد العمليات الجراحية",
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8652), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "برنامج التأهيل بعد الجراحة"
                         });
                 });
@@ -3138,12 +2940,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(2491), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             IsTaken = true,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(2491), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Number = 1,
                             SessionDate = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             TherapyCardId = 1
@@ -3151,12 +2953,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(3299), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
                             IsTaken = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(3300), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Number = 2,
                             SessionDate = new DateTime(2025, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             TherapyCardId = 1
@@ -3288,13 +3090,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             CardStatus = "New",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(9527), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 2,
                             IsActive = true,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(9527), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             ProgramEndDate = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ProgramStartDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SessionPricePerType = 200m,
@@ -3402,36 +3204,36 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             CardNumber = "WC-0001",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(3846), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            Expiration = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(3847), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 1
                         },
                         new
                         {
                             Id = 2,
                             CardNumber = "WC-0002",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4719), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            Expiration = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4719), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 2
                         },
                         new
                         {
                             Id = 3,
                             CardNumber = "WC-0003",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4721), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            Expiration = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4721), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 3
                         });
                 });
@@ -3513,7 +3315,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = "19a59129-6c20-417a-834d-11a208d32d96",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "11573afb-6857-491e-9c46-cbd93a23f64b",
+                            ConcurrencyStamp = "45a69252-a993-46d4-aa95-6dc881c3a15a",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
@@ -3521,7 +3323,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             PasswordHash = "AQAAAAIAAYagAAAAEJ8FZJNBD5y7YVavcn6e99DgR9n2YPF5mD31ySEh7F3hW6Y2qgFlgVzuqMbI8mgZZg==",
                             PersonId = 4,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e9bcc83f-142e-494e-a6ed-96cd35d06291",
+                            SecurityStamp = "f81ff42e-eb5b-4af3-a3c8-4ff90f17fe1d",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -4874,49 +4676,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Sale");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.RepairCards.Orders.Order", "Order")
-                        .WithOne("ExchangeOrder")
-                        .HasForeignKey("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", "OrderId");
-
-                    b.HasOne("AlatrafClinic.Domain.Sales.Sale", "Sale")
-                        .WithOne("ExchangeOrder")
-                        .HasForeignKey("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", "SaleId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Sale");
-
-                    b.Navigation("Store");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrderItem", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", "ExchangeOrder")
-                        .WithMany("Items")
-                        .HasForeignKey("ExchangeOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
-                        .WithMany()
-                        .HasForeignKey("StoreItemUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExchangeOrder");
-
-                    b.Navigation("StoreItemUnit");
-                });
-
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Items.Item", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.Inventory.Units.Unit", "BaseUnit")
@@ -4945,25 +4704,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Unit");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Items.ItemUnit", "ItemUnit")
-                        .WithMany()
-                        .HasForeignKey("ItemUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.Store", "Store")
-                        .WithMany("StoreItemUnits")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ItemUnit");
-
-                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Patients.Patient", b =>
@@ -5167,17 +4907,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
-                        .WithMany("SaleItems")
-                        .HasForeignKey("StoreItemUnitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("ItemUnit");
 
                     b.Navigation("Sale");
-
-                    b.Navigation("StoreItemUnit");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Appointments.Appointment", b =>
@@ -5500,24 +5232,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("DisabledPayments");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
-                {
-                    b.Navigation("Items");
-                });
-
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Items.Item", b =>
                 {
                     b.Navigation("ItemUnits");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.Store", b =>
-                {
-                    b.Navigation("StoreItemUnits");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", b =>
-                {
-                    b.Navigation("SaleItems");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Units.Unit", b =>
@@ -5570,8 +5287,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.Order", b =>
                 {
-                    b.Navigation("ExchangeOrder");
-
                     b.Navigation("OrderItems");
                 });
 
@@ -5588,8 +5303,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>
                 {
-                    b.Navigation("ExchangeOrder");
-
                     b.Navigation("ExitCard");
 
                     b.Navigation("SaleItems");

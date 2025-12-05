@@ -51,7 +51,8 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
             .IsUnique();
 
         builder.HasIndex(x => x.AutoRegistrationNumber)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter(null);
 
         builder.HasIndex(x => x.FullName);
         builder.HasIndex(x => x.Birthdate);

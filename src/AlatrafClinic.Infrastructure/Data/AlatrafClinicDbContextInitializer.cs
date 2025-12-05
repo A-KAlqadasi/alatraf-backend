@@ -42,6 +42,11 @@ namespace AlatrafClinic.Infrastructure.Data;
 
 public static class AlatrafClinicDbContextInitializer
 {
+     private static readonly DateTimeOffset SeedTimestamp =
+        new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+    private static readonly DateTime SeedDate = new DateTime(2025, 1, 1);
+
     public static void Seed(ModelBuilder modelBuilder)
     {
         SeedInjuryLookups(modelBuilder);
@@ -69,55 +74,55 @@ public static class AlatrafClinicDbContextInitializer
     private static void SeedInjuryLookups(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<InjuryReason>().HasData(
-            new { Id = 1, Name = "حادث مروري", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "حادث مروري", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
 
-            new { Id = 2, Name = "إصابة عمل",CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "إصابة عمل",CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 3, Name = "إصابة رياضية", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "إصابة رياضية", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
         );
 
         modelBuilder.Entity<InjurySide>().HasData(
-            new { Id = 1, Name = "الجانب الأيسر", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "الجانب الأيسر", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 2, Name = "الجانب الأيمن", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "الجانب الأيمن", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 3, Name = "الجانبين",CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "الجانبين",CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
         );
 
         modelBuilder.Entity<InjuryType>().HasData(
-            new { Id = 1, Name = "كسر", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "كسر", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 2, Name = "حرق",CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "حرق",CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 3, Name = "التواء",CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "التواء",CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
@@ -127,49 +132,49 @@ public static class AlatrafClinicDbContextInitializer
     private static void SeedDepartmentsSectionsRooms(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Department>().HasData(
-            new { Id = 1, Name = "العلاج الطبيعي", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc =  DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "العلاج الطبيعي", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc =  SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 2, Name = "إدارة فنية",CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "إدارة فنية",CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
         );
 
         modelBuilder.Entity<Section>().HasData(
-            new { Id = 1, Name = "القسم الاول", Code = "S-A", DepartmentId = 1,CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "القسم الاول", Code = "S-A", DepartmentId = 1,CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 2, Name = "القسم الثاني", Code = "S-B", DepartmentId = 1,CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "القسم الثاني", Code = "S-B", DepartmentId = 1,CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 3, Name = "القسم الثالث", Code = "S-C", DepartmentId = 2,CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "القسم الثالث", Code = "S-C", DepartmentId = 2,CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
         );
 
         modelBuilder.Entity<Room>().HasData(
-            new { Id = 1, Name = "غرفة ١٠١", SectionId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "غرفة ١٠١", SectionId = 1, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 2, Name = "غرفة ١٠٢", SectionId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "غرفة ١٠٢", SectionId = 1, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 3, Name = "غرفة ٢٠١", SectionId = 2, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "غرفة ٢٠١", SectionId = 2, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
@@ -179,68 +184,68 @@ public static class AlatrafClinicDbContextInitializer
     private static void SeedMedicalProgramsAndServices(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<MedicalProgram>().HasData(
-            new { Id = 1, Name = "برنامج آلام الظهر",  Description = "برنامج مخصص لعلاج آلام الظهر", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "برنامج آلام الظهر",  Description = "برنامج مخصص لعلاج آلام الظهر", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 2, Name = "برنامج تأهيل الركبة",  Description = "برنامج مخصص لتأهيل إصابات الركبة", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "برنامج تأهيل الركبة",  Description = "برنامج مخصص لتأهيل إصابات الركبة", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 3, Name = "برنامج التأهيل بعد الجراحة", Description = "برنامج تأهيلي للمرضى بعد العمليات الجراحية", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "برنامج التأهيل بعد الجراحة", Description = "برنامج تأهيلي للمرضى بعد العمليات الجراحية", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
         );
 
         modelBuilder.Entity<Service>().HasData(
-            new { Id = 1, Name = "استشارة", Code = "SRV-CONS", CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "استشارة", Code = "SRV-CONS", CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false },
-            new { Id = 2, Name = "علاج طبيعي", Code = "SRV-THER", DepartmentId = 1,CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "علاج طبيعي", Code = "SRV-THER", DepartmentId = 1,CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 3, Name = "اطراف صناعية",Code = "SRV-PRO", DepartmentId = 2, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "اطراف صناعية",Code = "SRV-PRO", DepartmentId = 2, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
             new { Id = 4, Name = "مبيعات",Code = "SRV-SAL", DepartmentId = 2,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
                 },
-            new { Id = 5, Name = "إصلاحات",Code = "SRV-REP", DepartmentId = 2,CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 5, Name = "إصلاحات",Code = "SRV-REP", DepartmentId = 2,CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 6, Name = "عظام",Code = "SRV-BON", DepartmentId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 6, Name = "عظام",Code = "SRV-BON", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 7, Name = "أعصاب",Code = "SRV-NER", DepartmentId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 7, Name = "أعصاب",Code = "SRV-NER", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 8, Name = "تجديد كروت علاج",Code = "SRV-REN", DepartmentId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 8, Name = "تجديد كروت علاج",Code = "SRV-REN", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false},
-            new { Id = 9, Name = "إصدار بدل فاقد لكرت علاج",Code = "SRV-DMG", DepartmentId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 9, Name = "إصدار بدل فاقد لكرت علاج",Code = "SRV-DMG", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false}
@@ -256,8 +261,8 @@ public static class AlatrafClinicDbContextInitializer
                 PatientId = 1,
                 ServiceId = 2,
                 Status = TicketStatus.New,
-                CreatedAtUtc = new DateTimeOffset(2025, 1, 5, 8, 0, 0, TimeSpan.Zero),
-                LastModifiedUtc = new DateTimeOffset(2025, 1, 5, 8, 0, 0, TimeSpan.Zero),
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -268,8 +273,8 @@ public static class AlatrafClinicDbContextInitializer
                 PatientId = 1,
                 ServiceId = 3,
                 Status = TicketStatus.Pause,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -280,8 +285,8 @@ public static class AlatrafClinicDbContextInitializer
                 PatientId = 2,
                 ServiceId = 5,
                 Status = TicketStatus.New,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -300,12 +305,12 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 1,
             DiagnosisText = "Lower back pain due to muscle strain",
-            InjuryDate = new DateTime(2025, 1, 5),
+            InjuryDate = SeedDate,
             DiagnoType = DiagnosisType.Limbs, // stored as string
             TicketId = 1,
             PatientId = 1,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -314,12 +319,12 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 2,
             DiagnosisText = "Right knee ligament sprain",
-            InjuryDate = new DateTime(2025, 1, 12),
+            InjuryDate = SeedDate,
             DiagnoType = DiagnosisType.Therapy,
             TicketId = 2,
             PatientId = 2,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -328,12 +333,12 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 3,
             DiagnosisText = "Neck pain caused by whiplash injury",
-            InjuryDate = new DateTime(2025, 1, 20),
+            InjuryDate = SeedDate,
             DiagnoType = DiagnosisType.Sales,
             TicketId = 3,
             PatientId = 3,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -369,11 +374,11 @@ public static class AlatrafClinicDbContextInitializer
                 IndustrialPartUnitId = 1,       // دعامة الركبة - قطعة
                 Price = 80m,
                 Quantity = 1,
-                DoctorAssignDate = new DateTime(2025, 1, 6),
+                DoctorAssignDate = SeedDate,
                 DoctorSectionRoomId = (int?)null,
                 RepairCardId = 1,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -385,11 +390,11 @@ public static class AlatrafClinicDbContextInitializer
                 IndustrialPartUnitId = 2,       // حزام الظهر
                 Price = 120m,
                 Quantity = 1,
-                DoctorAssignDate = DateTime.UtcNow,
+                DoctorAssignDate = SeedDate,
                 DoctorSectionRoomId = (int?)null,
                 RepairCardId = 1,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -401,11 +406,11 @@ public static class AlatrafClinicDbContextInitializer
                 IndustrialPartUnitId = 3,       // رقبة طبية
                 Price = 90m,
                 Quantity = 1,
-                DoctorAssignDate = DateTime.UtcNow,
+                DoctorAssignDate = SeedDate,
                 DoctorSectionRoomId = (int?)null,
                 RepairCardId = 1,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -423,8 +428,8 @@ public static class AlatrafClinicDbContextInitializer
                 MedicalProgramId = 1,    // برنامج آلام الظهر
                 Duration = 10,
                 Notes = "خطة علاج لآلام أسفل الظهر لمدة عشرة جلسات",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -436,8 +441,8 @@ public static class AlatrafClinicDbContextInitializer
                 MedicalProgramId = 2,    // برنامج تأهيل الركبة
                 Duration = 8,
                 Notes = "برنامج تأهيل للركبة بعد إصابة رياضية",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -449,8 +454,8 @@ public static class AlatrafClinicDbContextInitializer
                 MedicalProgramId = 3,    // برنامج التأهيل بعد الجراحة
                 Duration = 12,
                 Notes = "تأهيل للرقبة والكتف بعد إصابة حادة",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -464,36 +469,36 @@ public static class AlatrafClinicDbContextInitializer
     {
         
         modelBuilder.Entity<WoundedCard>().HasData(
-            new { Id = 1, CardNumber = "WC-0001", Expiration = new DateTime(2026, 1, 1), CardImagePath = (string?)null, PatientId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, CardNumber = "WC-0001", Expiration = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 1, CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false },
-            new { Id = 2, CardNumber = "WC-0002", Expiration = new DateTime(2026, 2, 1), CardImagePath = (string?)null, PatientId = 2, CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, CardNumber = "WC-0002", Expiration = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 2, CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false },
-            new { Id = 3, CardNumber = "WC-0003", Expiration = new DateTime(2026, 3, 1), CardImagePath = (string?)null, PatientId = 3, CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, CardNumber = "WC-0003", Expiration = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 3, CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false }
         );
 
         modelBuilder.Entity<DisabledCard>().HasData(
-            new { Id = 1, CardNumber = "DC-0001", ExpirationDate = new DateTime(2026, 1, 1), CardImagePath = (string?)null, PatientId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, CardNumber = "DC-0001", ExpirationDate = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 1, CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false },
-            new { Id = 2, CardNumber = "DC-0002", ExpirationDate = new DateTime(2026, 2, 1), CardImagePath = (string?)null, PatientId = 2, CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, CardNumber = "DC-0002", ExpirationDate = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 2, CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false },
-            new { Id = 3, CardNumber = "DC-0003", ExpirationDate = new DateTime(2026, 3, 1), CardImagePath = (string?)null, PatientId = 3, CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, CardNumber = "DC-0003", ExpirationDate = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 3, CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false }
@@ -509,15 +514,15 @@ public static class AlatrafClinicDbContextInitializer
                 TotalAmount = 200m,
                 PaidAmount = 200m,
                 Discount = (decimal?)null,
-                PaymentDate = new DateTime(2025, 1, 5),
+                PaymentDate = SeedDate,
                 IsCompleted = true,
                 Notes = "دفع كامل مقابل جلسة علاج",
                 AccountKind = AccountKind.Patient,                // stored as string
                 PaymentReference = PaymentReference.TherapyCardNew, // stored as string
                 DiagnosisId = 1,
                 TicketId = 1,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -528,15 +533,15 @@ public static class AlatrafClinicDbContextInitializer
                 TotalAmount = 300m,
                 PaidAmount = 250m,
                 Discount = 50m,
-                PaymentDate = new DateTime(2025, 1, 10),
+                PaymentDate = SeedDate,
                 IsCompleted = false,
                 Notes = "دفع جزئي مع خصم",
                 AccountKind = AccountKind.Wounded,
                 PaymentReference = PaymentReference.TherapyCardRenew,
                 DiagnosisId = 2,
                 TicketId = 2,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -554,8 +559,8 @@ public static class AlatrafClinicDbContextInitializer
                 PaymentReference = PaymentReference.Sales,
                 DiagnosisId = 3,
                 TicketId = 3,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -563,16 +568,16 @@ public static class AlatrafClinicDbContextInitializer
         );
 
         modelBuilder.Entity<PatientPayment>().HasData(
-            new { Id = 10, PaymentId = 1, VoucherNumber = "VOU-0001", PatientId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 10, PaymentId = 1, VoucherNumber = "VOU-0001", PatientId = 1, CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false }
         );
         
         modelBuilder.Entity<WoundedPayment>().HasData(
-            new { Id = 11, PaymentId = 1, WoundedCardId = 1, CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 11, PaymentId = 1, WoundedCardId = 1, CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false }
@@ -590,13 +595,13 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 1,
             FullName = "علي أحمد",
-            Birthdate = new DateTime(1990, 1, 1),
+            Birthdate = SeedDate,
             Phone = "771234567",
             NationalNo = "NAT-0001",
             Gender = true,                 // ذكر
             Address = "صنعاء",
-            CreatedAtUtc = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero),
-            LastModifiedUtc = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero),
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -605,13 +610,13 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 2,
             FullName = "محمد صالح",
-            Birthdate = new DateTime(1985, 5, 10),
+            Birthdate = SeedDate,
             Phone = "781234568",
             NationalNo = "NAT-0002",
             Gender = true,
             Address = "عدن",
-            CreatedAtUtc = new DateTimeOffset(2025, 1, 2, 0, 0, 0, TimeSpan.Zero),
-            LastModifiedUtc = new DateTimeOffset(2025, 1, 2, 0, 0, 0, TimeSpan.Zero),
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -620,13 +625,13 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 3,
             FullName = "سارة علي",
-            Birthdate = new DateTime(1995, 3, 20),
+            Birthdate = SeedDate,
             Phone = "731234569",
             NationalNo = "NAT-0003",
             Gender = false,               // أنثى
             Address = "تعز",
-            CreatedAtUtc = new DateTimeOffset(2025, 1, 3, 0, 0, 0, TimeSpan.Zero),
-            LastModifiedUtc = new DateTimeOffset(2025, 1, 3, 0, 0, 0, TimeSpan.Zero),
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -635,13 +640,13 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 4,
             FullName = "عبدالكريم شوقي يوسف أحمد",
-            Birthdate = new DateTime(1995, 3, 20),
+            Birthdate = SeedDate,
             Phone = "782422822",
             NationalNo = "NAT-0004",
             Gender = true,               // ذكر
             Address = "تعز",
-            CreatedAtUtc = new DateTimeOffset(2025, 1, 3, 0, 0, 0, TimeSpan.Zero),
-            LastModifiedUtc = new DateTimeOffset(2025, 1, 3, 0, 0, 0, TimeSpan.Zero),
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -658,8 +663,8 @@ public static class AlatrafClinicDbContextInitializer
             Id = 1,
             PersonId = 1,
             PatientType = PatientType.Normal,  // عادي
-            CreatedAtUtc = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero),
-            LastModifiedUtc = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero),
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -669,8 +674,8 @@ public static class AlatrafClinicDbContextInitializer
             Id = 2,
             PersonId = 2,
             PatientType = PatientType.Wounded,
-            CreatedAtUtc = new DateTimeOffset(2025, 1, 2, 0, 0, 0, TimeSpan.Zero),
-            LastModifiedUtc = new DateTimeOffset(2025, 1, 2, 0, 0, 0, TimeSpan.Zero),
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -680,8 +685,8 @@ public static class AlatrafClinicDbContextInitializer
             Id = 3,
             PersonId = 3,
             PatientType = PatientType.Disabled,
-            CreatedAtUtc = new DateTimeOffset(2025, 1, 3, 0, 0, 0, TimeSpan.Zero),
-            LastModifiedUtc = new DateTimeOffset(2025, 1, 3, 0, 0, 0, TimeSpan.Zero),
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -697,11 +702,11 @@ public static class AlatrafClinicDbContextInitializer
             Id = 1,
             TicketId = 2,
             PatientType = PatientType.Normal,      // stored as string
-            AttendDate = new DateTime(2025, 1, 10),
+            AttendDate = SeedDate,
             Status = AppointmentStatus.Scheduled,  // stored as string
             Notes = "موعد متابعة للمريض",
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -715,8 +720,8 @@ public static class AlatrafClinicDbContextInitializer
         //     AttendDate = new DateTime(2025, 1, 11),
         //     Status = AppointmentStatus.Today,
         //     Notes = "موعد طارئ",
-        //     CreatedAtUtc = DateTimeOffset.UtcNow,
-        //     LastModifiedUtc = DateTimeOffset.UtcNow,
+        //     CreatedAtUtc = SeedTimestamp,
+        //     LastModifiedUtc = SeedTimestamp,
         //     CreatedBy = "Seed",
         //     LastModifiedBy = "Seed",
         //     IsDeleted = false
@@ -729,8 +734,8 @@ public static class AlatrafClinicDbContextInitializer
         //     AttendDate = new DateTime(2025, 1, 12),
         //     Status = AppointmentStatus.Attended,
         //     Notes = "حضر الموعد في الوقت المحدد",
-        //     CreatedAtUtc = DateTimeOffset.UtcNow,
-        //     LastModifiedUtc = DateTimeOffset.UtcNow,
+        //     CreatedAtUtc = SeedTimestamp,
+        //     LastModifiedUtc = SeedTimestamp,
         //     CreatedBy = "Seed",
         //     LastModifiedBy = "Seed",
         //     IsDeleted = false,
@@ -748,8 +753,8 @@ public static class AlatrafClinicDbContextInitializer
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -763,8 +768,8 @@ public static class AlatrafClinicDbContextInitializer
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -778,8 +783,8 @@ public static class AlatrafClinicDbContextInitializer
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -793,8 +798,8 @@ public static class AlatrafClinicDbContextInitializer
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -808,8 +813,8 @@ public static class AlatrafClinicDbContextInitializer
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
-            CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false
@@ -827,8 +832,8 @@ public static class AlatrafClinicDbContextInitializer
                 Id = 1,
                 Name = "دعامة الركبة",
                 Description = "تستخدم لتثبيت ودعم مفصل الركبة",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -838,8 +843,8 @@ public static class AlatrafClinicDbContextInitializer
                 Id = 2,
                 Name = "حزام الظهر الطبي",
                 Description = "يساعد على دعم أسفل الظهر وتخفيف الألم",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -849,8 +854,8 @@ public static class AlatrafClinicDbContextInitializer
                 Id = 3,
                 Name = " كولار رقبة طبية",
                 Description = "تستخدم لتثبيت الرقبة في حالات الإصابات",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -868,8 +873,8 @@ public static class AlatrafClinicDbContextInitializer
                 IndustrialPartId = 1, // دعامة الركبة
                 UnitId = 1,            // قطعة
                 PricePerUnit = 80m,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -880,8 +885,8 @@ public static class AlatrafClinicDbContextInitializer
                 IndustrialPartId = 2, // حزام الظهر
                 UnitId = 1,            // قطعة
                 PricePerUnit = 120m,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -892,8 +897,8 @@ public static class AlatrafClinicDbContextInitializer
                 IndustrialPartId = 3, // رقبة طبية
                 UnitId = 1,            // قطعة
                 PricePerUnit = 90m,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -904,23 +909,23 @@ public static class AlatrafClinicDbContextInitializer
     private static void SeedUnits(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Unit>().HasData(
-            new { Id = 1, Name = "قطعة", CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 1, Name = "قطعة", CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false },
-            new { Id = 2, Name = "زوج", CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 2, Name = "زوج", CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false },
-            new { Id = 3, Name = "يمين", CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 3, Name = "يمين", CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false },
-            new { Id = 4, Name = "يسار", CreatedAtUtc = DateTimeOffset.UtcNow,
-            LastModifiedUtc = DateTimeOffset.UtcNow,
+            new { Id = 4, Name = "يسار", CreatedAtUtc = SeedTimestamp,
+            LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",
             LastModifiedBy = "Seed",
             IsDeleted = false }
@@ -941,8 +946,8 @@ public static class AlatrafClinicDbContextInitializer
                 SessionPricePerType = 200m,
                 CardStatus = TherapyCardStatus.New, // enum → string
                 ParentCardId = (int?)null,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -997,8 +1002,8 @@ public static class AlatrafClinicDbContextInitializer
                 Number = 1,
                 SessionDate = new DateTime(2025, 1, 10),
                 IsTaken = true,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1010,8 +1015,8 @@ public static class AlatrafClinicDbContextInitializer
                 Number = 2,
                 SessionDate = new DateTime(2025, 1, 11),
                 IsTaken = false,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1023,8 +1028,8 @@ public static class AlatrafClinicDbContextInitializer
             //     Number = 3,
             //     SessionDate = new DateTime(2025, 1, 12),
             //     IsTaken = false,
-            //     CreatedAtUtc = DateTimeOffset.UtcNow,
-            //     LastModifiedUtc = DateTimeOffset.UtcNow,
+            //     CreatedAtUtc = SeedTimestamp,
+            //     LastModifiedUtc = SeedTimestamp,
             //     CreatedBy = "Seed",
             //     LastModifiedBy = "Seed",
             //     IsDeleted = false
@@ -1041,8 +1046,8 @@ public static class AlatrafClinicDbContextInitializer
                 DiagnosisProgramId = 1,
                 SessionId = 1,
                 DoctorSectionRoomId = 1,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1053,8 +1058,8 @@ public static class AlatrafClinicDbContextInitializer
                 DiagnosisProgramId = 2,
                 SessionId = 1,
                 DoctorSectionRoomId = 1,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1065,8 +1070,8 @@ public static class AlatrafClinicDbContextInitializer
                 DiagnosisProgramId = 3,
                 SessionId = 1,
                 DoctorSectionRoomId = 2,
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1083,8 +1088,8 @@ public static class AlatrafClinicDbContextInitializer
                 DepartmentId = 1,                // قسم العلاج الطبيعي
                 IsActive = true,
                 Specialization = "أخصائي علاج طبيعي",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1096,8 +1101,8 @@ public static class AlatrafClinicDbContextInitializer
                 DepartmentId = 2,                // قسم العظام
                 IsActive = true,
                 Specialization = "اخصائي اطراف صناعية",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1109,8 +1114,8 @@ public static class AlatrafClinicDbContextInitializer
                 DepartmentId = 1,                // قسم الأعصاب
                 IsActive = false,                // مثال: في إجازة
                 Specialization = "أخصائية أعصاب",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1130,8 +1135,8 @@ public static class AlatrafClinicDbContextInitializer
                 EndDate = (DateTime?)null,
                 IsActive = true,
                 Notes = "تكليف أساسي للطبيب في القسم الأول",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1146,8 +1151,8 @@ public static class AlatrafClinicDbContextInitializer
                 EndDate = (DateTime?)null,
                 IsActive = true,
                 Notes = "تكليف للطبيب بقسم العظام في الغرفة ٢٠٢",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1162,8 +1167,8 @@ public static class AlatrafClinicDbContextInitializer
                 EndDate = new DateTime(2025, 2, 7),
                 IsActive = false,
                 Notes = "تكليف منتهي للطبيبة في قسم الأعصاب",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1180,8 +1185,8 @@ public static class AlatrafClinicDbContextInitializer
                 Status = RepairCardStatus.New,
                 IsActive = true,
                 Notes = "بطاقة صيانة جديدة للحالة الأولى",
-                CreatedAtUtc = DateTimeOffset.UtcNow,
-                LastModifiedUtc = DateTimeOffset.UtcNow,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
@@ -1193,8 +1198,8 @@ public static class AlatrafClinicDbContextInitializer
             //     Status = RepairCardStatus.InProgress,
             //     IsActive = true,
             //     Notes = "متابعة أعمال الصيانة للحالة الثانية",
-            //     CreatedAtUtc = DateTimeOffset.UtcNow,
-            //     LastModifiedUtc = DateTimeOffset.UtcNow,
+            //     CreatedAtUtc = SeedTimestamp,
+            //     LastModifiedUtc = SeedTimestamp,
             //     CreatedBy = "Seed",
             //     LastModifiedBy = "Seed",
             //     IsDeleted = false
@@ -1475,8 +1480,8 @@ public static class AlatrafClinicDbContextInitializer
                 // pre-generated password hash - Admin@12345
                 PasswordHash = "AQAAAAIAAYagAAAAEJ8FZJNBD5y7YVavcn6e99DgR9n2YPF5mD31ySEh7F3hW6Y2qgFlgVzuqMbI8mgZZg==",
 
-                SecurityStamp = Guid.NewGuid().ToString(),
-                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                SecurityStamp = "f81ff42e-eb5b-4af3-a3c8-4ff90f17fe1d",
+                ConcurrencyStamp = "45a69252-a993-46d4-aa95-6dc881c3a15a",
 
                 PhoneNumber = null,
                 PhoneNumberConfirmed = false,

@@ -12,6 +12,8 @@ using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
@@ -113,6 +115,11 @@ public class AlatrafClinicDbContext
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AlatrafClinicDbContext).Assembly);
         AlatrafClinicDbContextInitializer.Seed(builder);
+        builder.Ignore<StoreItemUnit>(); // To be implemented later
+        builder.Ignore<Store>(); // To be implemented later
+        builder.Ignore<ExchangeOrderItem>(); // To be implemented later
+        builder.Ignore<ExchangeOrder>(); // To be implemented later
+                
     }
 
 }

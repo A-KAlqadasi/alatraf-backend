@@ -239,26 +239,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Store",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Store", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TherapyCardTypePrices",
                 columns: table => new
                 {
@@ -969,40 +949,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StoreItemUnit",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    ItemUnitId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StoreItemUnit", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StoreItemUnit_ItemUnit_ItemUnitId",
-                        column: x => x.ItemUnitId,
-                        principalTable: "ItemUnit",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_StoreItemUnit_Store_StoreId",
-                        column: x => x.StoreId,
-                        principalTable: "Store",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DiagnosisInjuryReason",
                 columns: table => new
                 {
@@ -1496,12 +1442,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         principalTable: "Sales",
                         principalColumn: "SaleId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SaleItems_StoreItemUnit_StoreItemUnitId",
-                        column: x => x.StoreItemUnitId,
-                        principalTable: "StoreItemUnit",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1573,48 +1513,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         principalTable: "TherapyCards",
                         principalColumn: "TherapyCardId",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExchangeOrder",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SaleId = table.Column<int>(type: "int", nullable: true),
-                    OrderId = table.Column<int>(type: "int", nullable: true),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExchangeOrder", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExchangeOrder_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ExchangeOrder_Sales_SaleId",
-                        column: x => x.SaleId,
-                        principalTable: "Sales",
-                        principalColumn: "SaleId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExchangeOrder_Store_StoreId",
-                        column: x => x.StoreId,
-                        principalTable: "Store",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1692,40 +1590,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ExchangeOrderItem",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExchangeOrderId = table.Column<int>(type: "int", nullable: false),
-                    StoreItemUnitId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExchangeOrderItem", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExchangeOrderItem_ExchangeOrder_ExchangeOrderId",
-                        column: x => x.ExchangeOrderId,
-                        principalTable: "ExchangeOrder",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExchangeOrderItem_StoreItemUnit_StoreItemUnitId",
-                        column: x => x.StoreItemUnitId,
-                        principalTable: "StoreItemUnit",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -1755,8 +1619,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "DepartmentId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8670), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8671), new TimeSpan(0, 0, 0, 0, 0)), "العلاج الطبيعي" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8674), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8674), new TimeSpan(0, 0, 0, 0, 0)), "إدارة فنية" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "العلاج الطبيعي" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "إدارة فنية" }
                 });
 
             migrationBuilder.InsertData(
@@ -1764,11 +1628,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "HolidayId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "EndDate", "IsActive", "IsDeleted", "IsRecurring", "LastModifiedBy", "LastModifiedUtc", "Name", "StartDate", "Type" },
                 values: new object[,]
                 {
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(7706), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(7707), new TimeSpan(0, 0, 0, 0, 0)), "عيد العمال العالمي", new DateTime(1, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
-                    { 4, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8566), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8566), new TimeSpan(0, 0, 0, 0, 0)), "عيد الوحدة اليمنية", new DateTime(1, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
-                    { 5, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8568), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8568), new TimeSpan(0, 0, 0, 0, 0)), "ثورة 26 سبتمبر", new DateTime(1, 9, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
-                    { 6, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8569), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8569), new TimeSpan(0, 0, 0, 0, 0)), "ثورة 14 أكتوبر", new DateTime(1, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
-                    { 7, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8570), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(8571), new TimeSpan(0, 0, 0, 0, 0)), "عيد الجلاء", new DateTime(1, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" }
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "عيد العمال العالمي", new DateTime(1, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
+                    { 4, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "عيد الوحدة اليمنية", new DateTime(1, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
+                    { 5, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "ثورة 26 سبتمبر", new DateTime(1, 9, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
+                    { 6, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "ثورة 14 أكتوبر", new DateTime(1, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" },
+                    { 7, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, true, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "عيد الجلاء", new DateTime(1, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "Fixed" }
                 });
 
             migrationBuilder.InsertData(
@@ -1776,9 +1640,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "IndustrialPartId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "Description", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1786), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "تستخدم لتثبيت ودعم مفصل الركبة", false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1787), new TimeSpan(0, 0, 0, 0, 0)), "دعامة الركبة" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1790), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "يساعد على دعم أسفل الظهر وتخفيف الألم", false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1790), new TimeSpan(0, 0, 0, 0, 0)), "حزام الظهر الطبي" },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1792), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "تستخدم لتثبيت الرقبة في حالات الإصابات", false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1793), new TimeSpan(0, 0, 0, 0, 0)), " كولار رقبة طبية" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "تستخدم لتثبيت ودعم مفصل الركبة", false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "دعامة الركبة" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "يساعد على دعم أسفل الظهر وتخفيف الألم", false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "حزام الظهر الطبي" },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "تستخدم لتثبيت الرقبة في حالات الإصابات", false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), " كولار رقبة طبية" }
                 });
 
             migrationBuilder.InsertData(
@@ -1786,9 +1650,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "InjuryReasonId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(5549), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(5552), new TimeSpan(0, 0, 0, 0, 0)), "حادث مروري" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6434), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6435), new TimeSpan(0, 0, 0, 0, 0)), "إصابة عمل" },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6436), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 319, DateTimeKind.Unspecified).AddTicks(6437), new TimeSpan(0, 0, 0, 0, 0)), "إصابة رياضية" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "حادث مروري" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "إصابة عمل" },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "إصابة رياضية" }
                 });
 
             migrationBuilder.InsertData(
@@ -1796,9 +1660,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "InjurySideId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2658), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2658), new TimeSpan(0, 0, 0, 0, 0)), "الجانب الأيسر" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2661), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2661), new TimeSpan(0, 0, 0, 0, 0)), "الجانب الأيمن" },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2662), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2662), new TimeSpan(0, 0, 0, 0, 0)), "الجانبين" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "الجانب الأيسر" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "الجانب الأيمن" },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "الجانبين" }
                 });
 
             migrationBuilder.InsertData(
@@ -1806,9 +1670,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "InjuryTypeId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2811), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2811), new TimeSpan(0, 0, 0, 0, 0)), "كسر" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2813), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2813), new TimeSpan(0, 0, 0, 0, 0)), "حرق" },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2814), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(2814), new TimeSpan(0, 0, 0, 0, 0)), "التواء" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "كسر" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "حرق" },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "التواء" }
                 });
 
             migrationBuilder.InsertData(
@@ -1816,9 +1680,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "MedicalProgramId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "Description", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name", "SectionId" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(7850), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "برنامج مخصص لعلاج آلام الظهر", false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(7851), new TimeSpan(0, 0, 0, 0, 0)), "برنامج آلام الظهر", null },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8650), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "برنامج مخصص لتأهيل إصابات الركبة", false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8651), new TimeSpan(0, 0, 0, 0, 0)), "برنامج تأهيل الركبة", null },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8652), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "برنامج تأهيلي للمرضى بعد العمليات الجراحية", false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8652), new TimeSpan(0, 0, 0, 0, 0)), "برنامج التأهيل بعد الجراحة", null }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "برنامج مخصص لعلاج آلام الظهر", false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "برنامج آلام الظهر", null },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "برنامج مخصص لتأهيل إصابات الركبة", false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "برنامج تأهيل الركبة", null },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "برنامج تأهيلي للمرضى بعد العمليات الجراحية", false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "برنامج التأهيل بعد الجراحة", null }
                 });
 
             migrationBuilder.InsertData(
@@ -1826,10 +1690,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "PersonId", "Address", "Birthdate", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "FullName", "Gender", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "NationalNo", "Phone" },
                 values: new object[,]
                 {
-                    { 1, "صنعاء", new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "علي أحمد", true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0001", "771234567" },
-                    { 2, "عدن", new DateTime(1985, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "محمد صالح", true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0002", "781234568" },
-                    { 3, "تعز", new DateTime(1995, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "سارة علي", false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0003", "731234569" },
-                    { 4, "تعز", new DateTime(1995, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "عبدالكريم شوقي يوسف أحمد", true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0004", "782422822" }
+                    { 1, "صنعاء", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "علي أحمد", true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0001", "771234567" },
+                    { 2, "عدن", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "محمد صالح", true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0002", "781234568" },
+                    { 3, "تعز", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "سارة علي", false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0003", "731234569" },
+                    { 4, "تعز", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "عبدالكريم شوقي يوسف أحمد", true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "NAT-0004", "782422822" }
                 });
 
             migrationBuilder.InsertData(
@@ -1926,32 +1790,32 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Services",
                 columns: new[] { "ServiceId", "Code", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DepartmentId", "DepartmentId1", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name", "Price" },
-                values: new object[] { 1, "SRV-CONS", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8760), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(8761), new TimeSpan(0, 0, 0, 0, 0)), "استشارة", null });
+                values: new object[] { 1, "SRV-CONS", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "استشارة", null });
 
             migrationBuilder.InsertData(
                 table: "Units",
                 columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4700), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4700), new TimeSpan(0, 0, 0, 0, 0)), "قطعة" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4702), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4703), new TimeSpan(0, 0, 0, 0, 0)), "زوج" },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4727), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4727), new TimeSpan(0, 0, 0, 0, 0)), "يمين" },
-                    { 4, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4728), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(4728), new TimeSpan(0, 0, 0, 0, 0)), "يسار" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "قطعة" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "زوج" },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "يمين" },
+                    { 4, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "يسار" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "19a59129-6c20-417a-834d-11a208d32d96", 0, "11573afb-6857-491e-9c46-cbd93a23f64b", null, true, true, false, null, null, "ADMIN", "AQAAAAIAAYagAAAAEJ8FZJNBD5y7YVavcn6e99DgR9n2YPF5mD31ySEh7F3hW6Y2qgFlgVzuqMbI8mgZZg==", 4, null, false, "e9bcc83f-142e-494e-a6ed-96cd35d06291", false, "admin" });
+                values: new object[] { "19a59129-6c20-417a-834d-11a208d32d96", 0, "45a69252-a993-46d4-aa95-6dc881c3a15a", null, true, true, false, null, null, "ADMIN", "AQAAAAIAAYagAAAAEJ8FZJNBD5y7YVavcn6e99DgR9n2YPF5mD31ySEh7F3hW6Y2qgFlgVzuqMbI8mgZZg==", 4, null, false, "f81ff42e-eb5b-4af3-a3c8-4ff90f17fe1d", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "IndustrialPartUnits",
                 columns: new[] { "IndustrialPartUnitId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IndustrialPartId", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "PricePerUnit", "UnitId" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1856), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(1856), new TimeSpan(0, 0, 0, 0, 0)), 80m, 1 },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2742), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2743), new TimeSpan(0, 0, 0, 0, 0)), 120m, 1 },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2744), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 3, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(2744), new TimeSpan(0, 0, 0, 0, 0)), 90m, 1 }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 80m, 1 },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 120m, 1 },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 3, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 90m, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -1960,8 +1824,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 values: new object[,]
                 {
                     { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), (byte)0, 1 },
-                    { 2, new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), (byte)1, 2 },
-                    { 3, new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), (byte)2, 3 }
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), (byte)1, 2 },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), (byte)2, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -2060,9 +1924,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "SectionId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DepartmentId", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8894), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 320, DateTimeKind.Unspecified).AddTicks(8894), new TimeSpan(0, 0, 0, 0, 0)), "القسم الاول" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(657), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(660), new TimeSpan(0, 0, 0, 0, 0)), "القسم الثاني" },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(662), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(663), new TimeSpan(0, 0, 0, 0, 0)), "القسم الثالث" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "القسم الاول" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "القسم الثاني" },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "القسم الثالث" }
                 });
 
             migrationBuilder.InsertData(
@@ -2070,14 +1934,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "ServiceId", "Code", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DepartmentId", "DepartmentId1", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name", "Price" },
                 values: new object[,]
                 {
-                    { 2, "SRV-THER", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9433), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9433), new TimeSpan(0, 0, 0, 0, 0)), "علاج طبيعي", null },
-                    { 3, "SRV-PRO", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9435), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9435), new TimeSpan(0, 0, 0, 0, 0)), "اطراف صناعية", null },
-                    { 4, "SRV-SAL", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9436), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9436), new TimeSpan(0, 0, 0, 0, 0)), "مبيعات", null },
-                    { 5, "SRV-REP", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9437), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9437), new TimeSpan(0, 0, 0, 0, 0)), "إصلاحات", null },
-                    { 6, "SRV-BON", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9438), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9438), new TimeSpan(0, 0, 0, 0, 0)), "عظام", null },
-                    { 7, "SRV-NER", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9439), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9439), new TimeSpan(0, 0, 0, 0, 0)), "أعصاب", null },
-                    { 8, "SRV-REN", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9440), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9441), new TimeSpan(0, 0, 0, 0, 0)), "تجديد كروت علاج", null },
-                    { 9, "SRV-DMG", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9441), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(9442), new TimeSpan(0, 0, 0, 0, 0)), "إصدار بدل فاقد لكرت علاج", null }
+                    { 2, "SRV-THER", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "علاج طبيعي", null },
+                    { 3, "SRV-PRO", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "اطراف صناعية", null },
+                    { 4, "SRV-SAL", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "مبيعات", null },
+                    { 5, "SRV-REP", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "إصلاحات", null },
+                    { 6, "SRV-BON", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "عظام", null },
+                    { 7, "SRV-NER", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "أعصاب", null },
+                    { 8, "SRV-REN", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "تجديد كروت علاج", null },
+                    { 9, "SRV-DMG", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "إصدار بدل فاقد لكرت علاج", null }
                 });
 
             migrationBuilder.InsertData(
@@ -2085,9 +1949,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "DisabledCardId", "CardImagePath", "CardNumber", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "ExpirationDate", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "PatientId" },
                 values: new object[,]
                 {
-                    { 1, null, "DC-0001", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4825), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4825), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { 2, null, "DC-0002", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5588), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5589), new TimeSpan(0, 0, 0, 0, 0)), 2 },
-                    { 3, null, "DC-0003", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5590), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(5590), new TimeSpan(0, 0, 0, 0, 0)), 3 }
+                    { 1, null, "DC-0001", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { 2, null, "DC-0002", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 2 },
+                    { 3, null, "DC-0003", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -2095,9 +1959,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "RoomId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name", "SectionId" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(1057), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(1058), new TimeSpan(0, 0, 0, 0, 0)), "غرفة ١٠١", 1 },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2776), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2776), new TimeSpan(0, 0, 0, 0, 0)), "غرفة ١٠٢", 1 },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2778), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 321, DateTimeKind.Unspecified).AddTicks(2778), new TimeSpan(0, 0, 0, 0, 0)), "غرفة ٢٠١", 2 }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "غرفة ١٠١", 1 },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "غرفة ١٠٢", 1 },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "غرفة ٢٠١", 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -2105,9 +1969,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "TicketId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "PatientId", "ServiceId", "ServicePrice", "Status" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 1, 5, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 5, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1, 2, null, "New" },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7649), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7650), new TimeSpan(0, 0, 0, 0, 0)), 1, 3, null, "Pause" },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7651), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(7651), new TimeSpan(0, 0, 0, 0, 0)), 2, 5, null, "New" }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1, 2, null, "New" },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1, 3, null, "Pause" },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 2, 5, null, "New" }
                 });
 
             migrationBuilder.InsertData(
@@ -2115,24 +1979,24 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "WoundedCardId", "CardImagePath", "CardNumber", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "Expiration", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "PatientId" },
                 values: new object[,]
                 {
-                    { 1, null, "WC-0001", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(3846), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(3847), new TimeSpan(0, 0, 0, 0, 0)), 1 },
-                    { 2, null, "WC-0002", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4719), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4719), new TimeSpan(0, 0, 0, 0, 0)), 2 },
-                    { 3, null, "WC-0003", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4721), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(4721), new TimeSpan(0, 0, 0, 0, 0)), 3 }
+                    { 1, null, "WC-0001", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1 },
+                    { 2, null, "WC-0002", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 2 },
+                    { 3, null, "WC-0003", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 3 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Appointments",
                 columns: new[] { "AppointmentId", "AttendDate", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "PatientType", "Status", "TicketId" },
-                values: new object[] { 1, new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(6641), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 325, DateTimeKind.Unspecified).AddTicks(6641), new TimeSpan(0, 0, 0, 0, 0)), "موعد متابعة للمريض", "Normal", "Scheduled", 2 });
+                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "موعد متابعة للمريض", "Normal", "Scheduled", 2 });
 
             migrationBuilder.InsertData(
                 table: "Diagnoses",
                 columns: new[] { "DiagnosisId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisType", "DiagnosisText", "InjuryDate", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "PatientId", "TicketId" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2005), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Limbs", "Lower back pain due to muscle strain", new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2006), new TimeSpan(0, 0, 0, 0, 0)), 1, 1 },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2981), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Therapy", "Right knee ligament sprain", new DateTime(2025, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2982), new TimeSpan(0, 0, 0, 0, 0)), 2, 2 },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2983), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Sales", "Neck pain caused by whiplash injury", new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(2983), new TimeSpan(0, 0, 0, 0, 0)), 3, 3 }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Limbs", "Lower back pain due to muscle strain", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1, 1 },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Therapy", "Right knee ligament sprain", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 2, 2 },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Sales", "Neck pain caused by whiplash injury", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 3, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -2140,9 +2004,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "DiagnosisProgramId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisId", "Duration", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "MedicalProgramId", "Notes", "TherapyCardId" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(9213), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 10, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(9213), new TimeSpan(0, 0, 0, 0, 0)), 1, "خطة علاج لآلام أسفل الظهر لمدة عشرة جلسات", null },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(114), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 8, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(115), new TimeSpan(0, 0, 0, 0, 0)), 2, "برنامج تأهيل للركبة بعد إصابة رياضية", null },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(116), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 12, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 323, DateTimeKind.Unspecified).AddTicks(116), new TimeSpan(0, 0, 0, 0, 0)), 3, "تأهيل للرقبة والكتف بعد إصابة حادة", null }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 10, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1, "خطة علاج لآلام أسفل الظهر لمدة عشرة جلسات", null },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 8, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 2, "برنامج تأهيل للركبة بعد إصابة رياضية", null },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 12, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 3, "تأهيل للرقبة والكتف بعد إصابة حادة", null }
                 });
 
             migrationBuilder.InsertData(
@@ -2150,49 +2014,49 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "PaymentId", "AccountKind", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisId", "Discount", "IsCompleted", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "PaidAmount", "PaymentDate", "PaymentReference", "TicketId", "TotalAmount" },
                 values: new object[,]
                 {
-                    { 10, "Patient", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(639), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, true, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(639), new TimeSpan(0, 0, 0, 0, 0)), "دفع كامل مقابل جلسة علاج", 200m, new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "TherapyCardNew", 1, 200m },
-                    { 11, "Wounded", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(1876), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 50m, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(1877), new TimeSpan(0, 0, 0, 0, 0)), "دفع جزئي مع خصم", 250m, new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "TherapyCardRenew", 2, 300m },
-                    { 12, "Disabled", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(2846), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 3, null, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(2847), new TimeSpan(0, 0, 0, 0, 0)), "لم يتم الدفع بعد", null, null, "Sales", 3, 150m }
+                    { 10, "Patient", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, null, true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "دفع كامل مقابل جلسة علاج", 200m, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TherapyCardNew", 1, 200m },
+                    { 11, "Wounded", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 50m, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "دفع جزئي مع خصم", 250m, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TherapyCardRenew", 2, 300m },
+                    { 12, "Disabled", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 3, null, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "لم يتم الدفع بعد", null, null, "Sales", 3, 150m }
                 });
 
             migrationBuilder.InsertData(
                 table: "RepairCards",
                 columns: new[] { "RepairCardId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisId", "IsActive", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "Status" },
-                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(4929), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, true, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(4929), new TimeSpan(0, 0, 0, 0, 0)), "بطاقة صيانة جديدة للحالة الأولى", "New" });
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "بطاقة صيانة جديدة للحالة الأولى", "New" });
 
             migrationBuilder.InsertData(
                 table: "TherapyCards",
                 columns: new[] { "TherapyCardId", "CardStatus", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisId", "IsActive", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "ParentCardId", "ProgramEndDate", "ProgramStartDate", "SessionPricePerType", "Type" },
-                values: new object[] { 1, "New", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(9527), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, true, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 326, DateTimeKind.Unspecified).AddTicks(9527), new TimeSpan(0, 0, 0, 0, 0)), null, null, new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 200m, "General" });
+                values: new object[] { 1, "New", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, null, new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 200m, "General" });
 
             migrationBuilder.InsertData(
                 table: "DiagnosisIndustrialParts",
                 columns: new[] { "DiagnosisIndustrialPartId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisId", "DoctorAssignDate", "DoctorSectionRoomId", "IndustrialPartId", "IndustrialPartUnitId", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Price", "Quantity", "RepairCardId" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(6046), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, new DateTime(2025, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(6047), new TimeSpan(0, 0, 0, 0, 0)), 80m, 1, 1 },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7118), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Utc).AddTicks(7117), null, null, 2, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7118), new TimeSpan(0, 0, 0, 0, 0)), 120m, 1, 1 },
-                    { 3, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7120), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Utc).AddTicks(7119), null, null, 3, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 322, DateTimeKind.Unspecified).AddTicks(7120), new TimeSpan(0, 0, 0, 0, 0)), 90m, 1, 1 }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 80m, 1, 1 },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 2, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 120m, 1, 1 },
+                    { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, 3, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 90m, 1, 1 }
                 });
 
             migrationBuilder.InsertData(
                 table: "PatientPayments",
                 columns: new[] { "PatientPaymentId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "VoucherNumber" },
-                values: new object[] { 10, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(3914), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(3914), new TimeSpan(0, 0, 0, 0, 0)), null, "VOU-0001" });
+                values: new object[] { 10, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, "VOU-0001" });
 
             migrationBuilder.InsertData(
                 table: "Sessions",
                 columns: new[] { "SessionId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "IsTaken", "LastModifiedBy", "LastModifiedUtc", "Number", "SessionDate", "TherapyCardId" },
                 values: new object[,]
                 {
-                    { 1, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(2491), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(2491), new TimeSpan(0, 0, 0, 0, 0)), 1, new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 2, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(3299), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 327, DateTimeKind.Unspecified).AddTicks(3300), new TimeSpan(0, 0, 0, 0, 0)), 2, new DateTime(2025, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 }
+                    { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, true, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 1, new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
+                    { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 2, new DateTime(2025, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 }
                 });
 
             migrationBuilder.InsertData(
                 table: "WoundedPayments",
                 columns: new[] { "WoundedPaymentId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "ReportNumber", "WoundedCardId" },
-                values: new object[] { 11, new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(4759), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 12, 5, 7, 27, 17, 324, DateTimeKind.Unspecified).AddTicks(4760), new TimeSpan(0, 0, 0, 0, 0)), null, null, 1 });
+                values: new object[] { 11, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, null, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_AttendDate",
@@ -2383,35 +2247,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 column: "SectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExchangeOrder_OrderId",
-                table: "ExchangeOrder",
-                column: "OrderId",
-                unique: true,
-                filter: "[OrderId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeOrder_SaleId",
-                table: "ExchangeOrder",
-                column: "SaleId",
-                unique: true,
-                filter: "[SaleId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeOrder_StoreId",
-                table: "ExchangeOrder",
-                column: "StoreId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeOrderItem_ExchangeOrderId",
-                table: "ExchangeOrderItem",
-                column: "ExchangeOrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeOrderItem_StoreItemUnitId",
-                table: "ExchangeOrderItem",
-                column: "StoreItemUnitId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ExitCards_PatientId",
                 table: "ExitCards",
                 column: "PatientId");
@@ -2540,8 +2375,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "IX_People_AutoRegistrationNumber",
                 table: "People",
                 column: "AutoRegistrationNumber",
-                unique: true,
-                filter: "[AutoRegistrationNumber] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_People_Birthdate",
@@ -2605,11 +2439,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 column: "SaleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SaleItems_StoreItemUnitId",
-                table: "SaleItems",
-                column: "StoreItemUnitId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sales_DiagnosisId",
                 table: "Sales",
                 column: "DiagnosisId",
@@ -2660,16 +2489,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 table: "Sessions",
                 columns: new[] { "TherapyCardId", "Number" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StoreItemUnit_ItemUnitId",
-                table: "StoreItemUnit",
-                column: "ItemUnitId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StoreItemUnit_StoreId",
-                table: "StoreItemUnit",
-                column: "StoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TherapyCards_DiagnosisId",
@@ -2769,9 +2588,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "DisabledPayments");
 
             migrationBuilder.DropTable(
-                name: "ExchangeOrderItem");
-
-            migrationBuilder.DropTable(
                 name: "ExitCards");
 
             migrationBuilder.DropTable(
@@ -2820,13 +2636,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "DisabledCards");
 
             migrationBuilder.DropTable(
-                name: "ExchangeOrder");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "StoreItemUnit");
+                name: "ItemUnit");
+
+            migrationBuilder.DropTable(
+                name: "Sales");
 
             migrationBuilder.DropTable(
                 name: "DiagnosisPrograms");
@@ -2853,16 +2672,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "IndustrialParts");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "RepairCards");
 
             migrationBuilder.DropTable(
-                name: "Sales");
-
-            migrationBuilder.DropTable(
-                name: "ItemUnit");
-
-            migrationBuilder.DropTable(
-                name: "Store");
+                name: "Item");
 
             migrationBuilder.DropTable(
                 name: "MedicalPrograms");
@@ -2877,19 +2690,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "TherapyCards");
 
             migrationBuilder.DropTable(
-                name: "RepairCards");
-
-            migrationBuilder.DropTable(
-                name: "Item");
+                name: "Units");
 
             migrationBuilder.DropTable(
                 name: "Sections");
 
             migrationBuilder.DropTable(
                 name: "Diagnoses");
-
-            migrationBuilder.DropTable(
-                name: "Units");
 
             migrationBuilder.DropTable(
                 name: "Tickets");
