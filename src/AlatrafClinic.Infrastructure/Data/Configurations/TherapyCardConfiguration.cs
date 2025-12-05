@@ -25,9 +25,6 @@ public sealed class TherapyCardConfiguration : IEntityTypeConfiguration<TherapyC
         builder.Property(tc => tc.ProgramEndDate)
             .HasColumnType("date")
             .IsRequired();
-        
-        builder.Property(tc => tc.NumberOfSessions)
-            .IsRequired();
         builder.Property(tc => tc.IsActive)
             .IsRequired();
         

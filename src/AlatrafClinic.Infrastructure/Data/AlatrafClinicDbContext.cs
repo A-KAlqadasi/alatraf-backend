@@ -47,7 +47,6 @@ namespace AlatrafClinic.Infrastructure.Data;
 public class AlatrafClinicDbContext
     : IdentityDbContext<AppUser, IdentityRole, string>, IAlatrafClinicDbContext
 {
-    private readonly IMediator _mediator;
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
@@ -104,16 +103,16 @@ public class AlatrafClinicDbContext
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     
     
-    public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options, IMediator mediator)
+    public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
         : base(options)
     {
-        _mediator = mediator;
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AlatrafClinicDbContext).Assembly);
+        AlatrafClinicDbContextInitializer.Seed(builder);
     }
 
 }
