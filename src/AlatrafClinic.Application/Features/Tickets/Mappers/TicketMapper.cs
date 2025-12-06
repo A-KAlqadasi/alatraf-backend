@@ -11,10 +11,10 @@ public static class TicketMapper
     {
         return new TicketDto
         {
-            Id = ticket.Id,
+            TicketId = ticket.Id,
             Service = ticket.Service?.ToDto(),
             Patient = ticket.Patient?.ToDto(),
-            Status = ticket.Status
+            TicketStatus = ticket.Status
         };
     }
     public static List<TicketDto> ToDtos(this IEnumerable<Ticket> tickets)

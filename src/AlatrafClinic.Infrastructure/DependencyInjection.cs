@@ -1,8 +1,10 @@
 using System.Text;
 
 using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Infrastructure.Data;
 using AlatrafClinic.Infrastructure.Data.Interceptors;
+using AlatrafClinic.Infrastructure.Data.Repositories;
 using AlatrafClinic.Infrastructure.Identity;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,8 +36,6 @@ public static class DependencyInjection
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
             options.UseSqlServer(connectionString);
         });
-
-        services.AddScoped<IAlatrafClinicDbContext>(provider => provider.GetRequiredService<AlatrafClinicDbContext>());
 
         // services.AddScoped<ApplicationDbContextInitialiser>();
 
@@ -83,6 +83,7 @@ public static class DependencyInjection
         //         policy.Requirements.Add(new LaborAssignedRequirement()));
 
         services.AddTransient<IIdentityService, IdentityService>();
+        
 
         services.AddHybridCache(options => options.DefaultEntryOptions = new HybridCacheEntryOptions
         {
@@ -91,6 +92,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ITokenProvider, TokenProvider>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }

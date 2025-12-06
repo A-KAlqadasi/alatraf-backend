@@ -10,6 +10,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Holidays.Commands.CreateHoliday;
@@ -17,12 +18,12 @@ namespace AlatrafClinic.Application.Features.Holidays.Commands.CreateHoliday;
 public class CreateHolidayCommandHandler(
     IUnitOfWork unitOfWork,
     ILogger<CreateHolidayCommandHandler> logger,
-    ICacheService cache
+    HybridCache cache
 ) : IRequestHandler<CreateHolidayCommand, Result<HolidayDto>>
 {
   private readonly IUnitOfWork _unitOfWork = unitOfWork;
   private readonly ILogger<CreateHolidayCommandHandler> _logger = logger;
-  private readonly ICacheService _cache = cache;
+  private readonly HybridCache _cache = cache;
 
   public async Task<Result<HolidayDto>> Handle(CreateHolidayCommand command, CancellationToken ct)
   {

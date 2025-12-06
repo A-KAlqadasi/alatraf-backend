@@ -10,6 +10,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Organization.Departments.Commands.CreateDepartment;
@@ -18,12 +19,12 @@ public sealed class CreateDepartmentCommandHandler(
     IUnitOfWork unitOfWork,
     ILogger<CreateDepartmentCommandHandler> logger,
 
-    ICacheService cache
+    HybridCache cache
 ) : IRequestHandler<CreateDepartmentCommand, Result<DepartmentDto>>
 {
   private readonly IUnitOfWork _unitOfWork = unitOfWork;
   private readonly ILogger<CreateDepartmentCommandHandler> _logger = logger;
-  private readonly ICacheService _cache = cache;
+  private readonly HybridCache _cache = cache;
   public async Task<Result<DepartmentDto>> Handle(CreateDepartmentCommand request, CancellationToken ct)
   {
     var name = request.Name.Trim();

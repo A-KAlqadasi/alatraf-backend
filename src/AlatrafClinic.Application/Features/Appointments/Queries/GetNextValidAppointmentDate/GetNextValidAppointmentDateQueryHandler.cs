@@ -1,35 +1,35 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetNextValidAppointmentDate;
 
 public class GetNextValidAppointmentDateQueryHandler(
-    IUnitOfWork unitOfWork,
-    AppointmentScheduleRules rules,
-    HolidayCalendar holidayCalendar) : IRequestHandler<GetNextValidAppointmentDateQuery, Result<DateTime>>
+    IUnitOfWork unitOfWork) : IRequestHandler<GetNextValidAppointmentDateQuery, Result<DateTime>>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly AppointmentScheduleRules _rules = rules;
-    private readonly HolidayCalendar _holidayCalendar = holidayCalendar;
 
     public async Task<Result<DateTime>> Handle(GetNextValidAppointmentDateQuery query, CancellationToken ct)
     {
-        DateTime lastScheduleDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
+       
+       DateTime lastAppointmentDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
 
-        DateTime baseDate = lastScheduleDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastScheduleDate.Date;
+        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
 
-        if (query.RequestedDate.Date > baseDate)
+        if (query.RequestedDate.HasValue && query.RequestedDate.Value.Date > baseDate)
         {
-            baseDate = query.RequestedDate.Date;
+            baseDate = query.RequestedDate.Value.Date;
         }
 
-        while (!_rules.IsAllowedDay(baseDate.DayOfWeek) || _holidayCalendar.IsHoliday(baseDate))
+        var allowedDaysString = await _unitOfWork.AppSettings.GetAllowedAppointmentDaysAsync(ct);
+        
+        var allowedDays = allowedDaysString.Split(',').Select(day => Enum.Parse<DayOfWeek>(day.Trim())).ToList();
+
+        var holidays = await _unitOfWork.Holidays.GetAllAsync(ct);
+
+
+        while (!allowedDays.Contains(baseDate.DayOfWeek) || baseDate.DayOfWeek == DayOfWeek.Friday || holidays.Any(h => h.Matches(baseDate)))
         {
             baseDate = baseDate.AddDays(1);
         }

@@ -1,5 +1,3 @@
-using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
@@ -38,7 +36,6 @@ using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Domain.WoundedCards;
 using AlatrafClinic.Infrastructure.Identity;
 
-using MediatR;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -47,7 +44,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AlatrafClinic.Infrastructure.Data;
 
 public class AlatrafClinicDbContext
-    : IdentityDbContext<AppUser, IdentityRole, string>, IAlatrafClinicDbContext
+    : IdentityDbContext<AppUser, IdentityRole, string>
 {
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();

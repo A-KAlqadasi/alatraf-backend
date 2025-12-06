@@ -29,7 +29,7 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
             .IsRequired(false);
         
         builder.HasOne(s => s.Department)
-            .WithMany()
+            .WithMany(d=>d.Services)
             .HasForeignKey(s => s.DepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
             

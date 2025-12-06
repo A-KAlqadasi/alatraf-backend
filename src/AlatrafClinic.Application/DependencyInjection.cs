@@ -6,6 +6,8 @@ using AlatrafClinic.Application.Features.People.Services.CreatePerson;
 using AlatrafClinic.Application.Features.People.Services.UpdatePerson;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
+using AlatrafClinic.Domain.Services.Appointments;
+using AlatrafClinic.Domain.Services.Appointments.Holidays;
 
 namespace AlatrafClinic.Application;
 
@@ -28,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<IPersonUpdateService, PersonUpdateService>();
         services.AddScoped<IDiagnosisCreationService, DiagnosisCreationService>();
         services.AddScoped<IDiagnosisUpdateService, DiagnosisUpdateService>();
+                
         return services;
     }
 }

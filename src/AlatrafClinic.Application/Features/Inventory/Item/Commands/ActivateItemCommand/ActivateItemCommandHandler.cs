@@ -17,7 +17,7 @@ public record ActivateItemCommandHandler : IRequestHandler<ActivateItemCommand, 
     private readonly HybridCache _cache;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ActivateItemCommandHandler(ILogger logger, HybridCache cache, IUnitOfWork unitOfWork)
+    public ActivateItemCommandHandler(ILogger<ActivateItemCommandHandler> logger, HybridCache cache, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _cache = cache;

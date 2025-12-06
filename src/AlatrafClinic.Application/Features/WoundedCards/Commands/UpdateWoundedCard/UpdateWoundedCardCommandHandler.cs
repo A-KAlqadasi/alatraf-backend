@@ -6,6 +6,7 @@ using AlatrafClinic.Domain.WoundedCards;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.WoundedCards.Commands.UpdateWoundedCard;
@@ -14,9 +15,9 @@ public class UpdateWoundedCardCommandHandler : IRequestHandler<UpdateWoundedCard
 {
     private readonly ILogger<UpdateWoundedCardCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICacheService _cache;
+    private readonly HybridCache _cache;
 
-    public UpdateWoundedCardCommandHandler(ILogger<UpdateWoundedCardCommandHandler> logger, IUnitOfWork unitOfWork, ICacheService cache)
+    public UpdateWoundedCardCommandHandler(ILogger<UpdateWoundedCardCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;

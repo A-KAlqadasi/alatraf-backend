@@ -6,6 +6,7 @@ using AlatrafClinic.Domain.Patients;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.DisabledCards.Commands.UpdateDisabledCard;
@@ -14,9 +15,9 @@ public class UpdateDisabledCardCommandHandler : IRequestHandler<UpdateDisabledCa
 {
     private readonly ILogger<UpdateDisabledCardCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICacheService _cache;
+    private readonly HybridCache _cache;
 
-    public UpdateDisabledCardCommandHandler(ILogger<UpdateDisabledCardCommandHandler> logger, IUnitOfWork unitOfWork, ICacheService cache)
+    public UpdateDisabledCardCommandHandler(ILogger<UpdateDisabledCardCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;

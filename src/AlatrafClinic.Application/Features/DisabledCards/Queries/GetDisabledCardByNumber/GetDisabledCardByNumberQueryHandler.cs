@@ -8,6 +8,7 @@ using AlatrafClinic.Domain.DisabledCards;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.DisabledCards.Queries.GetDisabledCardByNumber;
@@ -16,9 +17,9 @@ public class GetDisabledCardByNumberQueryHandler : IRequestHandler<GetDisabledCa
 {
     private readonly ILogger<GetDisabledCardByNumberQueryHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICacheService _cache;
+    private readonly HybridCache _cache;
 
-    public GetDisabledCardByNumberQueryHandler(ILogger<GetDisabledCardByNumberQueryHandler> logger, IUnitOfWork unitOfWork, ICacheService cache)
+    public GetDisabledCardByNumberQueryHandler(ILogger<GetDisabledCardByNumberQueryHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;

@@ -9,6 +9,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Rooms.Commands.CreateRoom;
@@ -16,13 +17,12 @@ namespace AlatrafClinic.Application.Features.Rooms.Commands.CreateRoom;
 public sealed class CreateRoomCommandHandler(
     IUnitOfWork unitOfWork,
     ILogger<CreateRoomCommandHandler> logger,
-
-ICacheService cacheService
+    HybridCache cache
 ) : IRequestHandler<CreateRoomCommand, Result<RoomDto>>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILogger<CreateRoomCommandHandler> _logger = logger;
-    private readonly ICacheService _cacheService = cacheService;
+    private readonly HybridCache _cacheService = cache;
 
     public async Task<Result<RoomDto>> Handle(CreateRoomCommand command, CancellationToken ct)
     {

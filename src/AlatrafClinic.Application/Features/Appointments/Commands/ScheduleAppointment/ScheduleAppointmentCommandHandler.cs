@@ -5,12 +5,12 @@ using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Appointments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Domain.Services.Enums;
 using AlatrafClinic.Domain.Services.Tickets;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Commands.ScheduleAppointment;
@@ -19,17 +19,14 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 {
     private readonly ILogger<ScheduleAppointmentCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICacheService _cache;
-    private readonly AppointmentScheduleRules _rules;
-    private readonly HolidayCalendar _holidayCalendar;
+    private readonly HybridCache _cache;
 
-    public ScheduleAppointmentCommandHandler(ILogger<ScheduleAppointmentCommandHandler> logger, IUnitOfWork unitOfWork, ICacheService cache, AppointmentScheduleRules rules, HolidayCalendar holidayCalendar)
+
+    public ScheduleAppointmentCommandHandler(ILogger<ScheduleAppointmentCommandHandler> logger, IUnitOfWork unitOfWork,HybridCache cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _cache = cache;
-        _rules = rules;
-        _holidayCalendar = holidayCalendar;
     }
 
     public async Task<Result<AppointmentDto>> Handle(ScheduleAppointmentCommand command, CancellationToken ct)
@@ -54,16 +51,31 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
         }
 
         DateTime lastAppointmentDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
+
+        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+
+        if (command.RequestedDate.HasValue && command.RequestedDate.Value.Date > baseDate)
+        {
+            baseDate = command.RequestedDate.Value.Date;
+        }
+
+        var allowedDaysString = await _unitOfWork.AppSettings.GetAllowedAppointmentDaysAsync(ct);
         
+        var allowedDays = allowedDaysString.Split(',').Select(day => Enum.Parse<DayOfWeek>(day.Trim())).ToList();
+
+        var holidays = await _unitOfWork.Holidays.GetAllAsync(ct);
+
+
+        while (!allowedDays.Contains(baseDate.DayOfWeek) || baseDate.DayOfWeek == DayOfWeek.Friday || holidays.Any(h => h.Matches(baseDate)))
+        {
+            baseDate = baseDate.AddDays(1);
+        }
 
         var appointmentResult = Appointment.Schedule(
             ticketId: ticket.Id,
             patientType: command.PatientType,
-            requestedDate: command.RequestedDate,
-            notes: command.Notes,
-            lastScheduledDate: lastAppointmentDate,
-            rules: _rules,
-            holidays: _holidayCalendar
+            attendDate: baseDate,
+            notes: command.Notes
         );
         
         if (appointmentResult.IsError)
@@ -81,4 +93,5 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 
         return appointment.ToDto();
     }
+    
 }
