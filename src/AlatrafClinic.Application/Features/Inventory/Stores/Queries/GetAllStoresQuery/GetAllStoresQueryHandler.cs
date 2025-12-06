@@ -2,7 +2,9 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Inventory.Stores.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Stores.Mappers;
 using AlatrafClinic.Domain.Common.Results;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Stores.Queries.GetAllStoresQuery;

@@ -6,4 +6,6 @@ public interface IStoreRepository : IGenericRepository<Store, int>
 {
     Task<Store?> GetByIdWithItemUnitsAsync(int id, CancellationToken cancellationToken = default);
     Task<IEnumerable<StoreItemUnitDto>> GetItemUnitsAsync(int storeId, CancellationToken cancellationToken = default);
+    Task<bool> HasAssociationsAsync(int StoreId, CancellationToken cancellationToken = default);
+
 }

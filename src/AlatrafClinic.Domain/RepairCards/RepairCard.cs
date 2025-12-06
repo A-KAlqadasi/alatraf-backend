@@ -28,7 +28,7 @@ public class RepairCard : AuditableEntity<int>
     public decimal TotalCost => _diagnosisIndustrialParts.Sum(part => part.Price * part.Quantity);
 
     // Navigation
-    public DeliveryTime? DeliveryTime { get;  set; }
+    public DeliveryTime? DeliveryTime { get; set; }
     public bool IsLate => Status is RepairCardStatus.InProgress && DeliveryTime?.DeliveryDate.Date < DateTime.Now.Date;
 
     private readonly List<Order> _orders = new();
@@ -38,7 +38,7 @@ public class RepairCard : AuditableEntity<int>
 
     private RepairCard() { }
 
-    private RepairCard(int diagnosisId, List<DiagnosisIndustrialPart> diagnosisIndustrialParts,  RepairCardStatus status, string? notes = null, bool isActive = true)
+    private RepairCard(int diagnosisId, List<DiagnosisIndustrialPart> diagnosisIndustrialParts, RepairCardStatus status, string? notes = null, bool isActive = true)
     {
         DiagnosisId = diagnosisId;
         IsActive = isActive;
@@ -261,7 +261,7 @@ public class RepairCard : AuditableEntity<int>
 
         return Result.Updated;
     }
-    
+
     public Result<Updated> AssignExitCard(string? notes)
     {
         if (ExitCard is not null)

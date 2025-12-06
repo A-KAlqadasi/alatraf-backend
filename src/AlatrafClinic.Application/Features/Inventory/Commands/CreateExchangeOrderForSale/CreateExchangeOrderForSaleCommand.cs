@@ -1,5 +1,6 @@
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Dtos;
 using AlatrafClinic.Domain.Common.Results;
+
 using MediatR;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.CreateExchangeOrderForSale;

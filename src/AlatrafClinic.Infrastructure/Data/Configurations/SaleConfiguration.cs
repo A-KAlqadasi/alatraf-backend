@@ -33,10 +33,10 @@ public sealed class SaleConfiguration : IEntityTypeConfiguration<Sale>
             .HasForeignKey<Sale>(s => s.DiagnosisId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasOne(s => s.ExchangeOrder)
-            .WithOne(e => e.Sale)
-            .HasForeignKey<ExchangeOrder>(e => e.SaleId)
-            .OnDelete(DeleteBehavior.Restrict);
+        // builder.HasOne(s => s.ExchangeOrder)
+        //     .WithOne(e => e.Sale)
+        //     .HasForeignKey<ExchangeOrder>(e => e.SaleId)
+        //     .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(s => s.ExitCard)
             .WithOne(e => e.Sale)

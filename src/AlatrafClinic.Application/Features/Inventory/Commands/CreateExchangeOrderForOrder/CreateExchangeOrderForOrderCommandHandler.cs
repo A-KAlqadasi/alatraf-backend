@@ -6,6 +6,7 @@ using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 using AlatrafClinic.Domain.RepairCards.Orders;
 
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.CreateExchangeOrderForOrder;
@@ -96,7 +97,7 @@ public sealed class CreateExchangeOrderForOrderCommandHandler : IRequestHandler<
             _logger.LogWarning("Failed approving exchange order {ExchangeOrderId}: {Errors}", exchangeOrder.Id, exchangeApproveResult.Errors);
             return exchangeApproveResult.Errors;
         }
-        
+
         // Now decrease store quantities through Store aggregate methods (so store owns the mutation)
         foreach (var line in exchangeOrder.Items)
         {
