@@ -18,7 +18,7 @@ public sealed class AppointmentsFilter : FilterSpecification<Appointment>
     {
         query = query
             .Include(a => a.Ticket)
-                .ThenInclude(t => t.Patient)
+                .ThenInclude(t => t.Patient!)
                     .ThenInclude(p => p.Person);
 
         // Filters

@@ -1,4 +1,31 @@
-@baseUrl = https://localhost:2004/api
+@baseUrl = https://localhost:2004/api/v1
+
+@ticketId = 10
 
 ### Get Tickets
-GET {{baseUrl}}/v1/tickets?status=pause
+GET {{baseUrl}}/tickets
+
+### Get Ticket By Id
+GET {{baseUrl}}/tickets/{{ticketId}}
+
+### Create new Ticket
+POST  {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+    "ServiceId": 3,
+    "PatientId": 2
+}
+
+### Update Ticket
+PUT  {{baseUrl}}/tickets/{{ticketId}}
+Content-Type: application/json
+
+{
+    "ServiceId": 3,
+    "PatientId": 2,
+    "Status": "completed"
+}
+
+### Delete Ticket
+DELETE  {{baseUrl}}/tickets/{{ticketId}}

@@ -44,7 +44,7 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             return Domain.Services.ServiceErrors.ServiceNotFound;
         }
 
-        var updateResult = ticket.Update(patient, service);
+        var updateResult = ticket.Update(patient, service, command.Status);
         if (updateResult.IsError)
         {
             _logger.LogError("Failed to update ticket Id {TicketId}: {Error}", command.TicketId, updateResult.Errors);

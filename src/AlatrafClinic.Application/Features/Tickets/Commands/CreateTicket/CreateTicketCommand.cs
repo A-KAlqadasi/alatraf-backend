@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Tickets.Commands.CreateTicket;
 
-public record class CreateTicketCommand(int ServiceId, int PatientId) : IRequest<Result<TicketDto>>;
+public record class CreateTicketCommand(int ServiceId, int? PatientId) : IRequest<Result<TicketDto>>;

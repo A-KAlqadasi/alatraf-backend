@@ -19,7 +19,7 @@ public sealed class TicketsFilter : FilterSpecification<Ticket>
     {
         // Includes
         query = query
-            .Include(t => t.Patient)
+            .Include(t => t.Patient!)
                 .ThenInclude(p => p.Person)
             .Include(t => t.Service)
                 .ThenInclude(s => s.Department);
