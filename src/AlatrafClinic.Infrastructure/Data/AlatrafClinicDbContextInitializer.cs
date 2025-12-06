@@ -908,7 +908,7 @@ public static class AlatrafClinicDbContextInitializer
 
     private static void SeedUnits(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Unit>().HasData(
+        modelBuilder.Entity<GeneralUnit>().HasData(
             new { Id = 1, Name = "قطعة", CreatedAtUtc = SeedTimestamp,
             LastModifiedUtc = SeedTimestamp,
             CreatedBy = "Seed",

@@ -53,11 +53,14 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
     public IIndustrialPartRepository IndustrialParts => _industrialPart ??= new IndustrialPartRepository(_dbContext);
 
     
-    public IItemRepository Items => throw new NotImplementedException();
+    private IItemRepository? _item;
+    public IItemRepository Items => _item ??= new Inventory.ItemRepository(_dbContext);
 
-    public ISupplierRepository Suppliers => throw new NotImplementedException();
+    private ISupplierRepository? _supplier;
+    public ISupplierRepository Suppliers => _supplier ??= new Inventory.SupplierRepository(_dbContext);
 
-    public IUnitRepository Units => throw new NotImplementedException();
+    private IUnitRepository? _unit;
+    public IUnitRepository Units => _unit ??= new Inventory.UnitRepository(_dbContext);
 
     private ISaleRepository? _sale;
     public ISaleRepository Sales => _sale ??= new SaleRepository(_dbContext);
@@ -92,13 +95,17 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
     private IWoundedCardRepository? _woundedCards;
     public IWoundedCardRepository WoundedCards => _woundedCards ??= new WoundedCardRepository(_dbContext);
 
-    public IStoreRepository Stores => throw new NotImplementedException();
+    private IStoreRepository? _store;
+    public IStoreRepository Stores => _store ??= new Inventory.StoreRepository(_dbContext);
 
-    public IExchangeOrderRepository ExchangeOrders => throw new NotImplementedException();
+    private IExchangeOrderRepository? _exchangeOrder;
+    public IExchangeOrderRepository ExchangeOrders => _exchangeOrder ??= new Inventory.ExchangeOrderRepository(_dbContext);
 
-    public IPurchaseInvoiceRepository PurchaseInvoices => throw new NotImplementedException();
+    private IPurchaseInvoiceRepository? _purchaseInvoice;
+    public IPurchaseInvoiceRepository PurchaseInvoices => _purchaseInvoice ??= new Inventory.PurchaseInvoiceRepository(_dbContext);
 
-    public IOrderRepository Orders => throw new NotImplementedException();
+    private IOrderRepository? _order;
+    public IOrderRepository Orders => _order ??= new OrderRepository(_dbContext);
 
     public async ValueTask DisposeAsync()
     {

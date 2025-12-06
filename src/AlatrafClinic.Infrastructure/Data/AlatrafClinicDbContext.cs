@@ -11,7 +11,11 @@ using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Identity;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+using AlatrafClinic.Domain.Inventory.Items;
+using AlatrafClinic.Domain.Inventory.Purchases;
 using AlatrafClinic.Domain.Inventory.Stores;
+using AlatrafClinic.Domain.Inventory.Suppliers;
+using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
@@ -54,7 +58,7 @@ public class AlatrafClinicDbContext
 
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Holiday> Holidays => Set<Holiday>();
-    
+
     public DbSet<Diagnosis> Diagnoses => Set<Diagnosis>();
     public DbSet<InjuryType> InjuryTypes => Set<InjuryType>();
     public DbSet<InjurySide> InjurySides => Set<InjurySide>();
@@ -69,7 +73,7 @@ public class AlatrafClinicDbContext
     public DbSet<RepairCard> RepairCards => Set<RepairCard>();
     public DbSet<IndustrialPart> IndustrialParts => Set<IndustrialPart>();
     public DbSet<IndustrialPartUnit> IndustrialPartUnits => Set<IndustrialPartUnit>();
-   
+
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<SaleItem> SaleItems => Set<SaleItem>();
 
@@ -90,7 +94,7 @@ public class AlatrafClinicDbContext
     public DbSet<Person> People => Set<Person>();
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<Doctor> Doctors => Set<Doctor>();
-   
+
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Section> Sections => Set<Section>();
     public DbSet<Room> Rooms => Set<Room>();
@@ -100,8 +104,20 @@ public class AlatrafClinicDbContext
     public DbSet<WoundedCard> WoundedCards => Set<WoundedCard>();
 
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
-    
-    
+
+    // Inventory entities
+    public DbSet<Item> Items => Set<Item>();
+    public DbSet<ItemUnit> ItemUnits => Set<ItemUnit>();
+    public DbSet<GeneralUnit> Units => Set<GeneralUnit>();
+    public DbSet<Store> Stores => Set<Store>();
+    public DbSet<StoreItemUnit> StoreItemUnits => Set<StoreItemUnit>();
+    public DbSet<ExchangeOrder> ExchangeOrders => Set<ExchangeOrder>();
+    public DbSet<PurchaseInvoice> PurchaseInvoices => Set<PurchaseInvoice>();
+
+    public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+
+
     public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
         : base(options)
     {

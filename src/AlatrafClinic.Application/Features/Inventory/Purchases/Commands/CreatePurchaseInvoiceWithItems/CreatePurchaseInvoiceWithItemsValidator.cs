@@ -1,4 +1,5 @@
 using FluentValidation;
+
 using System.Linq;
 
 namespace AlatrafClinic.Application.Features.Inventory.Purchases.Commands.CreatePurchaseInvoiceWithItems;
@@ -27,7 +28,8 @@ public class CreatePurchaseInvoiceWithItemsValidator : AbstractValidator<CreateP
 			.Must(items => items == null || items.Select(i => i.StoreItemUnitId).Distinct().Count() == items.Count())
 			.WithMessage("Duplicate store item units are not allowed.");
 
-		RuleForEach(x => x.Items).ChildRules(items => {
+		RuleForEach(x => x.Items).ChildRules(items =>
+		{
 			items.RuleFor(i => i.StoreItemUnitId).GreaterThan(0);
 			items.RuleFor(i => i.Quantity).GreaterThan(0);
 			items.RuleFor(i => i.UnitPrice).GreaterThanOrEqualTo(0);

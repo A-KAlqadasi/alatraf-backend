@@ -1,33 +1,44 @@
 using AlatrafClinic.Domain.Inventory.Units;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AlatrafClinic.Infrastructure.Data.Configurations;
 
-public sealed class UnitConfiguration : IEntityTypeConfiguration<Unit>
+public class UnitConfiguration : IEntityTypeConfiguration<GeneralUnit>
 {
-    public void Configure(EntityTypeBuilder<Unit> builder)
+    public void Configure(EntityTypeBuilder<GeneralUnit> builder)
     {
         builder.ToTable("Units");
 
-        builder.HasKey(u => u.Id);
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(u => u.Name)
-            .IsRequired()
-            .HasMaxLength(100);
-        
-        builder.HasMany(u => u.ItemUnits)
-            .WithOne(iu => iu.Unit)
-            .HasForeignKey(iu => iu.UnitId)
-            .OnDelete(DeleteBehavior.Restrict);
-        
-        builder.HasMany(u => u.IndustrialPartUnits)
-            .WithOne(ipu => ipu.Unit)
-            .HasForeignKey(ipu => ipu.UnitId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(x => x.Name)
+               .IsRequired()
+               .HasMaxLength(100);
 
-        builder.HasIndex(u => u.Name)
-            .IsUnique();
+        // Audit properties
+        builder.Property(x => x.CreatedAtUtc)
+               .IsRequired();
+
+        builder.Property(x => x.CreatedBy)
+               .HasMaxLength(200);
+
+        builder.Property(x => x.LastModifiedUtc);
+        builder.Property(x => x.LastModifiedBy)
+               .HasMaxLength(200);
+
+        // Navigation to ItemUnits (not owned; many-to-many relationship)
+        // Unit does not own ItemUnits; Item owns them via OwnsMany
+        builder.HasMany(x => x.ItemUnits)
+               .WithOne(iu => iu.Unit)
+               .HasForeignKey(iu => iu.UnitId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        // Navigation to IndustrialPartUnits
+        builder.HasMany(x => x.IndustrialPartUnits)
+               .WithOne(ipu => ipu.Unit)
+               .HasForeignKey(ipu => ipu.UnitId)
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }
