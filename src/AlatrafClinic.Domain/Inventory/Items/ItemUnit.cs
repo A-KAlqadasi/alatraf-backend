@@ -1,8 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.Inventory.Units;
-
+using AlatrafClinic.Domain.Inventory.Stores;
 namespace AlatrafClinic.Domain.Inventory.Items;
 
 public class ItemUnit : AuditableEntity<int>
@@ -10,7 +9,7 @@ public class ItemUnit : AuditableEntity<int>
     public int ItemId { get; private set; }
     public Item Item { get; private set; } = default!;
     public int UnitId { get; private set; }
-    public Unit Unit { get; private set; } = default!;
+    public GeneralUnit Unit { get; private set; } = default!;
     public decimal Price { get; private set; }
     public decimal? MinPriceToPay { get; private set; }
     public decimal? MaxPriceToPay { get; private set; }

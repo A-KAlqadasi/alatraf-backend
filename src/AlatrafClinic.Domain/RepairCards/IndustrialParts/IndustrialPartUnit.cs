@@ -11,7 +11,7 @@ public class IndustrialPartUnit : AuditableEntity<int>
     public int IndustrialPartId { get; private set; }
     public IndustrialPart IndustrialPart { get; set; } = default!;
     public int UnitId { get; private set; }
-    public Unit? Unit { get; set; }
+    public GeneralUnit? Unit { get; set; }
     public decimal PricePerUnit { get; private set; }
 
     private IndustrialPartUnit() { }

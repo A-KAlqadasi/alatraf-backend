@@ -14,7 +14,7 @@ public sealed record GetTherapyCardsQuery(
     string? SearchTerm = null,
     bool? IsActive = null,
     TherapyCardType? Type = null,
-    CardStatus? Status = null,
+    TherapyCardStatus? Status = null,
     DateTime? ProgramStartFrom = null,
     DateTime? ProgramStartTo = null,
     DateTime? ProgramEndFrom = null,

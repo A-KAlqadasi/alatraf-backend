@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AlatrafClinic.Infrastructure.Data.Configurations;
 
-public class UnitConfiguration : IEntityTypeConfiguration<Unit>
+public class UnitConfiguration : IEntityTypeConfiguration<GeneralUnit>
 {
-    public void Configure(EntityTypeBuilder<Unit> builder)
+    public void Configure(EntityTypeBuilder<GeneralUnit> builder)
     {
         builder.ToTable("Units");
 

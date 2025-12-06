@@ -9,7 +9,7 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
 {
     public void Configure(EntityTypeBuilder<Patient> builder)
     {
-        builder.ToTable("Patient");
+        builder.ToTable("Patients");
 
         builder.HasKey(x => x.Id);
 

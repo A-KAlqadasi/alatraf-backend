@@ -3,7 +3,7 @@ using AlatrafClinic.Domain.Inventory.Units;
 
 namespace AlatrafClinic.Infrastructure.Data.Repositories.Inventory;
 
-public class UnitRepository : GenericRepository<Unit, int>, IUnitRepository
+public class UnitRepository : GenericRepository<GeneralUnit, int>, IUnitRepository
 {
     public UnitRepository(AlatrafClinicDbContext dbContext) : base(dbContext)
     {

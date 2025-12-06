@@ -110,7 +110,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
-        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), CardStatus.Renew, currentTherapy.Id, command.Notes);
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.Renew, currentTherapy.Id, command.Notes);
 
         if (createTherapyCardResult.IsError)
         {
