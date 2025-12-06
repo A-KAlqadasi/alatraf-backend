@@ -13,9 +13,9 @@ namespace AlatrafClinic.Application.Features.Inventory.Suppliers.Commands.Create
 public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierCommand, Result<SupplierDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger _logger;
+    private readonly ILogger<CreateSupplierCommandHandler> _logger;
     private readonly HybridCache _cache;
-    public CreateSupplierCommandHandler(IUnitOfWork unitOfWork, ILogger logger, HybridCache cache)
+    public CreateSupplierCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateSupplierCommandHandler> logger, HybridCache cache)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;

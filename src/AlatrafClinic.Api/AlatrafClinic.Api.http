@@ -1,0 +1,4 @@
+@baseUrl = https://localhost:2004/api
+
+### Get Tickets
+GET {{baseUrl}}/v1/tickets?status=pause

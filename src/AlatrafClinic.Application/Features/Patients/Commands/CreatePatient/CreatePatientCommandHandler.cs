@@ -9,6 +9,7 @@ using AlatrafClinic.Domain.Patients;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Patients.Commands.CreatePatient;
@@ -17,14 +18,14 @@ public class CreatePatientCommandHandler(
     IUnitOfWork unitWork,
 ILogger<CreatePatientCommandHandler> logger,
 IPersonCreateService personCreateService,
-    ICacheService cache // 👈 inject the cache
+    HybridCache cache
 
 ) : IRequestHandler<CreatePatientCommand, Result<PatientDto>>
 {
     private readonly IUnitOfWork _unitWork = unitWork;
     private readonly ILogger<CreatePatientCommandHandler> _logger = logger;
     private readonly IPersonCreateService _personCreateService = personCreateService;
-    private readonly ICacheService _cache = cache;
+    private readonly HybridCache _cache = cache;
 
     public async Task<Result<PatientDto>> Handle(CreatePatientCommand command, CancellationToken ct)
     {

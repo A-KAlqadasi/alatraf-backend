@@ -6,6 +6,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Rooms.Commands.DeleteRoom;
@@ -13,12 +14,12 @@ namespace AlatrafClinic.Application.Features.Rooms.Commands.DeleteRoom;
 public sealed class DeleteRoomCommandHandler(
     IUnitOfWork unitOfWork,
     ILogger<DeleteRoomCommandHandler> logger,
-    ICacheService cacheService
+    HybridCache cache
 ) : IRequestHandler<DeleteRoomCommand, Result<Deleted>>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILogger<DeleteRoomCommandHandler> _logger = logger;
-    private readonly ICacheService _cacheService = cacheService;
+    private readonly HybridCache _cache = cache;
 
     public async Task<Result<Deleted>> Handle(DeleteRoomCommand request, CancellationToken ct)
     {
@@ -34,7 +35,7 @@ public sealed class DeleteRoomCommandHandler(
 
         _logger.LogInformation("Room {RoomId} deleted successfully.", room.Id);
 
-        await _cacheService.RemoveByTagAsync("room", ct);
+        await _cache.RemoveByTagAsync("room", ct);
 
         return Result.Deleted;
     }

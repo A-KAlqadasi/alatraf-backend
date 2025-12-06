@@ -6,6 +6,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Departments.Commands.UpdateDepartment;
@@ -14,12 +15,12 @@ public sealed class UpdateDepartmentCommandHandler(
     IUnitOfWork unitOfWork,
     ILogger<UpdateDepartmentCommandHandler> logger,
 
-ICacheService cache
+HybridCache cache
 ) : IRequestHandler<UpdateDepartmentCommand, Result<Updated>>
 {
   private readonly IUnitOfWork _unitOfWork = unitOfWork;
   private readonly ILogger<UpdateDepartmentCommandHandler> _logger = logger;
-    private readonly ICacheService _cache = cache;
+    private readonly HybridCache _cache = cache;
 
     public async Task<Result<Updated>> Handle(UpdateDepartmentCommand command, CancellationToken ct)
   {

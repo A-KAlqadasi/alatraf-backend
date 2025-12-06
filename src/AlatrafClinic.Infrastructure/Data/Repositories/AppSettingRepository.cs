@@ -11,6 +11,14 @@ public class AppSettingRepository : GenericRepository<AppSetting, int>, IAppSett
     {
     }
 
+    public Task<string> GetAllowedAppointmentDaysAsync(CancellationToken ct = default)
+    {
+        return dbContext.AppSettings
+            .Where(a => a.Key == "AllowedAppointmentDays")
+            .Select(a => a.Value)
+            .FirstOrDefaultAsync(ct)!;
+    }
+
     public async Task<AppSetting?> GetByKeyAsync(string key, CancellationToken ct = default)
     {
         return await dbContext.AppSettings

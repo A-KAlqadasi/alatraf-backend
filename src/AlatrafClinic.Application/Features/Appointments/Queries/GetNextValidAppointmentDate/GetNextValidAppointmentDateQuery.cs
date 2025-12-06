@@ -4,5 +4,5 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetNextValidAppointmentDate;
 
-public sealed record GetNextValidAppointmentDateQuery( DateTime RequestedDate = default
+public sealed record GetNextValidAppointmentDateQuery( DateTime? RequestedDate = null
 ) : IRequest<Result<DateTime>>;

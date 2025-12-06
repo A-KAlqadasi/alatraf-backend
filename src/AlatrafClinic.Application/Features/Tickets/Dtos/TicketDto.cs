@@ -6,8 +6,8 @@ namespace AlatrafClinic.Application.Features.Tickets.Dtos;
 
 public class TicketDto
 {
-    public int Id { get; set; }
+    public int TicketId { get; set; }
     public ServiceDto? Service { get; set; }
     public PatientDto? Patient { get; set; }
-    public TicketStatus Status { get; set; } = TicketStatus.New;
+    public TicketStatus TicketStatus { get; set; } = TicketStatus.New;
 }

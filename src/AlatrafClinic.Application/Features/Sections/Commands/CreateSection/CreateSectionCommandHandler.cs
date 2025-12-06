@@ -10,6 +10,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 
@@ -17,12 +18,12 @@ namespace AlatrafClinic.Application.Features.Sections.Commands.CreateSection;
 
 public sealed class CreateSectionCommandHandler(
     IUnitOfWork unitOfWork,
-ICacheService cache,
+    HybridCache cache,
     ILogger<CreateSectionCommandHandler> logger
 ) : IRequestHandler<CreateSectionCommand, Result<SectionDto>>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly ICacheService _cache = cache;
+    private readonly HybridCache _cache = cache;
     private readonly ILogger<CreateSectionCommandHandler> _logger = logger;
 
     public async Task<Result<SectionDto>> Handle(CreateSectionCommand command, CancellationToken ct)

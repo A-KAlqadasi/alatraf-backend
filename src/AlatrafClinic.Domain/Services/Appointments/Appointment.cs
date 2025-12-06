@@ -37,11 +37,8 @@ public class Appointment : AuditableEntity<int>
     public static Result<Appointment> Schedule(
         int ticketId,
         PatientType patientType,
-        DateTime? requestedDate,
-        string? notes,
-        DateTime lastScheduledDate,
-        AppointmentScheduleRules rules,
-        HolidayCalendar holidays)
+        DateTime attendDate,
+        string? notes)
     {
         if (ticketId <= 0)
         {
@@ -52,59 +49,17 @@ public class Appointment : AuditableEntity<int>
         {
             return AppointmentErrors.PatientTypeInvalid;
         }
-
-        if (rules is null)
-        {
-            return AppointmentErrors.AllowedDaysAreRequired;
-        }
         
-        if(holidays is null)
-        {
-            return AppointmentErrors.HolidaysAreRequired;
-        }
 
-        DateTime baseDate = lastScheduledDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastScheduledDate.Date;
-
-        if (requestedDate.HasValue && requestedDate.Value.Date > baseDate)
-        {
-            baseDate = requestedDate.Value.Date;
-        }
-
-        while (!rules.IsAllowedDay(baseDate.DayOfWeek) || holidays.IsHoliday(baseDate))
-        {
-            baseDate = baseDate.AddDays(1);
-        }
-
-        if (baseDate < DateTime.Now.Date)
+        if (attendDate < DateTime.Now.Date)
             return AppointmentErrors.AttendDateMustBeInFuture;
 
-        return new Appointment(ticketId, patientType, baseDate, AppointmentStatus.Scheduled, notes);
+        return new Appointment(ticketId, patientType, attendDate, AppointmentStatus.Scheduled, notes);
     }
     
-    public Result<Updated> Reschedule(DateTime newDate, AppointmentScheduleRules rules,
-        HolidayCalendar holidays)
+    public Result<Updated> Reschedule(DateTime newDate)
     {
         if (!IsEditable) return AppointmentErrors.Readonly;
-
-        if (rules is null)
-        {
-            return AppointmentErrors.AllowedDaysAreRequired;
-        }
-        
-        if(holidays is null)
-        {
-            return AppointmentErrors.HolidaysAreRequired;
-        }
-
-        if (!rules.IsAllowedDay(newDate.DayOfWeek))
-        {
-            return AppointmentErrors.InvalidAppointmentDay(rules.AllowedDays.ToList());
-        }
-        
-        if (holidays.IsHoliday(newDate))
-        {
-            return AppointmentErrors.AppointmentOnHoliday(newDate);
-        }
 
         if (newDate < DateTime.Now.Date)
             return AppointmentErrors.AttendDateMustBeInFuture;

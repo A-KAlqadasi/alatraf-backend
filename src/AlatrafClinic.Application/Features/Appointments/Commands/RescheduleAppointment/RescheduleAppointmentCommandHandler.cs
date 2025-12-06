@@ -1,7 +1,6 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
 
 using MediatR;
 
@@ -13,15 +12,11 @@ public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleApp
 {
     private readonly ILogger<RescheduleAppointmentCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly AppointmentScheduleRules _rules;
-    private readonly HolidayCalendar _holidays;
 
-    public RescheduleAppointmentCommandHandler(ILogger<RescheduleAppointmentCommandHandler> logger, IUnitOfWork unitOfWork, AppointmentScheduleRules rules, HolidayCalendar holidays)
+    public RescheduleAppointmentCommandHandler(ILogger<RescheduleAppointmentCommandHandler> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _rules = rules;
-        _holidays = holidays;
     }
     public async Task<Result<Updated>> Handle(RescheduleAppointmentCommand command, CancellationToken ct)
     {
@@ -31,7 +26,29 @@ public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleApp
             _logger.LogWarning("Appointment with ID {AppointmentId} not found.", command.AppointmentId);
             return AppointmentErrors.AppointmentNotFound;
         }
-        var rescheduleResult = appointment.Reschedule(command.NewAttendDate, _rules, _holidays);
+
+        DateTime lastAppointmentDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
+
+        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+
+        if (command.NewAttendDate.Date > baseDate)
+        {
+            baseDate = command.NewAttendDate.Date;
+        }
+
+        var allowedDaysString = await _unitOfWork.AppSettings.GetAllowedAppointmentDaysAsync(ct);
+        
+        var allowedDays = allowedDaysString.Split(',').Select(day => Enum.Parse<DayOfWeek>(day.Trim())).ToList();
+
+        var holidays = await _unitOfWork.Holidays.GetAllAsync(ct);
+
+
+        while (!allowedDays.Contains(baseDate.DayOfWeek) || baseDate.DayOfWeek == DayOfWeek.Friday || holidays.Any(h => h.Matches(baseDate)))
+        {
+            baseDate = baseDate.AddDays(1);
+        }
+
+        var rescheduleResult = appointment.Reschedule(baseDate);
 
         if (rescheduleResult.IsError)
         {

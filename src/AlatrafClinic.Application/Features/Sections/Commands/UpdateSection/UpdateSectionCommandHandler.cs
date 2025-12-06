@@ -6,19 +6,20 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Sections.Commands.UpdateSection;
 
 public sealed class UpdateSectionCommandHandler(
     IUnitOfWork unitOfWork,
-ICacheService cache,
+    HybridCache cache,
 
     ILogger<UpdateSectionCommandHandler> logger
 ) : IRequestHandler<UpdateSectionCommand, Result<Updated>>
 {
   private readonly IUnitOfWork _unitOfWork = unitOfWork;
-  private readonly ICacheService _cache = cache;
+  private readonly HybridCache _cache = cache;
   private readonly ILogger<UpdateSectionCommandHandler> _logger = logger;
 
   public async Task<Result<Updated>> Handle(UpdateSectionCommand request, CancellationToken ct)

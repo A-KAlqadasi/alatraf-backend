@@ -7,6 +7,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Holidays.Commands.UpdateHoliday;
@@ -14,12 +15,12 @@ namespace AlatrafClinic.Application.Features.Holidays.Commands.UpdateHoliday;
 public class UpdateHolidayCommandHandler(
     IUnitOfWork unitOfWork,
     ILogger<UpdateHolidayCommandHandler> logger,
-    ICacheService cache
+    HybridCache cache
 ) : IRequestHandler<UpdateHolidayCommand, Result<Updated>>
 {
   private readonly IUnitOfWork _uow = unitOfWork;
   private readonly ILogger<UpdateHolidayCommandHandler> _logger = logger;
-  private readonly ICacheService _cache = cache;
+  private readonly HybridCache _cache = cache;
 
   public async Task<Result<Updated>> Handle(UpdateHolidayCommand req, CancellationToken ct)
   {
