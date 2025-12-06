@@ -13,4 +13,4 @@ public class TicketFilterRequest
     public DateTime? CreatedFrom { get; set; }
     public DateTime? CreatedTo { get; set; }
     public TicketStatus? Status { get; set; }
-} 
+}

@@ -27,15 +27,6 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
     }
     public async Task<Result<TicketDto>> Handle(CreateTicketCommand command, CancellationToken ct)
     {
-        var patient = await _unitOfWork.Patients.GetByIdAsync(command.PatientId, ct);
-
-        if (patient is null)
-        {
-            _logger.LogError("Patient with Id {PatientId} not found.", command.PatientId);
-
-            return PatientErrors.PatientNotFound;
-        }
-
         var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
 
         if (service is null)
@@ -44,21 +35,42 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
 
             return Domain.Services.ServiceErrors.ServiceNotFound;
         }
+        Patient? patient = null;
 
-        var ticket = Ticket.Create(patient, service);
-        
-
-        if (ticket.IsError)
+        if(service.Id != 1)
         {
-            _logger.LogError("Failed to create ticket: {Error}", ticket.Errors);
-            return ticket.Errors;
+            if (command.PatientId is null)
+            {
+                _logger.LogError("PatientId is required for ServiceId {ServiceId}.", command.ServiceId);
+                return TicketErrors.PatientIsRequired;
+            }
+
+            patient = await _unitOfWork.Patients.GetByIdAsync(command.PatientId.Value, ct);
+
+            if (patient is null)
+            {
+                _logger.LogError("Patient with Id {PatientId} not found.", command.PatientId);
+
+                return PatientErrors.PatientNotFound;
+            }
+            
         }
         
-        await _unitOfWork.Tickets.AddAsync(ticket.Value, ct);
+        var ticketResult = Ticket.Create(patient, service);
+        
+
+        if (ticketResult.IsError)
+        {
+            _logger.LogError("Failed to create ticket: {Error}", ticketResult.Errors);
+            return ticketResult.Errors;
+        }
+        var ticket = ticketResult.Value;
+        
+        await _unitOfWork.Tickets.AddAsync(ticket, ct);
         await _unitOfWork.SaveChangesAsync(ct);
         
-        _logger.LogInformation("Ticket with Id {TicketId} created successfully.", ticket.Value.Id);
+        _logger.LogInformation("Ticket with Id {TicketId} created successfully.", ticket.Id);
 
-        return ticket.Value.ToDto();
+        return ticket.ToDto();
     }
 }
