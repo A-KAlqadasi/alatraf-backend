@@ -51,7 +51,6 @@ public sealed class CreateRepairCardCommandHandler
             command.InjuryReasons,
             command.InjurySides,
             command.InjuryTypes,
-            command.PatientId,
             DiagnosisType.Limbs,
             ct);
 
@@ -105,10 +104,9 @@ public sealed class CreateRepairCardCommandHandler
         var payment = paymentResult.Value;
 
         diagnosis.AssignPayment(payment);
+        diagnosis.AssignRepairCard(repairCard);
         
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.RepairCards.AddAsync(repairCard, ct);
-        await _unitOfWork.Payments.AddAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
         

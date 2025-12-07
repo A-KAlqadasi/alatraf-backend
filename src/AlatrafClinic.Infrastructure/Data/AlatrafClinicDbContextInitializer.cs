@@ -32,10 +32,12 @@ using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
+using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Domain.WoundedCards;
 using AlatrafClinic.Infrastructure.Identity;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Infrastructure.Data;
@@ -69,6 +71,9 @@ public static class AlatrafClinicDbContextInitializer
         SeedApplicationPermissions(modelBuilder);
         SeedAdminRolePermissions(modelBuilder);
         SeedAdminUser(modelBuilder);
+        SeedTherapyCardTypePrices(modelBuilder);
+        SeedDoctors(modelBuilder);
+        SeedDoctorSectionRooms(modelBuilder);
     }
 
     private static void SeedInjuryLookups(ModelBuilder modelBuilder)
@@ -932,6 +937,45 @@ public static class AlatrafClinicDbContextInitializer
         );
     }
 
+    private static void SeedTherapyCardTypePrices(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TherapyCardTypePrice>().HasData(
+            new
+            {
+                Id = 1,
+                Type = TherapyCardType.General,
+                SessionPrice = 200m,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Type = TherapyCardType.Special,
+                SessionPrice = 2000m,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Type = TherapyCardType.NerveKids,
+                SessionPrice = 400m,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+    }
+
     private static void SeedTherapyCards(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TherapyCard>().HasData(
@@ -1131,7 +1175,7 @@ public static class AlatrafClinicDbContextInitializer
                 DoctorId = 1,
                 SectionId = 1,
                 RoomId = 1,
-                AssignDate = new DateTime(2025, 1, 5),
+                AssignDate = SeedDate,
                 EndDate = (DateTime?)null,
                 IsActive = true,
                 Notes = "تكليف أساسي للطبيب في القسم الأول",
@@ -1145,12 +1189,11 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 2,
                 DoctorId = 2,
-                SectionId = 2,
-                RoomId = 2,
-                AssignDate = new DateTime(2025, 1, 6),
+                SectionId = 8,
+                AssignDate = SeedDate,
                 EndDate = (DateTime?)null,
                 IsActive = true,
-                Notes = "تكليف للطبيب بقسم العظام في الغرفة ٢٠٢",
+                Notes = "تكليف للطبيب بقسم الحديد",
                 CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
@@ -1161,12 +1204,12 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 3,
                 DoctorId = 3,
-                SectionId = 3,
+                SectionId = 2,
                 RoomId = 3,
-                AssignDate = new DateTime(2025, 1, 7),
-                EndDate = new DateTime(2025, 2, 7),
+                AssignDate = SeedDate,
+                EndDate = SeedDate,
                 IsActive = false,
-                Notes = "تكليف منتهي للطبيبة في قسم الأعصاب",
+                Notes = "تكليف منتهي للطبيبة في قسم الحرارة",
                 CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",

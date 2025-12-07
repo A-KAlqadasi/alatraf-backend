@@ -11,5 +11,8 @@ public class CreateTherapySessionCommandValidator : AbstractValidator<CreateTher
         RuleFor(x => x.SessionProgramsData)
             .NotEmpty()
             .WithMessage("At least one session program data must be specified.");
+            
+        RuleForEach(x=> x.SessionProgramsData)
+            .SetValidator(new SessionProgramDataValidator());
     }
 }

@@ -49,7 +49,6 @@ public sealed class CreateTherapyCardCommandHandler
             command.InjuryReasons,
             command.InjurySides,
             command.InjuryTypes,
-            command.PatientId,
             DiagnosisType.Therapy,
             ct);
 
@@ -120,11 +119,11 @@ public sealed class CreateTherapyCardCommandHandler
 
         var payment = paymentResult.Value;
 
+        diagnosis.AssignTherapyCard(therapyCard);
         diagnosis.AssignPayment(payment);
+        
 
-        await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.TherapyCards.AddAsync(therapyCard, ct);
-        await _unitOfWork.Payments.AddAsync(payment, ct);
+        await _unitOfWork.Diagnoses.AddAsync(diagnosis);
         await _unitOfWork.SaveChangesAsync(ct);
 
         

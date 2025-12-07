@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapySession;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
@@ -7,4 +8,4 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Commands.GenerateSessi
 public sealed record TakeSessionCommand(
     int TherapyCardId,
     int SessionId,
-    List<(int diagnosisProgramId, int doctorSectionRoomId)> SessionProgramsData) : IRequest<Result<Success>>;
+    List<SessionProgramData> SessionProgramsData) : IRequest<Result<Success>>;

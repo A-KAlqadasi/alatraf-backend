@@ -18,7 +18,7 @@ public sealed class Payment : AuditableEntity<int>
     public int TicketId {get; private set;}
     public Ticket Ticket { get; set; } = default!;
     public PaymentReference PaymentReference { get; private set; }
-    public AccountKind AccountKind { get; private set; }
+    public AccountKind? AccountKind { get; private set; }
     public bool IsCompleted { get; private set; } = false;
     public string? Notes { get; private set; }
     public DateTime? PaymentDate {get; private set;}
@@ -45,7 +45,6 @@ public sealed class Payment : AuditableEntity<int>
     public static Result<Payment> Create(int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
     {
         if (ticketId <= 0) return PaymentErrors.InvalidTicketId;
-        if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
         if (total <= 0) return PaymentErrors.InvalidTotal;
         if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
 
@@ -105,7 +104,8 @@ public sealed class Payment : AuditableEntity<int>
         // Clear other types to ensure single-type invariant
         ClearPaymentType();
         PatientPayment = patientPayment;
-        AccountKind = AccountKind.Patient;
+        AccountKind = Payments.AccountKind.Patient;
+        
         return Result.Updated;
     }
 
@@ -114,7 +114,7 @@ public sealed class Payment : AuditableEntity<int>
         if (disabledPayment == null) return PaymentErrors.InvalidDisabledPayment;
         ClearPaymentType();
         DisabledPayment = disabledPayment;
-        AccountKind = AccountKind.Disabled;
+        AccountKind = Payments.AccountKind.Disabled;
         return Result.Updated;
     }
 
@@ -123,7 +123,7 @@ public sealed class Payment : AuditableEntity<int>
         if (woundedPayment == null) return PaymentErrors.InvalidWoundedPayment;
         ClearPaymentType();
         WoundedPayment = woundedPayment;
-        AccountKind = AccountKind.Wounded;
+        AccountKind = Payments.AccountKind.Wounded;
         return Result.Updated;
     }
 

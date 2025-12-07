@@ -7,6 +7,8 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Payments;
+using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
@@ -49,6 +51,12 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             return TherapyCardErrors.TherapyCardNotExpired;
         }
 
+        if (currentTherapy.IsActive)
+        {
+            currentTherapy.DeActivate();
+            await _unitOfWork.TherapyCards.UpdateAsync(currentTherapy);
+        }
+
         var currentDiagnosis = currentTherapy.Diagnosis;
 
         if (currentDiagnosis is null)
@@ -60,6 +68,20 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         
         if (command.Programs is null || command.Programs.Count == 0)
             return DiagnosisErrors.MedicalProgramsAreRequired;
+        
+        var ticketService = await _unitOfWork.Tickets.GetTicketServiceAsync(command.TicketId, ct);
+
+        if (ticketService is null)
+        {
+            _logger.LogError("Ticket {TicketId} not found.", command.TicketId);
+            return TicketErrors.TicketNotFound;
+        }
+
+        if(ticketService.Id != (int)ServiceEnum.Renewals)
+        {
+            _logger.LogError("Ticket is not for renewal therapy card");
+            return TicketErrors.TicketServiceIsNotRenewal;
+        }
 
         var diagnosisResult = await _diagnosisService.CreateAsync(
             command.TicketId,
@@ -68,7 +90,6 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             currentDiagnosis.InjuryReasons.Select(r=> r.Id).ToList(),
             currentDiagnosis.InjurySides.Select(s=> s.Id).ToList(),
             currentDiagnosis.InjuryTypes.Select(s=> s.Id).ToList(),
-            currentDiagnosis.PatientId,
             DiagnosisType.Therapy,
             ct);
 
@@ -140,10 +161,9 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         var payment = paymentResult.Value;
 
         diagnosis.AssignPayment(payment);
+        diagnosis.AssignTherapyCard(therapyCard);
         
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.TherapyCards.AddAsync(therapyCard, ct);
-        await _unitOfWork.Payments.AddAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);

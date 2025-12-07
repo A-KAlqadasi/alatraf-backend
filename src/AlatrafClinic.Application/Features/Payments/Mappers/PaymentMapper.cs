@@ -4,9 +4,6 @@ using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Payments;
-using AlatrafClinic.Domain.Payments.DisabledPayments;
-using AlatrafClinic.Domain.Payments.PatientPayments;
-using AlatrafClinic.Domain.Payments.WoundedPayments;
 
 namespace AlatrafClinic.Application.Features.Payments.Mappers;
 

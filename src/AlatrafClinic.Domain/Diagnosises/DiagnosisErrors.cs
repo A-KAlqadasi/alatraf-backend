@@ -53,4 +53,9 @@ public static class DiagnosisErrors
     public static readonly Error SaleAssignOnlyForSaleDiagnosis = Error.Conflict("Diagnosis.SaleAssignOnlyForSaleDiagnosis", "Assigning sale is only allowed for sale diagnoses.");
     public static readonly Error SaleItemsAreRequired = Error.Validation("Diagnosis.SaleItemsAreRequired", "Sale items are required for sale diagnosis.");
     public static readonly Error PaymentIsRequired = Error.Validation("Diagnosis.PaymentIsRequired", "Payment is required to assign diagnosis to payment.");
+    public static readonly Error TherpyCardAssignmentOnlyForTherapyDiagnosis = Error.Conflict("Diagnosis.TherpyCardAssignmentOnlyForTherapyDiagnosis", "Therapy card assignment only for therapy diagnosis");
+    public static readonly Error TherapyCardIsRequired = Error.Validation("Diagnosis.TherapyCardIsRequired", "Therapy Card is required for diagnosis");
+    public static readonly Error RepairCardAssignmentOnlyForLimbsDiagnosis = Error.Conflict("Diagnosis.RepairCardAssignmentOnlyForLimbsDiagnosis", "Repair card assignment only for limbs diagnosis");
+    public static readonly Error RepairCardIsRequired = Error.Validation("Diagnosis.RepairCardIsRequired", "Repair Card is required for diagnosis");
+
 }

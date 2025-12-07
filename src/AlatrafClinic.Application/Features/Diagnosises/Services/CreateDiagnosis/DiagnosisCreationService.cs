@@ -36,7 +36,6 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         List<int> injuryReasons,
         List<int> injurySides,
         List<int> injuryTypes,
-        int patientId,
         DiagnosisType diagnosisType,
         CancellationToken ct)
     {
@@ -87,7 +86,7 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
             reasons,
             sides,
             types,
-            patientId,
+            ticket.PatientId!.Value,
             diagnosisType);
 
         if (diagnosisResult.IsError)

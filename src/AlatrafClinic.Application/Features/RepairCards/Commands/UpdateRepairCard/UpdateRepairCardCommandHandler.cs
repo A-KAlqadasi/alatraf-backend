@@ -40,12 +40,12 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return RepairCardErrors.RepairCardNotFound;
         }
 
-        if (currentRepairCard.IsPaid)
-        {
-            _logger.LogError("RepairCard with id {RepairCardId} is readonly because it is paid", command.RepairCardId);
+        // if (currentRepairCard.IsPaid)
+        // {
+        //     _logger.LogError("RepairCard with id {RepairCardId} is readonly because it is paid", command.RepairCardId);
             
-            return RepairCardErrors.Readonly;
-        }
+        //     return RepairCardErrors.Readonly;
+        // }
 
         if (currentRepairCard.Status != RepairCardStatus.New)
         {
@@ -62,7 +62,6 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             injuryReasons: command.InjuryReasons,
             injurySides: command.InjurySides,
             injuryTypes: command.InjuryTypes,
-            patientId: command.PatientId,
             DiagnosisType.Limbs,
             ct: ct);
 
@@ -119,7 +118,8 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return upsertRepairResult.Errors;
         }
 
-        var currentPayment = currentRepairCard.Payment;
+        var currentPayment = currentRepairCard.Diagnosis.Payments.FirstOrDefault(r=> r.PaymentReference == PaymentReference.Repair);
+
         if (currentPayment is null)
         {
             _logger.LogError("Payment for RepairCard with id {RepairCardId} not found", command.RepairCardId);
@@ -139,10 +139,9 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
         }
 
         updatedDiagnosis.AssignPayment(currentPayment);
+        updatedDiagnosis.AssignRepairCard(currentRepairCard);
 
         await _unitOfWork.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
-        await _unitOfWork.RepairCards.UpdateAsync(currentRepairCard, ct);
-        await _unitOfWork.Payments.UpdateAsync(currentPayment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("Repair Card with id {RepairCardId} updated successfully", command.RepairCardId);
