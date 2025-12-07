@@ -22,5 +22,7 @@ public static class TicketErrors
     public static readonly Error TicketNotFound = Error.NotFound("Ticket.NotFound", "Ticket not found");
     public static readonly Error TicketAlreadHasAppointment = Error.Conflict("Ticket.AlreadHasAppointment", "Ticket already has appointment");
     public static readonly Error TicketPaused = Error.Conflict("Ticket.Paused", "Ticket is paused and cannot accept this operation");
+
+    public static readonly Error TicketServiceIsNotRenewal = Error.Conflict("Ticket.TicketServiceIsNotRenewal", "Ticket service is not renew");
     
 }

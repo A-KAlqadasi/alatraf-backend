@@ -39,7 +39,13 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
 
             return TherapyCardErrors.TherapyCardExpired;
         }
-        var session = therapyCard.AddSession(command.SessionProgramsData);
+        List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData = new();
+        foreach (var sessionProgram in command.SessionProgramsData)
+        {
+            sessionProgramsData.Add((sessionProgram.DiagnosisProgramId, sessionProgram.DoctorSectionRoomId)); 
+        }
+
+        var session = therapyCard.AddSession(sessionProgramsData);
         
         if (session.IsError)
         {

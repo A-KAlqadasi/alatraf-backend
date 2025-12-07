@@ -33,7 +33,6 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
         List<int> injuryReasons,
         List<int> injurySides,
         List<int> injuryTypes,
-        int patientId,
         DiagnosisType diagnosisType,
         CancellationToken ct)
     {

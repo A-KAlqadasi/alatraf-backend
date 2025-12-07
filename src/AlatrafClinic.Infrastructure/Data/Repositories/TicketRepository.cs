@@ -1,4 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Domain.Services;
 using AlatrafClinic.Domain.Services.Tickets;
 
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,11 @@ public class TicketRepository : GenericRepository<Ticket, int>, ITicketRepositor
                                         .ThenInclude(s => s.Department)  
                                         .FirstOrDefaultAsync(t => t.Id == id, ct);
     }
-    
 
+    public async Task<Service?> GetTicketServiceAsync(int ticketId, CancellationToken ct = default)
+    {
+       var ticket = await dbContext.Tickets.Include(t=> t.Service).FirstOrDefaultAsync(t=> t.Id == ticketId, ct);
+
+       return ticket?.Service;
+    }
 }

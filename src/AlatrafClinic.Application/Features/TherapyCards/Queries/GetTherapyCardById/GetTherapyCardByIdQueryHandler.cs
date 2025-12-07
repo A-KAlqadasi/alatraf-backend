@@ -24,19 +24,7 @@ public class GetTherapyCardByIdQueryHandler
     public async Task<Result<TherapyCardDto>> Handle(GetTherapyCardByIdQuery query, CancellationToken ct)
     {
         var card = await _unitOfWork.TherapyCards.GetByIdAsync(query.TherapyCardId, ct);
-
-        // var card = await therapyQuery
-        //     .Include(tc => tc.Diagnosis)!
-        //         .ThenInclude(d => d.Patient)!.ThenInclude(p => p.Person)
-        //     .Include(tc => tc.DiagnosisPrograms)!.ThenInclude(dp => dp.MedicalProgram)
-        //     .Include(tc => tc.Sessions)!
-        //         .ThenInclude(s => s.SessionPrograms)!
-        //             .ThenInclude(sp => sp.DiagnosisProgram)!.ThenInclude(dp => dp.MedicalProgram)
-        //     .Include(tc => tc.Sessions)!
-        //         .ThenInclude(s => s.SessionPrograms)!
-        //             .ThenInclude(sp => sp.DoctorSectionRoom)
-        //     .FirstOrDefaultAsync(tc => tc.Id == query.TherapyCardId, ct);
-
+        
         if (card is null)
         {
             _logger.LogWarning("Therapy card with ID {TherapyCardId} not found.", query.TherapyCardId);

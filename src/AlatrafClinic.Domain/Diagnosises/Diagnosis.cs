@@ -45,7 +45,7 @@ public class Diagnosis : AuditableEntity<int>
     private readonly List<Payment> _payments = new();
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
 
-   
+    
     private Diagnosis()
     {
     }
@@ -282,6 +282,38 @@ public class Diagnosis : AuditableEntity<int>
             _payments.Add(payment);
         }
         
+        return Result.Updated;
+    }
+
+    public Result<Updated> AssignTherapyCard(TherapyCard therapyCard)
+    {
+        if(DiagnoType != DiagnosisType.Therapy)
+        {
+            return DiagnosisErrors.TherpyCardAssignmentOnlyForTherapyDiagnosis;
+        }
+
+        if(therapyCard is null)
+        {
+            return DiagnosisErrors.TherapyCardIsRequired;
+        }
+        TherapyCard = therapyCard;
+
+        return Result.Updated;
+    }
+    public Result<Updated> AssignRepairCard(RepairCard repairCard)
+    {
+        if(DiagnoType != DiagnosisType.Limbs)
+        {
+            return DiagnosisErrors.RepairCardAssignmentOnlyForLimbsDiagnosis;
+        }
+
+        if(repairCard is null)
+        {
+            return DiagnosisErrors.RepairCardIsRequired;
+        }
+        
+        RepairCard = repairCard;
+
         return Result.Updated;
     }
 }

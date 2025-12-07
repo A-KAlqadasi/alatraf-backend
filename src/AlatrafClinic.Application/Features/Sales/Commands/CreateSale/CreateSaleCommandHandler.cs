@@ -45,7 +45,6 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
             command.InjuryReasons,
             command.InjurySides,
             command.InjuryTypes,
-            command.PatientId,
             DiagnosisType.Sales,
             ct);
 

@@ -13,7 +13,7 @@ public sealed class DisabledPaymentConfiguration : IEntityTypeConfiguration<Disa
 
         builder.HasKey(d => d.Id);
 
-        builder.Property(d => d.Id)
+        builder.Property(d => d.Id).ValueGeneratedNever()
             .HasColumnName("DisabledPaymentId");
         
         builder.Property(d => d.Notes)

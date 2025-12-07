@@ -17,7 +17,7 @@ public static class TherapyCardMapper
             TherapyCardId = entity.Id,
             Diagnosis = entity.Diagnosis != null ? entity.Diagnosis.ToDto() : new DiagnosisDto(),
             IsActive = entity.IsActive,
-            NumberOfSessions = entity.NumberOfSessions,
+            NumberOfSessions = entity.NumberOfTakenSessions,
             ProgramStartDate = entity.ProgramStartDate,
             ProgramEndDate = entity.ProgramEndDate,
             TherapyCardType = entity.Type,

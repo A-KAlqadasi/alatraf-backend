@@ -15,7 +15,6 @@ public sealed record CreateTherapyCardCommand(
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,
-    int PatientId,
     DateTime ProgramStartDate,
     DateTime ProgramEndDate,
     TherapyCardType TherapyCardType,

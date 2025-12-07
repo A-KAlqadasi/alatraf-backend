@@ -13,7 +13,6 @@ public sealed record class UpdateSaleCommand(
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,
-    int PatientId,
     List<UpdateSaleItemCommand> SaleItems,
     string? Notes = null
 ) : IRequest<Result<Updated>>;

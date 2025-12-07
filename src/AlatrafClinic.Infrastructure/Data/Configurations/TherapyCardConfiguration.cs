@@ -16,8 +16,6 @@ public sealed class TherapyCardConfiguration : IEntityTypeConfiguration<TherapyC
         builder.Property(tc => tc.Id)
             .HasColumnName("TherapyCardId");
 
-        
-
         builder.Property(tc => tc.ProgramStartDate)
             .HasColumnType("date")
             .IsRequired();

@@ -10,8 +10,7 @@ public class CreateTherapyCardCommandValidator : AbstractValidator<CreateTherapy
     {
         RuleFor(x => x.TicketId)
             .GreaterThan(0).WithMessage("TicketId must be greater than 0.");
-        RuleFor(x => x.PatientId)
-            .GreaterThan(0).WithMessage("PatientId must be greater than 0.");
+        
         RuleFor(x => x.DiagnosisText)
             .NotEmpty().WithMessage("DiagnosisText must not be empty.")
             .MaximumLength(1000).WithMessage("DiagnosisText must not exceed 1000 characters.");

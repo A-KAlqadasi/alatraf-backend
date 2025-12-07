@@ -3,8 +3,6 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.ExitCards;
-using AlatrafClinic.Domain.Patients;
-using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards.DeliveryTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
@@ -19,10 +17,6 @@ public class RepairCard : AuditableEntity<int>
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
-
-    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsCompleted);
-    public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
-
     public ExitCard? ExitCard { get; set; }
     public string? Notes { get; private set; }
     public decimal TotalCost => _diagnosisIndustrialParts.Sum(part => part.Price * part.Quantity);
@@ -49,10 +43,6 @@ public class RepairCard : AuditableEntity<int>
 
     public static Result<RepairCard> Create(int diagnosisId, List<DiagnosisIndustrialPart> diagnosisIndustrialParts, string? notes = null)
     {
-        if (diagnosisId <= 0)
-        {
-            return RepairCardErrors.InvalidDiagnosisId;
-        }
 
         return new RepairCard(diagnosisId, diagnosisIndustrialParts, RepairCardStatus.New, notes: notes);
     }
@@ -88,6 +78,7 @@ public class RepairCard : AuditableEntity<int>
             _ => false
         };
     }
+
     public Result<Updated> AssignRepairCardToDoctor(int doctorSectionRoomId)
     {
         if (!IsEditable)
@@ -103,6 +94,7 @@ public class RepairCard : AuditableEntity<int>
         Status = RepairCardStatus.AssignedToTechnician;
         return Result.Updated;
     }
+
     public Result<Updated> AssignSpecificIndustrialPartToDoctor(int diagnosisIndustrialPartId, int doctorSectionRoomId)
     {
         if (!IsEditable)

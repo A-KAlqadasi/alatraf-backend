@@ -10,7 +10,7 @@ public class PaymentDto
     public DiagnosisDto Diagnosis { get; set; } = new();
     public int TicketId { get; set; }
     public PaymentReference PaymentReference { get; set; }
-    public AccountKind AccountKind { get; set; }
+    public AccountKind? AccountKind { get; set; }
     public bool IsCompleted { get; set; }
     public decimal TotalAmount { get; set; }
     public decimal? PaidAmount { get; set; }

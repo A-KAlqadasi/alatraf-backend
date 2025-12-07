@@ -29,3 +29,7 @@ Content-Type: application/json
 
 ### Delete Ticket
 DELETE  {{baseUrl}}/tickets/{{ticketId}}
+
+### Get TherapyCards By Patient Id
+GET {{baseUrl}}/therapy-cards
+

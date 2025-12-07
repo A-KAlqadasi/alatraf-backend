@@ -39,7 +39,7 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasMaxLength(500);
 
         builder.Property(p => p.AccountKind)
-            .IsRequired()
+            .IsRequired(false)
             .HasMaxLength(50)
             .HasConversion<string>();
 
