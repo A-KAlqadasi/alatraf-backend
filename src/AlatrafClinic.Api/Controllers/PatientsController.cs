@@ -123,7 +123,7 @@ public sealed class PatientsController(ISender sender) : ApiController
         );
     }
 
-    [HttpPut("patientId:int")]
+    [HttpPut("{patientId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
