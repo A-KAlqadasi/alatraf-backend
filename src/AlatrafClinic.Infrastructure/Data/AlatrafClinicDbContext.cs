@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
@@ -48,7 +49,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AlatrafClinic.Infrastructure.Data;
 
 public class AlatrafClinicDbContext
-    : IdentityDbContext<AppUser, IdentityRole, string>
+    : IdentityDbContext<AppUser, IdentityRole, string>, IAppDbContext
 {
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
@@ -131,8 +132,7 @@ public class AlatrafClinicDbContext
         builder.Ignore<StoreItemUnit>(); // To be implemented later
         builder.Ignore<Store>(); // To be implemented later
         builder.Ignore<ExchangeOrderItem>(); // To be implemented later
-        builder.Ignore<ExchangeOrder>(); // To be implemented later
-                
+        builder.Ignore<ExchangeOrder>(); // To be implemented later    
     }
 
 }

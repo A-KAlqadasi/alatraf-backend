@@ -56,12 +56,13 @@ IPersonCreateService personCreateService,
         }
 
         var patient = patientResult.Value;
+        person.AssignPatient(patient);
 
         await _unitWork.People.AddAsync(person, ct);
-        await _unitWork.Patients.AddAsync(patient, ct);
         await _unitWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("Patient created successfully with ID: {patient}", patient.Id);
+        
         await _cache.RemoveByTagAsync("patient", ct);
 
         return patient.ToDto();

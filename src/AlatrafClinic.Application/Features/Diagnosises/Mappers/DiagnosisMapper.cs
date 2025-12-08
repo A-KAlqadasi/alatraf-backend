@@ -6,6 +6,7 @@ using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
+using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
@@ -48,7 +49,7 @@ public static class DiagnosisMapper
             Patient       = diagnosis.Patient?.ToDto()
                             ?? diagnosis.Ticket?.Patient?.ToDto(),
 
-            DiagnosisType = diagnosis.DiagnoType,
+            DiagnosisType = diagnosis.DiagnoType.ToArabicDiagnosisType(),
 
             InjuryReasons = diagnosis.InjuryReasons.ToDtos(),
             InjurySides   = diagnosis.InjurySides.ToDtos(),
@@ -136,4 +137,17 @@ public static class DiagnosisMapper
             Quantity   = item.Quantity,
             Price      = item.Price,
         }).ToList();
+
+    public static string ToArabicDiagnosisType(this DiagnosisType type)
+    {
+        switch (type)
+        {
+            case DiagnosisType.Therapy : return "علاج طبيعي";
+            case DiagnosisType.Limbs : return "أطراف صناعية";
+            case DiagnosisType.Sales : return "مبيعات";
+            
+            default:
+             throw new Exception($"Diagnosis type {type.ToString()} is now unknown");
+        }
+    }
 }

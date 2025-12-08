@@ -23,6 +23,7 @@ public class TherapyCardRepository : GenericRepository<TherapyCard, int>, IThera
     public async new Task<TherapyCard?> GetByIdAsync(int id, CancellationToken ct)
     {
         return await dbContext.TherapyCards
+            .AsNoTracking()
             .Include(tc => tc.Diagnosis)
                 .ThenInclude(d => d.Patient)!.ThenInclude(p=> p.Person)
             .Include(tc => tc.Diagnosis)

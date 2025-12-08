@@ -39,7 +39,7 @@ public sealed record GetTherapyCardsQuery(
         $":pat={(PatientId?.ToString() ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
-    public string[] Tags => ["therapycard"];
+    public string[] Tags => ["therapy-card"];
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 
 

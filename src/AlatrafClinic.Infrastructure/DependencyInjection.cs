@@ -37,6 +37,9 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString);
         });
 
+        services.AddScoped<IAppDbContext>(provider => provider. GetRequiredService<AlatrafClinicDbContext>());
+
+
         // services.AddScoped<ApplicationDbContextInitialiser>();
 
         services.AddAuthentication(options =>

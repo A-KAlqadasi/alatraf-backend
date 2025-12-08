@@ -72,4 +72,24 @@ public sealed class Person : AuditableEntity<int>
 
         return Result.Updated;
     }
+    public Result<Updated> AssignPatient(Patient patient)
+    {
+        if(patient is null)
+        {
+            return PersonErrors.PatientIsRequired;
+        }
+        Patient = patient;
+
+        return Result.Updated;
+    }
+    public Result<Updated> AssignDoctor(Doctor doctor)
+    {
+        if(doctor is null)
+        {
+            return PersonErrors.DoctorIsRequired;
+        }
+        Doctor = doctor;
+
+        return Result.Updated;
+    }
 }
