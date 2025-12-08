@@ -43,8 +43,10 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
 
             return serviceResult.Errors;
         }
+        
         var service = serviceResult.Value;
         service.Department = department;
+
         await _unitOfWork.Services.AddAsync(service, ct);
         await _unitOfWork.SaveChangesAsync(ct);
         

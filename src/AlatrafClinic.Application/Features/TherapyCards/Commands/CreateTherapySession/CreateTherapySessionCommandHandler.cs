@@ -56,6 +56,8 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
 
         await _unitOfWork.TherapyCards.UpdateAsync(therapyCard, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("session", ct);
+
 
         _logger.LogInformation("TherapyCard {TherapyCardId} updated with new session {Number}.", therapyCard.Id, session.Value.Number);
 

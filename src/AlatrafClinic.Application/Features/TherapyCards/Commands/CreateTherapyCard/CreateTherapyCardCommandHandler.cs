@@ -125,6 +125,7 @@ public sealed class CreateTherapyCardCommandHandler
 
         await _unitOfWork.Diagnoses.AddAsync(diagnosis);
         await _unitOfWork.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("therapy-card", ct);
 
         
         _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);

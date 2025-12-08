@@ -19,7 +19,6 @@ public static class PatientMapper
             PersonId = entity.PersonId,
             PersonDto = entity.Person!.ToDto(),
             PatientType = entity.PatientType,
-            AutoRegistrationNumber = entity.Person.AutoRegistrationNumber
         };
     }
 

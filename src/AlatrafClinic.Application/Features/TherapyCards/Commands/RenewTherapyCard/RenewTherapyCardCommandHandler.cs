@@ -165,6 +165,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("therapy-card", ct);
 
         _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);
         

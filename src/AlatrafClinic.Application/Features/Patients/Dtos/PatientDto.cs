@@ -9,5 +9,4 @@ public class PatientDto
     public int PersonId { get; set; }
     public PersonDto? PersonDto { get; set; }
     public PatientType PatientType { get; set; }
-    public string? AutoRegistrationNumber { get; set; }
 }

@@ -115,7 +115,7 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
     }
 
     [HttpPut("{therapyCardId:int}")]
-    [ProducesResponseType(typeof(TherapyCardDto), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -144,7 +144,7 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
         ), ct);
 
         return result.Match(
-            response => Ok(response),
+            _ => NoContent(),
             Problem);
     }
 
@@ -221,7 +221,4 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
             Problem
         );
     }
-
-    
-
 }

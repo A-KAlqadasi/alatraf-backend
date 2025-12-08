@@ -27,5 +27,9 @@ public static class PersonErrors
     public static readonly Error NameIsExist = Error.Conflict("Person.NameIsExist", "Name is already exists");
 
     public static readonly Error NotFound = Error.NotFound("Person.NotFound", "Person is not found");
+
+    public static readonly Error PatientIsRequired = Error.Validation("Person.PatientIsRequired", "Patient is required to be assigned to person");
+
+    public static readonly Error DoctorIsRequired = Error .Validation("Person.DoctorIsRequired", "Doctor is required to be assigned to person");
     
 }
