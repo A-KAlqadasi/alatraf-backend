@@ -8,6 +8,7 @@ using AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardById;
+using AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardByIdWithSessions;
 using AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCards;
 
 using Asp.Versioning;
@@ -60,16 +61,35 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
         );
     }
 
-    [HttpGet("{therapyCardId:int}", Name = "GetTherapyCardById")]
+    [HttpGet("{therapyCardId:int}/with-sessions", Name = "GetTherapyCardByIdWithSessions")]
     [ProducesResponseType(typeof(TherapyCardDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Retrieves a therapy card by its ID.")]
     [EndpointDescription("Fetches detailed information about a specific therapy card using its unique identifier.")]
-    [EndpointName("GetTherapyCardById")]
+    [EndpointName("GetTherapyCardByIdWithSessions")]
     [ApiVersion("1.0")]
     public async Task<IActionResult> GetById(int therapyCardId, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new GetTherapyCardByIdWithSessionsQuery(therapyCardId), ct);
+        
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
+    }
+
+    [HttpGet("{therapyCardId:int}", Name = "GetTherapyCardId")]
+    [ProducesResponseType(typeof(TherapyCardDiagnosisDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves a therapy card details by Id, without sessions info.")]
+    [EndpointDescription("Fetches person, diagnosis and programs info about a specific therapy card using its unique identifier.")]
+    [EndpointName("GetTherapyCardId")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> GetTherpyCardById(int therapyCardId, CancellationToken ct = default)
     {
         var result = await sender.Send(new GetTherapyCardByIdQuery(therapyCardId), ct);
         
@@ -80,7 +100,7 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(TherapyCardDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(TherapyCardDiagnosisDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Creates a new therapy card.")]

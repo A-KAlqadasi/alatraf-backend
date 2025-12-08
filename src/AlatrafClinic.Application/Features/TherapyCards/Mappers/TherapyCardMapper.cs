@@ -2,6 +2,7 @@ using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.TherapyCards;
+using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Mappers;
@@ -20,8 +21,8 @@ public static class TherapyCardMapper
             NumberOfSessions = entity.NumberOfTakenSessions,
             ProgramStartDate = entity.ProgramStartDate,
             ProgramEndDate = entity.ProgramEndDate,
-            TherapyCardType = entity.Type,
-            CardStatus = entity.CardStatus,
+            TherapyCardType = entity.Type.ToArabicTherapyCardType(),
+            CardStatus = entity.CardStatus.ToArabicTherapyCardStatus(),
             Notes = entity.Notes,
             Programs = entity.DiagnosisPrograms?.ToDtos(),
             Sessions = entity.Sessions?.ToDtos()
@@ -76,6 +77,73 @@ public static class TherapyCardMapper
             DoctorName = program.DoctorSectionRoom?.Doctor?.Person?.FullName
         };
     }
+
+    public static TherapyCardDiagnosisDto ToTherapyDiagnosisDto(this TherapyCard entity)
+    {
+        return new TherapyCardDiagnosisDto
+        {
+            TicketId = entity.Diagnosis.TicketId,
+
+            PatientId = entity.Diagnosis.PatientId,
+
+            PatientName = entity.Diagnosis.Patient.Person.FullName,
+
+            Gender  = entity.Diagnosis.Patient.Person.Gender ? "ذكر" : "أنثى",
+            Age = DateTime.Now.Year - entity.Diagnosis.Patient.Person.Birthdate.Year,
+            DiagnosisId = entity.DiagnosisId,
+
+            DiagnosisText = entity.Diagnosis.DiagnosisText,
+
+            InjuryDate  = entity.Diagnosis.InjuryDate,
+
+            DiagnosisType = entity.Diagnosis.DiagnoType.ToArabicDiagnosisType(),
+
+            InjuryReasons = entity.Diagnosis.InjuryReasons.ToDtos(),
+            InjurySides = entity.Diagnosis.InjurySides.ToDtos(),
+            InjuryTypes = entity.Diagnosis.InjuryTypes.ToDtos(),
+            Programs = entity.Diagnosis.DiagnosisPrograms.ToDtos(),
+            TherapyCardId  = entity.Id,
+            ProgramStartDate = entity.ProgramStartDate,
+            ProgramEndDate  = entity.ProgramEndDate,
+
+            TherapyCardType = entity.Type.ToArabicTherapyCardType(),
+
+            CardStatus = entity.CardStatus.ToArabicTherapyCardStatus(),
+
+            Notes = entity.Notes
+        
+        };
+    }
+
+    public static List<TherapyCardDiagnosisDto> ToTherapyDiagnosisDtos(this IEnumerable<TherapyCard> therapyCards)
+    {
+        return therapyCards.Select(t=> t.ToTherapyDiagnosisDto()).ToList();
+    }
+    
+
+    public static string ToArabicTherapyCardType(this TherapyCardType type)
+    {
+        switch (type)
+        {
+            case TherapyCardType.General : return "عام";
+            case TherapyCardType.Special : return "خاص";
+            case TherapyCardType.NerveKids : return "أطفال اعصاب";
+            default:
+             throw new Exception("Therapy card type is unknown");
+        }
+    }
+
+    public static string ToArabicTherapyCardStatus(this TherapyCardStatus status)
+    {
+        switch (status)
+        {
+            case TherapyCardStatus.New : return "لأول مرة";
+            case TherapyCardStatus.Renew : return "مجدد";
+            default:
+            throw new Exception("Therapy card status is unknown");
+        }
+    }
+
 
    
 }

@@ -7,6 +7,8 @@ using AlatrafClinic.Application.Features.Patients.Commands.UpdatePatient;
 using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.Patients.Queries.GetPatientById;
 using AlatrafClinic.Application.Features.Patients.Queries.GetPatients;
+using AlatrafClinic.Application.Features.TherapyCards.Dtos;
+using AlatrafClinic.Application.Features.TherapyCards.Queries.GetPatientTherapyCards;
 
 using Asp.Versioning;
 
@@ -65,6 +67,25 @@ public sealed class PatientsController(ISender sender) : ApiController
     public async Task<IActionResult> GetById(int patientId, CancellationToken ct = default)
     {
         var result = await sender.Send(new GetPatientByIdQuery(patientId), ct);
+        
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
+    }
+
+    [HttpGet("{patientId:int}/therapy-cards", Name = "GetTherapyCardsByPatientId")]
+    [ProducesResponseType(typeof(List<TherapyCardDiagnosisDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Fetches patient's therapy cards by Id.")]
+    [EndpointDescription("Retrieve patient's therapy cards info (diagnosis, medical programs no sessions included) by patient Id")]
+    [EndpointName("GetTherapyCardsByPatientId")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> GetTherapyCardsByPatientId(int patientId, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new GetPatientTherapyCardsQuery(patientId), ct);
         
         return result.Match(
             response => Ok(response),

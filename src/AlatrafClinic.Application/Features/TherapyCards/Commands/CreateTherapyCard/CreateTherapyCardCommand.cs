@@ -20,4 +20,4 @@ public sealed record CreateTherapyCardCommand(
     TherapyCardType TherapyCardType,
     List<CreateTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null
-) : IRequest<Result<TherapyCardDto>>;
+) : IRequest<Result<TherapyCardDiagnosisDto>>;

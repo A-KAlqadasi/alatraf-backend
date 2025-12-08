@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
 
-public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCommand, Result<TherapyCardDto>>
+public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCommand, Result<TherapyCardDiagnosisDto>>
 {
     private readonly ILogger<RenewTherapyCardCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -36,7 +36,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         _diagnosisService = diagnosisService;
     }
 
-    public async Task<Result<TherapyCardDto>> Handle(RenewTherapyCardCommand command, CancellationToken ct)
+    public async Task<Result<TherapyCardDiagnosisDto>> Handle(RenewTherapyCardCommand command, CancellationToken ct)
     {
         TherapyCard? currentTherapy = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
 
@@ -169,6 +169,6 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 
         _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);
         
-        return therapyCard.ToDto();;
+        return therapyCard.ToTherapyDiagnosisDto();;
     }
 }
