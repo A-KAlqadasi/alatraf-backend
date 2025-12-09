@@ -1,4 +1,5 @@
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -29,43 +30,28 @@ public class ExchangeOrderConfiguration : IEntityTypeConfiguration<ExchangeOrder
         builder.Property(x => x.RelatedOrderId);
         builder.Property(x => x.RelatedSaleId);
 
-        // Audit properties
-        builder.Property(x => x.CreatedAtUtc)
-               .IsRequired();
+        // // Audit properties
+        // builder.Property(x => x.CreatedAtUtc)
+        //        .IsRequired();
 
-        builder.Property(x => x.CreatedBy)
-               .HasMaxLength(200);
+        // builder.Property(x => x.CreatedBy)
+        //        .HasMaxLength(200);
 
-        builder.Property(x => x.LastModifiedUtc);
-        builder.Property(x => x.LastModifiedBy)
-               .HasMaxLength(200);
+        // builder.Property(x => x.LastModifiedUtc);
+        // builder.Property(x => x.LastModifiedBy)
+        //        .HasMaxLength(200);
 
-        // Foreign key to Store
+
         builder.HasOne(x => x.Store)
-               .WithMany()
-               .HasForeignKey(x => x.StoreId)
-               .OnDelete(DeleteBehavior.Restrict);
+                       .WithMany()
+                       .HasForeignKey(x => x.StoreId)
+                       .OnDelete(DeleteBehavior.Restrict);
 
-        // Owned collection: Items
-        builder.OwnsMany(x => x.Items, items =>
-        {
-            items.ToTable("ExchangeOrderItems");
-            items.WithOwner().HasForeignKey("ExchangeOrderId");
-
-            items.HasKey(i => i.Id);
-            items.Property(i => i.Id).ValueGeneratedOnAdd();
-
-            items.Property(i => i.ExchangeOrderId).IsRequired();
-            items.Property(i => i.StoreItemUnitId).IsRequired();
-            items.Property(i => i.Quantity)
-                 .IsRequired()
-                 .HasPrecision(18, 3);
-
-            items.Property(i => i.CreatedAtUtc).IsRequired();
-            items.Property(i => i.CreatedBy).HasMaxLength(200);
-            items.Property(i => i.LastModifiedUtc);
-            items.Property(i => i.LastModifiedBy).HasMaxLength(200);
-        });
+        // علاقة One-to-Many مع ExchangeOrderItem
+        builder.HasMany(x => x.Items)
+               .WithOne(i => i.ExchangeOrder)
+               .HasForeignKey(i => i.ExchangeOrderId)
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.Navigation(x => x.Items).AutoInclude(false);
     }

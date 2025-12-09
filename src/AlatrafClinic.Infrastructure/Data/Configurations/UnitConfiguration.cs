@@ -17,16 +17,16 @@ public class UnitConfiguration : IEntityTypeConfiguration<GeneralUnit>
                .IsRequired()
                .HasMaxLength(100);
 
-        // Audit properties
-        builder.Property(x => x.CreatedAtUtc)
-               .IsRequired();
+        // // Audit properties
+        // builder.Property(x => x.CreatedAtUtc)
+        //        .IsRequired();
 
-        builder.Property(x => x.CreatedBy)
-               .HasMaxLength(200);
+        // builder.Property(x => x.CreatedBy)
+        //        .HasMaxLength(200);
 
-        builder.Property(x => x.LastModifiedUtc);
-        builder.Property(x => x.LastModifiedBy)
-               .HasMaxLength(200);
+        // builder.Property(x => x.LastModifiedUtc);
+        // builder.Property(x => x.LastModifiedBy)
+        //        .HasMaxLength(200);
 
         // Navigation to ItemUnits (not owned; many-to-many relationship)
         // Unit does not own ItemUnits; Item owns them via OwnsMany

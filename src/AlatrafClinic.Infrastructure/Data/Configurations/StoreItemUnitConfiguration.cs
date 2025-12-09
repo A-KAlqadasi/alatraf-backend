@@ -8,33 +8,24 @@ public class StoreItemUnitConfiguration : IEntityTypeConfiguration<StoreItemUnit
 {
     public void Configure(EntityTypeBuilder<StoreItemUnit> builder)
     {
-        builder.ToTable("StoreItemUnits");
+         builder.ToTable("StoreItemUnits");
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(x => x.StoreId)
-               .IsRequired();
-
-        builder.Property(x => x.ItemUnitId)
-               .IsRequired();
-
+        builder.Property(x => x.StoreId).IsRequired();
+        builder.Property(x => x.ItemUnitId).IsRequired();
         builder.Property(x => x.Quantity)
                .IsRequired()
                .HasPrecision(18, 3);
 
-        // Audit properties
-        builder.Property(x => x.CreatedAtUtc)
-               .IsRequired();
+        // علاقة مع Store
+        builder.HasOne(x => x.Store)
+               .WithMany(s => s.StoreItemUnits)
+               .HasForeignKey(x => x.StoreId)
+               .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(x => x.CreatedBy)
-               .HasMaxLength(200);
-
-        builder.Property(x => x.LastModifiedUtc);
-        builder.Property(x => x.LastModifiedBy)
-               .HasMaxLength(200);
-
-        // Foreign key to ItemUnit
+        // علاقة مع ItemUnit
         builder.HasOne(x => x.ItemUnit)
                .WithMany()
                .HasForeignKey(x => x.ItemUnitId)
