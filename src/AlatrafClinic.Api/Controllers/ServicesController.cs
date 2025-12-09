@@ -32,7 +32,7 @@ public sealed class ServicesController(ISender sender) : ApiController
         );
     }
 
-    [HttpGet("serviceId:int", Name = "GetServiceById")]
+    [HttpGet("{serviceId:int}", Name = "GetServiceById")]
     [ProducesResponseType(typeof(ServiceDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
