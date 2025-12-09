@@ -1,4 +1,5 @@
 
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.MedicalPrograms.Dtos;
 using AlatrafClinic.Application.Features.MedicalPrograms.Mappers;
@@ -7,6 +8,7 @@ using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -15,18 +17,18 @@ namespace AlatrafClinic.Application.Features.MedicalPrograms.Commands.CreateMedi
 public class CreateMedicalProgramCommandHandler : IRequestHandler<CreateMedicalProgramCommand, Result<MedicalProgramDto>>
 {
     private readonly ILogger<CreateMedicalProgramCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly HybridCache _cache;
 
-    public CreateMedicalProgramCommandHandler(ILogger<CreateMedicalProgramCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public CreateMedicalProgramCommandHandler(ILogger<CreateMedicalProgramCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _cache = cache;
     }
     public async Task<Result<MedicalProgramDto>> Handle(CreateMedicalProgramCommand command, CancellationToken ct)
     {
-        var isExists = await _unitOfWork.MedicalPrograms.IsExistsByName(command.Name, ct);
+        var isExists = await _context.MedicalPrograms.AnyAsync(mp => mp.Name == command.Name, ct);
         if (isExists)
         {
             _logger.LogWarning("Medical program {name} already exists", command.Name);
@@ -43,8 +45,11 @@ public class CreateMedicalProgramCommandHandler : IRequestHandler<CreateMedicalP
 
         var medicalProgram = medicalProgramResult.Value;
 
-        await _unitOfWork.MedicalPrograms.AddAsync(medicalProgram, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.MedicalPrograms.AddAsync(medicalProgram, ct);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("medical-program");
+
+        _logger.LogInformation("Medical program {name} created successfully", command.Name);
 
         return medicalProgram.ToDto();
     }
