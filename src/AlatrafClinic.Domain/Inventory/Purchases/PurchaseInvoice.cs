@@ -8,7 +8,7 @@ namespace AlatrafClinic.Domain.Inventory.Purchases;
 
 public class PurchaseInvoice : AuditableEntity<int>
 {
-    public int PurchaseInvoiceId { get; protected set; }
+    // public int PurchaseInvoiceId { get; protected set; }
     public string Number { get; private set; } = string.Empty;
     public DateTime Date { get; private set; }
 
