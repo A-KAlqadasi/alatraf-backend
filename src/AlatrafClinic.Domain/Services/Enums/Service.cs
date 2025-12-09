@@ -1,6 +1,6 @@
-namespace AlatrafClinic.Api.Requests.Common;
+namespace AlatrafClinic.Domain.Services.Enums;
 
-public enum Service : int
+public enum ServiceEnum : int
 {
     Consultation = 1,
     Therapy,

@@ -14,4 +14,4 @@ public sealed record class RenewTherapyCardCommand(
     TherapyCardType TherapyCardType,
     List<RenewTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null
-) : IRequest<Result<TherapyCardDto>>;
+) : IRequest<Result<TherapyCardDiagnosisDto>>;

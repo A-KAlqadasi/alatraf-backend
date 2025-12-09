@@ -1,48 +1,50 @@
-using Microsoft.Extensions.Logging;
-using MediatR;
-
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.TherapyCards;
 
+using MediatR;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardById;
 
-public class GetTherapyCardByIdQueryHandler
-    : IRequestHandler<GetTherapyCardByIdQuery, Result<TherapyCardDto>>
+public class GetTherapyCardByIdQueryHandler : IRequestHandler<GetTherapyCardByIdQuery, Result<TherapyCardDiagnosisDto>>
 {
     private readonly ILogger<GetTherapyCardByIdQueryHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
-    public GetTherapyCardByIdQueryHandler(ILogger<GetTherapyCardByIdQueryHandler> logger, IUnitOfWork unitOfWork)
+    public GetTherapyCardByIdQueryHandler(ILogger<GetTherapyCardByIdQueryHandler> logger, IAppDbContext context)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
-    public async Task<Result<TherapyCardDto>> Handle(GetTherapyCardByIdQuery query, CancellationToken ct)
+    public async Task<Result<TherapyCardDiagnosisDto>> Handle(GetTherapyCardByIdQuery query, CancellationToken ct)
     {
-        var card = await _unitOfWork.TherapyCards.GetByIdAsync(query.TherapyCardId, ct);
+        var therpayCard = await _context.TherapyCards
+            .AsNoTracking()
+            .Include(tc => tc.Diagnosis)
+                .ThenInclude(d => d.Patient)!.ThenInclude(p=> p.Person)
+            .Include(tc => tc.Diagnosis)
+                .ThenInclude(ir=> ir.InjuryReasons)
+            .Include(tc => tc.Diagnosis)
+                .ThenInclude(injs=> injs.InjurySides)
+            .Include(tc => tc.Diagnosis)
+                .ThenInclude(it=> it.InjuryTypes)
+            .Include(tc => tc.Diagnosis).ThenInclude(d=> d.DiagnosisPrograms)
+            .Include(tc => tc.DiagnosisPrograms)!.ThenInclude(dp => dp.MedicalProgram)
+            .FirstOrDefaultAsync(tc => tc.Id == query.TherapyCardId, ct);
 
-        // var card = await therapyQuery
-        //     .Include(tc => tc.Diagnosis)!
-        //         .ThenInclude(d => d.Patient)!.ThenInclude(p => p.Person)
-        //     .Include(tc => tc.DiagnosisPrograms)!.ThenInclude(dp => dp.MedicalProgram)
-        //     .Include(tc => tc.Sessions)!
-        //         .ThenInclude(s => s.SessionPrograms)!
-        //             .ThenInclude(sp => sp.DiagnosisProgram)!.ThenInclude(dp => dp.MedicalProgram)
-        //     .Include(tc => tc.Sessions)!
-        //         .ThenInclude(s => s.SessionPrograms)!
-        //             .ThenInclude(sp => sp.DoctorSectionRoom)
-        //     .FirstOrDefaultAsync(tc => tc.Id == query.TherapyCardId, ct);
-
-        if (card is null)
+        if(therpayCard is null)
         {
-            _logger.LogWarning("Therapy card with ID {TherapyCardId} not found.", query.TherapyCardId);
+            _logger.LogError("Therpay card with Id {id} is not found", query.TherapyCardId);
             return TherapyCardErrors.TherapyCardNotFound;
         }
 
-        return card.ToDto();
+        return therpayCard.ToTherapyDiagnosisDto();
     }
 }

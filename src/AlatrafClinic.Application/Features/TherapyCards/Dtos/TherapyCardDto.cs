@@ -1,6 +1,4 @@
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
-using AlatrafClinic.Domain.TherapyCards;
-using AlatrafClinic.Domain.TherapyCards.Enums;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Dtos;
 
@@ -12,8 +10,8 @@ public class TherapyCardDto
     public int? NumberOfSessions { get; set; }
     public DateTime? ProgramStartDate { get; set; }
     public DateTime? ProgramEndDate { get; set; }
-    public TherapyCardType TherapyCardType { get; set; }
-    public TherapyCardStatus CardStatus { get; set; }
+    public string TherapyCardType { get; set; } = string.Empty;
+    public string CardStatus { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public List<DiagnosisProgramDto>? Programs { get; set; }
     public List<SessionDto>? Sessions { get; set; }

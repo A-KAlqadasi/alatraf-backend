@@ -7,6 +7,7 @@ using AlatrafClinic.Domain.TherapyCards;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.GenerateSessions;
@@ -15,11 +16,13 @@ public class GenerateSessionsCommandHandler : IRequestHandler<GenerateSessionsCo
 {
     private readonly ILogger<GenerateSessionsCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly HybridCache _cache;
 
-    public GenerateSessionsCommandHandler(ILogger<GenerateSessionsCommandHandler> logger, IUnitOfWork unitOfWork)
+    public GenerateSessionsCommandHandler(ILogger<GenerateSessionsCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
     public async Task<Result<List<SessionDto>>> Handle(GenerateSessionsCommand command, CancellationToken ct)
     {
@@ -43,6 +46,7 @@ public class GenerateSessionsCommandHandler : IRequestHandler<GenerateSessionsCo
         var sessions = therapyCard.Sessions.Where(x => DateTime.Now >= x.SessionDate).ToList();
 
         _logger.LogInformation("Generated {SessionCount} sessions for Therapy Card ID {TherapyCardId}.", sessions.Count, command.TherapyCardId);
+        await _cache.RemoveByTagAsync("session", ct);
         
         return sessions.ToDtos();
     }

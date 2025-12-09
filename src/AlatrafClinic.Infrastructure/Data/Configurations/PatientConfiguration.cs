@@ -20,13 +20,15 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
             .IsRequired();
 
         builder.Property(x => x.PatientType)
+            .HasConversion<string>()
+            .HasMaxLength(50)
             .IsRequired();
 
         // Relationships
         builder.HasOne(x => x.Person)
             .WithOne(x=> x.Patient)
             .HasForeignKey<Patient>(x => x.PersonId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         // One patient per person (business rule)
         builder.HasIndex(x => x.PersonId)

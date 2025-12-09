@@ -60,8 +60,9 @@ public class UpdatePatientCommandHandler(
         if (patientUpdate.IsError)
             return patientUpdate.Errors;
 
+        person.AssignPatient(patient);
+
         await _unitWork.People.UpdateAsync(person, ct);
-        await _unitWork.Patients.UpdateAsync(patient, ct);
         await _unitWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("Patient {PatientId} and Person {PersonId} updated successfully.", patient.Id, person.Id);

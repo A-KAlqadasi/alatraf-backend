@@ -4,7 +4,6 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
-using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 
@@ -14,23 +13,22 @@ public class TherapyCard : AuditableEntity<int>
 {
     public DateTime ProgramStartDate { get; private set; }
     public DateTime ProgramEndDate { get; private set; }
-    public int NumberOfSessions => _sessions.Where(s=> s.IsTaken == true).Count();
+    public int NumberOfTakenSessions => _sessions.Where(s=> s.IsTaken == true).Count();
+    public int TotalSessions => ProgramEndDate.Subtract(ProgramStartDate).Days + 1;
+
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
-    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsCompleted);
-    public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
-    
+
     public TherapyCardType Type { get; private set; }
     public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
-    public decimal TotalCost => NumberOfSessions * SessionPricePerType;
+    public decimal TotalCost => SessionPricePerType * (ProgramEndDate.Subtract(ProgramStartDate).Days + 1);
     public bool IsExpired => DateTime.Now.Date > ProgramEndDate.Date;
-    public bool IsEditable => IsActive && !IsExpired && !IsPaid && _sessions.Count() == 0;
+    public bool IsEditable => IsActive && !IsExpired && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();
     public IReadOnlyCollection<Session> Sessions => _sessions.AsReadOnly();
     public Session? LatestSession => _sessions.OrderByDescending(s => s.SessionDate).FirstOrDefault();
-     
     private readonly List<DiagnosisProgram> _diagnosisPrograms = new();
     public IReadOnlyCollection<DiagnosisProgram> DiagnosisPrograms => _diagnosisPrograms.AsReadOnly();
     public int? ParentCardId { get; private set; }
@@ -56,11 +54,6 @@ public class TherapyCard : AuditableEntity<int>
 
     public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status, int? parentCardId = null, string? notes = null)
     {
-        if (diagnosisId <= 0)
-        {
-            return TherapyCardErrors.InvalidDiagnosisId;
-        }
-
         if (programStartDate < DateTime.Now)
         {
             return TherapyCardErrors.ProgramStartDateNotInPast;
@@ -153,23 +146,20 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.Readonly;
         }
 
-        if (!IsPaid)
-        {
-            return TherapyCardErrors.IsNotPaid;
-        }
-
+        
         if (DateTime.Now > ProgramEndDate)
         {
             return TherapyCardErrors.ProgramEnded;
         }
 
-        if (_sessions.Count >= NumberOfSessions)
+        if (_sessions.Count >= TotalSessions)
         {
-            return TherapyCardErrors.ProgramEnded;
+            return TherapyCardErrors.AllSessionsAlreadyGenerated;
         }
-        ;
+        
         return Result.Success;
     }
+    
     public Result<Session> AddSession(List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
     {
         var sessionValidate = SessionValidation();

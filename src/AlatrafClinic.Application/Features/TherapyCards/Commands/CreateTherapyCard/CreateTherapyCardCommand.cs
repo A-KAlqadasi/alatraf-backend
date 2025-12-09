@@ -15,10 +15,9 @@ public sealed record CreateTherapyCardCommand(
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,
-    int PatientId,
     DateTime ProgramStartDate,
     DateTime ProgramEndDate,
     TherapyCardType TherapyCardType,
     List<CreateTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null
-) : IRequest<Result<TherapyCardDto>>;
+) : IRequest<Result<TherapyCardDiagnosisDto>>;

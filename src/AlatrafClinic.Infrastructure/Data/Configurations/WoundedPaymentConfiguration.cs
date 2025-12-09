@@ -13,7 +13,7 @@ public sealed class WoundedPaymentConfiguration : IEntityTypeConfiguration<Wound
 
         builder.HasKey(w => w.Id);
 
-        builder.Property(w => w.Id)
+        builder.Property(w => w.Id).ValueGeneratedNever()
             .HasColumnName("WoundedPaymentId");
 
         builder.HasOne(w => w.Payment)

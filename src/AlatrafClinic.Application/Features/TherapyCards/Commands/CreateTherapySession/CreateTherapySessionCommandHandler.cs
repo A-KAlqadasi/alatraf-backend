@@ -39,7 +39,13 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
 
             return TherapyCardErrors.TherapyCardExpired;
         }
-        var session = therapyCard.AddSession(command.SessionProgramsData);
+        List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData = new();
+        foreach (var sessionProgram in command.SessionProgramsData)
+        {
+            sessionProgramsData.Add((sessionProgram.DiagnosisProgramId, sessionProgram.DoctorSectionRoomId)); 
+        }
+
+        var session = therapyCard.AddSession(sessionProgramsData);
         
         if (session.IsError)
         {
@@ -50,6 +56,8 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
 
         await _unitOfWork.TherapyCards.UpdateAsync(therapyCard, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("session", ct);
+
 
         _logger.LogInformation("TherapyCard {TherapyCardId} updated with new session {Number}.", therapyCard.Id, session.Value.Number);
 

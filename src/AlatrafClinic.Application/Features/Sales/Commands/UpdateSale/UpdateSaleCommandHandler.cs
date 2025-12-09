@@ -59,7 +59,6 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
             injuryReasons: command.InjuryReasons,
             injurySides: command.InjurySides,
             injuryTypes: command.InjuryTypes,
-            patientId: command.PatientId,
             DiagnosisType.Sales,
             ct: ct);
 

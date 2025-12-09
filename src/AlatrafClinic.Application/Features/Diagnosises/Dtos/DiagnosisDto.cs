@@ -2,7 +2,6 @@ using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.Sales.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
-using AlatrafClinic.Domain.Diagnosises.Enums;
 
 namespace AlatrafClinic.Application.Features.Diagnosises.Dtos;
 
@@ -17,7 +16,7 @@ public class DiagnosisDto
     public string PatientName { get; set; } = string.Empty;
     public PatientDto? Patient { get; set; }
 
-    public DiagnosisType DiagnosisType { get; set; }
+    public string DiagnosisType { get; set; } = string.Empty;
 
     public List<InjuryDto> InjuryReasons { get; set; } = new();
     public List<InjuryDto> InjurySides { get; set; } = new();

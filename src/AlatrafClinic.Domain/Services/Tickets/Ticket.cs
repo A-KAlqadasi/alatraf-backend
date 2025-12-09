@@ -10,8 +10,8 @@ namespace AlatrafClinic.Domain.Services.Tickets;
 
 public class Ticket : AuditableEntity<int>
 {
-    public int PatientId { get; private set; }
-    public Patient Patient { get; private set; } = default!;
+    public int? PatientId { get; private set; }
+    public Patient? Patient { get; private set; }
     public int ServiceId { get; private set; }
     public Service Service { get; private set; } = default!;
     public decimal? ServicePrice { get; private set; } = null;
@@ -25,30 +25,30 @@ public class Ticket : AuditableEntity<int>
 
     private Ticket() { }
 
-    private Ticket(Patient patient, Service service)
+    private Ticket(Patient? patient, Service service)
     {
         Patient = patient;
-        PatientId = patient.Id;
+        PatientId = patient?.Id;
         Service = service;
         ServicePrice = service.Price;
         ServiceId = service.Id;
     }
-    public static Result<Ticket> Create(Patient patient, Service service)
+    public static Result<Ticket> Create(Patient? patient, Service service)
     {
-        if (patient is null)
-        {
-            return TicketErrors.PatientIsRequired;
-        }
-
         if (service is null)
         {
             return TicketErrors.ServiceIsRequired;
         }
 
+        if (service.Id != 1 && patient is null)
+        {
+            return TicketErrors.PatientIsRequired;
+        }
+
         return new Ticket(patient, service);
     }
 
-    public Result<Updated> Update(Patient patient, Service service)
+    public Result<Updated> Update(Patient patient, Service service, TicketStatus? status = null)
     {
         if (!IsEditable)
         {
@@ -69,9 +69,11 @@ public class Ticket : AuditableEntity<int>
         Service = service;
         ServiceId = service.Id;
         ServicePrice = service.Price;
+        Status = status ?? Status;
 
         return Result.Updated;
     }
+
     public Result<Updated> AssignDiagnosis(Diagnosis diagnosis)
     {
         if (Diagnosis is not null)

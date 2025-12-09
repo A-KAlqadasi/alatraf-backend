@@ -5,6 +5,7 @@ using AlatrafClinic.Domain.Services.Tickets;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Tickets.Commands.UpdateTicket;
@@ -13,11 +14,13 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateTicketCommandHandler> _logger;
+    private readonly HybridCache _cache;
 
-    public UpdateTicketCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateTicketCommandHandler> logger)
+    public UpdateTicketCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateTicketCommandHandler> logger, HybridCache cache)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _cache = cache;
     }
 
     public async Task<Result<Updated>> Handle(UpdateTicketCommand command, CancellationToken ct)
@@ -44,7 +47,7 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
             return Domain.Services.ServiceErrors.ServiceNotFound;
         }
 
-        var updateResult = ticket.Update(patient, service);
+        var updateResult = ticket.Update(patient, service, command.Status);
         if (updateResult.IsError)
         {
             _logger.LogError("Failed to update ticket Id {TicketId}: {Error}", command.TicketId, updateResult.Errors);
@@ -53,6 +56,7 @@ public class UpdateTicketCommandHandler : IRequestHandler<UpdateTicketCommand, R
 
         await _unitOfWork.Tickets.UpdateAsync(ticket, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("ticket", ct);
         
         _logger.LogInformation("Ticket with Id {TicketId} updated successfully.", command.TicketId);
         

@@ -18,7 +18,7 @@ using AlatrafClinic.Domain.Payments;
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 
 public sealed class CreateTherapyCardCommandHandler
-    : IRequestHandler<CreateTherapyCardCommand, Result<TherapyCardDto>>
+    : IRequestHandler<CreateTherapyCardCommand, Result<TherapyCardDiagnosisDto>>
 {
     private readonly ILogger<CreateTherapyCardCommandHandler> _logger;
     private readonly HybridCache _cache;
@@ -37,7 +37,7 @@ public sealed class CreateTherapyCardCommandHandler
         _diagnosisService = diagnosisService;
     }
 
-    public async Task<Result<TherapyCardDto>> Handle(CreateTherapyCardCommand command, CancellationToken ct)
+    public async Task<Result<TherapyCardDiagnosisDto>> Handle(CreateTherapyCardCommand command, CancellationToken ct)
     {
         if (command.Programs is null || command.Programs.Count == 0)
             return DiagnosisErrors.MedicalProgramsAreRequired;
@@ -49,7 +49,6 @@ public sealed class CreateTherapyCardCommandHandler
             command.InjuryReasons,
             command.InjurySides,
             command.InjuryTypes,
-            command.PatientId,
             DiagnosisType.Therapy,
             ct);
 
@@ -120,16 +119,17 @@ public sealed class CreateTherapyCardCommandHandler
 
         var payment = paymentResult.Value;
 
+        diagnosis.AssignTherapyCard(therapyCard);
         diagnosis.AssignPayment(payment);
+        
 
-        await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.TherapyCards.AddAsync(therapyCard, ct);
-        await _unitOfWork.Payments.AddAsync(payment, ct);
+        await _unitOfWork.Diagnoses.AddAsync(diagnosis);
         await _unitOfWork.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("therapy-card", ct);
 
         
         _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);
         
-        return therapyCard.ToDto();
+        return therapyCard.ToTherapyDiagnosisDto();
     }
 }

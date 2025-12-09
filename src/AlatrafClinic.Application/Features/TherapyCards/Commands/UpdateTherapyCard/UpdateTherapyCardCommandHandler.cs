@@ -52,7 +52,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             return TherapyCardErrors.DiagnosisNotIncluded;
         }
 
-        var updateDiagnosisResult = await _diagnosisUpdateService.UpdateAsync(currentDiagnosis.Id, command.TicketId, command.DiagnosisText, command.InjuryDate, command.InjuryReasons, command.InjurySides, command.InjuryTypes, command.PatientId, DiagnosisType.Therapy, ct);
+        var updateDiagnosisResult = await _diagnosisUpdateService.UpdateAsync(currentDiagnosis.Id, command.TicketId, command.DiagnosisText, command.InjuryDate, command.InjuryReasons, command.InjurySides, command.InjuryTypes, DiagnosisType.Therapy, ct);
 
         if (updateDiagnosisResult.IsError)
         {
@@ -118,7 +118,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             return upsertTherapyResult.Errors;
         }
 
-        var currentPayment = currentTherapy.Payment;
+        var currentPayment = currentTherapy.Diagnosis.Payments.FirstOrDefault(t=> t.PaymentReference != PaymentReference.TherapyCardDamagedReplacement);
         
         if (currentPayment is null)
         {
@@ -141,11 +141,11 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         }
 
         updatedDiagnosis.AssignPayment(currentPayment);
+        updatedDiagnosis.AssignTherapyCard(currentTherapy);
 
         await _unitOfWork.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
-        await _unitOfWork.TherapyCards.UpdateAsync(currentTherapy, ct);
-        await _unitOfWork.Payments.UpdateAsync(currentPayment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("therapy-card", ct);
 
         _logger.LogInformation("TherapyCard with id {TherapyCardId} updated successfully", command.TherapyCardId);
 

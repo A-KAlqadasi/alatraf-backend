@@ -42,7 +42,7 @@ public class GetDiagnosesQueryHandler
                                     ? d.Patient.Person.FullName
                                     : string.Empty,
 
-                DiagnosisType = d.DiagnoType,
+                DiagnosisType = d.DiagnoType.ToArabicDiagnosisType(),
 
                 InjuryReasons = d.InjuryReasons.ToDtos(),
                 InjurySides   = d.InjurySides.ToDtos(),

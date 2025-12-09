@@ -12,7 +12,6 @@ public sealed record class CreateSaleCommand(
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,
-    int PatientId,
     List<CreateSaleItemCommand> SaleItems,
     string? Notes = null
 ) : IRequest<Result<SaleDto>>;

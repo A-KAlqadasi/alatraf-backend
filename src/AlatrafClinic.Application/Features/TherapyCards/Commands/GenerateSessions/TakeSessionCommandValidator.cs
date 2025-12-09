@@ -1,3 +1,5 @@
+using AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapySession;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.GenerateSessions;
@@ -12,8 +14,7 @@ public class TakeSessionCommandValidator : AbstractValidator<TakeSessionCommand>
         RuleFor(x => x.SessionId)
             .GreaterThan(0).WithMessage("SessionId must be greater than 0.");
 
-        RuleFor(x => x.SessionProgramsData)
-            .NotNull().WithMessage("SessionProgramsData cannot be null.")
-            .Must(x => x.Count > 0).WithMessage("SessionProgramsData must contain at least one item.");
+        RuleForEach(x=> x.SessionProgramsData)
+            .SetValidator(new SessionProgramDataValidator());
     }
 }

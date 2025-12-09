@@ -33,10 +33,10 @@ public class Patient : AuditableEntity<int>
 
     public static Result<Patient> Create(int personId, PatientType patientType)
     {
-        if (personId <= 0)
-        {
-            return PatientErrors.PersonIdRequired;
-        }
+        // if (personId <= 0)
+        // {
+        //     return PatientErrors.PersonIdRequired;
+        // }
 
         if (!Enum.IsDefined(typeof(PatientType), patientType))
         {
