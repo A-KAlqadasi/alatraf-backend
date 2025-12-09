@@ -4,16 +4,19 @@ using AlatrafClinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AlatrafClinic.Infrastructure.Data.Migrations
+namespace AlatrafClinic.Infrastructure.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    partial class AlatrafClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251209204341_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,28 +66,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Departments", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "العلاج الطبيعي"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "إدارة فنية"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.DoctorSectionRooms.DoctorSectionRoom", b =>
@@ -148,53 +129,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("DoctorId", "IsActive");
 
                     b.ToTable("DoctorSectionRooms", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DoctorId = 1,
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "تكليف أساسي للطبيب في القسم الأول",
-                            RoomId = 1,
-                            SectionId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DoctorId = 2,
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "تكليف للطبيب بقسم الحديد",
-                            SectionId = 8
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DoctorId = 3,
-                            EndDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = false,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "تكليف منتهي للطبيبة في قسم الحرارة",
-                            RoomId = 3,
-                            SectionId = 2
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.Sections.Rooms.Room", b =>
@@ -241,41 +175,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Rooms", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "غرفة ١٠١",
-                            SectionId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "غرفة ١٠٢",
-                            SectionId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "غرفة ٢٠١",
-                            SectionId = 2
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.Sections.Section", b =>
@@ -323,41 +222,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("Name", "DepartmentId");
 
                     b.ToTable("Sections", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "القسم الاول"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "القسم الثاني"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 2,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "القسم الثالث"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Diagnosises.Diagnosis", b =>
@@ -416,50 +280,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Diagnoses", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnoType = "Limbs",
-                            DiagnosisText = "Lower back pain due to muscle strain",
-                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 1,
-                            TicketId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnoType = "Therapy",
-                            DiagnosisText = "Right knee ligament sprain",
-                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 2,
-                            TicketId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnoType = "Sales",
-                            DiagnosisText = "Neck pain caused by whiplash injury",
-                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 3,
-                            TicketId = 3
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts.DiagnosisIndustrialPart", b =>
@@ -530,53 +350,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("DiagnosisIndustrialParts", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IndustrialPartUnitId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Price = 80m,
-                            Quantity = 1,
-                            RepairCardId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IndustrialPartUnitId = 2,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Price = 120m,
-                            Quantity = 1,
-                            RepairCardId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IndustrialPartUnitId = 3,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Price = 90m,
-                            Quantity = 1,
-                            RepairCardId = 1
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms.DiagnosisProgram", b =>
@@ -635,47 +408,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("DiagnosisPrograms", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 2,
-                            Duration = 10,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            MedicalProgramId = 1,
-                            Notes = "خطة علاج لآلام أسفل الظهر لمدة عشرة جلسات"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 2,
-                            Duration = 8,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            MedicalProgramId = 2,
-                            Notes = "برنامج تأهيل للركبة بعد إصابة رياضية"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 2,
-                            Duration = 12,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            MedicalProgramId = 3,
-                            Notes = "تأهيل للرقبة والكتف بعد إصابة حادة"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Diagnosises.InjuryReasons.InjuryReason", b =>
@@ -719,38 +451,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("InjuryReasons", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "حادث مروري"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "إصابة عمل"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "إصابة رياضية"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Diagnosises.InjurySides.InjurySide", b =>
@@ -793,38 +493,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("InjurySides", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "الجانب الأيسر"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "الجانب الأيمن"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "الجانبين"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Diagnosises.InjuryTypes.InjuryType", b =>
@@ -867,38 +535,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("InjuryTypes", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "كسر"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "حرق"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "التواء"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.DisabledCards.DisabledCard", b =>
@@ -955,44 +591,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("DisabledCards", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CardNumber = "DC-0001",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CardNumber = "DC-0002",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CardNumber = "DC-0003",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 3
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.ExitCards.ExitCard", b =>
@@ -1102,6 +700,113 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("RefreshTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("RelatedOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RelatedSaleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("ExchangeOrders", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExchangeOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("StoreItemUnitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExchangeOrderId");
+
+                    b.HasIndex("StoreItemUnitId");
+
+                    b.ToTable("ExchangeOrderItems", (string)null);
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Items.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -1126,7 +831,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1142,13 +848,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BaseUnitId");
 
-                    b.ToTable("Item");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Items.ItemUnit", b =>
@@ -1160,7 +867,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("ConversionFactor")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)")
+                        .HasDefaultValue(1m);
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("datetimeoffset");
@@ -1187,13 +897,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("MaxPriceToPay")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal?>("MinPriceToPay")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<int>("UnitId")
                         .HasColumnType("int");
@@ -1204,10 +917,277 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("ItemUnit");
+                    b.ToTable("ItemUnits", (string)null);
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Units.Unit", b =>
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Purchases.PurchaseInvoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("PaidAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("PaymentAmount")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PaymentReference")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("PostedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("PurchaseInvoices", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Purchases.PurchaseItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PurchaseInvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("StoreItemUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseInvoiceId");
+
+                    b.HasIndex("StoreItemUnitId");
+
+                    b.ToTable("PurchaseItems", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.Store", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Stores", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ItemUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemUnitId");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("StoreItemUnits", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Suppliers.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Units.GeneralUnit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1243,52 +1223,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("Units", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "قطعة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "زوج"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "يمين"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "يسار"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Patients.Patient", b =>
@@ -1321,10 +1256,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedUtc")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("PatientType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<byte>("PatientType")
+                        .HasColumnType("tinyint");
 
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
@@ -1337,41 +1270,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Patients", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientType = "Normal",
-                            PersonId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientType = "Wounded",
-                            PersonId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientType = "Disabled",
-                            PersonId = 3
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Payments.DisabledPayments.DisabledPayment", b =>
@@ -1454,18 +1352,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PatientPayments", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 10,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            VoucherNumber = "VOU-0001"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Payments.Payment", b =>
@@ -1478,6 +1364,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AccountKind")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -1542,61 +1429,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Payments", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 10,
-                            AccountKind = "Patient",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 1,
-                            IsCompleted = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "دفع كامل مقابل جلسة علاج",
-                            PaidAmount = 200m,
-                            PaymentDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentReference = "TherapyCardNew",
-                            TicketId = 1,
-                            TotalAmount = 200m
-                        },
-                        new
-                        {
-                            Id = 11,
-                            AccountKind = "Wounded",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 2,
-                            Discount = 50m,
-                            IsCompleted = false,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "دفع جزئي مع خصم",
-                            PaidAmount = 250m,
-                            PaymentDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentReference = "TherapyCardRenew",
-                            TicketId = 2,
-                            TotalAmount = 300m
-                        },
-                        new
-                        {
-                            Id = 12,
-                            AccountKind = "Disabled",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 3,
-                            IsCompleted = false,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "لم يتم الدفع بعد",
-                            PaymentReference = "Sales",
-                            TicketId = 3,
-                            TotalAmount = 150m
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Payments.WoundedPayments.WoundedPayment", b =>
@@ -1640,18 +1472,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("WoundedCardId");
 
                     b.ToTable("WoundedPayments", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 11,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            WoundedCardId = 1
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.People.Doctors.Doctor", b =>
@@ -1705,47 +1525,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Doctors", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PersonId = 1,
-                            Specialization = "أخصائي علاج طبيعي"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 2,
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PersonId = 2,
-                            Specialization = "اخصائي اطراف صناعية"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsActive = false,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PersonId = 3,
-                            Specialization = "أخصائية أعصاب"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.People.Person", b =>
@@ -1821,68 +1600,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("People", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "صنعاء",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            FullName = "علي أحمد",
-                            Gender = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            NationalNo = "NAT-0001",
-                            Phone = "771234567"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "عدن",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            FullName = "محمد صالح",
-                            Gender = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            NationalNo = "NAT-0002",
-                            Phone = "781234568"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Address = "تعز",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            FullName = "سارة علي",
-                            Gender = false,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            NationalNo = "NAT-0003",
-                            Phone = "731234569"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Address = "تعز",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            FullName = "عبدالكريم شوقي يوسف أحمد",
-                            Gender = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            NationalNo = "NAT-0004",
-                            Phone = "782422822"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.DeliveryTimes.DeliveryTime", b =>
@@ -1975,41 +1692,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("IndustrialParts", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Description = "تستخدم لتثبيت ودعم مفصل الركبة",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "دعامة الركبة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Description = "يساعد على دعم أسفل الظهر وتخفيف الألم",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "حزام الظهر الطبي"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Description = "تستخدم لتثبيت الرقبة في حالات الإصابات",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = " كولار رقبة طبية"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPartUnit", b =>
@@ -2058,44 +1740,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("UnitId");
 
                     b.ToTable("IndustrialPartUnits", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IndustrialPartId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PricePerUnit = 80m,
-                            UnitId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IndustrialPartId = 2,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PricePerUnit = 120m,
-                            UnitId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IndustrialPartId = 3,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PricePerUnit = 90m,
-                            UnitId = 1
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.Order", b =>
@@ -2110,7 +1754,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTimeOffset?>("DeletedAtUtc")
                         .HasColumnType("datetimeoffset");
@@ -2122,13 +1767,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTimeOffset>("LastModifiedUtc")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("OrderType")
-                        .HasColumnType("int");
+                    b.Property<string>("OrderType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("RepairCardId")
                         .HasColumnType("int");
@@ -2136,8 +1784,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("SectionId")
                         .HasColumnType("int");
 
-                    b.Property<byte>("Status")
-                        .HasColumnType("tinyint");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -2145,7 +1795,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("SectionId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.OrderItem", b =>
@@ -2249,21 +1899,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("RepairCards", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 1,
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "بطاقة صيانة جديدة للحالة الأولى",
-                            Status = "New"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>
@@ -2290,6 +1925,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("DiagnosisId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ExchangeOrderId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -2311,6 +1949,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("DiagnosisId")
                         .IsUnique();
+
+                    b.HasIndex("ExchangeOrderId");
 
                     b.ToTable("Sales", (string)null);
                 });
@@ -2365,6 +2005,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("ItemUnitId");
 
                     b.HasIndex("SaleId");
+
+                    b.HasIndex("StoreItemUnitId");
 
                     b.ToTable("SaleItems", (string)null);
                 });
@@ -2431,22 +2073,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Appointments", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AttendDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Notes = "موعد متابعة للمريض",
-                            PatientType = "Normal",
-                            Status = "Scheduled",
-                            TicketId = 2
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Appointments.Holidays.Holiday", b =>
@@ -2506,78 +2132,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("StartDate", "EndDate", "IsRecurring", "Type");
 
                     b.ToTable("Holidays", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsRecurring = true,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "عيد العمال العالمي",
-                            StartDate = new DateTime(1, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = "Fixed"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsRecurring = true,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "عيد الوحدة اليمنية",
-                            StartDate = new DateTime(1, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = "Fixed"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsRecurring = true,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "ثورة 26 سبتمبر",
-                            StartDate = new DateTime(1, 9, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = "Fixed"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsRecurring = true,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "ثورة 14 أكتوبر",
-                            StartDate = new DateTime(1, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = "Fixed"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsRecurring = true,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "عيد الجلاء",
-                            StartDate = new DateTime(1, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = "Fixed"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Service", b =>
@@ -2632,115 +2186,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("Name");
 
                     b.ToTable("Services", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = "SRV-CONS",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "استشارة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Code = "SRV-THER",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "علاج طبيعي"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Code = "SRV-PRO",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 2,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "اطراف صناعية"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Code = "SRV-SAL",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 2,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "مبيعات"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Code = "SRV-REP",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 2,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "إصلاحات"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Code = "SRV-BON",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "عظام"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Code = "SRV-NER",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "أعصاب"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Code = "SRV-REN",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "تجديد كروت علاج"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Code = "SRV-DMG",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DepartmentId = 1,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "إصدار بدل فاقد لكرت علاج"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Tickets.Ticket", b =>
@@ -2773,7 +2218,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedUtc")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int?>("PatientId")
+                    b.Property<int>("PatientId")
                         .HasColumnType("int");
 
                     b.Property<int>("ServiceId")
@@ -2796,44 +2241,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("Tickets", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 1,
-                            ServiceId = 2,
-                            Status = "New"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 1,
-                            ServiceId = 3,
-                            Status = "Pause"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 2,
-                            ServiceId = 5,
-                            Status = "New"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Settings.AppSetting", b =>
@@ -2934,41 +2341,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("MedicalPrograms", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Description = "برنامج مخصص لعلاج آلام الظهر",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "برنامج آلام الظهر"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Description = "برنامج مخصص لتأهيل إصابات الركبة",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "برنامج تأهيل الركبة"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Description = "برنامج تأهيلي للمرضى بعد العمليات الجراحية",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "برنامج التأهيل بعد الجراحة"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.Sessions.Session", b =>
@@ -3019,34 +2391,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Sessions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            IsTaken = true,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Number = 1,
-                            SessionDate = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TherapyCardId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            IsTaken = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Number = 2,
-                            SessionDate = new DateTime(2025, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TherapyCardId = 1
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.Sessions.SessionProgram", b =>
@@ -3168,32 +2512,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("ParentCardId");
 
                     b.ToTable("TherapyCards", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CardStatus = "New",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            DiagnosisId = 2,
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            ProgramEndDate = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProgramStartDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            SessionPricePerType = 200m,
-                            Type = "General"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices.TherapyCardTypePrice", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
@@ -3219,53 +2544,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal>("SessionPrice")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("SessionPrice");
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("Type");
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TherapyCardTypePrices", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            SessionPrice = 200m,
-                            Type = "General"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            SessionPrice = 2000m,
-                            Type = "Special"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            SessionPrice = 400m,
-                            Type = "NerveKids"
-                        });
+                    b.ToTable("TherapyCardTypePrices");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.WoundedCards.WoundedCard", b =>
@@ -3322,44 +2608,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("WoundedCards", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CardNumber = "WC-0001",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CardNumber = "WC-0002",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CardNumber = "WC-0003",
-                            CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "Seed",
-                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            LastModifiedBy = "Seed",
-                            LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            PatientId = 3
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.AppUser", b =>
@@ -3433,24 +2681,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "19a59129-6c20-417a-834d-11a208d32d96",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "45a69252-a993-46d4-aa95-6dc881c3a15a",
-                            EmailConfirmed = true,
-                            IsActive = true,
-                            LockoutEnabled = false,
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJ8FZJNBD5y7YVavcn6e99DgR9n2YPF5mD31ySEh7F3hW6Y2qgFlgVzuqMbI8mgZZg==",
-                            PersonId = 4,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "f81ff42e-eb5b-4af3-a3c8-4ff90f17fe1d",
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.ApplicationPermission", b =>
@@ -3475,428 +2705,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Permissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "person:create"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "person:read"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "person:update"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "person:delete"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "service:create"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "service:read"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "service:update"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "service:delete"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "ticket:create"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "ticket:read"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "ticket:update"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "ticket:delete"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "ticket:print"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "appointment:create"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "appointment:reschedule"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name = "appointment:read"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "appointment:update"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "appointment:delete"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "appointment:change_status"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "holiday:create"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Name = "holiday:read"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Name = "holiday:update"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Name = "holiday:delete"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Name = "therapyCard:create"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Name = "therapyCard:read"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Name = "therapyCard:update"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Name = "therapyCard:delete"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Name = "therapyCard:renew"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Name = "therapyCard:generate_sessions"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Name = "therapyCard:create_session"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            Name = "repairCard:create"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            Name = "repairCard:read"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            Name = "repairCard:update"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            Name = "repairCard:delete"
-                        },
-                        new
-                        {
-                            Id = 35,
-                            Name = "repairCard:change_status"
-                        },
-                        new
-                        {
-                            Id = 36,
-                            Name = "repairCard:assign_to_technician"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            Name = "repairCard:create_delivery_time"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Name = "industrialPart:create"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Name = "industrialPart:read"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Name = "industrialPart:update"
-                        },
-                        new
-                        {
-                            Id = 41,
-                            Name = "industrialPart:delete"
-                        },
-                        new
-                        {
-                            Id = 42,
-                            Name = "medicalProgram:create"
-                        },
-                        new
-                        {
-                            Id = 43,
-                            Name = "medicalProgram:read"
-                        },
-                        new
-                        {
-                            Id = 44,
-                            Name = "medicalProgram:update"
-                        },
-                        new
-                        {
-                            Id = 45,
-                            Name = "medicalProgram:delete"
-                        },
-                        new
-                        {
-                            Id = 46,
-                            Name = "department:create"
-                        },
-                        new
-                        {
-                            Id = 47,
-                            Name = "department:read"
-                        },
-                        new
-                        {
-                            Id = 48,
-                            Name = "department:update"
-                        },
-                        new
-                        {
-                            Id = 49,
-                            Name = "department:delete"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            Name = "section:create"
-                        },
-                        new
-                        {
-                            Id = 51,
-                            Name = "section:read"
-                        },
-                        new
-                        {
-                            Id = 52,
-                            Name = "section:update"
-                        },
-                        new
-                        {
-                            Id = 53,
-                            Name = "section:delete"
-                        },
-                        new
-                        {
-                            Id = 54,
-                            Name = "room:create"
-                        },
-                        new
-                        {
-                            Id = 55,
-                            Name = "room:read"
-                        },
-                        new
-                        {
-                            Id = 56,
-                            Name = "room:update"
-                        },
-                        new
-                        {
-                            Id = 57,
-                            Name = "room:delete"
-                        },
-                        new
-                        {
-                            Id = 58,
-                            Name = "payment:create"
-                        },
-                        new
-                        {
-                            Id = 59,
-                            Name = "payment:read"
-                        },
-                        new
-                        {
-                            Id = 60,
-                            Name = "payment:update"
-                        },
-                        new
-                        {
-                            Id = 61,
-                            Name = "payment:delete"
-                        },
-                        new
-                        {
-                            Id = 62,
-                            Name = "doctor:create"
-                        },
-                        new
-                        {
-                            Id = 63,
-                            Name = "doctor:read"
-                        },
-                        new
-                        {
-                            Id = 64,
-                            Name = "doctor:update"
-                        },
-                        new
-                        {
-                            Id = 65,
-                            Name = "doctor:delete"
-                        },
-                        new
-                        {
-                            Id = 66,
-                            Name = "doctor:assign_doctor_to_section"
-                        },
-                        new
-                        {
-                            Id = 67,
-                            Name = "doctor:assign_doctor_to_section_and_room"
-                        },
-                        new
-                        {
-                            Id = 68,
-                            Name = "doctor:change_doctor_department"
-                        },
-                        new
-                        {
-                            Id = 69,
-                            Name = "doctor:end_doctor_assignment"
-                        },
-                        new
-                        {
-                            Id = 70,
-                            Name = "patient:create"
-                        },
-                        new
-                        {
-                            Id = 71,
-                            Name = "patient:read"
-                        },
-                        new
-                        {
-                            Id = 72,
-                            Name = "patient:update"
-                        },
-                        new
-                        {
-                            Id = 73,
-                            Name = "patient:delete"
-                        },
-                        new
-                        {
-                            Id = 74,
-                            Name = "patient:read_disabled_card"
-                        },
-                        new
-                        {
-                            Id = 75,
-                            Name = "patient:add_disabled_card"
-                        },
-                        new
-                        {
-                            Id = 76,
-                            Name = "patient:update_disabled_card"
-                        },
-                        new
-                        {
-                            Id = 77,
-                            Name = "patient:add_wounded_card"
-                        },
-                        new
-                        {
-                            Id = 78,
-                            Name = "patient:update_wounded_card"
-                        },
-                        new
-                        {
-                            Id = 79,
-                            Name = "patient:read_wounded_card"
-                        },
-                        new
-                        {
-                            Id = 80,
-                            Name = "sale:create"
-                        },
-                        new
-                        {
-                            Id = 81,
-                            Name = "sale:read"
-                        },
-                        new
-                        {
-                            Id = 82,
-                            Name = "sale:update"
-                        },
-                        new
-                        {
-                            Id = 83,
-                            Name = "sale:delete"
-                        },
-                        new
-                        {
-                            Id = 84,
-                            Name = "sale:change_status"
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.RolePermission", b =>
@@ -3912,428 +2720,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("RolePermissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 1
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 2
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 3
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 4
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 5
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 6
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 7
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 8
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 11
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 12
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 13
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 14
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 15
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 16
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 17
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 18
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 19
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 20
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 21
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 22
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 23
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 24
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 25
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 26
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 27
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 28
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 29
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 30
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 31
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 32
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 33
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 34
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 35
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 36
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 37
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 38
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 39
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 40
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 41
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 42
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 43
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 44
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 45
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 46
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 47
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 48
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 49
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 50
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 51
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 52
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 53
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 54
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 55
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 56
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 57
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 58
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 59
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 60
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 61
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 62
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 63
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 64
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 65
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 66
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 67
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 68
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 69
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 70
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 71
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 72
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 73
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 74
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 75
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 76
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 77
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 78
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 79
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 80
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 81
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 82
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 83
-                        },
-                        new
-                        {
-                            RoleId = "Admin",
-                            PermissionId = 84
-                        });
                 });
 
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermission", b =>
@@ -4421,110 +2807,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "Admin",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "Receptionist",
-                            Name = "Receptionist",
-                            NormalizedName = "RECEPTIONIST"
-                        },
-                        new
-                        {
-                            Id = "AccountsEmployee",
-                            Name = "AccountsEmployee",
-                            NormalizedName = "ACCOUNTSEMPLOYEE"
-                        },
-                        new
-                        {
-                            Id = "AccountsManager",
-                            Name = "AccountsManager",
-                            NormalizedName = "ACCOUNTSMANAGER"
-                        },
-                        new
-                        {
-                            Id = "TechnicalManagementDoctor",
-                            Name = "TechnicalManagementDoctor",
-                            NormalizedName = "TECHNICALMANAGEMENTDOCTOR"
-                        },
-                        new
-                        {
-                            Id = "TechnicalManagementReceptionist",
-                            Name = "TechnicalManagementReceptionist",
-                            NormalizedName = "TECHNICALMANAGEMENTRECEPTIONIST"
-                        },
-                        new
-                        {
-                            Id = "TechnicalManagementOrdersEmployee",
-                            Name = "TechnicalManagementOrdersEmployee",
-                            NormalizedName = "TECHNICALMANAGEMENTORDERSEMPLOYEE"
-                        },
-                        new
-                        {
-                            Id = "TechnicalManagementManager",
-                            Name = "TechnicalManagementManager",
-                            NormalizedName = "TECHNICALMANAGEMENTMANAGER"
-                        },
-                        new
-                        {
-                            Id = "TherapyManagementReceptionist",
-                            Name = "TherapyManagementReceptionist",
-                            NormalizedName = "THERAPYMANAGEMENTRECEPTIONIST"
-                        },
-                        new
-                        {
-                            Id = "TherapyManagementDoctor",
-                            Name = "TherapyManagementDoctor",
-                            NormalizedName = "THERAPYMANAGEMENTDOCTOR"
-                        },
-                        new
-                        {
-                            Id = "TherapyManagementManager",
-                            Name = "TherapyManagementManager",
-                            NormalizedName = "THERAPYMANAGEMENTMANAGER"
-                        },
-                        new
-                        {
-                            Id = "SalesEmployee",
-                            Name = "SalesEmployee",
-                            NormalizedName = "SALESEMPLOYEE"
-                        },
-                        new
-                        {
-                            Id = "SalesManager",
-                            Name = "SalesManager",
-                            NormalizedName = "SALESMANAGER"
-                        },
-                        new
-                        {
-                            Id = "ExchangeOrderEmployee",
-                            Name = "ExchangeOrderEmployee",
-                            NormalizedName = "EXCHANGEORDEREMPLOYEE"
-                        },
-                        new
-                        {
-                            Id = "ExchangeOrderManager",
-                            Name = "ExchangeOrderManager",
-                            NormalizedName = "EXCHANGEORDERMANAGER"
-                        },
-                        new
-                        {
-                            Id = "PurchaseEmployee",
-                            Name = "PurchaseEmployee",
-                            NormalizedName = "PURCHASEEMPLOYEE"
-                        },
-                        new
-                        {
-                            Id = "PurchaseManager",
-                            Name = "PurchaseManager",
-                            NormalizedName = "PURCHASEMANAGER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -4800,12 +3082,42 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Sale");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrderItem", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", "ExchangeOrder")
+                        .WithMany("Items")
+                        .HasForeignKey("ExchangeOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
+                        .WithMany()
+                        .HasForeignKey("StoreItemUnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExchangeOrder");
+
+                    b.Navigation("StoreItemUnit");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Items.Item", b =>
                 {
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.Unit", "BaseUnit")
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.GeneralUnit", "BaseUnit")
                         .WithMany()
                         .HasForeignKey("BaseUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BaseUnit");
@@ -4819,7 +3131,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.Unit", "Unit")
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.GeneralUnit", "Unit")
                         .WithMany("ItemUnits")
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4830,12 +3142,69 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Unit");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Purchases.PurchaseInvoice", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Suppliers.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Store");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Purchases.PurchaseItem", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Purchases.PurchaseInvoice", "PurchaseInvoice")
+                        .WithMany("Items")
+                        .HasForeignKey("PurchaseInvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
+                        .WithMany()
+                        .HasForeignKey("StoreItemUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PurchaseInvoice");
+
+                    b.Navigation("StoreItemUnit");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Items.ItemUnit", "ItemUnit")
+                        .WithMany()
+                        .HasForeignKey("ItemUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.Store", "Store")
+                        .WithMany("StoreItemUnits")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemUnit");
+
+                    b.Navigation("Store");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Patients.Patient", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.People.Person", "Person")
                         .WithOne("Patient")
                         .HasForeignKey("AlatrafClinic.Domain.Patients.Patient", "PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Person");
@@ -4947,7 +3316,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.Unit", "Unit")
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.GeneralUnit", "Unit")
                         .WithMany("IndustrialPartUnits")
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4968,7 +3337,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasOne("AlatrafClinic.Domain.Departments.Sections.Section", "Section")
                         .WithMany()
                         .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("RepairCard");
@@ -4987,7 +3356,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasOne("AlatrafClinic.Domain.RepairCards.Orders.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ItemUnit");
@@ -5014,7 +3383,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", "ExchangeOrder")
+                        .WithMany()
+                        .HasForeignKey("ExchangeOrderId");
+
                     b.Navigation("Diagnosis");
+
+                    b.Navigation("ExchangeOrder");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.SalesItems.SaleItem", b =>
@@ -5031,9 +3406,17 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
+                        .WithMany("SaleItems")
+                        .HasForeignKey("StoreItemUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("ItemUnit");
 
                     b.Navigation("Sale");
+
+                    b.Navigation("StoreItemUnit");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Appointments.Appointment", b =>
@@ -5062,7 +3445,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasOne("AlatrafClinic.Domain.Patients.Patient", "Patient")
                         .WithMany("Tickets")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("AlatrafClinic.Domain.Services.Service", "Service")
                         .WithMany("Tickets")
@@ -5351,12 +3735,32 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("DisabledPayments");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Items.Item", b =>
                 {
                     b.Navigation("ItemUnits");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Units.Unit", b =>
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Purchases.PurchaseInvoice", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.Store", b =>
+                {
+                    b.Navigation("StoreItemUnits");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", b =>
+                {
+                    b.Navigation("SaleItems");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Inventory.Units.GeneralUnit", b =>
                 {
                     b.Navigation("IndustrialPartUnits");
 

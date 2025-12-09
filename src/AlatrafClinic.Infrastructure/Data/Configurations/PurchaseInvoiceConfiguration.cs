@@ -42,16 +42,16 @@ public class PurchaseInvoiceConfiguration : IEntityTypeConfiguration<PurchaseInv
         builder.Property(x => x.PaymentReference)
                .HasMaxLength(100);
 
-        // Audit properties
-        builder.Property(x => x.CreatedAtUtc)
-               .IsRequired();
+        // // Audit properties
+        // builder.Property(x => x.CreatedAtUtc)
+        //        .IsRequired();
 
-        builder.Property(x => x.CreatedBy)
-               .HasMaxLength(200);
+        // builder.Property(x => x.CreatedBy)
+        //        .HasMaxLength(200);
 
-        builder.Property(x => x.LastModifiedUtc);
-        builder.Property(x => x.LastModifiedBy)
-               .HasMaxLength(200);
+        // builder.Property(x => x.LastModifiedUtc);
+        // builder.Property(x => x.LastModifiedBy)
+        //        .HasMaxLength(200);
 
         // Foreign keys
         builder.HasOne(x => x.Supplier)
@@ -65,39 +65,11 @@ public class PurchaseInvoiceConfiguration : IEntityTypeConfiguration<PurchaseInv
                .OnDelete(DeleteBehavior.Restrict);
 
         // Owned collection: PurchaseItems
-        builder.OwnsMany(x => x.Items, pi =>
-        {
-            pi.ToTable("PurchaseItems");
-            pi.WithOwner().HasForeignKey("PurchaseInvoiceId");
-
-            pi.HasKey(i => i.Id);
-            pi.Property(i => i.Id).ValueGeneratedOnAdd();
-
-            pi.Property(i => i.PurchaseInvoiceId).IsRequired();
-            pi.Property(i => i.StoreItemUnitId).IsRequired();
-
-            pi.Property(i => i.Quantity)
-              .IsRequired()
-              .HasPrecision(18, 3);
-
-            pi.Property(i => i.UnitPrice)
-              .IsRequired()
-              .HasPrecision(18, 3);
-
-            pi.Property(i => i.Notes)
-              .HasMaxLength(500);
-
-            pi.Property(i => i.CreatedAtUtc).IsRequired();
-            pi.Property(i => i.CreatedBy).HasMaxLength(200);
-            pi.Property(i => i.LastModifiedUtc);
-            pi.Property(i => i.LastModifiedBy).HasMaxLength(200);
-
-            // Foreign key to StoreItemUnit (external reference, not owned)
-            pi.HasOne(i => i.StoreItemUnit)
-               .WithMany()
-               .HasForeignKey(i => i.StoreItemUnitId)
-               .OnDelete(DeleteBehavior.Restrict);
-        });
+          // 🔥 Change from Owned to Dependent Entity
+        builder.HasMany(x => x.Items)
+               .WithOne(i => i.PurchaseInvoice)
+               .HasForeignKey(i => i.PurchaseInvoiceId)
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.Navigation(x => x.Items).AutoInclude(false);
     }

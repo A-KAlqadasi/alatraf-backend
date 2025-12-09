@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace AlatrafClinic.Infrastructure.Data.Migrations
+namespace AlatrafClinic.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FixServiceDepartmentsRelation : Migration
+    public partial class SeedData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -216,6 +216,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 values: new object[] { 1, "SRV-CONS", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "استشارة", null });
 
             migrationBuilder.InsertData(
+                table: "Stores",
+                columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Main Store" });
+
+            migrationBuilder.InsertData(
+                table: "Suppliers",
+                columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Phone", "SupplierName" },
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "0000000000", "Default Supplier" });
+
+            migrationBuilder.InsertData(
                 table: "Units",
                 columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
                 values: new object[,]
@@ -232,6 +242,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 values: new object[] { "19a59129-6c20-417a-834d-11a208d32d96", 0, "45a69252-a993-46d4-aa95-6dc881c3a15a", null, true, true, false, null, null, "ADMIN", "AQAAAAIAAYagAAAAEJ8FZJNBD5y7YVavcn6e99DgR9n2YPF5mD31ySEh7F3hW6Y2qgFlgVzuqMbI8mgZZg==", 4, null, false, "f81ff42e-eb5b-4af3-a3c8-4ff90f17fe1d", false, "admin" });
 
             migrationBuilder.InsertData(
+                table: "ExchangeOrders",
+                columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsApproved", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "Number", "RelatedOrderId", "RelatedSaleId", "StoreId" },
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, "EX-1", null, null, 1 });
+
+            migrationBuilder.InsertData(
                 table: "IndustrialPartUnits",
                 columns: new[] { "IndustrialPartUnitId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IndustrialPartId", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "PricePerUnit", "UnitId" },
                 values: new object[,]
@@ -242,6 +257,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Items",
+                columns: new[] { "Id", "BaseUnitId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "Description", "IsActive", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name" },
+                values: new object[] { 1, 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Sample inventory item A", true, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Sample Item A" });
+
+            migrationBuilder.InsertData(
                 table: "Patients",
                 columns: new[] { "PatientId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "PatientType", "PersonId" },
                 values: new object[,]
@@ -250,6 +270,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     { 2, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), (byte)1, 2 },
                     { 3, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), (byte)2, 3 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "PurchaseInvoices",
+                columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "Date", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Number", "PaidAtUtc", "PaymentAmount", "PaymentMethod", "PaymentReference", "PostedAtUtc", "Status", "StoreId", "SupplierId" },
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "PI-1001", null, null, null, null, null, "Draft", 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "RolePermissions",
@@ -378,6 +403,15 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "ItemUnits",
+                columns: new[] { "Id", "ConversionFactor", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "ItemId", "LastModifiedBy", "LastModifiedUtc", "MaxPriceToPay", "MinPriceToPay", "Price", "UnitId" },
+                values: new object[,]
+                {
+                    { 1, 1m, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, 1, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, null, 100m, 1 },
+                    { 2, 2m, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, 1, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, null, 180m, 2 }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Rooms",
                 columns: new[] { "RoomId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Name", "SectionId" },
                 values: new object[,]
@@ -423,6 +457,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "StoreItemUnits",
+                columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "IsDeleted", "ItemUnitId", "LastModifiedBy", "LastModifiedUtc", "Quantity", "StoreId" },
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, false, 1, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 100m, 1 });
+
+            migrationBuilder.InsertData(
                 table: "DiagnosisPrograms",
                 columns: new[] { "DiagnosisProgramId", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisId", "Duration", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "MedicalProgramId", "Notes", "TherapyCardId" },
                 values: new object[,]
@@ -433,6 +472,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "ExchangeOrderItems",
+                columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "ExchangeOrderId", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Quantity", "StoreItemUnitId" },
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 1, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), 2m, 1 });
+
+            migrationBuilder.InsertData(
                 table: "Payments",
                 columns: new[] { "PaymentId", "AccountKind", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "DiagnosisId", "Discount", "IsCompleted", "IsDeleted", "LastModifiedBy", "LastModifiedUtc", "Notes", "PaidAmount", "PaymentDate", "PaymentReference", "TicketId", "TotalAmount" },
                 values: new object[,]
@@ -441,6 +485,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     { 11, "Wounded", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 2, 50m, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "دفع جزئي مع خصم", 250m, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TherapyCardRenew", 2, 300m },
                     { 12, "Disabled", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, 3, null, false, false, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "لم يتم الدفع بعد", null, null, "Sales", 3, 150m }
                 });
+
+            migrationBuilder.InsertData(
+                table: "PurchaseItems",
+                columns: new[] { "Id", "CreatedAtUtc", "CreatedBy", "DeletedAtUtc", "DeletedBy", "LastModifiedBy", "LastModifiedUtc", "Notes", "PurchaseInvoiceId", "Quantity", "StoreItemUnitId", "UnitPrice" },
+                values: new object[] { 1, new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "Seed", null, null, "Seed", new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, 1, 10m, 1, 90m });
 
             migrationBuilder.InsertData(
                 table: "RepairCards",
@@ -621,6 +670,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
+                table: "ExchangeOrderItems",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
                 table: "Holidays",
                 keyColumn: "HolidayId",
                 keyValue: 3);
@@ -691,6 +745,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
+                table: "ItemUnits",
+                keyColumn: "Id",
+                keyValue: 2);
+
+            migrationBuilder.DeleteData(
                 table: "PatientPayments",
                 keyColumn: "PatientPaymentId",
                 keyValue: 10);
@@ -699,6 +758,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 table: "Payments",
                 keyColumn: "PaymentId",
                 keyValue: 12);
+
+            migrationBuilder.DeleteData(
+                table: "PurchaseItems",
+                keyColumn: "Id",
+                keyValue: 1);
 
             migrationBuilder.DeleteData(
                 table: "RolePermissions",
@@ -1183,11 +1247,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             migrationBuilder.DeleteData(
                 table: "Units",
                 keyColumn: "Id",
-                keyValue: 2);
-
-            migrationBuilder.DeleteData(
-                table: "Units",
-                keyColumn: "Id",
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
@@ -1219,6 +1278,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 table: "Diagnoses",
                 keyColumn: "DiagnosisId",
                 keyValue: 3);
+
+            migrationBuilder.DeleteData(
+                table: "ExchangeOrders",
+                keyColumn: "Id",
+                keyValue: 1);
 
             migrationBuilder.DeleteData(
                 table: "IndustrialPartUnits",
@@ -1686,6 +1750,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 keyValue: 84);
 
             migrationBuilder.DeleteData(
+                table: "PurchaseInvoices",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
                 table: "RepairCards",
                 keyColumn: "RepairCardId",
                 keyValue: 1);
@@ -1701,9 +1770,19 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 keyValue: 2);
 
             migrationBuilder.DeleteData(
+                table: "StoreItemUnits",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
                 table: "TherapyCards",
                 keyColumn: "TherapyCardId",
                 keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "Units",
+                keyColumn: "Id",
+                keyValue: 2);
 
             migrationBuilder.DeleteData(
                 table: "WoundedCards",
@@ -1736,9 +1815,24 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
+                table: "ItemUnits",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
                 table: "Patients",
                 keyColumn: "PatientId",
                 keyValue: 3);
+
+            migrationBuilder.DeleteData(
+                table: "Stores",
+                keyColumn: "Id",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "Suppliers",
+                keyColumn: "Id",
+                keyValue: 1);
 
             migrationBuilder.DeleteData(
                 table: "Tickets",
@@ -1746,7 +1840,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
-                table: "Units",
+                table: "Items",
                 keyColumn: "Id",
                 keyValue: 1);
 
@@ -1794,6 +1888,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 table: "Services",
                 keyColumn: "ServiceId",
                 keyValue: 3);
+
+            migrationBuilder.DeleteData(
+                table: "Units",
+                keyColumn: "Id",
+                keyValue: 1);
 
             migrationBuilder.DeleteData(
                 table: "Departments",

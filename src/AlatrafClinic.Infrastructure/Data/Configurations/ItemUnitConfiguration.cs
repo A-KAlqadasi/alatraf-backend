@@ -1,5 +1,6 @@
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Units;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,11 +15,19 @@ public class ItemUnitConfiguration : IEntityTypeConfiguration<ItemUnit>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(x => x.ItemId)
-               .IsRequired();
+        // Foreign keys
+        builder.Property(x => x.ItemId).IsRequired();
+        builder.Property(x => x.UnitId).IsRequired();
 
-        builder.Property(x => x.UnitId)
-               .IsRequired();
+        builder.HasOne(iu => iu.Item)
+               .WithMany(i => i.ItemUnits)
+               .HasForeignKey(iu => iu.ItemId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(iu => iu.Unit)
+               .WithMany(u => u.ItemUnits)
+               .HasForeignKey(iu => iu.UnitId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.Price)
                .IsRequired()
@@ -35,21 +44,10 @@ public class ItemUnitConfiguration : IEntityTypeConfiguration<ItemUnit>
                .HasDefaultValue(1)
                .HasPrecision(18, 3);
 
-        // Audit properties
-        builder.Property(x => x.CreatedAtUtc)
-               .IsRequired();
-
-        builder.Property(x => x.CreatedBy)
-               .HasMaxLength(200);
-
-        builder.Property(x => x.LastModifiedUtc);
-        builder.Property(x => x.LastModifiedBy)
-               .HasMaxLength(200);
-
-        // Foreign key to Unit
-        builder.HasOne(x => x.Unit)
-               .WithMany(u => u.ItemUnits)
-               .HasForeignKey(x => x.UnitId)
-               .OnDelete(DeleteBehavior.Restrict);
+        // // Audit
+        // builder.Property(x => x.CreatedAtUtc).IsRequired();
+        // builder.Property(x => x.CreatedBy).HasMaxLength(200);
+        // builder.Property(x => x.LastModifiedUtc);
+        // builder.Property(x => x.LastModifiedBy).HasMaxLength(200);
     }
 }

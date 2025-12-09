@@ -10,51 +10,57 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
         builder.ToTable("Orders");
 
+        // Primary key
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
+        // RepairCard (optional FK)
         builder.Property(x => x.RepairCardId);
 
-        builder.Property(x => x.SectionId)
-               .IsRequired();
+        builder.HasOne(x => x.RepairCard)
+               .WithMany()
+               .HasForeignKey(x => x.RepairCardId)
+               .OnDelete(DeleteBehavior.Restrict);
 
+        // Section (required FK)
+        builder.Property(x => x.SectionId).IsRequired();
+
+        builder.HasOne(x => x.Section)
+               .WithMany()
+               .HasForeignKey(x => x.SectionId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        // OrderType enum
         builder.Property(x => x.OrderType)
-               .IsRequired()
                .HasConversion<string>()
+               .IsRequired()
                .HasMaxLength(50);
 
+        // Status enum
         builder.Property(x => x.Status)
-               .IsRequired()
                .HasConversion<string>()
+               .IsRequired()
                .HasMaxLength(50);
 
-        // Audit
+        // Audit fields (dependent on AuditableEntity<int>)
         builder.Property(x => x.CreatedAtUtc).IsRequired();
         builder.Property(x => x.CreatedBy).HasMaxLength(200);
-        builder.Property(x => x.LastModifiedUtc);
         builder.Property(x => x.LastModifiedBy).HasMaxLength(200);
 
-        // Owned collection: OrderItems
-        builder.OwnsMany(x => x.OrderItems, oi =>
-        {
-            oi.ToTable("OrderItems");
-            oi.WithOwner().HasForeignKey("OrderId");
+        // Navigation (Order has many OrderItems)
+        builder.HasMany(x => x.OrderItems)
+               .WithOne(i => i.Order)
+               .HasForeignKey(i => i.OrderId)
+               .OnDelete(DeleteBehavior.Restrict); // مهم لمنع multiple cascade paths
 
-            oi.HasKey(i => i.Id);
-            oi.Property(i => i.Id).ValueGeneratedOnAdd();
 
-            oi.Property(i => i.OrderId).IsRequired();
-            oi.Property(i => i.ItemUnitId).IsRequired();
+        // // Audit
+        // builder.Property(x => x.CreatedAtUtc).IsRequired();
+        // builder.Property(x => x.CreatedBy).HasMaxLength(200);
+        // builder.Property(x => x.LastModifiedUtc);
+        // builder.Property(x => x.LastModifiedBy).HasMaxLength(200);
 
-            oi.Property(i => i.Quantity)
-               .IsRequired()
-               .HasPrecision(18, 3);
-
-            oi.Property(i => i.CreatedAtUtc).IsRequired();
-            oi.Property(i => i.CreatedBy).HasMaxLength(200);
-            oi.Property(i => i.LastModifiedUtc);
-            oi.Property(i => i.LastModifiedBy).HasMaxLength(200);
-        });
+     
 
         builder.Navigation(x => x.OrderItems).AutoInclude(false);
     }
