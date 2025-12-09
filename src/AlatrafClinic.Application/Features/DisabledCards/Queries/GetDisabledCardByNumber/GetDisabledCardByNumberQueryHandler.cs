@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.DisabledCards.Dtos;
 using AlatrafClinic.Application.Features.DisabledCards.Mappers;
@@ -8,7 +7,7 @@ using AlatrafClinic.Domain.DisabledCards;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.DisabledCards.Queries.GetDisabledCardByNumber;
@@ -16,18 +15,20 @@ namespace AlatrafClinic.Application.Features.DisabledCards.Queries.GetDisabledCa
 public class GetDisabledCardByNumberQueryHandler : IRequestHandler<GetDisabledCardByNumberQuery, Result<DisabledCardDto>>
 {
     private readonly ILogger<GetDisabledCardByNumberQueryHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly HybridCache _cache;
+    private readonly IAppDbContext _context;
 
-    public GetDisabledCardByNumberQueryHandler(ILogger<GetDisabledCardByNumberQueryHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public GetDisabledCardByNumberQueryHandler(ILogger<GetDisabledCardByNumberQueryHandler> logger, IAppDbContext context)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
-        _cache = cache;
+        _context = context;
     }
     public async Task<Result<DisabledCardDto>> Handle(GetDisabledCardByNumberQuery query, CancellationToken ct)
     {
-        var card = await _unitOfWork.DisabledCards.GetDisabledCardByNumber(query.CardNumber, ct);
+        var card = await _context.DisabledCards
+        .Include(c=> c.Patient)
+            .ThenInclude(p=> p.Person)
+            .FirstOrDefaultAsync(c=> c.CardNumber == query.CardNumber, ct);
+
         if (card is null)
         {
             _logger.LogError("Disabled card with number {number} is not found", query.CardNumber);

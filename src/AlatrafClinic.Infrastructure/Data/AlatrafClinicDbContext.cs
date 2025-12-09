@@ -13,6 +13,7 @@ using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Identity;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 using AlatrafClinic.Domain.Inventory.Stores;
+using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
@@ -101,8 +102,9 @@ public class AlatrafClinicDbContext
     public DbSet<WoundedCard> WoundedCards => Set<WoundedCard>();
 
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
-    
-    
+
+    public DbSet<Unit> Units => Set<Unit>();
+
     public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
         : base(options)
     {

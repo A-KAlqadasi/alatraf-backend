@@ -27,7 +27,7 @@ public sealed record GetHolidaysQuery(
         $"sort={SortBy?.Trim().ToLower() ?? "startdate"}:" +
         $"dir={SortDirection.Trim().ToLower()}";
 
-    public string[] Tags => ["holidays"];
+    public string[] Tags => ["holiday"];
 
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }

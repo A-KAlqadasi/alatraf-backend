@@ -11,6 +11,7 @@ using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
@@ -91,6 +92,8 @@ public interface IAppDbContext
     public DbSet<WoundedCard> WoundedCards { get; }
 
     public DbSet<AppSetting> AppSettings { get; }
+
+    public DbSet<Unit> Units {get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

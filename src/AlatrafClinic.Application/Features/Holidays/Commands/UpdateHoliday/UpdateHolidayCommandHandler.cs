@@ -1,53 +1,54 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
-using AlatrafClinic.Application.Features.Holidays.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 
 using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Holidays.Commands.UpdateHoliday;
 
 public class UpdateHolidayCommandHandler(
-    IUnitOfWork unitOfWork,
-    ILogger<UpdateHolidayCommandHandler> logger,
-    HybridCache cache
+    IAppDbContext _context,
+    ILogger<UpdateHolidayCommandHandler> _logger,
+    HybridCache _cache
 ) : IRequestHandler<UpdateHolidayCommand, Result<Updated>>
 {
-  private readonly IUnitOfWork _uow = unitOfWork;
-  private readonly ILogger<UpdateHolidayCommandHandler> _logger = logger;
-  private readonly HybridCache _cache = cache;
+  
 
-  public async Task<Result<Updated>> Handle(UpdateHolidayCommand req, CancellationToken ct)
-  {
-    // 1️⃣ Get the holiday from repository
-    var holiday = await _uow.Holidays.GetByIdAsync(req.HolidayId, ct);
-    if (holiday is null)
-      return ApplicationErrors.HolidayNotFound;
-    holiday.UpdateHoliday(
-        name: req.Name,
-        startDate: req.StartDate,
-        endDate: req.EndDate,
-        isRecurring: req.IsRecurring,
-        type: req.Type
-    );
+    public async Task<Result<Updated>> Handle(UpdateHolidayCommand command, CancellationToken ct)
+    {
+        
+        var holiday = await _context.Holidays.FirstOrDefaultAsync(h=> h.Id == command.HolidayId, ct);
 
-    if (req.IsActive)
-      holiday.Activate();
-    else
-      holiday.Deactivate();
+        if (holiday is null)
+        {
+            _logger.LogError("Holiday with Id {holidayId} is not found", command.HolidayId);
+            return ApplicationErrors.HolidayNotFound;
+        }
 
-    await _uow.Holidays.UpdateAsync(holiday, ct);
-    await _uow.SaveChangesAsync(ct);
+        holiday.UpdateHoliday(
+            name: command.Name,
+            startDate: command.StartDate,
+            endDate: command.EndDate,
+            isRecurring: command.IsRecurring,
+            type: command.Type
+        );
 
-    _logger.LogInformation("Holiday updated successfully with ID: {id}", holiday.Id);
+        if (command.IsActive)
+            holiday.Activate();
+        else
+            holiday.Deactivate();
 
-    await _cache.RemoveByTagAsync("holidays", ct);
+        _context.Holidays.Update(holiday);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("holiday", ct);
 
-    return Result.Updated;
-  }
+        _logger.LogInformation("Holiday updated successfully with ID: {id}", holiday.Id);
+
+        return Result.Updated;
+    }
 }

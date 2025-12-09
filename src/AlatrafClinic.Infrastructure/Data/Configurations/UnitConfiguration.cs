@@ -1,5 +1,4 @@
 using AlatrafClinic.Domain.Inventory.Units;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

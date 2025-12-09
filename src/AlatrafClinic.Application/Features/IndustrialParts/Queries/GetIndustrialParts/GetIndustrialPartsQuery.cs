@@ -17,6 +17,6 @@ public sealed record GetIndustrialPartsQuery(
         $":q={(SearchTerm ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
-    public string[] Tags => ["industrialpart"];
+    public string[] Tags => ["industrial-part"];
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }

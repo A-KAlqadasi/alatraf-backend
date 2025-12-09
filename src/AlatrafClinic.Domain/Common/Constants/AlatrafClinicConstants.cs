@@ -4,4 +4,5 @@ public static class AlatrafClinicConstants
 {
 
     public const string SystemUser = "System";
+    public const string AllowedDaysKey = "AllowedAppointmentDays";
 }

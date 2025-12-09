@@ -29,6 +29,6 @@ public sealed record GetRepairCardsQuery(
         $":pat={(PatientId?.ToString() ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
-    public string[] Tags => ["repaircard"];
+    public string[] Tags => ["repair-card"];
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }

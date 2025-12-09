@@ -26,7 +26,7 @@ public sealed record GetDisabledCardsQuery(
         $":expTo={(ExpirationTo?.ToString("yyyyMMdd") ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
-    public string[] Tags => ["disabledcard"];
+    public string[] Tags => ["disabled-card"];
 
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }
