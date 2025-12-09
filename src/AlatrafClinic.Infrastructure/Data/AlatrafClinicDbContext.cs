@@ -135,4 +135,10 @@ public class AlatrafClinicDbContext
         builder.Ignore<ExchangeOrder>(); // To be implemented later    
     }
 
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
 }
