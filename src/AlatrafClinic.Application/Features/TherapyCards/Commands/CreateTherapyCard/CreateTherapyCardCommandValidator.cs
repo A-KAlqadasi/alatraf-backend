@@ -13,7 +13,7 @@ public class CreateTherapyCardCommandValidator : AbstractValidator<CreateTherapy
         
         RuleFor(x => x.DiagnosisText)
             .NotEmpty().WithMessage("DiagnosisText must not be empty.")
-            .MaximumLength(1000).WithMessage("DiagnosisText must not exceed 1000 characters.");
+            .MaximumLength(2000).WithMessage("DiagnosisText must not exceed 2000 characters.");
         RuleForEach(x => x.InjuryReasons)
             .GreaterThan(0).WithMessage("InjuryReasons must contain valid reason IDs.");
         RuleForEach(x => x.InjurySides)

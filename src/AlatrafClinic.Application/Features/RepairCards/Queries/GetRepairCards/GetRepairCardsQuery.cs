@@ -15,9 +15,9 @@ public sealed record GetRepairCardsQuery(
     RepairCardStatus? Status = null,
     int? DiagnosisId = null,
     int? PatientId = null,
-    string SortColumn = "DeliveryDate",
+    string SortColumn = "repaircardid",
     string SortDirection = "desc"
-) : ICachedQuery<Result<PaginatedList<RepairCardDto>>>
+) : ICachedQuery<Result<PaginatedList<RepairCardDiagnosisDto>>>
 {
     public string CacheKey =>
         $"repaircards:p={Page}:ps={PageSize}" +

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetRepairCardById;
 
-public class GetRepairCardByIdQueryHandler : IRequestHandler<GetRepairCardByIdQuery, Result<RepairCardDto>>
+public class GetRepairCardByIdQueryHandler : IRequestHandler<GetRepairCardByIdQuery, Result<RepairCardDiagnosisDto>>
 {
     private readonly ILogger<GetRepairCardByIdQueryHandler> _logger;
     private readonly IAppDbContext _context;
@@ -21,9 +21,23 @@ public class GetRepairCardByIdQueryHandler : IRequestHandler<GetRepairCardByIdQu
         _logger = logger;
         _context = context;
     }
-    public async Task<Result<RepairCardDto>> Handle(GetRepairCardByIdQuery query, CancellationToken ct)
+    public async Task<Result<RepairCardDiagnosisDto>> Handle(GetRepairCardByIdQuery query, CancellationToken ct)
     {
-        var repairCard = await _context.RepairCards.Include(r=> r.Diagnosis).Include(r=> r.DiagnosisIndustrialParts).AsNoTracking().FirstOrDefaultAsync(r=> r.Id ==query.RepairCardId, ct);
+        var repairCard = await _context.RepairCards
+        .Include(r=> r.Diagnosis).ThenInclude(d=> d.InjurySides)
+        .Include(r=> r.Diagnosis).ThenInclude(d=> d.InjuryReasons)
+        .Include(r=> r.Diagnosis).ThenInclude(d=> d.InjuryTypes)
+        .Include(r=> r.Diagnosis)
+                .ThenInclude(t=> t.Patient)
+                    .ThenInclude(p=> p.Person)
+        .Include(r=> r.DiagnosisIndustrialParts)
+            .ThenInclude(i=> i.IndustrialPartUnit)
+                .ThenInclude(u=> u.IndustrialPart)
+        .Include(r=> r.DiagnosisIndustrialParts)
+            .ThenInclude(i=> i.IndustrialPartUnit)
+                .ThenInclude(u=> u.Unit)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(r=> r.Id ==query.RepairCardId, ct);
 
         if (repairCard is null)
         {
@@ -31,6 +45,6 @@ public class GetRepairCardByIdQueryHandler : IRequestHandler<GetRepairCardByIdQu
             return RepairCardErrors.RepairCardNotFound;
         }
 
-        return repairCard.ToDto();
+        return repairCard.ToDiagnosisDto();
     }
 }

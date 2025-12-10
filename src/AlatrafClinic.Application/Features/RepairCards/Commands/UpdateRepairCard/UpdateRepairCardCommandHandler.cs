@@ -33,7 +33,9 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
     }
     public async Task<Result<Updated>> Handle(UpdateRepairCardCommand command, CancellationToken ct)
     {
-        RepairCard? currentRepairCard = await _context.RepairCards.FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
+        RepairCard? currentRepairCard = await _context.RepairCards
+        .Include(r=> r.Diagnosis).ThenInclude(d=> d.DiagnosisIndustrialParts)
+        .FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
 
         if (currentRepairCard is null)
         {
@@ -94,15 +96,8 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 
                 return IndustrialPartUnitErrors.IndustrialPartUnitNotFound;
             }
-
-            if (part.Price != partUnit.PricePerUnit)
-            {
-                _logger.LogError("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", part.Price, partUnit.PricePerUnit);
-
-                return IndustrialPartUnitErrors.InconsistentPrice;
-            }
-
-            incoming.Add((partUnit.Id, part.Quantity, part.Price));
+            
+            incoming.Add((partUnit.Id, part.Quantity, partUnit.PricePerUnit));
         }
 
         var upsertDiagnosisPartsResult = updatedDiagnosis.UpsertDiagnosisIndustrialParts(incoming);
@@ -122,7 +117,7 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return upsertRepairResult.Errors;
         }
 
-        var currentPayment = currentRepairCard.Diagnosis.Payments.FirstOrDefault(r=> r.PaymentReference == PaymentReference.Repair);
+        var currentPayment = _context.Payments.FirstOrDefault(p=> p.DiagnosisId == currentRepairCard.DiagnosisId);
 
         if (currentPayment is null)
         {
@@ -142,8 +137,8 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return updatePaymentResult.Errors;
         }
 
-        updatedDiagnosis.AssignPayment(currentPayment);
         updatedDiagnosis.AssignRepairCard(currentRepairCard);
+        updatedDiagnosis.AssignPayment(currentPayment);
 
         _context.Diagnoses.Update(updatedDiagnosis);
         await _context.SaveChangesAsync(ct);

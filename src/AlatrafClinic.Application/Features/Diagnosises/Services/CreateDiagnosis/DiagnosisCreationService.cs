@@ -9,7 +9,6 @@ using AlatrafClinic.Domain.Services.Enums;
 using AlatrafClinic.Domain.Services.Tickets;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
@@ -37,7 +36,10 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         DiagnosisType diagnosisType,
         CancellationToken ct)
     {
-        var ticket = await _context.Tickets.FirstOrDefaultAsync(t=> t.Id == ticketId, ct);
+        var ticket = await _context.Tickets
+        .Include(t=> t.Patient!)
+            .ThenInclude(p=> p.Person)
+        .FirstOrDefaultAsync(t=> t.Id == ticketId, ct);
         if (ticket is null)
         {
             _logger.LogError("Ticket {TicketId} not found.", ticketId);

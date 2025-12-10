@@ -14,4 +14,4 @@ public sealed record CreateRepairCardCommand(
     List<int> InjuryTypes,
     List<CreateRepairCardIndustrialPartCommand> IndustrialParts,
     string? Notes = null
-) : IRequest<Result<RepairCardDto>>;
+) : IRequest<Result<RepairCardDiagnosisDto>>;

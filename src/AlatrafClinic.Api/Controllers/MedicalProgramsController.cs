@@ -1,3 +1,4 @@
+using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.MedicalPrograms;
 using AlatrafClinic.Application.Features.MedicalPrograms.Commands.CreateMedicalProgram;
 using AlatrafClinic.Application.Features.MedicalPrograms.Commands.DeleteMedicalProgram;
@@ -22,13 +23,13 @@ public sealed class MedicalProgramsController(ISender sender) : ApiController
     [ProducesResponseType(typeof(List<MedicalProgramDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Retrieve medical programs.")]
-    [EndpointDescription("Retrive all the medical programs in the system.")]
+    [EndpointSummary("Retrieves a paginated list of medical programs.")]
+    [EndpointDescription("Supports filtering medical programs by search term. Sorting is by name.")]
     [EndpointName("GetMedicalPrograms")]
     [ApiVersion("1.0")]
-    public async Task<IActionResult> Get(CancellationToken ct)
+    public async Task<IActionResult> Get(string? searchTerm, [FromQuery] PageRequest pageRequest, CancellationToken ct)
     {
-        var result = await sender.Send(new GetMedicalProgramsQuery(), ct);
+        var result = await sender.Send(new GetMedicalProgramsQuery(pageRequest.Page, pageRequest.PageSize, searchTerm), ct);
         return result.Match(
             response => Ok(response),
             Problem
@@ -99,7 +100,7 @@ public sealed class MedicalProgramsController(ISender sender) : ApiController
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Deletes an existing medical program.")]
-    [EndpointDescription("Deletes an existing medical program with the specified details.")]
+    [EndpointDescription("Deletes an existing medical program by its Id.")]
     [EndpointName("DeleteMedicalProgram")]
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Delete(int medicalProgramId, CancellationToken ct)

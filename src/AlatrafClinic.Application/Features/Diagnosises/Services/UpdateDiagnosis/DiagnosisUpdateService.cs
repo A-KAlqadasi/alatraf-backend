@@ -34,7 +34,13 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
         DiagnosisType diagnosisType,
         CancellationToken ct)
     {
-         Diagnosis? diagnosis = await _context.Diagnoses.FirstOrDefaultAsync(d=> d.Id == diagnosisId, ct);
+        Diagnosis? diagnosis = await _context.Diagnoses
+        .Include(d=> d.InjuryReasons)
+        .Include(d=> d.InjurySides)
+        .Include(d=> d.InjuryTypes)
+        .Include(d=> d.DiagnosisIndustrialParts)
+        .Include(d=> d.DiagnosisPrograms)
+        .FirstOrDefaultAsync(d=> d.Id == diagnosisId, ct);
 
         if (diagnosis is null)
         {
