@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Appointments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -6,6 +6,7 @@ using AlatrafClinic.Domain.Services.Appointments;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetAppointmentById;
@@ -13,16 +14,17 @@ namespace AlatrafClinic.Application.Features.Appointments.Queries.GetAppointment
 public class GetAppointmentByIdQueryHandler : IRequestHandler<GetAppointmentByIdQuery, Result<AppointmentDto>>
 {
     private readonly ILogger<GetAppointmentByIdQueryHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
-    public GetAppointmentByIdQueryHandler(ILogger<GetAppointmentByIdQueryHandler> logger, IUnitOfWork unitOfWork)
+    public GetAppointmentByIdQueryHandler(ILogger<GetAppointmentByIdQueryHandler> logger, IAppDbContext context)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
     public async Task<Result<AppointmentDto>> Handle(GetAppointmentByIdQuery query, CancellationToken ct)
     {
-        Appointment? appointment = await _unitOfWork.Appointments.GetByIdAsync(query.AppointmentId, ct);
+        Appointment? appointment = await _context.Appointments.Include(a=> a.Ticket).FirstOrDefaultAsync(a=> a.Id ==query.AppointmentId, ct);
+
         if (appointment is null)
         {
             _logger.LogWarning("Appointment with ID {AppointmentId} not found.", query.AppointmentId);

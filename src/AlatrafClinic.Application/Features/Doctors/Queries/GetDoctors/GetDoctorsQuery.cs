@@ -1,8 +1,9 @@
+
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Doctors.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
-using MediatR;
 
 namespace AlatrafClinic.Application.Features.Doctors.Queries.GetDoctors;
 
@@ -17,4 +18,19 @@ public sealed record GetDoctorsQuery(
     bool? HasActiveAssignment = null,
     string SortBy = "assigndate",
     string SortDir = "desc"
-) : IRequest<Result<PaginatedList<DoctorListItemDto>>>;
+) : ICachedQuery<Result<PaginatedList<DoctorListItemDto>>>
+{
+    public string CacheKey =>
+        $"doctors:p={Page}:ps={PageSize}" +
+        $":dept={(DepartmentId?.ToString() ?? "-")}" +
+        $":sec={(SectionId?.ToString() ?? "-")}" +
+        $":room={(RoomId?.ToString() ?? "-")}" +
+        $":search={(Search ?? "-")}" +
+        $":spec={(Specialization ?? "-")}" +
+        $":hasActive={(HasActiveAssignment?.ToString() ?? "-")}" +
+        $":sort={SortBy}:{SortDir}";
+
+    public string[] Tags => ["doctor"];
+
+    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+}

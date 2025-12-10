@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.People.Services.UpdatePerson;
 using AlatrafClinic.Domain.Common.Results;
 
@@ -14,7 +13,7 @@ namespace AlatrafClinic.Application.Features.Patients.Commands.UpdatePatient;
 
 public class UpdatePatientCommandHandler(
     IPersonUpdateService personUpdateService,
-    IUnitOfWork unitWork,
+    IAppDbContext context,
     ILogger<UpdatePatientCommandHandler> logger,
 
     HybridCache cache
@@ -22,20 +21,20 @@ public class UpdatePatientCommandHandler(
 ) : IRequestHandler<UpdatePatientCommand, Result<Updated>>
 {
     private readonly IPersonUpdateService _personUpdateService = personUpdateService;
-    private readonly IUnitOfWork _unitWork = unitWork;
+    private readonly IAppDbContext _context = context;
     private readonly ILogger<UpdatePatientCommandHandler> _logger = logger;
     private readonly HybridCache _cache = cache;
 
     public async Task<Result<Updated>> Handle(UpdatePatientCommand command, CancellationToken ct)
     {
-        var patient = await _unitWork.Patients.GetByIdAsync(command.PatientId, ct);
+        var patient = await _context.Patients.FindAsync(new object[] { command.PatientId }, ct);
         if (patient is null)
         {
             _logger.LogWarning("Patient with ID {PatientId} not found.", command.PatientId);
             return ApplicationErrors.PatientNotFound;
         }
 
-        var person = await _unitWork.People.GetByIdAsync(patient.PersonId, ct);
+        var person = await _context.People.FindAsync(new object[] { patient.PersonId }, ct);
         if (person is null)
         {
             _logger.LogWarning("Person for Patient {PatientId} not found.", command.PatientId);
@@ -62,12 +61,11 @@ public class UpdatePatientCommandHandler(
 
         person.AssignPatient(patient);
 
-        await _unitWork.People.UpdateAsync(person, ct);
-        await _unitWork.SaveChangesAsync(ct);
+        _context.People.Update(person);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("patient", ct);
 
         _logger.LogInformation("Patient {PatientId} and Person {PersonId} updated successfully.", patient.Id, person.Id);
-
-        await _cache.RemoveByTagAsync("patient", ct);
 
         return Result.Updated;
     }

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 using AlatrafClinic.Domain.TherapyCards.Enums;
 
 namespace AlatrafClinic.Api.Requests.TherapyCards;
@@ -23,8 +25,10 @@ public sealed class TherapyCardFilterRequest
     public int? DiagnosisId { get; set; }
 
     public int? PatientId { get; set; }
-
+    
+    [RegularExpression("^[a-zA-Z0-9_]+$", ErrorMessage = "SortColumn contains invalid characters.")]
     public string SortColumn { get; set; } = "ProgramStartDate";
-
+    
+    [RegularExpression("^(asc|desc)$", ErrorMessage = "SortDirection must be 'asc' or 'desc'.")]
     public string SortDirection { get; set; } = "desc";
 }

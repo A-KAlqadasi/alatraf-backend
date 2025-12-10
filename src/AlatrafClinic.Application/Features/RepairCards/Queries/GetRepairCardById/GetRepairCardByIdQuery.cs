@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetRepairCardById;
 
-public sealed record GetRepairCardByIdQuery(int RepairCardId) : IRequest<Result<RepairCardDto>>;
+public sealed record GetRepairCardByIdQuery(int RepairCardId) : IRequest<Result<RepairCardDiagnosisDto>>;

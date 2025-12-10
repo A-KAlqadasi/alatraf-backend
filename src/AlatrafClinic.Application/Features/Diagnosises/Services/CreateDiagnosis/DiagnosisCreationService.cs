@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.Enums;
@@ -8,7 +8,7 @@ using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.Services.Enums;
 using AlatrafClinic.Domain.Services.Tickets;
 
-using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
@@ -16,17 +16,14 @@ namespace AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosi
 public sealed class DiagnosisCreationService : IDiagnosisCreationService
 {
     private readonly ILogger<DiagnosisCreationService> _logger;
-    private readonly HybridCache _cache;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
     public DiagnosisCreationService(
         ILogger<DiagnosisCreationService> logger,
-        HybridCache cache,
-        IUnitOfWork unitOfWork)
+        IAppDbContext context)
     {
         _logger = logger;
-        _cache = cache;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
     public async Task<Result<Diagnosis>> CreateAsync(
@@ -39,7 +36,10 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         DiagnosisType diagnosisType,
         CancellationToken ct)
     {
-        var ticket = await _unitOfWork.Tickets.GetByIdAsync(ticketId, ct);
+        var ticket = await _context.Tickets
+        .Include(t=> t.Patient!)
+            .ThenInclude(p=> p.Person)
+        .FirstOrDefaultAsync(t=> t.Id == ticketId, ct);
         if (ticket is null)
         {
             _logger.LogError("Ticket {TicketId} not found.", ticketId);
@@ -61,21 +61,21 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         var reasons = new List<InjuryReason>();
         foreach (var id in injuryReasons.Distinct())
         {
-            var reason = await _unitOfWork.InjuryReasons.GetByIdAsync(id, ct);
+            var reason = await _context.InjuryReasons.FirstOrDefaultAsync(i=> i.Id == id, ct);
             if (reason is not null) reasons.Add(reason);
         }
 
         var sides = new List<InjurySide>();
         foreach (var id in injurySides.Distinct())
         {
-            var side = await _unitOfWork.InjurySides.GetByIdAsync(id, ct);
+            var side = await _context.InjurySides.FirstOrDefaultAsync(i=> i.Id == id, ct);
             if (side is not null) sides.Add(side);
         }
 
         var types = new List<InjuryType>();
         foreach (var id in injuryTypes.Distinct())
         {
-            var type = await _unitOfWork.InjuryTypes.GetByIdAsync(id, ct);
+            var type = await _context.InjuryTypes.FirstOrDefaultAsync(i=> i.Id == id, ct);
             if (type is not null) types.Add(type);
         }
 

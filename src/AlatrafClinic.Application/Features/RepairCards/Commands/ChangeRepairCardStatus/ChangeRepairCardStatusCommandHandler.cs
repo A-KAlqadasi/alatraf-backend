@@ -1,10 +1,12 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.Enums;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.ChangeRepairCardStatus;
@@ -12,16 +14,18 @@ namespace AlatrafClinic.Application.Features.RepairCards.Commands.ChangeRepairCa
 public class ChangeRepairCardStatusCommandHandler : IRequestHandler<ChangeRepairCardStatusCommand, Result<Updated>>
 {
     private readonly ILogger<ChangeRepairCardStatusCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
+    private readonly HybridCache _cache;
 
-    public ChangeRepairCardStatusCommandHandler(ILogger<ChangeRepairCardStatusCommandHandler> logger, IUnitOfWork unitOfWork)
+    public ChangeRepairCardStatusCommandHandler(ILogger<ChangeRepairCardStatusCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
+        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(ChangeRepairCardStatusCommand command, CancellationToken ct)
     {
-        var repairCard = await _unitOfWork.RepairCards.GetByIdAsync(command.RepairCardId, ct);
+        var repairCard = await _context.RepairCards.FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
         if (repairCard is null)
         {
             _logger.LogError("Repair card with ID {RepairCardId} not found.", command.RepairCardId);
@@ -60,8 +64,10 @@ public class ChangeRepairCardStatusCommandHandler : IRequestHandler<ChangeRepair
             return result.Errors;
         }
         
-        await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.RepairCards.Update(repairCard);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("repair-card");
+        
         _logger.LogInformation("Successfully changed status of Repair card ID {RepairCardId} to {NewStatus}.", command.RepairCardId, command.NewStatus);
 
         return Result.Updated;

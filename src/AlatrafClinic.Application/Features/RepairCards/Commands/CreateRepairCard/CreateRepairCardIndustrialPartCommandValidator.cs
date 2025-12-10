@@ -9,6 +9,5 @@ public class CreateRepairCardIndustrialPartCommandValidator : AbstractValidator<
         RuleFor(x => x.IndustrialPartId).GreaterThan(0);
         RuleFor(x => x.UnitId).GreaterThan(0);
         RuleFor(x => x.Quantity).GreaterThan(0);
-        RuleFor(x => x.Price).GreaterThanOrEqualTo(0);
     }
 }

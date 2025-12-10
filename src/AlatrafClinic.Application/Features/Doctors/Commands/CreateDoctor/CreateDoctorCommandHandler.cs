@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Doctors.Dtos;
 using AlatrafClinic.Application.Features.Doctors.Mappers;
@@ -10,61 +10,64 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.CreateDoctor;
 
 public class CreateDoctorCommandHandler(
-      IPersonCreateService personCreateService,
-      IUnitOfWork unitOfWork,
-      ILogger<CreateDoctorCommandHandler> logger
+      IPersonCreateService _personCreateService,
+      IAppDbContext _context,
+      ILogger<CreateDoctorCommandHandler> _logger,
+      HybridCache _cache
   ) : IRequestHandler<CreateDoctorCommand, Result<DoctorDto>>
 {
-  private readonly IPersonCreateService _personCreateService = personCreateService;
-  private readonly IUnitOfWork _unitOfWork = unitOfWork;
-  private readonly ILogger<CreateDoctorCommandHandler> _logger = logger;
 
-  public async Task<Result<DoctorDto>> Handle(CreateDoctorCommand command, CancellationToken cancellationToken)
-  {
-    var personResult = await _personCreateService.CreateAsync(
-        command.Fullname,
-        command.Birthdate,
-        command.Phone,
-        command.NationalNo,
-        command.Address,
-        command.Gender,
-        cancellationToken);
-
-    if (personResult.IsError)
-      return personResult.Errors;
-
-    var person = personResult.Value;
-
-
-
-    var department = await _unitOfWork.Departments.GetByIdAsync(command.DepartmentId, cancellationToken);
-    if (department is null)
+    public async Task<Result<DoctorDto>> Handle(CreateDoctorCommand command, CancellationToken ct)
     {
-      _logger.LogWarning("Department with ID {DepartmentId} not found.", command.DepartmentId);
-      return ApplicationErrors.DepartmentNotFound;
+        var personResult = await _personCreateService.CreateAsync(
+            command.Fullname,
+            command.Birthdate,
+            command.Phone,
+            command.NationalNo,
+            command.Address,
+            command.Gender,
+            ct);
+
+        if (personResult.IsError)
+        return personResult.Errors;
+
+        var person = personResult.Value;
+
+
+
+        var department = await _context.Departments.FirstOrDefaultAsync(d=> d.Id == command.DepartmentId, ct);
+        if (department is null)
+        {
+            _logger.LogWarning("Department with ID {DepartmentId} not found.", command.DepartmentId);
+            return ApplicationErrors.DepartmentNotFound;
+        }
+
+        var doctorResult = Doctor.Create(
+            person.Id,
+            command.DepartmentId,
+            command.Specialization);
+
+        if (doctorResult.IsError)
+        {
+            return doctorResult.Errors;
+        }
+
+        var doctor = doctorResult.Value;
+        person.AssignDoctor(doctor);
+
+        await _context.People.AddAsync(person, ct);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("doctor", ct);
+
+        _logger.LogInformation("Doctor created successfully with ID: {DoctorId}", doctor.Id);
+
+        return doctor.ToDto();
     }
-
-    var doctorResult = Doctor.Create(
-        person.Id,
-        command.DepartmentId,
-        command.Specialization);
-
-    if (doctorResult.IsError)
-      return doctorResult.Errors;
-
-    var doctor = doctorResult.Value;
-
-    await _unitOfWork.People.AddAsync(person, cancellationToken);
-    await _unitOfWork.Doctors.AddAsync(doctor, cancellationToken);
-    await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-    _logger.LogInformation("Doctor created successfully with ID: {DoctorId}", doctor.Id);
-
-    return doctor.ToDto();
-  }
 }

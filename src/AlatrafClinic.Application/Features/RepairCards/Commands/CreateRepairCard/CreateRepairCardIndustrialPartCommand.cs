@@ -7,6 +7,5 @@ namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCa
 public sealed record CreateRepairCardIndustrialPartCommand(
     int IndustrialPartId,
     int UnitId,
-    int Quantity,
-    decimal Price
-) : IRequest<Result<Success>>;
+    int Quantity
+    ) : IRequest<Result<Success>>;

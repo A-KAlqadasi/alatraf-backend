@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.Patients.Mappers;
@@ -8,21 +8,24 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace AlatrafClinic.Application.Features.Patients.Queries.GetPatientById;
 
 public class GetPatientByIdQueryHandler(
-    IUnitOfWork unitWork
+    IAppDbContext context
 ) : IRequestHandler<GetPatientByIdQuery, Result<PatientDto>>
 {
-    private readonly IUnitOfWork _unitWork = unitWork;
+    private readonly IAppDbContext _context = context;
 
     public async Task<Result<PatientDto>> Handle(GetPatientByIdQuery query, CancellationToken ct)
     {
-        var patient = await _unitWork.Patients.GetByIdAsync(query.PatientId, ct);
-
+        var patient = await _context.Patients.Include(p=> p.Person).FirstOrDefaultAsync(p=> p.Id == query.PatientId, ct);
         if (patient is null)
+        {
             return ApplicationErrors.PatientNotFound;
-            
+        }
+        
         return patient.ToDto();
     }
 }
