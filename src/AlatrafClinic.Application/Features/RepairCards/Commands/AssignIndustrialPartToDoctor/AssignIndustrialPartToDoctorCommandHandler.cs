@@ -28,7 +28,8 @@ public class AssignIndustrialPartToDoctorCommandHandler : IRequestHandler<Assign
 
     public async Task<Result<Updated>> Handle(AssignIndustrialPartToDoctorCommand command, CancellationToken ct)
     {
-        var repairCard = await _context.RepairCards.FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
+        var repairCard = await _context.RepairCards.Include(x=> x.DiagnosisIndustrialParts).FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
+
         if (repairCard is null)
         {
             _logger.LogError("Repair card with id {RepairCardId} not found", command.RepairCardId);
@@ -37,7 +38,8 @@ public class AssignIndustrialPartToDoctorCommandHandler : IRequestHandler<Assign
 
         foreach (var doctorPart in command.DoctorIndustrialParts)
         {
-            var industrialPart = await _context.DiagnosisIndustrialParts.FirstOrDefaultAsync(x=> x.Id == doctorPart.DiagnosisIndustrialPartId, ct);
+            var industrialPart = await _context.DiagnosisIndustrialParts
+            .FirstOrDefaultAsync(x=> x.Id == doctorPart.DiagnosisIndustrialPartId, ct);
 
             if (industrialPart is null)
             {

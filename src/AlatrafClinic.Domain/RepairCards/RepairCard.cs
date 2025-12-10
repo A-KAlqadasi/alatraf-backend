@@ -101,6 +101,7 @@ public class RepairCard : AuditableEntity<int>
         {
             return RepairCardErrors.Readonly;
         }
+        
         if (!CanTransitionTo(RepairCardStatus.AssignedToTechnician))
         {
             return RepairCardErrors.InvalidStateTransition(Status, RepairCardStatus.AssignedToTechnician);
