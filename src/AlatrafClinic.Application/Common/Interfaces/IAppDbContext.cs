@@ -93,7 +93,7 @@ public interface IAppDbContext
 
     public DbSet<AppSetting> AppSettings { get; }
 
-    public DbSet<Unit> Units {get; }
+    public DbSet<GeneralUnit> Units {get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

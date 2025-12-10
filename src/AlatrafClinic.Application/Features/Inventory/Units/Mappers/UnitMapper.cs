@@ -5,7 +5,7 @@ namespace AlatrafClinic.Application.Features.Inventory.Units.Mappers;
 
 public static class UnitMapper
 {
-    public static UnitDto ToDto(this Unit unit)
+    public static UnitDto ToDto(this GeneralUnit unit)
     {
         return new UnitDto
         {
@@ -15,7 +15,7 @@ public static class UnitMapper
 
     }
 
-    public static List<UnitDto> ToDtoList(this IEnumerable<Unit> units)
+    public static List<UnitDto> ToDtoList(this IEnumerable<GeneralUnit> units)
         => units.Select(ToDto).ToList();
 
 }

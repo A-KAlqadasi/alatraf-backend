@@ -18,7 +18,7 @@ public class CreateUnitCommandHandler : IRequestHandler<CreateUnitCommand, Resul
 
     public async Task<Result<UnitDto>> Handle(CreateUnitCommand request, CancellationToken cancellationToken)
     {
-        var result = Domain.Inventory.Units.Unit.Create(request.Name);
+        var result = Domain.Inventory.Units.GeneralUnit.Create(request.Name);
         if (result.IsError)
             return result.Errors;
 

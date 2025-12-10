@@ -129,7 +129,8 @@ public class Sale : AuditableEntity<int>
 
         // create exchange order lines from sale items and set StoreItemUnit navigation
         var exchangeOrderItems = items
-            .Select(i => {
+            .Select(i =>
+            {
                 var created = ExchangeOrderItem.Create(exchangeOrder.Id, i.StoreItemUnit.Id, i.Quantity).Value;
                 created.StoreItemUnit = i.StoreItemUnit;
                 return created;
@@ -156,7 +157,7 @@ public class Sale : AuditableEntity<int>
         return Result.Updated;
     }
 
- public Result<Updated> MarkPosted()
+    public Result<Updated> MarkPosted()
     {
         if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
         if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;

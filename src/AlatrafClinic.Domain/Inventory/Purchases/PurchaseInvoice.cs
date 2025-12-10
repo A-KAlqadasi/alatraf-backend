@@ -8,6 +8,7 @@ namespace AlatrafClinic.Domain.Inventory.Purchases;
 
 public class PurchaseInvoice : AuditableEntity<int>
 {
+    // public int PurchaseInvoiceId { get; protected set; }
     public string Number { get; private set; } = string.Empty;
     public DateTime Date { get; private set; }
 
@@ -48,7 +49,7 @@ public class PurchaseInvoice : AuditableEntity<int>
         if (supplier is null) return PurchaseInvoiceErrors.InvalidSupplier;
         if (store is null) return PurchaseInvoiceErrors.InvalidStore;
 
-        return new PurchaseInvoice(number, date, supplier, store);;
+        return new PurchaseInvoice(number, date, supplier, store); ;
     }
 
     public Result<Updated> UpdateHeader(string number, DateTime date, Supplier supplier, Store store)
@@ -134,7 +135,7 @@ public class PurchaseInvoice : AuditableEntity<int>
             else
             {
                 it.AssignPurchaseInvoice(this);
-                
+
                 merged.Add(it.StoreItemUnitId, it);
             }
         }
@@ -187,9 +188,9 @@ public class PurchaseInvoice : AuditableEntity<int>
     /// </summary>
     public Result<Updated> Post()
     {
-        if (Status == PurchaseInvoiceStatus.Posted)   return PurchaseInvoiceErrors.AlreadyPosted;
+        if (Status == PurchaseInvoiceStatus.Posted) return PurchaseInvoiceErrors.AlreadyPosted;
         if (Status == PurchaseInvoiceStatus.Cancelled) return PurchaseInvoiceErrors.AlreadyCancelled;
-        if (_items.Count == 0)                        return PurchaseInvoiceErrors.ItemsRequired;
+        if (_items.Count == 0) return PurchaseInvoiceErrors.ItemsRequired;
 
         // Final store consistency check
         if (_items.Any(i => i.StoreItemUnit.StoreId != StoreId))
@@ -201,7 +202,7 @@ public class PurchaseInvoice : AuditableEntity<int>
             if (inc.IsError) return inc.Errors;
         }
 
-        Status     = PurchaseInvoiceStatus.Posted;
+        Status = PurchaseInvoiceStatus.Posted;
         PostedAtUtc = DateTime.UtcNow;
 
         return Result.Updated;

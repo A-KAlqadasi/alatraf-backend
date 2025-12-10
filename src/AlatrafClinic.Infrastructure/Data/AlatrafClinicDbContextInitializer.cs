@@ -12,6 +12,11 @@ using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+using AlatrafClinic.Domain.Inventory.Items;
+using AlatrafClinic.Domain.Inventory.Purchases;
+using AlatrafClinic.Domain.Inventory.Stores;
+using AlatrafClinic.Domain.Inventory.Suppliers;
 using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Patients.Enums;
@@ -44,8 +49,8 @@ namespace AlatrafClinic.Infrastructure.Data;
 
 public static class AlatrafClinicDbContextInitializer
 {
-     private static readonly DateTimeOffset SeedTimestamp =
-        new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset  SeedTimestamp =
+       new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
     private static readonly DateTime SeedDate = new DateTime(2025, 1, 1);
 
@@ -63,6 +68,12 @@ public static class AlatrafClinicDbContextInitializer
         SeedAppointmentsAndHolidays(modelBuilder);
         SeedIndustrialParts(modelBuilder);
         SeedUnits(modelBuilder);
+        // Inventory seeds
+        SeedSuppliers(modelBuilder);
+        SeedItemsAndUnits(modelBuilder);
+        SeedStoresAndStoreItemUnits(modelBuilder);
+        SeedPurchaseInvoices(modelBuilder);
+        SeedExchangeOrders(modelBuilder);
         SeedTickets(modelBuilder);
         SeedTherapyCards(modelBuilder);
         SeedSessions(modelBuilder);
@@ -79,181 +90,353 @@ public static class AlatrafClinicDbContextInitializer
     private static void SeedInjuryLookups(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<InjuryReason>().HasData(
-            new { Id = 1, Name = "حادث مروري", CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 1,
+                Name = "حادث مروري",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false},
+                IsDeleted = false
+            },
 
-            new { Id = 2, Name = "إصابة عمل",CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 2,
+                Name = "إصابة عمل",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 3, Name = "إصابة رياضية", CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "إصابة رياضية",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false }
+                IsDeleted = false
+            }
         );
 
         modelBuilder.Entity<InjurySide>().HasData(
-            new { Id = 1, Name = "الجانب الأيسر", CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 1,
+                Name = "الجانب الأيسر",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 2, Name = "الجانب الأيمن", CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Name = "الجانب الأيمن",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 3, Name = "الجانبين",CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "الجانبين",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false }
+                IsDeleted = false
+            }
         );
 
         modelBuilder.Entity<InjuryType>().HasData(
-            new { Id = 1, Name = "كسر", CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 1,
+                Name = "كسر",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 2, Name = "حرق",CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Name = "حرق",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 3, Name = "التواء",CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "التواء",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false }
+                IsDeleted = false
+            }
         );
     }
 
     private static void SeedDepartmentsSectionsRooms(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Department>().HasData(
-            new { Id = 1, Name = "العلاج الطبيعي", CreatedAtUtc = SeedTimestamp,
-                LastModifiedUtc =  SeedTimestamp,
-                CreatedBy = "Seed",
-                LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 2, Name = "إدارة فنية",CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 1,
+                Name = "العلاج الطبيعي",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false }
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Name = "إدارة فنية",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
         );
 
         modelBuilder.Entity<Section>().HasData(
-            new { Id = 1, Name = "القسم الاول", Code = "S-A", DepartmentId = 1,CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 1,
+                Name = "القسم الاول",
+                Code = "S-A",
+                DepartmentId = 1,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 2, Name = "القسم الثاني", Code = "S-B", DepartmentId = 1,CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Name = "القسم الثاني",
+                Code = "S-B",
+                DepartmentId = 1,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 3, Name = "القسم الثالث", Code = "S-C", DepartmentId = 2,CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "القسم الثالث",
+                Code = "S-C",
+                DepartmentId = 2,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false }
+                IsDeleted = false
+            }
         );
 
         modelBuilder.Entity<Room>().HasData(
-            new { Id = 1, Name = "غرفة ١٠١", SectionId = 1, CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 1,
+                Name = "غرفة ١٠١",
+                SectionId = 1,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 2, Name = "غرفة ١٠٢", SectionId = 1, CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Name = "غرفة ١٠٢",
+                SectionId = 1,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 3, Name = "غرفة ٢٠١", SectionId = 2, CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "غرفة ٢٠١",
+                SectionId = 2,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false }
+                IsDeleted = false
+            }
         );
     }
 
     private static void SeedMedicalProgramsAndServices(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<MedicalProgram>().HasData(
-            new { Id = 1, Name = "برنامج آلام الظهر",  Description = "برنامج مخصص لعلاج آلام الظهر", CreatedAtUtc = SeedTimestamp,
-                LastModifiedUtc = SeedTimestamp,
-                CreatedBy = "Seed",
-                LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 2, Name = "برنامج تأهيل الركبة",  Description = "برنامج مخصص لتأهيل إصابات الركبة", CreatedAtUtc = SeedTimestamp,
-                LastModifiedUtc = SeedTimestamp,
-                CreatedBy = "Seed",
-                LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 3, Name = "برنامج التأهيل بعد الجراحة", Description = "برنامج تأهيلي للمرضى بعد العمليات الجراحية", CreatedAtUtc = SeedTimestamp,
-                LastModifiedUtc = SeedTimestamp,
-                CreatedBy = "Seed",
-                LastModifiedBy = "Seed",
-                IsDeleted = false }
-        );
-
-        modelBuilder.Entity<Service>().HasData(
-            new { Id = 1, Name = "استشارة", Code = "SRV-CONS", CreatedAtUtc = SeedTimestamp,
-                LastModifiedUtc = SeedTimestamp,
-                CreatedBy = "Seed",
-                LastModifiedBy = "Seed",
-                IsDeleted = false },
-            new { Id = 2, Name = "علاج طبيعي", Code = "SRV-THER", DepartmentId = 1,CreatedAtUtc = SeedTimestamp,
-                LastModifiedUtc = SeedTimestamp,
-                CreatedBy = "Seed",
-                LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 3, Name = "اطراف صناعية",Code = "SRV-PRO", DepartmentId = 2, CreatedAtUtc = SeedTimestamp,
-                LastModifiedUtc = SeedTimestamp,
-                CreatedBy = "Seed",
-                LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 4, Name = "مبيعات",Code = "SRV-SAL", DepartmentId = 2,
-            CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 1,
+                Name = "برنامج آلام الظهر",
+                Description = "برنامج مخصص لعلاج آلام الظهر",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
                 IsDeleted = false
-                },
-            new { Id = 5, Name = "إصلاحات",Code = "SRV-REP", DepartmentId = 2,CreatedAtUtc = SeedTimestamp,
+            },
+            new
+            {
+                Id = 2,
+                Name = "برنامج تأهيل الركبة",
+                Description = "برنامج مخصص لتأهيل إصابات الركبة",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 6, Name = "عظام",Code = "SRV-BON", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "برنامج التأهيل بعد الجراحة",
+                Description = "برنامج تأهيلي للمرضى بعد العمليات الجراحية",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 7, Name = "أعصاب",Code = "SRV-NER", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            }
+        );
+
+        modelBuilder.Entity<Service>().HasData(
+            new
+            {
+                Id = 1,
+                Name = "استشارة",
+                Code = "SRV-CONS",
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 8, Name = "تجديد كروت علاج",Code = "SRV-REN", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Name = "علاج طبيعي",
+                Code = "SRV-THER",
+                DepartmentId = 1,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false},
-            new { Id = 9, Name = "إصدار بدل فاقد لكرت علاج",Code = "SRV-DMG", DepartmentId = 1, CreatedAtUtc = SeedTimestamp,
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "اطراف صناعية",
+                Code = "SRV-PRO",
+                DepartmentId = 2,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false}
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 4,
+                Name = "مبيعات",
+                Code = "SRV-SAL",
+                DepartmentId = 2,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 5,
+                Name = "إصلاحات",
+                Code = "SRV-REP",
+                DepartmentId = 2,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 6,
+                Name = "عظام",
+                Code = "SRV-BON",
+                DepartmentId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 7,
+                Name = "أعصاب",
+                Code = "SRV-NER",
+                DepartmentId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 8,
+                Name = "تجديد كروت علاج",
+                Code = "SRV-REN",
+                DepartmentId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 9,
+                Name = "إصدار بدل فاقد لكرت علاج",
+                Code = "SRV-DMG",
+                DepartmentId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
 
         );
     }
@@ -300,55 +483,55 @@ public static class AlatrafClinicDbContextInitializer
     }
 
 
-    private static void SeedDiagnoses(ModelBuilder modelBuilder)    
+    private static void SeedDiagnoses(ModelBuilder modelBuilder)
     {
-    // -------------------------
-    // DIAGNOSES
-    // -------------------------
-    modelBuilder.Entity<Diagnosis>().HasData(
-        new
-        {
-            Id = 1,
-            DiagnosisText = "Lower back pain due to muscle strain",
-            InjuryDate = SeedDate,
-            DiagnoType = DiagnosisType.Limbs, // stored as string
-            TicketId = 1,
-            PatientId = 1,
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        },
-        new
-        {
-            Id = 2,
-            DiagnosisText = "Right knee ligament sprain",
-            InjuryDate = SeedDate,
-            DiagnoType = DiagnosisType.Therapy,
-            TicketId = 2,
-            PatientId = 2,
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        },
-        new
-        {
-            Id = 3,
-            DiagnosisText = "Neck pain caused by whiplash injury",
-            InjuryDate = SeedDate,
-            DiagnoType = DiagnosisType.Sales,
-            TicketId = 3,
-            PatientId = 3,
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        }
-        );
+        // -------------------------
+        // DIAGNOSES
+        // -------------------------
+        modelBuilder.Entity<Diagnosis>().HasData(
+            new
+            {
+                Id = 1,
+                DiagnosisText = "Lower back pain due to muscle strain",
+                InjuryDate = SeedDate,
+                DiagnoType = DiagnosisType.Limbs, // stored as string
+                TicketId = 1,
+                PatientId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                DiagnosisText = "Right knee ligament sprain",
+                InjuryDate = SeedDate,
+                DiagnoType = DiagnosisType.Therapy,
+                TicketId = 2,
+                PatientId = 2,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                DiagnosisText = "Neck pain caused by whiplash injury",
+                InjuryDate = SeedDate,
+                DiagnoType = DiagnosisType.Sales,
+                TicketId = 3,
+                PatientId = 3,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+            );
         // modelBuilder.Entity("DiagnosisInjuryReasons").HasData(
         //     new { DiagnosesId = 1, InjuryReasonsId = 1 }, // Accident
         //     new { DiagnosesId = 2, InjuryReasonsId = 2 }, // Work injury
@@ -472,41 +655,89 @@ public static class AlatrafClinicDbContextInitializer
 
     private static void SeedCards(ModelBuilder modelBuilder)
     {
-        
+
         modelBuilder.Entity<WoundedCard>().HasData(
-            new { Id = 1, CardNumber = "WC-0001", Expiration = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 1, CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false },
-            new { Id = 2, CardNumber = "WC-0002", Expiration = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 2, CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false },
-            new { Id = 3, CardNumber = "WC-0003", Expiration = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 3, CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false }
+            new
+            {
+                Id = 1,
+                CardNumber = "WC-0001",
+                Expiration = SeedDate.AddDays(100),
+                CardImagePath = (string?)null,
+                PatientId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                CardNumber = "WC-0002",
+                Expiration = SeedDate.AddDays(100),
+                CardImagePath = (string?)null,
+                PatientId = 2,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                CardNumber = "WC-0003",
+                Expiration = SeedDate.AddDays(100),
+                CardImagePath = (string?)null,
+                PatientId = 3,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
         );
 
         modelBuilder.Entity<DisabledCard>().HasData(
-            new { Id = 1, CardNumber = "DC-0001", ExpirationDate = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 1, CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false },
-            new { Id = 2, CardNumber = "DC-0002", ExpirationDate = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 2, CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false },
-            new { Id = 3, CardNumber = "DC-0003", ExpirationDate = SeedDate.AddDays(100), CardImagePath = (string?)null, PatientId = 3, CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false }
+            new
+            {
+                Id = 1,
+                CardNumber = "DC-0001",
+                ExpirationDate = SeedDate.AddDays(100),
+                CardImagePath = (string?)null,
+                PatientId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                CardNumber = "DC-0002",
+                ExpirationDate = SeedDate.AddDays(100),
+                CardImagePath = (string?)null,
+                PatientId = 2,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                CardNumber = "DC-0003",
+                ExpirationDate = SeedDate.AddDays(100),
+                CardImagePath = (string?)null,
+                PatientId = 3,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
         );
     }
 
@@ -573,19 +804,32 @@ public static class AlatrafClinicDbContextInitializer
         );
 
         modelBuilder.Entity<PatientPayment>().HasData(
-            new { Id = 10, PaymentId = 1, VoucherNumber = "VOU-0001", PatientId = 1, CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false }
-        );
-        
-        modelBuilder.Entity<WoundedPayment>().HasData(
-            new { Id = 11, PaymentId = 1, WoundedCardId = 1, CreatedAtUtc = SeedTimestamp,
+            new
+            {
+                Id = 10,
+                PaymentId = 1,
+                VoucherNumber = "VOU-0001",
+                PatientId = 1,
+                CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
                 CreatedBy = "Seed",
                 LastModifiedBy = "Seed",
-                IsDeleted = false }
+                IsDeleted = false
+            }
+        );
+
+        modelBuilder.Entity<WoundedPayment>().HasData(
+            new
+            {
+                Id = 11,
+                PaymentId = 1,
+                WoundedCardId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
         );
 
         // modelBuilder.Entity<DisabledPayment>().HasData(
@@ -594,109 +838,109 @@ public static class AlatrafClinicDbContextInitializer
     }
     private static void SeedPeopleAndPatients(ModelBuilder modelBuilder)
     {
-    // الأشخاص (People)
-    modelBuilder.Entity<Person>().HasData(
-        new
-        {
-            Id = 1,
-            FullName = "علي أحمد",
-            Birthdate = SeedDate,
-            Phone = "771234567",
-            NationalNo = "NAT-0001",
-            Gender = true,                 // ذكر
-            Address = "صنعاء",
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        },
-        new
-        {
-            Id = 2,
-            FullName = "محمد صالح",
-            Birthdate = SeedDate,
-            Phone = "781234568",
-            NationalNo = "NAT-0002",
-            Gender = true,
-            Address = "عدن",
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        },
-        new
-        {
-            Id = 3,
-            FullName = "سارة علي",
-            Birthdate = SeedDate,
-            Phone = "731234569",
-            NationalNo = "NAT-0003",
-            Gender = false,               // أنثى
-            Address = "تعز",
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        },
-        new
-        {
-            Id = 4,
-            FullName = "عبدالكريم شوقي يوسف أحمد",
-            Birthdate = SeedDate,
-            Phone = "782422822",
-            NationalNo = "NAT-0004",
-            Gender = true,               // ذكر
-            Address = "تعز",
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        }
-    );
-
-    // لاحظ: لم نضع AutoRegistrationNumber في الـ seed
-    // لأنه عمود محسوب (Computed Column) وسيتم توليده في SQL
-    // بالشكل: سنة_شهر_يوم_معرّف_الشخص
-    
-    modelBuilder.Entity<Patient>().HasData(
-        new
-        {
-            Id = 1,
-            PersonId = 1,
-            PatientType = PatientType.Normal,  // عادي
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        },
-        new
-        {
-            Id = 2,
-            PersonId = 2,
-            PatientType = PatientType.Wounded,
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
-        },
-        new
-        {
-            Id = 3,
-            PersonId = 3,
-            PatientType = PatientType.Disabled,
-            CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false
+        // الأشخاص (People)
+        modelBuilder.Entity<Person>().HasData(
+            new
+            {
+                Id = 1,
+                FullName = "علي أحمد",
+                Birthdate = SeedDate,
+                Phone = "771234567",
+                NationalNo = "NAT-0001",
+                Gender = true,                 // ذكر
+                Address = "صنعاء",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                FullName = "محمد صالح",
+                Birthdate = SeedDate,
+                Phone = "781234568",
+                NationalNo = "NAT-0002",
+                Gender = true,
+                Address = "عدن",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                FullName = "سارة علي",
+                Birthdate = SeedDate,
+                Phone = "731234569",
+                NationalNo = "NAT-0003",
+                Gender = false,               // أنثى
+                Address = "تعز",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 4,
+                FullName = "عبدالكريم شوقي يوسف أحمد",
+                Birthdate = SeedDate,
+                Phone = "782422822",
+                NationalNo = "NAT-0004",
+                Gender = true,               // ذكر
+                Address = "تعز",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
             }
         );
+
+        // لاحظ: لم نضع AutoRegistrationNumber في الـ seed
+        // لأنه عمود محسوب (Computed Column) وسيتم توليده في SQL
+        // بالشكل: سنة_شهر_يوم_معرّف_الشخص
+
+        modelBuilder.Entity<Patient>().HasData(
+            new
+            {
+                Id = 1,
+                PersonId = 1,
+                PatientType = PatientType.Normal,  // عادي
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                PersonId = 2,
+                PatientType = PatientType.Wounded,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                PersonId = 3,
+                PatientType = PatientType.Disabled,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+            );
     }
 
     private static void SeedAppointmentsAndHolidays(ModelBuilder modelBuilder)
@@ -744,7 +988,7 @@ public static class AlatrafClinicDbContextInitializer
         //     CreatedBy = "Seed",
         //     LastModifiedBy = "Seed",
         //     IsDeleted = false,
-            
+
         // }
         );
 
@@ -913,27 +1157,230 @@ public static class AlatrafClinicDbContextInitializer
 
     private static void SeedUnits(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Unit>().HasData(
-            new { Id = 1, Name = "قطعة", CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false },
-            new { Id = 2, Name = "زوج", CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false },
-            new { Id = 3, Name = "يمين", CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false },
-            new { Id = 4, Name = "يسار", CreatedAtUtc = SeedTimestamp,
-            LastModifiedUtc = SeedTimestamp,
-            CreatedBy = "Seed",
-            LastModifiedBy = "Seed",
-            IsDeleted = false }
+        modelBuilder.Entity<GeneralUnit>().HasData(
+            new
+            {
+                Id = 1,
+                Name = "قطعة",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                Name = "زوج",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 3,
+                Name = "يمين",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 4,
+                Name = "يسار",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+    }
+
+    private static void SeedSuppliers(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Supplier>().HasData(
+            new
+            {
+                Id = 1,
+                SupplierName = "Default Supplier",
+                Phone = "0000000000",
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+    }
+
+    private static void SeedItemsAndUnits(ModelBuilder modelBuilder)
+    {
+        // Items
+        modelBuilder.Entity<Item>().HasData(
+            new
+            {
+                Id = 1,
+                Name = "Sample Item A",
+                Description = "Sample inventory item A",
+                BaseUnitId = 1,
+                IsActive = true,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+
+        // ItemUnits as independent entity
+        modelBuilder.Entity<ItemUnit>().HasData(
+            new
+            {
+                Id = 1,
+                ItemId = 1,
+                UnitId = 1,
+                Price = 100m,
+                ConversionFactor = 1m,
+                MinPriceToPay = (decimal?)null,
+                MaxPriceToPay = (decimal?)null,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            },
+            new
+            {
+                Id = 2,
+                ItemId = 1,
+                UnitId = 2,
+                Price = 180m,
+                ConversionFactor = 2m,
+                MinPriceToPay = (decimal?)null,
+                MaxPriceToPay = (decimal?)null,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+    }
+
+    private static void SeedStoresAndStoreItemUnits(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Store>().HasData(
+     new
+     {
+         Id = 1,
+         Name = "Main Store",
+         CreatedAtUtc = SeedTimestamp,
+         LastModifiedUtc = SeedTimestamp,
+         CreatedBy = "Seed",
+         LastModifiedBy = "Seed",
+         IsDeleted = false
+     }
+ );
+
+        modelBuilder.Entity<StoreItemUnit>().HasData(
+            new
+            {
+                Id = 1,
+                StoreId = 1,
+                ItemUnitId = 1,
+                Quantity = 100m,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+
+    }
+    private static void SeedPurchaseInvoices(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PurchaseInvoice>().HasData(
+            new
+            {
+                Id = 1,
+                Number = "PI-1001",
+                Date = SeedDate,
+                SupplierId = 1,
+                StoreId = 1,
+                Status = AlatrafClinic.Domain.Inventory.Enums.PurchaseInvoiceStatus.Draft,
+                PostedAtUtc = (DateTime?)null,
+                PaidAtUtc = (DateTime?)null,
+                PaymentAmount = (decimal?)null,
+                PaymentMethod = (string?)null,
+                PaymentReference = (string?)null,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+
+        // Seed dependent PurchaseItem directly
+        modelBuilder.Entity<PurchaseItem>().HasData(
+            new
+            {
+                Id = 1,
+                PurchaseInvoiceId = 1,
+                StoreItemUnitId = 1,
+                Quantity = 10m,
+                UnitPrice = 90m,
+                Notes = (string?)null,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false  // IMPORTANT: You must include this
+            }
+        );
+    }
+
+    private static void SeedExchangeOrders(ModelBuilder modelBuilder)
+    {
+
+        // Seed ExchangeOrder
+        modelBuilder.Entity<ExchangeOrder>().HasData(
+            new
+            {
+                Id = 1,
+                Number = "EX-1",
+                IsApproved = false,
+                Notes = (string?)null,
+                RelatedOrderId = (int?)null,
+                RelatedSaleId = (int?)null,
+                StoreId = 1,
+                CreatedAtUtc = SeedTimestamp,
+                LastModifiedUtc = SeedTimestamp,
+                CreatedBy = "Seed",
+                LastModifiedBy = "Seed",
+                IsDeleted = false
+            }
+        );
+
+        modelBuilder.Entity<ExchangeOrderItem>().HasData(
+          new
+          {
+              Id = 1,
+              ExchangeOrderId = 1,
+              StoreItemUnitId = 1,
+              Quantity = 2m,
+              CreatedAtUtc = SeedTimestamp,
+              LastModifiedUtc = SeedTimestamp,
+              CreatedBy = "Seed",
+              LastModifiedBy = "Seed",
+              IsDeleted = false
+          }
         );
     }
 
@@ -1267,120 +1714,120 @@ public static class AlatrafClinicDbContextInitializer
     {
         modelBuilder.Entity<ApplicationPermission>().HasData(
             // Person (1–4)
-            new { Id = 1,  Name = Permission.Person.Create,  Description = (string?)null },
-            new { Id = 2,  Name = Permission.Person.Read,    Description = (string?)null },
-            new { Id = 3,  Name = Permission.Person.Update,  Description = (string?)null },
-            new { Id = 4,  Name = Permission.Person.Delete,  Description = (string?)null },
+            new { Id = 1, Name = Permission.Person.Create, Description = (string?)null },
+            new { Id = 2, Name = Permission.Person.Read, Description = (string?)null },
+            new { Id = 3, Name = Permission.Person.Update, Description = (string?)null },
+            new { Id = 4, Name = Permission.Person.Delete, Description = (string?)null },
 
             // Service (5–8)
-            new { Id = 5,  Name = Permission.Service.Create, Description = (string?)null },
-            new { Id = 6,  Name = Permission.Service.Read,   Description = (string?)null },
-            new { Id = 7,  Name = Permission.Service.Update, Description = (string?)null },
-            new { Id = 8,  Name = Permission.Service.Delete, Description = (string?)null },
+            new { Id = 5, Name = Permission.Service.Create, Description = (string?)null },
+            new { Id = 6, Name = Permission.Service.Read, Description = (string?)null },
+            new { Id = 7, Name = Permission.Service.Update, Description = (string?)null },
+            new { Id = 8, Name = Permission.Service.Delete, Description = (string?)null },
 
             // Ticket (9–13)
-            new { Id = 9,  Name = Permission.Ticket.Create,  Description = (string?)null },
-            new { Id = 10, Name = Permission.Ticket.Read,    Description = (string?)null },
-            new { Id = 11, Name = Permission.Ticket.Update,  Description = (string?)null },
-            new { Id = 12, Name = Permission.Ticket.Delete,  Description = (string?)null },
-            new { Id = 13, Name = Permission.Ticket.Print,   Description = (string?)null },
+            new { Id = 9, Name = Permission.Ticket.Create, Description = (string?)null },
+            new { Id = 10, Name = Permission.Ticket.Read, Description = (string?)null },
+            new { Id = 11, Name = Permission.Ticket.Update, Description = (string?)null },
+            new { Id = 12, Name = Permission.Ticket.Delete, Description = (string?)null },
+            new { Id = 13, Name = Permission.Ticket.Print, Description = (string?)null },
 
             // Appointment (14–19)
-            new { Id = 14, Name = Permission.Appointment.Create,       Description = (string?)null },
-            new { Id = 15, Name = Permission.Appointment.ReSchedule,   Description = (string?)null },
-            new { Id = 16, Name = Permission.Appointment.Read,         Description = (string?)null },
-            new { Id = 17, Name = Permission.Appointment.Update,       Description = (string?)null },
-            new { Id = 18, Name = Permission.Appointment.Delete,       Description = (string?)null },
+            new { Id = 14, Name = Permission.Appointment.Create, Description = (string?)null },
+            new { Id = 15, Name = Permission.Appointment.ReSchedule, Description = (string?)null },
+            new { Id = 16, Name = Permission.Appointment.Read, Description = (string?)null },
+            new { Id = 17, Name = Permission.Appointment.Update, Description = (string?)null },
+            new { Id = 18, Name = Permission.Appointment.Delete, Description = (string?)null },
             new { Id = 19, Name = Permission.Appointment.ChangeStatus, Description = (string?)null },
 
             // Holiday (20–23)
             new { Id = 20, Name = Permission.Holiday.Create, Description = (string?)null },
-            new { Id = 21, Name = Permission.Holiday.Read,   Description = (string?)null },
+            new { Id = 21, Name = Permission.Holiday.Read, Description = (string?)null },
             new { Id = 22, Name = Permission.Holiday.Update, Description = (string?)null },
             new { Id = 23, Name = Permission.Holiday.Delete, Description = (string?)null },
 
             // TherapyCard (24–30)
-            new { Id = 24, Name = Permission.TherapyCard.Create,          Description = (string?)null },
-            new { Id = 25, Name = Permission.TherapyCard.Read,            Description = (string?)null },
-            new { Id = 26, Name = Permission.TherapyCard.Update,          Description = (string?)null },
-            new { Id = 27, Name = Permission.TherapyCard.Delete,          Description = (string?)null },
-            new { Id = 28, Name = Permission.TherapyCard.Renew,           Description = (string?)null },
-            new { Id = 29, Name = Permission.TherapyCard.GenerateSessions,Description = (string?)null },
-            new { Id = 30, Name = Permission.TherapyCard.CreateSession,   Description = (string?)null },
+            new { Id = 24, Name = Permission.TherapyCard.Create, Description = (string?)null },
+            new { Id = 25, Name = Permission.TherapyCard.Read, Description = (string?)null },
+            new { Id = 26, Name = Permission.TherapyCard.Update, Description = (string?)null },
+            new { Id = 27, Name = Permission.TherapyCard.Delete, Description = (string?)null },
+            new { Id = 28, Name = Permission.TherapyCard.Renew, Description = (string?)null },
+            new { Id = 29, Name = Permission.TherapyCard.GenerateSessions, Description = (string?)null },
+            new { Id = 30, Name = Permission.TherapyCard.CreateSession, Description = (string?)null },
 
             // RepairCard (31–37)
-            new { Id = 31, Name = Permission.RepairCard.Create,           Description = (string?)null },
-            new { Id = 32, Name = Permission.RepairCard.Read,             Description = (string?)null },
-            new { Id = 33, Name = Permission.RepairCard.Update,           Description = (string?)null },
-            new { Id = 34, Name = Permission.RepairCard.Delete,           Description = (string?)null },
-            new { Id = 35, Name = Permission.RepairCard.ChangeStatus,     Description = (string?)null },
+            new { Id = 31, Name = Permission.RepairCard.Create, Description = (string?)null },
+            new { Id = 32, Name = Permission.RepairCard.Read, Description = (string?)null },
+            new { Id = 33, Name = Permission.RepairCard.Update, Description = (string?)null },
+            new { Id = 34, Name = Permission.RepairCard.Delete, Description = (string?)null },
+            new { Id = 35, Name = Permission.RepairCard.ChangeStatus, Description = (string?)null },
             new { Id = 36, Name = Permission.RepairCard.AssignToTechnician, Description = (string?)null },
             new { Id = 37, Name = Permission.RepairCard.CreateDeliveryTime, Description = (string?)null },
 
             // IndustrialPart (38–41)
             new { Id = 38, Name = Permission.IndustrialPart.Create, Description = (string?)null },
-            new { Id = 39, Name = Permission.IndustrialPart.Read,   Description = (string?)null },
+            new { Id = 39, Name = Permission.IndustrialPart.Read, Description = (string?)null },
             new { Id = 40, Name = Permission.IndustrialPart.Update, Description = (string?)null },
             new { Id = 41, Name = Permission.IndustrialPart.Delete, Description = (string?)null },
 
             // MedicalProgram (42–45)
             new { Id = 42, Name = Permission.MedicalProgram.Create, Description = (string?)null },
-            new { Id = 43, Name = Permission.MedicalProgram.Read,   Description = (string?)null },
+            new { Id = 43, Name = Permission.MedicalProgram.Read, Description = (string?)null },
             new { Id = 44, Name = Permission.MedicalProgram.Update, Description = (string?)null },
             new { Id = 45, Name = Permission.MedicalProgram.Delete, Description = (string?)null },
 
             // Department (46–49)
             new { Id = 46, Name = Permission.Department.Create, Description = (string?)null },
-            new { Id = 47, Name = Permission.Department.Read,   Description = (string?)null },
+            new { Id = 47, Name = Permission.Department.Read, Description = (string?)null },
             new { Id = 48, Name = Permission.Department.Update, Description = (string?)null },
             new { Id = 49, Name = Permission.Department.Delete, Description = (string?)null },
 
             // Section (50–53)
             new { Id = 50, Name = Permission.Section.Create, Description = (string?)null },
-            new { Id = 51, Name = Permission.Section.Read,   Description = (string?)null },
+            new { Id = 51, Name = Permission.Section.Read, Description = (string?)null },
             new { Id = 52, Name = Permission.Section.Update, Description = (string?)null },
             new { Id = 53, Name = Permission.Section.Delete, Description = (string?)null },
 
             // Room (54–57)
             new { Id = 54, Name = Permission.Room.Create, Description = (string?)null },
-            new { Id = 55, Name = Permission.Room.Read,   Description = (string?)null },
+            new { Id = 55, Name = Permission.Room.Read, Description = (string?)null },
             new { Id = 56, Name = Permission.Room.Update, Description = (string?)null },
             new { Id = 57, Name = Permission.Room.Delete, Description = (string?)null },
 
             // Payment (58–61)
             new { Id = 58, Name = Permission.Payment.Create, Description = (string?)null },
-            new { Id = 59, Name = Permission.Payment.Read,   Description = (string?)null },
+            new { Id = 59, Name = Permission.Payment.Read, Description = (string?)null },
             new { Id = 60, Name = Permission.Payment.Update, Description = (string?)null },
             new { Id = 61, Name = Permission.Payment.Delete, Description = (string?)null },
 
             // Doctor (62–69)
-            new { Id = 62, Name = Permission.Doctor.Create,                    Description = (string?)null },
-            new { Id = 63, Name = Permission.Doctor.Read,                      Description = (string?)null },
-            new { Id = 64, Name = Permission.Doctor.Update,                    Description = (string?)null },
-            new { Id = 65, Name = Permission.Doctor.Delete,                    Description = (string?)null },
-            new { Id = 66, Name = Permission.Doctor.AssignDoctorToSection,     Description = (string?)null },
+            new { Id = 62, Name = Permission.Doctor.Create, Description = (string?)null },
+            new { Id = 63, Name = Permission.Doctor.Read, Description = (string?)null },
+            new { Id = 64, Name = Permission.Doctor.Update, Description = (string?)null },
+            new { Id = 65, Name = Permission.Doctor.Delete, Description = (string?)null },
+            new { Id = 66, Name = Permission.Doctor.AssignDoctorToSection, Description = (string?)null },
             new { Id = 67, Name = Permission.Doctor.AssignDoctorToSectionAndRoom, Description = (string?)null },
-            new { Id = 68, Name = Permission.Doctor.ChangeDoctorDepartment,    Description = (string?)null },
-            new { Id = 69, Name = Permission.Doctor.EndDoctorAssignment,       Description = (string?)null },
+            new { Id = 68, Name = Permission.Doctor.ChangeDoctorDepartment, Description = (string?)null },
+            new { Id = 69, Name = Permission.Doctor.EndDoctorAssignment, Description = (string?)null },
 
             // Patient (70–80)
-            new { Id = 70, Name = Permission.Patient.Create,             Description = (string?)null },
-            new { Id = 71, Name = Permission.Patient.Read,               Description = (string?)null },
-            new { Id = 72, Name = Permission.Patient.Update,             Description = (string?)null },
-            new { Id = 73, Name = Permission.Patient.Delete,             Description = (string?)null },
-            new { Id = 74, Name = Permission.Patient.ReadDisabledCard,   Description = (string?)null },
-            new { Id = 75, Name = Permission.Patient.AddDisabledCard,    Description = (string?)null },
+            new { Id = 70, Name = Permission.Patient.Create, Description = (string?)null },
+            new { Id = 71, Name = Permission.Patient.Read, Description = (string?)null },
+            new { Id = 72, Name = Permission.Patient.Update, Description = (string?)null },
+            new { Id = 73, Name = Permission.Patient.Delete, Description = (string?)null },
+            new { Id = 74, Name = Permission.Patient.ReadDisabledCard, Description = (string?)null },
+            new { Id = 75, Name = Permission.Patient.AddDisabledCard, Description = (string?)null },
             new { Id = 76, Name = Permission.Patient.UpdateDisabledCard, Description = (string?)null },
-            new { Id = 77, Name = Permission.Patient.AddWoundedCard,     Description = (string?)null },
-            new { Id = 78, Name = Permission.Patient.UpdateWoundedCard,  Description = (string?)null },
-            new { Id = 79, Name = Permission.Patient.ReadWoundedCard,    Description = (string?)null },
+            new { Id = 77, Name = Permission.Patient.AddWoundedCard, Description = (string?)null },
+            new { Id = 78, Name = Permission.Patient.UpdateWoundedCard, Description = (string?)null },
+            new { Id = 79, Name = Permission.Patient.ReadWoundedCard, Description = (string?)null },
 
             // Sale (81–85)
-            new { Id = 80, Name = Permission.Sale.Create,  Description = (string?)null },
-            new { Id = 81, Name = Permission.Sale.Read,    Description = (string?)null },
-            new { Id = 82, Name = Permission.Sale.Update,  Description = (string?)null },
-            new { Id = 83, Name = Permission.Sale.Delete,  Description = (string?)null },
-            new { Id = 84, Name = Permission.Sale.Cancel,  Description = (string?)null }
+            new { Id = 80, Name = Permission.Sale.Create, Description = (string?)null },
+            new { Id = 81, Name = Permission.Sale.Read, Description = (string?)null },
+            new { Id = 82, Name = Permission.Sale.Update, Description = (string?)null },
+            new { Id = 83, Name = Permission.Sale.Delete, Description = (string?)null },
+            new { Id = 84, Name = Permission.Sale.Cancel, Description = (string?)null }
         );
     }
 

@@ -11,7 +11,7 @@ public class Item : AuditableEntity<int>
     public bool IsActive { get; private set; } = true;
 
     public int BaseUnitId { get; private set; }
-    public Unit BaseUnit { get; private set; } = default!;
+    public GeneralUnit BaseUnit { get; private set; } = default!;
 
     private readonly List<ItemUnit> _itemUnits = new();
     public IReadOnlyCollection<ItemUnit> ItemUnits => _itemUnits.AsReadOnly();
@@ -20,7 +20,7 @@ public class Item : AuditableEntity<int>
 
     private Item() { }
 
-    private Item(string name, Unit baseUnit, string? description = null)
+    private Item(string name, GeneralUnit baseUnit, string? description = null)
     {
         Name = name;
         BaseUnit = baseUnit;
@@ -30,7 +30,7 @@ public class Item : AuditableEntity<int>
 
     }
 
-    public static Result<Item> Create(string name, Unit baseUnit, string? description = null)
+    public static Result<Item> Create(string name, GeneralUnit baseUnit, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             return ItemErrors.NameIsRequired;
