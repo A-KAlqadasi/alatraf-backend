@@ -1,8 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Hybrid;
-using MediatR;
-
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -14,6 +9,13 @@ using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Domain.Payments;
+using AlatrafClinic.Application.Common.Interfaces;
+
+using MediatR;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 
@@ -22,18 +24,18 @@ public sealed class CreateTherapyCardCommandHandler
 {
     private readonly ILogger<CreateTherapyCardCommandHandler> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly IDiagnosisCreationService _diagnosisService;
 
     public CreateTherapyCardCommandHandler(
         ILogger<CreateTherapyCardCommandHandler> logger,
         HybridCache cache,
-        IUnitOfWork unitOfWork,
+        IAppDbContext context,
         IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
         _cache = cache;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _diagnosisService = diagnosisService;
     }
 
@@ -63,7 +65,7 @@ public sealed class CreateTherapyCardCommandHandler
         List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms = new();
         foreach (var program in command.Programs)
         {
-            var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(program.MedicalProgramId, ct);
+            var exists = await _context.MedicalPrograms.AnyAsync(mp=> mp.Id == program.MedicalProgramId, ct);
             if (!exists)
             {
                 _logger.LogError("Medical program {ProgramId} not found.", program.MedicalProgramId);
@@ -81,15 +83,16 @@ public sealed class CreateTherapyCardCommandHandler
             return upsertDiagnosisResult.Errors;
         }
         
-        decimal? price = await _unitOfWork.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
+        var typePrice = await  _context.TherapyCardTypePrices.FirstOrDefaultAsync(x=> x.Type == command.TherapyCardType, ct);
 
-        if(!price.HasValue)
+        if(typePrice is null)
         {
             _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
+        var price = typePrice.SessionPrice;
 
-        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.New, null, command.Notes);
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.New, null, command.Notes);
 
         if (createTherapyCardResult.IsError)
         {
@@ -123,8 +126,8 @@ public sealed class CreateTherapyCardCommandHandler
         diagnosis.AssignPayment(payment);
         
 
-        await _unitOfWork.Diagnoses.AddAsync(diagnosis);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.Diagnoses.AddAsync(diagnosis);
+        await _context.SaveChangesAsync(ct);
         await _cache.RemoveByTagAsync("therapy-card", ct);
 
         

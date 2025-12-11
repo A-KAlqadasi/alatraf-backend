@@ -12,8 +12,6 @@ public class IndustrialPart : AuditableEntity<int>
     private readonly List<IndustrialPartUnit> _industrialPartUnits = new();
     public IReadOnlyCollection<IndustrialPartUnit> IndustrialPartUnits => _industrialPartUnits.AsReadOnly();
     
-    public ICollection<DiagnosisIndustrialPart> DiagnosisIndustrialParts { get; set; } = new List<DiagnosisIndustrialPart>();
-
     private IndustrialPart() { }
 
     private IndustrialPart(string name, string? description)

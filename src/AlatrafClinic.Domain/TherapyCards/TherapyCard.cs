@@ -1,5 +1,3 @@
-using System.Collections;
-
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
@@ -185,46 +183,47 @@ public class TherapyCard : AuditableEntity<int>
 
         return session.Value;
     }
-    public Result<Updated> TakeSession(int sessionId, List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
-    {
-        var session = _sessions.FirstOrDefault(s => s.Id == sessionId);
-        if (session == null)
-        {
-            return TherapyCardErrors.SessionNotFound;
-        }
+    
+    // public Result<Updated> TakeSession(int sessionId, List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData)
+    // {
+    //     var session = _sessions.FirstOrDefault(s => s.Id == sessionId);
+    //     if (session == null)
+    //     {
+    //         return TherapyCardErrors.SessionNotFound;
+    //     }
         
 
-        return session.TakeSession(sessionProgramsData);
-    }
+    //     return session.TakeSession(sessionProgramsData);
+    // }
 
-    public Result<Updated> GenerateSessions()
-    {
-        var sessionValidate = SessionValidation();
-        if (sessionValidate.IsError)
-        {
-            return sessionValidate.TopError;
-        }
+    // public Result<Updated> GenerateSessions()
+    // {
+    //     var sessionValidate = SessionValidation();
+    //     if (sessionValidate.IsError)
+    //     {
+    //         return sessionValidate.TopError;
+    //     }
 
-        var lastSession = _sessions.OrderByDescending(s => s.SessionDate).FirstOrDefault();
+    //     var lastSession = _sessions.OrderByDescending(s => s.SessionDate).FirstOrDefault();
 
-        DateTime lastSessionDate = lastSession != null ? lastSession.SessionDate.AddDays(1) : ProgramStartDate;
-        int lastSessionNumber = lastSession != null ? lastSession.Number : 0;
+    //     DateTime lastSessionDate = lastSession != null ? lastSession.SessionDate.AddDays(1) : ProgramStartDate;
+    //     int lastSessionNumber = lastSession != null ? lastSession.Number : 0;
 
-        var numOfSessions = ProgramEndDate.Subtract(lastSessionDate).Days + 1;
+    //     var numOfSessions = ProgramEndDate.Subtract(lastSessionDate).Days + 1;
 
-        for (int i = 0; i < numOfSessions; i++)
-        {
-            var sessionDate = lastSessionDate.AddDays(i);
-            var session = Session.Create(Id, lastSessionNumber + i + 1, sessionDate);
+    //     for (int i = 0; i < numOfSessions; i++)
+    //     {
+    //         var sessionDate = lastSessionDate.AddDays(i);
+    //         var session = Session.Create(Id, lastSessionNumber + i + 1, sessionDate);
 
-            if (session.IsError)
-            {
-                return session.TopError;
-            }
+    //         if (session.IsError)
+    //         {
+    //             return session.TopError;
+    //         }
 
-            _sessions.Add(session.Value);
-        }
+    //         _sessions.Add(session.Value);
+    //     }
 
-        return Result.Updated;
-    }
+    //     return Result.Updated;
+    // }
 }

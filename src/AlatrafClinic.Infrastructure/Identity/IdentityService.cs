@@ -406,7 +406,7 @@ public class IdentityService(
 
     public async Task<IQueryable<UserDto>> GetUsersAsync()
     {
-        var usersQuery =  _userManager.Users
+        var usersQuery = _userManager.Users
             .SelectMany(u => _dbContext.People
                 .Where(p => p.Id == u.PersonId)
                 .Select(p => new { User = u, Person = p }))

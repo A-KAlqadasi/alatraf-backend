@@ -1,12 +1,14 @@
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.TherapyCards;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -16,17 +18,18 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
 {
     private readonly ILogger<CreateTherapySessionCommandHandler> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
-    public CreateTherapySessionCommandHandler(ILogger<CreateTherapySessionCommandHandler> logger, HybridCache cache, IUnitOfWork unitOfWork)
+    public CreateTherapySessionCommandHandler(ILogger<CreateTherapySessionCommandHandler> logger, HybridCache cache, IAppDbContext context)
     {
         _logger = logger;
         _cache = cache;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
     public async Task<Result<SessionDto>> Handle(CreateTherapySessionCommand command, CancellationToken ct)
     {
-        var therapyCard = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
+        var therapyCard = await _context.TherapyCards.Include(x => x.DiagnosisPrograms).FirstOrDefaultAsync(x=> x.Id == command.TherapyCardId, ct);
+
         if (therapyCard is null)
         {
             _logger.LogError("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
@@ -42,7 +45,25 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
         List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData = new();
         foreach (var sessionProgram in command.SessionProgramsData)
         {
-            sessionProgramsData.Add((sessionProgram.DiagnosisProgramId, sessionProgram.DoctorSectionRoomId)); 
+            var doctorSectionRoom = await _context.DoctorSectionRooms
+                .FirstOrDefaultAsync(x => x.DoctorId == sessionProgram.DocotorId 
+                                          && x.SectionId == sessionProgram.SectionId 
+                                          && x.RoomId == sessionProgram.RoomId, ct);
+            
+            if (doctorSectionRoom is null)
+            {
+                _logger.LogError("DoctorSectionRoom with DoctorId {DoctorId}, SectionId {SectionId}, RoomId {RoomId} not found or inactive", sessionProgram.DocotorId, sessionProgram.SectionId, sessionProgram.RoomId);
+
+                return DoctorSectionRoomErrors.DoctorSectionRoomNotFound;
+            }
+            if(!doctorSectionRoom.IsActive)
+            {
+                _logger.LogError("DoctorSectionRoom with DoctorId {DoctorId}, SectionId {SectionId}, RoomId {RoomId} is inactive", sessionProgram.DocotorId, sessionProgram.SectionId, sessionProgram.RoomId);
+
+                return DoctorSectionRoomErrors.DoctorIsNotActive;
+            }
+
+            sessionProgramsData.Add((sessionProgram.DiagnosisProgramId, doctorSectionRoom.Id)); 
         }
 
         var session = therapyCard.AddSession(sessionProgramsData);
@@ -54,8 +75,8 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
             return session.TopError;
         }
 
-        await _unitOfWork.TherapyCards.UpdateAsync(therapyCard, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.TherapyCards.Update(therapyCard);
+        await _context.SaveChangesAsync(ct);
         await _cache.RemoveByTagAsync("session", ct);
 
 

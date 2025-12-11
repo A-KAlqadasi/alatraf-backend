@@ -49,4 +49,3 @@ public sealed class DiagnosisIndustrialPartConfiguration : IEntityTypeConfigurat
             .IsUnique();
     }
 }
-

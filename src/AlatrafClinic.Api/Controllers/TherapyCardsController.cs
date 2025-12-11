@@ -3,7 +3,6 @@ using AlatrafClinic.Api.Requests.TherapyCards;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapySession;
-using AlatrafClinic.Application.Features.TherapyCards.Commands.GenerateSessions;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
@@ -200,44 +199,24 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
         );
     }
 
-    [HttpPost("{therapyCardId:int}/generate-sessions")]
+    [HttpPost("{therapyCardId:int}/create-session")]
     [ProducesResponseType(typeof(List<SessionDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound )]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Generates therapy sessions for a specified therapy card.")]
-    [EndpointDescription("Generates a list of therapy sessions associated with the specified therapy card ID.")]
-    [EndpointName("GenerateTherapySessions")]
+    [EndpointSummary("Creates therapy session for a specified therapy card.")]
+    [EndpointDescription("Creates a therapy session associated with the specified therapy card ID.")]
+    [EndpointName("CreateTherapySession")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> GenerateSessions(int therapyCardId, CancellationToken ct = default)
+    public async Task<IActionResult> CreateSession(int therapyCardId, [FromBody] CreateSessionRequest request, CancellationToken ct = default)
     {
-
-        var result = await sender.Send(new GenerateSessionsCommand(therapyCardId), ct);
+        var sessionProgramData = request.SessionPrograms
+            .ConvertAll(p => new SessionProgramData(p.DiagnosisProgramId, p.DoctorId, p.SectionId, p.RoomId));
+        
+        var result = await sender.Send(new CreateTherapySessionCommand(therapyCardId, sessionProgramData), ct);
 
         return result.Match(
             response => Ok(response),
-            Problem
-        );
-    }
-
-    [HttpPut("{therapyCardId:int}/sessions/{sessionId:int}/take-session")]
-    [ProducesResponseType(typeof(List<SessionDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound )]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Take therapy session for a specified therapy card.")]
-    [EndpointDescription("Assign therapy session for doctor and mark it as taken for specific therapyCard.")]
-    [EndpointName("TakeTherapySession")]
-    [MapToApiVersion("1.0")]
-    public async Task<IActionResult> TakeSession(int therapyCardId, int sessionId, [FromBody] List<TakeSessionRequest> request)
-    {
-        var sessionProgramData = request
-            .ConvertAll(p => new SessionProgramData(p.DiagnosisProgramId, p.DoctorSectionRoomId));
-
-        var response = await sender.Send(new TakeSessionCommand(therapyCardId, sessionId,sessionProgramData));
-
-        return response.Match(
-            _=> NoContent(),
             Problem
         );
     }

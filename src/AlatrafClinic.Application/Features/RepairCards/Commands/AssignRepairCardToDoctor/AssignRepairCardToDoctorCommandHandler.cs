@@ -26,7 +26,7 @@ public class AssignRepairCardToDoctorCommandHandler : IRequestHandler<AssignRepa
     }
     public async Task<Result<Updated>> Handle(AssignRepairCardToDoctorCommand command, CancellationToken ct)
     {
-        var repairCard = await _context.RepairCards.FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
+        var repairCard = await _context.RepairCards.Include(r => r.DiagnosisIndustrialParts).FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
         if (repairCard is null)
         {
             _logger.LogError("Repair card with Id {repairCardId} not found to assign to doctor", command.RepairCardId);

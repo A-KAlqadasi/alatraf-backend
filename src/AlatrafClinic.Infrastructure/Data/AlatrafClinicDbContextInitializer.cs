@@ -219,8 +219,7 @@ public static class AlatrafClinicDbContextInitializer
             new
             {
                 Id = 1,
-                Name = "القسم الاول",
-                Code = "S-A",
+                Name  = "تمارين",
                 DepartmentId = 1,
                 CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
@@ -231,8 +230,7 @@ public static class AlatrafClinicDbContextInitializer
             new
             {
                 Id = 2,
-                Name = "القسم الثاني",
-                Code = "S-B",
+                Name = "حرارة",
                 DepartmentId = 1,
                 CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
@@ -243,8 +241,7 @@ public static class AlatrafClinicDbContextInitializer
             new
             {
                 Id = 3,
-                Name = "القسم الثالث",
-                Code = "S-C",
+                Name = "حديد",
                 DepartmentId = 2,
                 CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
@@ -1636,7 +1633,7 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 2,
                 DoctorId = 2,
-                SectionId = 8,
+                SectionId = 3,
                 AssignDate = SeedDate,
                 EndDate = (DateTime?)null,
                 IsActive = true,

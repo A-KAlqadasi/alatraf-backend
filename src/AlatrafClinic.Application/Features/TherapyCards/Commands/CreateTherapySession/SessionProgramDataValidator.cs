@@ -9,7 +9,12 @@ public class SessionProgramDataValidator : AbstractValidator<SessionProgramData>
         RuleFor(x => x.DiagnosisProgramId)
             .GreaterThan(0).WithMessage("DiagnosisProgramId must be greater than 0.");
 
-        RuleFor(x => x.DoctorSectionRoomId)
-            .GreaterThan(0).WithMessage("DoctorSectionRoomId must be greater than 0.");
+        RuleFor(x => x.DocotorId)
+            .GreaterThan(0).WithMessage("DoctorId must be greater than 0.");
+        RuleFor(x => x.SectionId)
+            .GreaterThan(0).WithMessage("SectionId must be greater than 0.");
+        RuleFor(x => x.RoomId)
+            .GreaterThan(0).WithMessage("RoomId must be greater than 0.");
+            
     }
 }

@@ -40,6 +40,7 @@ public sealed class DiagnosisCreationService : IDiagnosisCreationService
         .Include(t=> t.Patient!)
             .ThenInclude(p=> p.Person)
         .FirstOrDefaultAsync(t=> t.Id == ticketId, ct);
+        
         if (ticket is null)
         {
             _logger.LogError("Ticket {TicketId} not found.", ticketId);

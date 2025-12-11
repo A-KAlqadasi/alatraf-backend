@@ -1,6 +1,10 @@
 using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.RepairCards;
 using AlatrafClinic.Application.Common.Models;
+using AlatrafClinic.Application.Features.RepairCards.Commands.AssignIndustrialPartToDoctor;
+using AlatrafClinic.Application.Features.RepairCards.Commands.AssignRepairCardToDoctor;
+using AlatrafClinic.Application.Features.RepairCards.Commands.ChangeRepairCardStatus;
+using AlatrafClinic.Application.Features.RepairCards.Commands.CreateDeliveryTime;
 using AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCard;
 using AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCard;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
@@ -108,6 +112,7 @@ public sealed class RepairCardsController(ISender sender) : ApiController
     [HttpPut("{repairCardId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Update a repair card.")]
     [EndpointDescription("Updates an existing repair card with the provided details.")]
@@ -135,6 +140,87 @@ public sealed class RepairCardsController(ISender sender) : ApiController
         );
     }
 
+    [HttpPost("{repairCardId:int}/industrial-part-assignments")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Assign Industrial Part To Doctor.")]
+    [EndpointDescription("Assign specific industrial part to specific doctor in specific section")]
+    [EndpointName("AssignIndustrialPartToDoctor")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> AssignIndustrialPartToDoctor(int repairCardId, [FromBody] AssignIndustrialPartsRequest request, CancellationToken ct =default)
+    {
+        var doctorIndustrialParts = request.Assignments.ConvertAll(x=> new DoctorIndustrialPartCommand(x.DiagnosisIndustrialPartId, x.DoctorId, x.SectionId));
+
+        var result = await sender.Send(new AssignIndustrialPartToDoctorCommand(repairCardId, doctorIndustrialParts), ct);
+
+        return result.Match(
+            _=> NoContent(),
+            Problem
+        );
+    }
+
+    [HttpPost("{repairCardId:int}/doctor-assignmets")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Assign Repair Card To Doctor")]
+    [EndpointDescription("Assign the whole industrial parts in repair card to doctor")]
+    [EndpointName("AssignRepairCardToDoctor")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> AssignRepairCardToDoctor(int repairCardId, [FromBody] DoctorAssignmentRequest request, CancellationToken ct =default)
+    {
+      
+        var result = await sender.Send(new AssignRepairCardToDoctorCommand(repairCardId, request.DoctorId, request.SectionId), ct);
+
+        return result.Match(
+            _=> NoContent(),
+            Problem
+        );
+    }
+
+    [HttpPatch("{repairCardId:int}/status")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Update a repair card.")]
+    [EndpointDescription("Updates an existing repair card with the provided details.")]
+    [EndpointName("UpdateRepairCardStatus")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> UpdateStatus(int repairCardId, [FromBody] ChangeRepairCardStatusRequest request, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new ChangeRepairCardStatusCommand(repairCardId, request.CardStatus), ct);
+      
+         return result.Match(
+            response => NoContent(),
+                Problem
+        );
+    }
+
+    [HttpPost("{repairCardId:int}/delivery-time")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Create delivery time.")]
+    [EndpointDescription("Create delivery time for a repair card.")]
+    [EndpointName("CreateDeliveryTime")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> CreateDeliveryTime(int repairCardId, [FromBody] CreateDeliveryTimeRequest request, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new CreateDeliveryTimeCommand(repairCardId, request.DeliveryDate, request.Notes), ct);
+      
+         return result.Match(
+            response => NoContent(),
+                Problem
+        );
+    }
     
 
 

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Hybrid;
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
@@ -13,6 +12,8 @@ using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 
 using MediatR;
+using AlatrafClinic.Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 
@@ -20,20 +21,32 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 {
     private readonly ILogger<UpdateTherapyCardCommandHandler> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly IDiagnosisUpdateService _diagnosisUpdateService;
 
-    public UpdateTherapyCardCommandHandler(ILogger<UpdateTherapyCardCommandHandler> logger, HybridCache cache, IUnitOfWork unitOfWork, IDiagnosisUpdateService diagnosisUpdateService)
+    public UpdateTherapyCardCommandHandler(ILogger<UpdateTherapyCardCommandHandler> logger, HybridCache cache, IAppDbContext context, IDiagnosisUpdateService diagnosisUpdateService)
     {
         _logger = logger;
         _cache = cache;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _diagnosisUpdateService = diagnosisUpdateService;
     }
 
     public async Task<Result<Updated>> Handle(UpdateTherapyCardCommand command, CancellationToken ct)
     {
-        TherapyCard? currentTherapy = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
+       TherapyCard? currentTherapy = await _context.TherapyCards
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.InjuryTypes)
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.InjuryReasons)
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.InjurySides)
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.DiagnosisPrograms)
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.Payments)
+        .FirstOrDefaultAsync(th=> th.Id == command.TherapyCardId, ct);
+
         if (currentTherapy is null)
         {
             _logger.LogError("TherapyCard with id {TherapyCardId} not found", command.TherapyCardId);
@@ -72,7 +85,7 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
         foreach (var program in command.Programs)
         {
-            var medicalProgram = await _unitOfWork.MedicalPrograms.IsExistAsync(program.MedicalProgramId, ct);
+            var medicalProgram = await _context.MedicalPrograms.AnyAsync(mp=> mp.Id == program.MedicalProgramId, ct);
             if (!medicalProgram)
             {
                 _logger.LogError("Medical program with id {MedicalProgramId} not found", program.MedicalProgramId);
@@ -91,16 +104,17 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
             return upsertDiagnosisProgramsResult.Errors;
         }
 
-        var sessionPricePerType = await _unitOfWork.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
+        var typePrice = await _context.TherapyCardTypePrices.FirstOrDefaultAsync(t=> t.Type == command.TherapyCardType, ct);
+        var price = typePrice?.SessionPrice;
         
-        if (!sessionPricePerType.HasValue)
+        if (price is null)
         {
             _logger.LogError("Session price for TherapyCardType {TherapyCardType} not found", command.TherapyCardType);
 
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
-        var updateTherapyResult = currentTherapy.Update(command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, sessionPricePerType.Value, command.Notes);
+        var updateTherapyResult = currentTherapy.Update(command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, command.Notes);
 
         if (updateTherapyResult.IsError)
         {
@@ -143,8 +157,8 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
         updatedDiagnosis.AssignPayment(currentPayment);
         updatedDiagnosis.AssignTherapyCard(currentTherapy);
 
-        await _unitOfWork.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.Diagnoses.Update(updatedDiagnosis);
+        await _context.SaveChangesAsync(ct);
         await _cache.RemoveByTagAsync("therapy-card", ct);
 
         _logger.LogInformation("TherapyCard with id {TherapyCardId} updated successfully", command.TherapyCardId);

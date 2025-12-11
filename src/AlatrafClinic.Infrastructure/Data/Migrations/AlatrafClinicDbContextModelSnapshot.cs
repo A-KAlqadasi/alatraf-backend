@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AlatrafClinic.Infrastructure.Migrations
+namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
     partial class AlatrafClinicDbContextModelSnapshot : ModelSnapshot
@@ -177,7 +177,7 @@ namespace AlatrafClinic.Infrastructure.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "تكليف للطبيب بقسم الحديد",
-                            SectionId = 8
+                            SectionId = 3
                         },
                         new
                         {
@@ -334,7 +334,7 @@ namespace AlatrafClinic.Infrastructure.Migrations
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "القسم الاول"
+                            Name = "تمارين"
                         },
                         new
                         {
@@ -345,7 +345,7 @@ namespace AlatrafClinic.Infrastructure.Migrations
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "القسم الثاني"
+                            Name = "حرارة"
                         },
                         new
                         {
@@ -356,7 +356,7 @@ namespace AlatrafClinic.Infrastructure.Migrations
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Name = "القسم الثالث"
+                            Name = "حديد"
                         });
                 });
 
@@ -492,9 +492,6 @@ namespace AlatrafClinic.Infrastructure.Migrations
                     b.Property<int?>("DoctorSectionRoomId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IndustrialPartId")
-                        .HasColumnType("int");
-
                     b.Property<int>("IndustrialPartUnitId")
                         .HasColumnType("int");
 
@@ -519,8 +516,6 @@ namespace AlatrafClinic.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DoctorSectionRoomId");
-
-                    b.HasIndex("IndustrialPartId");
 
                     b.HasIndex("IndustrialPartUnitId");
 
@@ -5246,10 +5241,6 @@ namespace AlatrafClinic.Infrastructure.Migrations
                         .HasForeignKey("DoctorSectionRoomId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPart", null)
-                        .WithMany("DiagnosisIndustrialParts")
-                        .HasForeignKey("IndustrialPartId");
-
                     b.HasOne("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPartUnit", "IndustrialPartUnit")
                         .WithMany()
                         .HasForeignKey("IndustrialPartUnitId")
@@ -6053,8 +6044,6 @@ namespace AlatrafClinic.Infrastructure.Migrations
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPart", b =>
                 {
-                    b.Navigation("DiagnosisIndustrialParts");
-
                     b.Navigation("IndustrialPartUnits");
                 });
 
