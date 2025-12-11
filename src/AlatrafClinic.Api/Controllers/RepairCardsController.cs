@@ -10,7 +10,6 @@ using AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCard;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Queries.GetRepairCardById;
 using AlatrafClinic.Application.Features.RepairCards.Queries.GetRepairCards;
-using AlatrafClinic.Domain.RepairCards.Enums;
 
 using Asp.Versioning;
 

@@ -1,5 +1,3 @@
-using System.Net.Quic;
-
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;

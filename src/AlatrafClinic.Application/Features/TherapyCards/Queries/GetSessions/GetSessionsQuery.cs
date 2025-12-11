@@ -31,5 +31,5 @@ public sealed record GetSessionsQuery(
         $":sort={SortColumn}:{SortDirection}";
 
     public string[] Tags => ["session"];
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+    public TimeSpan Expiration => TimeSpan.FromMinutes(20);
 }
