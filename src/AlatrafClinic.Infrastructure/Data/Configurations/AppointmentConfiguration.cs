@@ -44,5 +44,7 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
         builder.HasIndex(a => a.AttendDate);
         builder.HasIndex(a => a.Status);
         builder.HasIndex(a => a.PatientType);
+
+        builder.HasQueryFilter(a => !a.IsDeleted);
     }
 }
