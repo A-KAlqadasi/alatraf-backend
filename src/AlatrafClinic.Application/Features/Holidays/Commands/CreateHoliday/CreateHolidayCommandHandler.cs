@@ -27,7 +27,7 @@ public class CreateHolidayCommandHandler(
     {
 
         var alreadyExists = await _context.Holidays
-            .AnyAsync(h => h.StartDate.Date == command.StartDate, ct);
+            .AnyAsync(h => h.StartDate == command.StartDate, ct);
 
         if (alreadyExists)
         {

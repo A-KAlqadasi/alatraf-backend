@@ -19,7 +19,7 @@ public static class AppointmentMapper
             AttendDate = appointment.AttendDate,
             Status = appointment.Status,
             Notes = appointment.Notes,
-            CreatedAt = appointment.CreatedAtUtc.DateTime.Date,
+            CreatedAt = DateOnly.FromDateTime(appointment.CreatedAtUtc.DateTime),
             IsEditable = appointment.IsEditable,
             IsAppointmentTomorrow = appointment.IsAppointmentTomorrow()
         };

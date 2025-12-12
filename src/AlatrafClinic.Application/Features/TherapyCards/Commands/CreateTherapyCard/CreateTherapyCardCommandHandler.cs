@@ -61,7 +61,7 @@ public sealed class CreateTherapyCardCommandHandler
 
         var diagnosis = diagnosisResult.Value;
 
-        // Validate programs and add to diagnosis
+        
         List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms = new();
         foreach (var program in command.Programs)
         {

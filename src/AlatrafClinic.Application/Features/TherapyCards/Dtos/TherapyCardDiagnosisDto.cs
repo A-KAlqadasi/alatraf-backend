@@ -12,7 +12,7 @@ public class TherapyCardDiagnosisDto
 
     public int DiagnosisId { get; set; }
     public string DiagnosisText { get; set; } = string.Empty;
-    public DateTime InjuryDate { get; set; }
+    public DateOnly InjuryDate { get; set; }
     public string DiagnosisType { get; set; } = string.Empty;
 
     public List<InjuryDto> InjuryReasons { get; set; } = new();
@@ -22,8 +22,8 @@ public class TherapyCardDiagnosisDto
     public List<DiagnosisProgramDto>? Programs { get; set; }
     
     public int TherapyCardId { get; set; }
-    public DateTime? ProgramStartDate { get; set; }
-    public DateTime? ProgramEndDate { get; set; }
+    public DateOnly? ProgramStartDate { get; set; }
+    public DateOnly? ProgramEndDate { get; set; }
     public string TherapyCardType { get; set; } = string.Empty;
     public string CardStatus { get; set; } = string.Empty;
     public string? Notes { get; set; }

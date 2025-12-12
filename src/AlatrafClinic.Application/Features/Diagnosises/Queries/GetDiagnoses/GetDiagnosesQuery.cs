@@ -18,10 +18,10 @@ public sealed record GetDiagnosesQuery(
     bool? HasRepairCard = null,
     bool? HasTherapyCards = null,
     bool? HasSale = null,
-    DateTime? InjuryDateFrom = null,
-    DateTime? InjuryDateTo = null,
-    DateTime? CreatedDateFrom = null,
-    DateTime? CreatedDateTo = null
+    DateOnly? InjuryDateFrom = null,
+    DateOnly? InjuryDateTo = null,
+    DateOnly? CreatedDateFrom = null,
+    DateOnly? CreatedDateTo = null
 ) : ICachedQuery<Result<PaginatedList<DiagnosisDto>>>
 {
     public string CacheKey =>

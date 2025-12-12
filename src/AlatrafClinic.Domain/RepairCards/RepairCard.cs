@@ -7,6 +7,7 @@ using AlatrafClinic.Domain.RepairCards.DeliveryTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.Orders;
 using AlatrafClinic.Domain.Inventory.Items;
+using AlatrafClinic.Domain.Common.Constants;
 
 
 namespace AlatrafClinic.Domain.RepairCards;
@@ -23,7 +24,7 @@ public class RepairCard : AuditableEntity<int>
 
     // Navigation
     public DeliveryTime? DeliveryTime { get; set; }
-    public bool IsLate => Status is RepairCardStatus.InProgress && DeliveryTime?.DeliveryDate.Date < DateTime.Now.Date;
+    public bool IsLate => Status is RepairCardStatus.InProgress && DeliveryTime?.DeliveryDate < AlatrafClinicConstants.TodayDate;
 
     private readonly List<Order> _orders = new();
     public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
@@ -196,7 +197,7 @@ public class RepairCard : AuditableEntity<int>
         Status = RepairCardStatus.ExitForPractice;
         return Result.Updated;
     }
-    public Result<Updated> AssignDeliveryTime(DateTime deliveryDate, string? note)
+    public Result<Updated> AssignDeliveryTime(DateOnly deliveryDate, string? note)
     {
         if (!IsEditable)
         {

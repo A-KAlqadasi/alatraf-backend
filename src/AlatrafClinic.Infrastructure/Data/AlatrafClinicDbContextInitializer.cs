@@ -52,7 +52,8 @@ public static class AlatrafClinicDbContextInitializer
     private static readonly DateTimeOffset  SeedTimestamp =
        new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
-    private static readonly DateTime SeedDate = new DateTime(2025, 1, 1);
+    private static readonly DateOnly SeedDate = new DateOnly(2025, 1, 1);
+    private static readonly DateTime SeedDateTime = new DateTime(2025, 1, 1);
 
     public static void Seed(ModelBuilder modelBuilder)
     {
@@ -747,7 +748,7 @@ public static class AlatrafClinicDbContextInitializer
                 TotalAmount = 200m,
                 PaidAmount = 200m,
                 Discount = (decimal?)null,
-                PaymentDate = SeedDate,
+                PaymentDate = SeedDateTime,
                 IsCompleted = true,
                 Notes = "دفع كامل مقابل جلسة علاج",
                 AccountKind = AccountKind.Patient,                // stored as string
@@ -766,7 +767,7 @@ public static class AlatrafClinicDbContextInitializer
                 TotalAmount = 300m,
                 PaidAmount = 250m,
                 Discount = 50m,
-                PaymentDate = SeedDate,
+                PaymentDate = SeedDateTime,
                 IsCompleted = false,
                 Notes = "دفع جزئي مع خصم",
                 AccountKind = AccountKind.Wounded,
@@ -994,8 +995,8 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 3,
             Name = "عيد العمال العالمي",
-            StartDate = new DateTime(1, 5, 1),
-            EndDate = (DateTime?)null,
+            StartDate = new DateOnly(1, 5, 1),
+            EndDate = (DateOnly?)null,
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
@@ -1009,8 +1010,8 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 4,
             Name = "عيد الوحدة اليمنية",
-            StartDate = new DateTime(1, 5, 22),
-            EndDate = (DateTime?)null,
+            StartDate = new DateOnly(1, 5, 22),
+            EndDate = (DateOnly?)null,
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
@@ -1024,8 +1025,8 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 5,
             Name = "ثورة 26 سبتمبر",
-            StartDate = new DateTime(1, 9, 26),
-            EndDate = (DateTime?)null,
+            StartDate = new DateOnly(1, 9, 26),
+            EndDate = (DateOnly?)null,
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
@@ -1039,8 +1040,8 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 6,
             Name = "ثورة 14 أكتوبر",
-            StartDate = new DateTime(1, 10, 14),
-            EndDate = (DateTime?)null,
+            StartDate = new DateOnly(1, 10, 14),
+            EndDate = (DateOnly?)null,
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
@@ -1054,8 +1055,8 @@ public static class AlatrafClinicDbContextInitializer
         {
             Id = 7,
             Name = "عيد الجلاء",
-            StartDate = new DateTime(1, 11, 30),
-            EndDate = (DateTime?)null,
+            StartDate = new DateOnly(1, 11, 30),
+            EndDate = (DateOnly?)null,
             IsRecurring = true,
             IsActive = true,
             Type = HolidayType.Fixed,
@@ -1307,7 +1308,7 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 1,
                 Number = "PI-1001",
-                Date = SeedDate,
+                Date = SeedDateTime,
                 SupplierId = 1,
                 StoreId = 1,
                 Status = AlatrafClinic.Domain.Inventory.Enums.PurchaseInvoiceStatus.Draft,
@@ -1427,8 +1428,8 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 1,
                 DiagnosisId = 2,
-                ProgramStartDate = new DateTime(2025, 1, 1),
-                ProgramEndDate = new DateTime(2025, 1, 20),
+                ProgramStartDate = new DateOnly(2025, 1, 1),
+                ProgramEndDate = new DateOnly(2025, 1, 20),
                 IsActive = true,
                 Type = TherapyCardType.General,
                 SessionPricePerType = 200m,
@@ -1488,7 +1489,7 @@ public static class AlatrafClinicDbContextInitializer
                 Id = 1,
                 TherapyCardId = 1,
                 Number = 1,
-                SessionDate = new DateTime(2025, 1, 10),
+                SessionDate = new DateOnly(2025, 1, 10),
                 IsTaken = true,
                 CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,
@@ -1501,7 +1502,7 @@ public static class AlatrafClinicDbContextInitializer
                 Id = 2,
                 TherapyCardId = 1,
                 Number = 2,
-                SessionDate = new DateTime(2025, 1, 11),
+                SessionDate = new DateOnly(2025, 1, 11),
                 IsTaken = false,
                 CreatedAtUtc = SeedTimestamp,
                 LastModifiedUtc = SeedTimestamp,

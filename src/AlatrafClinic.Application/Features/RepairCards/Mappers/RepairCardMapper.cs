@@ -18,7 +18,7 @@ public static class RepairCardMapper
             IsLate = repairCard.IsLate,
             CardStatus = repairCard.Status.ToArabicRepairCardStatus(),
             TotalCost = repairCard.TotalCost,
-            DeliveryDate = repairCard.DeliveryTime?.DeliveryDate ?? repairCard.CreatedAtUtc.ToLocalTime().Date,
+            DeliveryDate = repairCard.DeliveryTime?.DeliveryDate ?? DateOnly.FromDateTime( repairCard.CreatedAtUtc.Date),
             DiagnosisIndustrialParts = repairCard.DiagnosisIndustrialParts.ToDtos()
             
         };

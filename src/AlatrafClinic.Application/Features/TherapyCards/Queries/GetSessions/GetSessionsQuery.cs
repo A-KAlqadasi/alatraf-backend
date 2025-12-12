@@ -13,8 +13,8 @@ public sealed record GetSessionsQuery(
     int? PatientId = null,
     int? TherapyCardId = null,
     bool? IsTaken = null,
-    DateTime? FromDate = null,
-    DateTime? ToDate = null,
+    DateOnly? FromDate = null,
+    DateOnly? ToDate = null,
     string SortColumn = "SessionDate",
     string SortDirection = "desc"
 ) : ICachedQuery<Result<PaginatedList<SessionListDto>>>

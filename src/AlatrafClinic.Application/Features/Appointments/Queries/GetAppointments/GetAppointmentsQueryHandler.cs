@@ -1,6 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
+using AlatrafClinic.Application.Features.Appointments.Mappers;
 using AlatrafClinic.Application.Features.Tickets.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Services.Appointments;
@@ -52,19 +53,7 @@ public sealed class GetAppointmentsQueryHandler
             .ToListAsync(ct);
 
         // Mapping – same as your existing mapping
-        var items = entities.Select(a => new AppointmentDto
-        {
-            Id                  = a.Id,
-            TicketId            = a.TicketId,
-            Ticket              = a.Ticket != null ? a.Ticket.ToDto() : null,
-            PatientType         = a.PatientType,
-            AttendDate          = a.AttendDate,
-            CreatedAt           = a.CreatedAtUtc.DateTime,
-            Status              = a.Status,
-            Notes               = a.Notes,
-            IsEditable          = a.IsEditable,
-            IsAppointmentTomorrow = a.IsAppointmentTomorrow()
-        }).ToList();
+        var items = entities.ToDtos();
 
         return new PaginatedList<AppointmentDto>
         {
@@ -89,7 +78,7 @@ public sealed class GetAppointmentsQueryHandler
 
         if (q.FromDate.HasValue)
         {
-            var from = q.FromDate.Value.Date;
+            var from = q.FromDate.Value;
             query = query.Where(a => a.AttendDate >= from);
         }
 
@@ -97,7 +86,7 @@ public sealed class GetAppointmentsQueryHandler
         {
             // keep same semantics as your filter:
             // ToDate inclusive (end of day)
-            var to = q.ToDate.Value.Date.AddDays(1).AddTicks(-1);
+            var to = q.ToDate.Value;
             query = query.Where(a => a.AttendDate <= to);
         }
 

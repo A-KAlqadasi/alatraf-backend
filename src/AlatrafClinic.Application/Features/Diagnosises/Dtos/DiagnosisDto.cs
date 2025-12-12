@@ -9,7 +9,7 @@ public class DiagnosisDto
 {
     public int DiagnosisId { get; set; }
     public string DiagnosisText { get; set; } = string.Empty;
-    public DateTime InjuryDate { get; set; }
+    public DateOnly InjuryDate { get; set; }
 
     public int TicketId { get; set; }
     public int PatientId { get; set; }

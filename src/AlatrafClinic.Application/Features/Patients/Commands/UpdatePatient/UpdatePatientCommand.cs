@@ -9,7 +9,7 @@ namespace AlatrafClinic.Application.Features.Patients.Commands.UpdatePatient;
 public sealed record UpdatePatientCommand(
     int PatientId,
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string? NationalNo,
     string Address,

@@ -9,8 +9,8 @@ public class PatientFilterRequest
     public string? SearchTerm { get; set; }
     public PatientType? PatientType { get; set; }
     public bool? Gender { get; set; }
-    public DateTime? BirthDateFrom { get; set; }
-    public DateTime? BirthDateTo { get; set; }
+    public DateOnly? BirthDateFrom { get; set; }
+    public DateOnly? BirthDateTo { get; set; }
     public bool? HasNationalNo {get; set;}
 
     [RegularExpression("^[a-zA-Z0-9_]+$", ErrorMessage = "SortColumn contains invalid characters.")]

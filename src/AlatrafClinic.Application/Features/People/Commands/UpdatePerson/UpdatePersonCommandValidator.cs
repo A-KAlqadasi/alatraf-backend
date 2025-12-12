@@ -1,3 +1,5 @@
+using AlatrafClinic.Domain.Common.Constants;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.People.Commands.UpdatePerson;
@@ -17,7 +19,7 @@ public sealed class UpdatePersonCommandValidator : AbstractValidator<UpdatePerso
 
     RuleFor(x => x.Birthdate)
         .NotNull().WithMessage("Birthdate is required.")
-        .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Birthdate cannot be in the future.");
+        .LessThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Birthdate cannot be in the future.");
 
     RuleFor(x => x.Phone)
         .NotEmpty().WithMessage("Phone number is required.")

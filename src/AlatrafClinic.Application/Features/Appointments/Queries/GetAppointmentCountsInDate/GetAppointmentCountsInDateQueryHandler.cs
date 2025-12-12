@@ -21,14 +21,14 @@ public class GetAppointmentCountsInDateQueryHandler : IRequestHandler<GetAppoint
     public async Task<Result<AppointmentCountsDto>> Handle(GetAppointmentCountsInDateQuery query, CancellationToken ct)
     {
         int totalCount = await _context.Appointments
-        .Where(a => a.CreatedAtUtc.DateTime.Date == query.Date).CountAsync(ct);
+        .Where(a => DateOnly.FromDateTime(a.CreatedAtUtc.DateTime) == query.Date).CountAsync(ct);
         
         int normalCount = await _context.Appointments
-        .Where(a => a.CreatedAtUtc.DateTime.Date == query.Date && a.PatientType == PatientType.Normal)
+        .Where(a => DateOnly.FromDateTime(a.CreatedAtUtc.DateTime) == query.Date && a.PatientType == PatientType.Normal)
             .CountAsync(ct);
             
         int woundedCount = await _context.Appointments
-        .Where(a => a.CreatedAtUtc.DateTime.Date == query.Date && a.PatientType == PatientType.Wounded)
+        .Where(a => DateOnly.FromDateTime(a.CreatedAtUtc.DateTime) == query.Date && a.PatientType == PatientType.Wounded)
             .CountAsync(ct);
 
         var dto = new AppointmentCountsDto

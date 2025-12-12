@@ -7,7 +7,7 @@ namespace AlatrafClinic.Application.Features.Identity.Commands.UpdateUser;
 public sealed record class UpdateUserCommand(
     Guid UserId,
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string NationalNo,
     string Address,

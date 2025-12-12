@@ -1,3 +1,4 @@
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Patients.Enums;
 
 using FluentValidation;
@@ -13,7 +14,7 @@ public class ScheduleAppointmentCommandValidator : AbstractValidator<ScheduleApp
         RuleFor(x => x.PatientType)
             .IsInEnum().WithMessage("Patient Type is invalid");
         RuleFor(x => x.RequestedDate)
-            .Must(date => date == null || date.Value.Date >= DateTime.Now.Date)
+            .Must(date => date == null || date.Value >= AlatrafClinicConstants.TodayDate)
             .WithMessage("Requested Date cannot be in the past");
         
     }

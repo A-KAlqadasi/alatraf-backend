@@ -129,14 +129,14 @@ public class GetDiagnosesQueryHandler
 
         if (q.CreatedDateFrom.HasValue)
         {
-            var fromUtc = DateTime.SpecifyKind(q.CreatedDateFrom.Value, DateTimeKind.Utc);
-            query = query.Where(d => d.CreatedAtUtc >= fromUtc);
+            var fromUtc = q.CreatedDateFrom.Value;
+            query = query.Where(d => DateOnly.FromDateTime(d.CreatedAtUtc.DateTime) >= fromUtc);
         }
 
         if (q.CreatedDateTo.HasValue)
         {
-            var toUtc = DateTime.SpecifyKind(q.CreatedDateTo.Value, DateTimeKind.Utc);
-            query = query.Where(d => d.CreatedAtUtc <= toUtc);
+            var toUtc = q.CreatedDateTo.Value;
+            query = query.Where(d => DateOnly.FromDateTime(d.CreatedAtUtc.DateTime) <= toUtc);
         }
 
         return query;

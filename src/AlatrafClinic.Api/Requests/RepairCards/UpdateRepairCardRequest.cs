@@ -15,7 +15,7 @@ public sealed class UpdateRepairCardRequest
 
     [Required]
     [DataType(DataType.Date)]
-    public DateTime InjuryDate { get; set; }
+    public DateOnly InjuryDate { get; set; }
 
     [Required]
     [MinLength(1, ErrorMessage = "At least one InjuryReason is required.")]

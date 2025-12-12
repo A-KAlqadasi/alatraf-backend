@@ -1,3 +1,5 @@
+using AlatrafClinic.Domain.Common.Constants;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.UpdateDoctor;
@@ -16,7 +18,7 @@ public sealed class UpdateDoctorCommandValidator : AbstractValidator<UpdateDocto
             .MaximumLength(150);
 
         RuleFor(x => x.Birthdate)
-            .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Birthdate cannot be in the future.");
+            .LessThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Birthdate cannot be in the future.");
 
         RuleFor(x => x.Phone)
             .NotEmpty()

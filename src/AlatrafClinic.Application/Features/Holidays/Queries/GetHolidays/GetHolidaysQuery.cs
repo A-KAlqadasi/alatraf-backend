@@ -10,8 +10,8 @@ public sealed record GetHolidaysQuery(
     int Page,
     int PageSize,
     bool? IsActive = null,
-    DateTime? SpecificDate = null,
-    DateTime? EndDate = null,
+    DateOnly? SpecificDate = null,
+    DateOnly? EndDate = null,
     HolidayType? Type = null,
     string? SortBy = null,
     string SortDirection = "desc"

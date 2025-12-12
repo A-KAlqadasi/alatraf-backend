@@ -25,7 +25,7 @@ public class PersonUpdateService : IPersonUpdateService
   public async Task<Result<Person>> UpdateAsync(
     int personId,
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string? NationalNo,
     string Address,

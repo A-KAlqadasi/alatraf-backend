@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Logging;
-
+using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Application.Features.People.Mappers;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
@@ -7,8 +7,8 @@ using AlatrafClinic.Domain.People;
 using MechanicShop.Application.Common.Errors;
 
 using MediatR;
-using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Features.People.Mappers;
+
+using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
 

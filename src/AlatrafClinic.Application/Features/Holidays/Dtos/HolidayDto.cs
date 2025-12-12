@@ -4,8 +4,8 @@ namespace AlatrafClinic.Application.Features.Holidays.Dtos;
 public sealed class HolidayDto
 {
     public int HolidayId { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly? EndDate { get; set; }
     public string? Name { get; set; }
     public bool IsRecurring { get; set; }
     public bool IsActive { get; set; }

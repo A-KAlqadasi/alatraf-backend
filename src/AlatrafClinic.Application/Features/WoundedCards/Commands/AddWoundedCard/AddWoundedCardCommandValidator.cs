@@ -1,3 +1,5 @@
+using AlatrafClinic.Domain.Common.Constants;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.WoundedCards.Commands.AddWoundedCard;
@@ -14,6 +16,6 @@ public class AddWoundedCardCommandValidator : AbstractValidator<AddWoundedCardCo
             .MaximumLength(50).WithMessage("CardNumber must not exceed 50 characters.");
 
         RuleFor(x => x.ExpirationDate)
-            .GreaterThan(DateTime.Now).WithMessage("ExpirationDate must be a future date.");
+            .GreaterThan(AlatrafClinicConstants.TodayDate).WithMessage("ExpirationDate must be a future date.");
     }
 }

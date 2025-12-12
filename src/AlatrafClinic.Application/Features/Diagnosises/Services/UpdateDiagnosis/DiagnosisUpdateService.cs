@@ -27,7 +27,7 @@ public sealed class DiagnosisUpdateService : IDiagnosisUpdateService
         int diagnosisId,
         int ticketId,
         string diagnosisText,
-        DateTime injuryDate,
+        DateOnly injuryDate,
         List<int> injuryReasons,
         List<int> injurySides,
         List<int> injuryTypes,

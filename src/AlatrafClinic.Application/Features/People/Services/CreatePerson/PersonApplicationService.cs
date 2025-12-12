@@ -23,7 +23,7 @@ public class PersonCreateService : IPersonCreateService
 
   public async Task<Result<Person>> CreateAsync(
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string? NationalNo,
     string Address,

@@ -13,7 +13,7 @@ public class RepairCardDiagnosisDto
 
     public int DiagnosisId { get; set; }
     public string DiagnosisText { get; set; } = string.Empty;
-    public DateTime InjuryDate { get; set; }
+    public DateOnly InjuryDate { get; set; }
     public string DiagnosisType { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public string CardStatus { get; set; } = string.Empty;

@@ -9,8 +9,8 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyC
 public sealed record class RenewTherapyCardCommand(
     int TherapyCardId,
     int TicketId,
-    DateTime ProgramStartDate,
-    DateTime ProgramEndDate,
+    DateOnly ProgramStartDate,
+    DateOnly ProgramEndDate,
     TherapyCardType TherapyCardType,
     List<RenewTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null

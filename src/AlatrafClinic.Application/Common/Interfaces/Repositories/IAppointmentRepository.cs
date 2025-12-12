@@ -5,7 +5,7 @@ namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 
 public interface IAppointmentRepository : IGenericRepository<Appointment, int>
 {
-    Task<DateTime> GetLastAppointmentAttendDate(CancellationToken ct = default);
-    Task<int> GetAppointmentCountByDate(DateTime date, CancellationToken ct = default);
-    Task<int> GetAppointmentCountByDateAndPatientType(DateTime date, PatientType patientType, CancellationToken ct = default);
+    Task<DateOnly> GetLastAppointmentAttendDate(CancellationToken ct = default);
+    Task<int> GetAppointmentCountByDate(DateOnly date, CancellationToken ct = default);
+    Task<int> GetAppointmentCountByDateAndPatientType(DateOnly date, PatientType patientType, CancellationToken ct = default);
 }

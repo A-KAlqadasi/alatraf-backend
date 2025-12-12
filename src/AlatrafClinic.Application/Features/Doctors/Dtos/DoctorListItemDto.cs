@@ -14,7 +14,7 @@ public sealed class DoctorListItemDto
   public int? CurrentRoomId { get; set; }
   public string? CurrentRoomName { get; set; }
 
-  public DateTime? AssignDate { get; set; }
+  public DateOnly? AssignDate { get; set; }
   public bool IsActiveAssignment { get; set; }
   
 }

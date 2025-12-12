@@ -16,7 +16,8 @@ public sealed class UpdateTherapyCardRequest
     public string DiagnosisText { get; set; } = default!;
 
     [Required(ErrorMessage = "InjuryDate is required.")]
-    public DateTime InjuryDate { get; set; }
+    [DataType(DataType.Date)]
+    public DateOnly InjuryDate { get; set; }
 
     [Required(ErrorMessage = "InjuryReasons is required.")]
     public List<int> InjuryReasons { get; set; } = new();
@@ -28,10 +29,12 @@ public sealed class UpdateTherapyCardRequest
     public List<int> InjuryTypes { get; set; } = new();
 
     [Required(ErrorMessage = "ProgramStartDate is required.")]
-    public DateTime ProgramStartDate { get; set; }
+    [DataType(DataType.Date)]
+    public DateOnly ProgramStartDate { get; set; }
 
     [Required(ErrorMessage = "ProgramEndDate is required.")]
-    public DateTime ProgramEndDate { get; set; }
+    [DataType(DataType.Date)]
+    public DateOnly ProgramEndDate { get; set; }
 
     [Required(ErrorMessage = "TherapyCardType is required.")]
     [EnumDataType(typeof(TherapyCardType), ErrorMessage = "Invalid TherapyCardType.")]

@@ -53,13 +53,13 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 
         var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
 
-        DateTime lastAppointmentDate = lastAppointment?.AttendDate ?? DateTime.MinValue;
+        DateOnly lastAppointmentDate = lastAppointment?.AttendDate ?? DateOnly.MinValue;
 
-        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+        DateOnly baseDate = lastAppointmentDate < AlatrafClinicConstants.TodayDate ? AlatrafClinicConstants.TodayDate : lastAppointmentDate;
 
-        if (command.RequestedDate.HasValue && command.RequestedDate.Value.Date > baseDate)
+        if (command.RequestedDate.HasValue && command.RequestedDate.Value > baseDate)
         {
-            baseDate = command.RequestedDate.Value.Date;
+            baseDate = command.RequestedDate.Value;
         }
 
         var allowedDaysString = await _context.AppSettings

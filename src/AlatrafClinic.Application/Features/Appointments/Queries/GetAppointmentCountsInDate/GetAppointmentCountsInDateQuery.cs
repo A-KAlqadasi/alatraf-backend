@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetAppointmentCountsInDate;
 
-public sealed record GetAppointmentCountsInDateQuery(DateTime Date) : IRequest<Result<AppointmentCountsDto>>;
+public sealed record GetAppointmentCountsInDateQuery(DateOnly Date) : IRequest<Result<AppointmentCountsDto>>;

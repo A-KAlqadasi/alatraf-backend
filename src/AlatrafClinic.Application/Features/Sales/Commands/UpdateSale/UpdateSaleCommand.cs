@@ -9,7 +9,7 @@ public sealed record class UpdateSaleCommand(
     int SaleId,
     int TicketId,
     string DiagnosisText,
-    DateTime InjuryDate,
+    DateOnly InjuryDate,
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,

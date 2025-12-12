@@ -8,8 +8,8 @@ namespace AlatrafClinic.Application.Features.Holidays.Commands.UpdateHoliday;
 public sealed record UpdateHolidayCommand(
     int HolidayId,
     string Name,
-    DateTime StartDate,
-    DateTime? EndDate,
+    DateOnly StartDate,
+    DateOnly? EndDate,
     bool IsRecurring,
     HolidayType Type,
     bool IsActive

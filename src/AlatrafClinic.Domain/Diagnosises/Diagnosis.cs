@@ -1,4 +1,5 @@
 using AlatrafClinic.Domain.Common;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
@@ -18,7 +19,7 @@ namespace AlatrafClinic.Domain.Diagnosises;
 public class Diagnosis : AuditableEntity<int>
 {
     public string DiagnosisText { get; private set; } = string.Empty;
-    public DateTime InjuryDate { get; private set; }
+    public DateOnly InjuryDate { get; private set; }
 
     // Links
     public int TicketId { get; private set; }
@@ -52,7 +53,7 @@ public class Diagnosis : AuditableEntity<int>
     public Diagnosis(
         int ticketId,
         string diagnosisText,
-        DateTime injuryDate,
+        DateOnly injuryDate,
         List<InjuryReason> injuryReasons,
         List<InjurySide> injurySides,
         List<InjuryType> injuryTypes,
@@ -70,7 +71,7 @@ public class Diagnosis : AuditableEntity<int>
     }
     public static Result<Diagnosis> Create(int ticketId,
         string diagnosisText,
-        DateTime injuryDate,
+        DateOnly injuryDate,
         List<InjuryReason> injuryReasons,
         List<InjurySide> injurySides,
         List<InjuryType> injuryTypes,
@@ -85,7 +86,7 @@ public class Diagnosis : AuditableEntity<int>
             {
                 return DiagnosisErrors.DiagnosisTextIsRequired;
             }
-            if (injuryDate > DateTime.UtcNow)
+            if (injuryDate > AlatrafClinicConstants.TodayDate)
             {
                 return DiagnosisErrors.InvalidInjuryDate;
             }
@@ -119,7 +120,7 @@ public class Diagnosis : AuditableEntity<int>
     }
     public Result<Updated> Update(
         string diagnosisText,
-        DateTime injuryDate,
+        DateOnly injuryDate,
         List<InjuryReason> injuryReasons,
         List<InjurySide> injurySides,
         List<InjuryType> injuryTypes,
@@ -129,7 +130,7 @@ public class Diagnosis : AuditableEntity<int>
         {
             return DiagnosisErrors.DiagnosisTextIsRequired;
         }
-        if (injuryDate > DateTime.UtcNow)
+        if (injuryDate > AlatrafClinicConstants.TodayDate)
         {
             return DiagnosisErrors.InvalidInjuryDate;
         }
