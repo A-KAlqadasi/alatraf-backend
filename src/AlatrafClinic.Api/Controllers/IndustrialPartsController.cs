@@ -1,6 +1,4 @@
-using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.IndustrialParts;
-using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.IndustrialParts.Commands.CreateIndustrialPart;
 using AlatrafClinic.Application.Features.IndustrialParts.Commands.DeleteIndustrialPart;
 using AlatrafClinic.Application.Features.IndustrialParts.Commands.UpdateIndustrialPart;
@@ -21,7 +19,7 @@ namespace AlatrafClinic.Api.Controllers;
 public sealed class IndustrialPartsController(ISender sender) : ApiController
 {
     [HttpGet]
-    [ProducesResponseType(typeof(PaginatedList<IndustrialPartDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<IndustrialPartDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Retrieves a paginated list of industrial parts.")]
@@ -29,15 +27,9 @@ public sealed class IndustrialPartsController(ISender sender) : ApiController
     [EndpointName("GetIndustrialParts")]
     [ApiVersion("1.0")]
     public async Task<IActionResult> Get(
-        string? searchTerm,
-        [FromQuery] PageRequest pageRequest,
         CancellationToken ct = default)
     {
-        var query = new GetIndustrialPartsQuery(
-            Page: pageRequest.Page,
-            PageSize: pageRequest.PageSize,
-            SearchTerm: searchTerm
-        );
+        var query = new GetIndustrialPartsQuery();
         
         var result = await sender.Send(query, ct);
         return result.Match(
