@@ -66,7 +66,9 @@ public static class TherapyCardMapper
     {
         if (program is null) return new SessionProgramDto();
         string roomSectionName = program.DoctorSectionRoom?.Section.Name + " - " + program.DoctorSectionRoom?.Room?.Name.ToString();
+
         roomSectionName = roomSectionName.Trim(new char[] { ' ', '-' });
+        
         return new SessionProgramDto
         {
             SessionProgramId = program.Id,
