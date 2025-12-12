@@ -60,25 +60,6 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
         );
     }
 
-    [HttpGet("{therapyCardId:int}/with-sessions", Name = "GetTherapyCardByIdWithSessions")]
-    [ProducesResponseType(typeof(TherapyCardDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Retrieves a therapy card by its ID.")]
-    [EndpointDescription("Fetches detailed information about a specific therapy card using its unique identifier.")]
-    [EndpointName("GetTherapyCardByIdWithSessions")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> GetById(int therapyCardId, CancellationToken ct = default)
-    {
-        var result = await sender.Send(new GetTherapyCardByIdWithSessionsQuery(therapyCardId), ct);
-        
-        return result.Match(
-            response => Ok(response),
-            Problem
-        );
-    }
-
     [HttpGet("{therapyCardId:int}", Name = "GetTherapyCardById")]
     [ProducesResponseType(typeof(TherapyCardDiagnosisDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -220,4 +201,41 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
             Problem
         );
     }
+
+    [HttpGet("paid")]
+    [ProducesResponseType(typeof(PaginatedList<TherapyCardDiagnosisDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves a paginated list of paid therapy diagnoses.")]
+    [EndpointDescription(
+        "Returns therapy diagnoses that have a therapy card and are fully paid. " +
+        "Supports searching by patient name or therapy card ID. " +
+        "Results are ordered by payment date and support pagination."
+    )]
+    [EndpointName("GetPaidTherapyDiagnoses")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> GetPaidTherapyDiagnoses(
+        [FromQuery] GetTherapyDiagnosesRequest request,
+        [FromQuery] PageRequest pageRequest,
+        CancellationToken ct = default)
+    {
+        var query = new GetTherapyDiagnosesQuery(
+            Page: pageRequest.Page,
+            PageSize: pageRequest.PageSize,
+            SearchTerm: request.SearchTerm,
+            SortColumn: request.SortColumn,
+            SortDirection: request.SortDirection
+        );
+
+        var result = await sender.Send(query, ct);
+
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
+    }
+
+
+
+
 }
