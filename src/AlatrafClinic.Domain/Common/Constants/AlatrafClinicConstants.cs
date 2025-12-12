@@ -5,5 +5,6 @@ public static class AlatrafClinicConstants
 
     public const string SystemUser = "System";
     public const string AllowedDaysKey = "AllowedAppointmentDays";
+    public const string AllowedScheduledPatientsKey = "AllowedScheduledPatients";
     public static readonly DateOnly TodayDate = DateOnly.FromDateTime(DateTime.UtcNow);
 }

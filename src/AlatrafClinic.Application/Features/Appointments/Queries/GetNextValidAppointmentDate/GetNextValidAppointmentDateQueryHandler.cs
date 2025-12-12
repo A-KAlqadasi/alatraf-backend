@@ -41,6 +41,8 @@ public class GetNextValidAppointmentDateQueryHandler(
         {
             baseDate = baseDate.AddDays(1);
         }
+
+        var total = await _context.Appointments.Where(a=> a.AttendDate == baseDate).CountAsync(ct);
         
 
         return baseDate;
