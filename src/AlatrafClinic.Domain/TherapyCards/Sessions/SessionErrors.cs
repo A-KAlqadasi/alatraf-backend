@@ -16,7 +16,7 @@ public static class SessionErrors
         Error.Validation(
             "Session.SessionAlreadyTaken",
             "This session is already taken.");
-    public static Error InvalidSessionDate(DateTime sessionDate) =>
+    public static Error InvalidSessionDate(DateOnly sessionDate) =>
         Error.Validation(
             "Session.InvalidSessionDate",
             $"Session date must be in {sessionDate.ToString("dd/MM/yyyy")}.");

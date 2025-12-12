@@ -1,8 +1,11 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.PatientPayments;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Payments.Commands;
 
@@ -11,13 +14,13 @@ public class PatientPaymentHandler : IPaymentTypeHandler
 {
     public AccountKind Kind => AccountKind.Patient;
 
-    public async Task<Result<Updated>> HandleCreateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
+    public async Task<Result<Updated>> HandleCreateAsync(Payment payment, object typeDto, IAppDbContext context, CancellationToken ct)
     {
         var dto = typeDto as PatientPaymentDto ?? throw new InvalidOperationException();
 
         payment.Pay(payment.PaidAmount, payment.Discount);
 
-        if (await uow.Payments.IsVoucherNumberExistsAsync(dto.VoucherNumber, ct))
+        if (await context.Payments.Include(p=> p.PatientPayment).AnyAsync(p=> p.PatientPayment!.VoucherNumber == dto.VoucherNumber, ct))
         {
             return PatientPaymentErrors.VoucherNumberAlreadyExists;
         }
@@ -28,7 +31,7 @@ public class PatientPaymentHandler : IPaymentTypeHandler
         return payment.AssignPatientPayment(patientPaymentResult.Value);
     }
 
-    public async Task<Result<Updated>> HandleUpdateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
+    public async Task<Result<Updated>> HandleUpdateAsync(Payment payment, object typeDto, IAppDbContext context, CancellationToken ct)
     {
         var dto = typeDto as PatientPaymentDto ?? throw new InvalidOperationException();
 
@@ -37,7 +40,7 @@ public class PatientPaymentHandler : IPaymentTypeHandler
 
         if (payment.PatientPayment == null)
         {
-            if (await uow.Payments.IsVoucherNumberExistsAsync(dto.VoucherNumber, ct))
+            if (await context.Payments.Include(p=> p.PatientPayment).AnyAsync(p=> p.PatientPayment!.VoucherNumber == dto.VoucherNumber, ct))
             {
                 return PatientPaymentErrors.VoucherNumberAlreadyExists;
             }
@@ -47,7 +50,7 @@ public class PatientPaymentHandler : IPaymentTypeHandler
             return payment.AssignPatientPayment(createResult.Value);
         }
 
-        if (await uow.Payments.IsVoucherNumberExistsAsync(dto.VoucherNumber, ct) && payment.PatientPayment.VoucherNumber != dto.VoucherNumber)
+        if (await context.Payments.Include(p=> p.PatientPayment).AnyAsync(p=> p.PatientPayment!.VoucherNumber == dto.VoucherNumber, ct) && payment.PatientPayment.VoucherNumber != dto.VoucherNumber)
         {
             return PatientPaymentErrors.VoucherNumberAlreadyExists;
         }

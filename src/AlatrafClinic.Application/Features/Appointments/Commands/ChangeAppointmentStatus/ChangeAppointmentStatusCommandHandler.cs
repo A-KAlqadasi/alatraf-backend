@@ -1,11 +1,13 @@
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Domain.Services.Enums;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Commands.ChangeAppointmentStatus;
@@ -13,16 +15,19 @@ namespace AlatrafClinic.Application.Features.Appointments.Commands.ChangeAppoint
 public class ChangeAppointmentStatusCommandHandler : IRequestHandler<ChangeAppointmentStatusCommand, Result<Updated>>
 {
     private readonly ILogger<ChangeAppointmentStatusCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
+    private readonly HybridCache _cache;
 
-    public ChangeAppointmentStatusCommandHandler(ILogger<ChangeAppointmentStatusCommandHandler> logger, IUnitOfWork unitOfWork)
+    public ChangeAppointmentStatusCommandHandler(ILogger<ChangeAppointmentStatusCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
+        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(ChangeAppointmentStatusCommand command, CancellationToken ct)
     {
-        Appointment? appointment = await _unitOfWork.Appointments.GetByIdAsync(command.AppointmentId, ct);
+        Appointment? appointment = await _context.Appointments.FirstOrDefaultAsync(a=> a.Id ==command.AppointmentId, ct);
+
         if (appointment is null)
         {
             _logger.LogWarning("Appointment with ID {AppointmentId} not found.", command.AppointmentId);
@@ -58,8 +63,10 @@ public class ChangeAppointmentStatusCommandHandler : IRequestHandler<ChangeAppoi
             return result.Errors;
         }
 
-        await _unitOfWork.Appointments.UpdateAsync(appointment, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.Appointments.Update(appointment);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("appointment", ct);
+
         _logger.LogInformation("Successfully changed status of appointment ID {AppointmentId} to {NewStatus}.", command.AppointmentId, command.NewStatus);
 
         return Result.Updated;

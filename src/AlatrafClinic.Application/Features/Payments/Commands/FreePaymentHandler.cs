@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
@@ -8,7 +9,7 @@ public class FreePaymentHandler : IPaymentTypeHandler
 {
     public AccountKind Kind => AccountKind.Free;
 
-    public Task<Result<Updated>> HandleCreateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
+    public Task<Result<Updated>> HandleCreateAsync(Payment payment, object typeDto, IAppDbContext context, CancellationToken ct)
     {
         payment.Pay(null, null);
         payment.ClearPaymentType();
@@ -17,7 +18,7 @@ public class FreePaymentHandler : IPaymentTypeHandler
         return Task.FromResult<Result<Updated>>(Result.Updated);
     }
 
-    public Task<Result<Updated>> HandleUpdateAsync(Payment payment, object typeDto, IUnitOfWork uow, CancellationToken ct)
+    public Task<Result<Updated>> HandleUpdateAsync(Payment payment, object typeDto, IAppDbContext context, CancellationToken ct)
     {
         payment.Pay(null, null);
         payment.ClearPaymentType();

@@ -10,8 +10,8 @@ public sealed record GetHolidaysQuery(
     int Page,
     int PageSize,
     bool? IsActive = null,
-    DateTime? SpecificDate = null,
-    DateTime? EndDate = null,
+    DateOnly? SpecificDate = null,
+    DateOnly? EndDate = null,
     HolidayType? Type = null,
     string? SortBy = null,
     string SortDirection = "desc"
@@ -27,7 +27,7 @@ public sealed record GetHolidaysQuery(
         $"sort={SortBy?.Trim().ToLower() ?? "startdate"}:" +
         $"dir={SortDirection.Trim().ToLower()}";
 
-    public string[] Tags => ["holidays"];
+    public string[] Tags => ["holiday"];
 
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }

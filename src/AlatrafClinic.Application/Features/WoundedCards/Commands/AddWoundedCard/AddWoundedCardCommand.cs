@@ -6,5 +6,5 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.WoundedCards.Commands.AddWoundedCard;
 
 public sealed record class AddWoundedCardCommand(
-    int PatientId, string CardNumber, DateTime ExpirationDate, string? CardImagePath = null
+    int PatientId, string CardNumber, DateOnly ExpirationDate, string? CardImagePath = null
 ) : IRequest<Result<WoundedCardDto>>;

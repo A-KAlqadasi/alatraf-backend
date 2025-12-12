@@ -1,5 +1,4 @@
-
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
@@ -16,6 +15,7 @@ using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -24,21 +24,30 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyC
 public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCommand, Result<TherapyCardDiagnosisDto>>
 {
     private readonly ILogger<RenewTherapyCardCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly HybridCache _cache;
     private readonly IDiagnosisCreationService _diagnosisService;
 
-    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache, IDiagnosisCreationService diagnosisService)
+    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IAppDbContext context, HybridCache cache, IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _cache = cache;
         _diagnosisService = diagnosisService;
     }
 
     public async Task<Result<TherapyCardDiagnosisDto>> Handle(RenewTherapyCardCommand command, CancellationToken ct)
     {
-        TherapyCard? currentTherapy = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
+        TherapyCard? currentTherapy = await _context.TherapyCards
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.InjuryTypes)
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.InjuryReasons)
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.InjurySides)
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(d=> d.DiagnosisPrograms)
+        .FirstOrDefaultAsync(th=> th.Id == command.TherapyCardId, ct);
 
         if (currentTherapy is null)
         {
@@ -54,7 +63,6 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         if (currentTherapy.IsActive)
         {
             currentTherapy.DeActivate();
-            await _unitOfWork.TherapyCards.UpdateAsync(currentTherapy);
         }
 
         var currentDiagnosis = currentTherapy.Diagnosis;
@@ -69,7 +77,9 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         if (command.Programs is null || command.Programs.Count == 0)
             return DiagnosisErrors.MedicalProgramsAreRequired;
         
-        var ticketService = await _unitOfWork.Tickets.GetTicketServiceAsync(command.TicketId, ct);
+        var ticket = await _context.Tickets.Include(s=> s.Service).FirstOrDefaultAsync(t=> t.Id ==command.TicketId, ct);
+
+        var ticketService = ticket?.Service;
 
         if (ticketService is null)
         {
@@ -103,7 +113,7 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms = new();
         foreach (var program in command.Programs)
         {
-            var exists = await _unitOfWork.MedicalPrograms.IsExistAsync(program.MedicalProgramId, ct);
+            var exists = await _context.MedicalPrograms.AnyAsync(md=> md.Id == program.MedicalProgramId, ct);
             if (!exists)
             {
                 _logger.LogError("Medical program {ProgramId} not found.", program.MedicalProgramId);
@@ -122,9 +132,10 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             return upsertDiagnosisResult.Errors;
         }
         
-        decimal? price = await _unitOfWork.TherapyCardTypePrices.GetSessionPriceByTherapyCardTypeAsync(command.TherapyCardType, ct);
-
-        if(!price.HasValue)
+        var typePrice = await _context.TherapyCardTypePrices.FirstOrDefaultAsync(t=> t.Type == command.TherapyCardType, ct);
+        var price = typePrice?.SessionPrice;
+        
+        if(price is null)
         {
             _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
 
@@ -163,8 +174,8 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         diagnosis.AssignPayment(payment);
         diagnosis.AssignTherapyCard(therapyCard);
         
-        await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.Diagnoses.AddAsync(diagnosis, ct);
+        await _context.SaveChangesAsync(ct);
         await _cache.RemoveByTagAsync("therapy-card", ct);
 
         _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);

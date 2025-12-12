@@ -8,7 +8,7 @@ public sealed record UpdateRepairCardCommand(
     int RepairCardId,
     int TicketId,
     string DiagnosisText,
-    DateTime InjuryDate,
+    DateOnly InjuryDate,
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,

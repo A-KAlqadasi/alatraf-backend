@@ -21,7 +21,9 @@ public class DoctorSectionRoomRepository : GenericRepository<DoctorSectionRoom, 
 
     public async Task<List<DoctorSectionRoom>> GetTechniciansActiveAssignmentsAsync(CancellationToken ct)
     {
-        return await dbContext.DoctorSectionRooms
+        return await dbContext.DoctorSectionRooms.Include(dsrm=> dsrm.DiagnosisIndustrialParts)
+            .Include(dsrm=> dsrm.Doctor).ThenInclude(d=> d.Person)
+            .Include(dsrm=> dsrm.Section)
             .Where(dsrm => dsrm.IsActive && dsrm.GetTodayIndustrialPartsCount() > 0)
             .ToListAsync(ct);
     }

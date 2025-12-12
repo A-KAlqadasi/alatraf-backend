@@ -11,9 +11,9 @@ public class HolidayRepository : GenericRepository<Holiday, int>, IHolidayReposi
     {
     }
 
-    public async Task<bool> HasSameHoliday(DateTime startDate, CancellationToken ct)
+    public async Task<bool> HasSameHoliday(DateOnly startDate, CancellationToken ct)
     {
         return await dbContext.Holidays
-            .AnyAsync(h => h.StartDate.Date == startDate.Date, ct);
+            .AnyAsync(h => h.StartDate == startDate, ct);
     }
 }

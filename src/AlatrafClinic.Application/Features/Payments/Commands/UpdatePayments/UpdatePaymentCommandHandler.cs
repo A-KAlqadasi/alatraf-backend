@@ -1,25 +1,28 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace AlatrafClinic.Application.Features.Payments.Commands.UpdatePayments;
 
 public class UpdatePaymentCommandHandler : IRequestHandler<UpdatePaymentCommand, Result<Updated>>
 {
-    private readonly IUnitOfWork _uow;
+    private readonly IAppDbContext _context;
     private readonly IEnumerable<IPaymentTypeHandler> _handlers;
 
-    public UpdatePaymentCommandHandler(IUnitOfWork uow, IEnumerable<IPaymentTypeHandler> handlers)
+    public UpdatePaymentCommandHandler(IAppDbContext context, IEnumerable<IPaymentTypeHandler> handlers)
     {
-        _uow = uow;
+        _context = context;
         _handlers = handlers;
     }
 
     public async Task<Result<Updated>> Handle(UpdatePaymentCommand cmd, CancellationToken ct)
     {
-        var payment = await _uow.Payments.GetByIdAsync(cmd.PaymentId, ct);
+        var payment = await _context.Payments.FirstOrDefaultAsync(p=> p.Id == cmd.PaymentId, ct);
         if (payment == null) return PaymentErrors.PaymentNotFound;
 
         var handler = _handlers.FirstOrDefault(h => h.Kind == cmd.AccountKind);
@@ -37,10 +40,10 @@ public class UpdatePaymentCommandHandler : IRequestHandler<UpdatePaymentCommand,
             _ => null!
         };
 
-        var result = await handler.HandleUpdateAsync(payment, typeDto, _uow, ct);
+        var result = await handler.HandleUpdateAsync(payment, typeDto, _context, ct);
         if (result.IsError) return result.Errors;
 
-        await _uow.SaveChangesAsync(ct);
+        await _context.SaveChangesAsync(ct);
         return Result.Updated;
     }
 }

@@ -12,8 +12,8 @@ public sealed record GetPatientsQuery(
     string? SearchTerm = null,
     PatientType? PatientType = null,
     bool? Gender = null,
-    DateTime? BirthdateFrom = null,
-    DateTime? BirthdateTo = null,
+    DateOnly? BirthdateFrom = null,
+    DateOnly? BirthdateTo = null,
     bool? HasNationalNo = null,
     string SortColumn = "fullname",
     string SortDirection = "asc"

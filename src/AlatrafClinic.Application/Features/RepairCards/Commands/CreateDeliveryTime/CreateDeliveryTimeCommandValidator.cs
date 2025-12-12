@@ -1,3 +1,5 @@
+using AlatrafClinic.Domain.Common.Constants;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateDeliveryTime;
@@ -9,6 +11,6 @@ public class CreateDeliveryTimeCommandValidator : AbstractValidator<CreateDelive
         RuleFor(x => x.RepairCardId)
             .GreaterThan(0).WithMessage("Repair card Id is invalid");
         RuleFor(x => x.DeliveryDate)
-            .GreaterThan(DateTime.Now.Date).WithMessage("Delivery date must be in future");
+            .GreaterThan(AlatrafClinicConstants.TodayDate).WithMessage("Delivery date must be in future");
     }
 }

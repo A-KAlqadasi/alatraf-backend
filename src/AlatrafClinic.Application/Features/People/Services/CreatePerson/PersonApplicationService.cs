@@ -1,44 +1,54 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.People.Services.CreatePerson;
 
 public class PersonCreateService : IPersonCreateService
 {
-  private readonly IUnitOfWork _unitOfWork;
-  private readonly ILogger<PersonCreateService> _logger;
+    private readonly IAppDbContext _context;
+    private readonly ILogger<PersonCreateService> _logger;
 
   public PersonCreateService(
-      IUnitOfWork unitOfWork,
+      IAppDbContext context,
       ILogger<PersonCreateService> logger)
   {
-    _unitOfWork = unitOfWork;
-    _logger = logger;
+        _context = context;
+        _logger = logger;
 
   }
 
   public async Task<Result<Person>> CreateAsync(
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string? NationalNo,
     string Address,
-    bool Gender, CancellationToken cancellationToken)
-  {
+    bool Gender, CancellationToken ct)
+{
     
     if (!string.IsNullOrWhiteSpace(NationalNo))
     {
-      var existing = await _unitOfWork.People
-          .GetByNationalNoAsync(NationalNo.Trim(), cancellationToken);
+      var existing = await _context.People
+          .AnyAsync(p => p.NationalNo == NationalNo.Trim(), ct);
 
-      if (existing is not null)
+      if (existing)
       {
         _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", NationalNo);
         return PersonErrors.NationalNoExists;
       }
+    }
+
+    var isPhoneExists = await _context.People
+        .AnyAsync(p => p.Phone == Phone.Trim(), ct);
+
+    if (isPhoneExists)
+    {
+       _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
+       return PersonErrors.PhoneExists; 
     }
 
     var createResult = Person.Create(

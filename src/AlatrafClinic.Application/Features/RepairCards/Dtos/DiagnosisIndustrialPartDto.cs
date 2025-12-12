@@ -11,6 +11,6 @@ public class DiagnosisIndustrialPartDto
     public decimal Price { get; set; }
     public int? DoctorSectionRoomId { get; set; }
     public string? DoctorSectionName { get; set; }
-    public DateTime? DoctorAssignedDate { get; set; }
+    public DateOnly? DoctorAssignedDate { get; set; }
     public decimal TotalPrice { get; set; }
 }

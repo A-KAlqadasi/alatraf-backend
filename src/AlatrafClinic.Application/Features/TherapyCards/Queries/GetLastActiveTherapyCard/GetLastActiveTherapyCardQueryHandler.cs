@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
@@ -7,6 +8,7 @@ using AlatrafClinic.Domain.TherapyCards;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetLastActiveTherapyCard;
@@ -15,14 +17,14 @@ public class GetLastActiveTherapyCardQueryHandler
     : IRequestHandler<GetLastActiveTherapyCardQuery, Result<TherapyCardDto>>
 {
     private readonly ILogger<GetLastActiveTherapyCardQueryHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
     public GetLastActiveTherapyCardQueryHandler(
         ILogger<GetLastActiveTherapyCardQueryHandler> logger,
-        IUnitOfWork unitOfWork)
+        IAppDbContext context)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
     public async Task<Result<TherapyCardDto>> Handle(
@@ -30,8 +32,8 @@ public class GetLastActiveTherapyCardQueryHandler
         CancellationToken ct)
     {
 
-        var isExists = await _unitOfWork.Patients
-            .IsExistAsync(query.PatientId, ct);
+        var isExists = await _context.Patients
+            .AnyAsync(p=> p.Id == query.PatientId, ct);
         
         if (!isExists)
         {
@@ -42,9 +44,11 @@ public class GetLastActiveTherapyCardQueryHandler
             return PatientErrors.PatientNotFound;
         }
 
-        var therapyCard = await _unitOfWork.TherapyCards
-            .GetLastActiveTherapyCardByPatientIdAsync(query.PatientId, ct);
-
+        var therapyCard = await _context.TherapyCards
+            .Include(t=> t.Diagnosis)
+            .OrderByDescending(tc => tc.CreatedAtUtc.DateTime)
+            .FirstOrDefaultAsync(tc => tc.Diagnosis.PatientId == query.PatientId && tc.IsActive, ct);
+            
         if (therapyCard is null)
         {
             _logger.LogWarning(

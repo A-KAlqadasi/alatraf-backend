@@ -6,26 +6,26 @@ namespace AlatrafClinic.Domain.Services.Appointments.Holidays;
 
 public sealed class Holiday : AuditableEntity<int>
 {
-    public DateTime StartDate { get; private set; }
-    public DateTime? EndDate { get; private set; }
+    public DateOnly StartDate { get; private set; }
+    public DateOnly? EndDate { get; private set; }
     public string? Name { get; private set; }
     public bool IsRecurring { get; private set; }
     public bool IsActive { get; private set; }
     public HolidayType Type { get; private set; }
     private Holiday() { }
 
-    private Holiday(DateTime startDate, string? name, bool isRecurring, HolidayType type, bool isActive, DateTime? endDate = null)
+    private Holiday(DateOnly startDate, string? name, bool isRecurring, HolidayType type, bool isActive, DateOnly? endDate = null)
     {
-        StartDate = startDate.Date;
+        StartDate = startDate;
         Name = name;
         IsRecurring = isRecurring;
         Type = type;
-        EndDate = endDate?.Date;
+        EndDate = endDate;
         IsActive = isActive;
     }
 
 
-    public static Result<Holiday> CreateFixed(DateTime date, string? name)
+    public static Result<Holiday> CreateFixed(DateOnly date, string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return HolidayErrors.HolidayNameIsRequired;
@@ -39,18 +39,18 @@ public sealed class Holiday : AuditableEntity<int>
 
 
 
-    public static Result<Holiday> CreateTemporary(DateTime startDate, string? name, DateTime? endDate = null)
+    public static Result<Holiday> CreateTemporary(DateOnly startDate, string? name, DateOnly? endDate = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             return HolidayErrors.HolidayNameIsRequired;
 
-        if (endDate.HasValue && endDate.Value.Date < startDate.Date)
+        if (endDate.HasValue && endDate.Value < startDate)
             return HolidayErrors.HolidayEndDateBeforeStartDate;
 
         return new Holiday(startDate, name, isRecurring: false, HolidayType.Temporary, isActive: false, endDate: endDate);
     }
 
-    public bool Matches(DateTime target)
+    public bool Matches(DateOnly target)
     {
         if (!IsActive)
             return false;
@@ -59,9 +59,9 @@ public sealed class Holiday : AuditableEntity<int>
         {
             if (EndDate.HasValue)
             {
-                var start = new DateTime(target.Year, StartDate.Month, StartDate.Day);
-                var end = new DateTime(target.Year, EndDate.Value.Month, EndDate.Value.Day);
-                return target.Date >= start.Date && target.Date <= end.Date;
+                var start = new DateOnly(target.Year, StartDate.Month, StartDate.Day);
+                var end = new DateOnly(target.Year, EndDate.Value.Month, EndDate.Value.Day);
+                return target >= start && target <=end;
             }
 
             return StartDate.Day == target.Day && StartDate.Month == target.Month;
@@ -69,9 +69,9 @@ public sealed class Holiday : AuditableEntity<int>
         else
         {
             if (EndDate.HasValue)
-                return target.Date >= StartDate.Date && target.Date <= EndDate.Value.Date;
+                return target >= StartDate && target <= EndDate.Value;
 
-            return StartDate.Date == target.Date;
+            return StartDate == target;
         }
     }
 
@@ -79,8 +79,8 @@ public sealed class Holiday : AuditableEntity<int>
 
     public Result<Updated> UpdateHoliday(
         string name,
-        DateTime startDate,
-        DateTime? endDate,
+        DateOnly startDate,
+        DateOnly? endDate,
         bool isRecurring,
         HolidayType type)
     {
@@ -95,7 +95,7 @@ public sealed class Holiday : AuditableEntity<int>
         if (type == HolidayType.Fixed && startDate.Year != 1)
             return HolidayErrors.HolidayFixedDateYearMustBeOne;
 
-        if (endDate.HasValue && endDate.Value.Date < startDate.Date)
+        if (endDate.HasValue && endDate.Value < startDate)
             return HolidayErrors.HolidayEndDateBeforeStartDate;
 
 
@@ -103,8 +103,8 @@ public sealed class Holiday : AuditableEntity<int>
         //     return HolidayErrors.FixedHolidayMustBeRecurring;
 
         Name = name;
-        StartDate = startDate.Date;
-        EndDate = endDate?.Date;
+        StartDate = startDate;
+        EndDate = endDate;
         IsRecurring = isRecurring;
         Type = type;
 

@@ -1,9 +1,12 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Services.Appointments;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Commands.RescheduleAppointment;
@@ -11,37 +14,43 @@ namespace AlatrafClinic.Application.Features.Appointments.Commands.RescheduleApp
 public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleAppointmentCommand, Result<Updated>>
 {
     private readonly ILogger<RescheduleAppointmentCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
+    private readonly HybridCache _cache;
 
-    public RescheduleAppointmentCommandHandler(ILogger<RescheduleAppointmentCommandHandler> logger, IUnitOfWork unitOfWork)
+    public RescheduleAppointmentCommandHandler(ILogger<RescheduleAppointmentCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
+        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(RescheduleAppointmentCommand command, CancellationToken ct)
     {
-        Appointment? appointment = await _unitOfWork.Appointments.GetByIdAsync(command.AppointmentId, ct);
+        Appointment? appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.Id ==command.AppointmentId, ct);
         if (appointment is null)
         {
             _logger.LogWarning("Appointment with ID {AppointmentId} not found.", command.AppointmentId);
             return AppointmentErrors.AppointmentNotFound;
         }
 
-        DateTime lastAppointmentDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
+        var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
 
-        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+        DateOnly lastAppointmentDate = lastAppointment?.AttendDate ?? DateOnly.MinValue;
 
-        if (command.NewAttendDate.Date > baseDate)
+        DateOnly baseDate = lastAppointmentDate < AlatrafClinicConstants.TodayDate ? AlatrafClinicConstants.TodayDate : lastAppointmentDate;
+
+        if (command.NewAttendDate > baseDate)
         {
-            baseDate = command.NewAttendDate.Date;
+            baseDate = command.NewAttendDate;
         }
 
-        var allowedDaysString = await _unitOfWork.AppSettings.GetAllowedAppointmentDaysAsync(ct);
-        
-        var allowedDays = allowedDaysString.Split(',').Select(day => Enum.Parse<DayOfWeek>(day.Trim())).ToList();
+      var allowedDaysString = await _context.AppSettings
+            .Where(a => a.Key == AlatrafClinicConstants.AllowedDaysKey)
+            .Select(a => a.Value)
+            .FirstOrDefaultAsync(ct);
 
-        var holidays = await _unitOfWork.Holidays.GetAllAsync(ct);
+        var allowedDays = allowedDaysString?.Split(',').Select(day => Enum.Parse<DayOfWeek>(day.Trim())).ToList() ?? [DayOfWeek.Saturday, DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday];
 
+        var holidays = await _context.Holidays.ToListAsync(ct);
 
         while (!allowedDays.Contains(baseDate.DayOfWeek) || baseDate.DayOfWeek == DayOfWeek.Friday || holidays.Any(h => h.Matches(baseDate)))
         {
@@ -56,8 +65,11 @@ public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleApp
             return rescheduleResult.Errors;
         }
         
-        await _unitOfWork.Appointments.UpdateAsync(appointment);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.Appointments.Update(appointment);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("appointment", ct);
+
+        _logger.LogInformation("Appointment with Id {appointmentId}, rescheduled to {newDate}", appointment.Id, appointment.AttendDate);
 
         return Result.Updated;
     }

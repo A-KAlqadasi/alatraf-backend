@@ -7,7 +7,7 @@ namespace AlatrafClinic.Application.Features.Doctors.Commands.UpdateDoctor;
 public sealed record UpdateDoctorCommand(
     int DoctorId,
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string NationalNo,
     string Address,

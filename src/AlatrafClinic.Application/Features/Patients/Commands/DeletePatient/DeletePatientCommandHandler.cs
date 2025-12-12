@@ -1,10 +1,11 @@
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -13,18 +14,18 @@ namespace AlatrafClinic.Application.Features.Patients.Commands.DeletePatient;
 public class DeletePatientCommandHandler : IRequestHandler<DeletePatientCommand, Result<Deleted>>
 {
     private readonly ILogger<DeleteItemCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly HybridCache _cache;
 
-    public DeletePatientCommandHandler(ILogger<DeleteItemCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public DeletePatientCommandHandler(ILogger<DeleteItemCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _cache = cache;
     }
     public async Task<Result<Deleted>> Handle(DeletePatientCommand command, CancellationToken ct)
     {
-        var patient = await _unitOfWork.Patients.GetByIdAsync(command.PatientId);
+        var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == command.PatientId, ct);
 
         if(patient is null)
         {
@@ -32,10 +33,11 @@ public class DeletePatientCommandHandler : IRequestHandler<DeletePatientCommand,
             return PatientErrors.PatientNotFound;
         }
 
-        await _unitOfWork.Patients.DeleteAsync(patient, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
-
+        _context.Patients.Remove(patient);
+        await _context.SaveChangesAsync(ct);
         await _cache.RemoveByTagAsync("patient", ct);
+
+        _logger.LogInformation("Patient with Id {paitentid} is deleted successfully", command.PatientId);
 
         return Result.Deleted;
     }

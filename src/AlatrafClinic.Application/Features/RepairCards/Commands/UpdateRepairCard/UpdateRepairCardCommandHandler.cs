@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
-
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
@@ -12,6 +8,11 @@ using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 using MediatR;
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Logging;
+
+using AlatrafClinic.Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCard;
@@ -20,19 +21,22 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 {
      private readonly ILogger<UpdateRepairCardCommandHandler> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly IDiagnosisUpdateService _diagnosisUpdateService;
 
-    public UpdateRepairCardCommandHandler(ILogger<UpdateRepairCardCommandHandler> logger, HybridCache cache, IUnitOfWork unitOfWork, IDiagnosisUpdateService diagnosisUpdateService)
+    public UpdateRepairCardCommandHandler(ILogger<UpdateRepairCardCommandHandler> logger, HybridCache cache, IAppDbContext context, IDiagnosisUpdateService diagnosisUpdateService)
     {
         _logger = logger;
         _cache = cache;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _diagnosisUpdateService = diagnosisUpdateService;
     }
     public async Task<Result<Updated>> Handle(UpdateRepairCardCommand command, CancellationToken ct)
     {
-        RepairCard? currentRepairCard = await _unitOfWork.RepairCards.GetByIdAsync(command.RepairCardId, ct);
+        RepairCard? currentRepairCard = await _context.RepairCards
+        .Include(r=> r.Diagnosis).ThenInclude(d=> d.DiagnosisIndustrialParts)
+        .FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
+
         if (currentRepairCard is null)
         {
             _logger.LogError("RepairCard with id {RepairCardId} not found", command.RepairCardId);
@@ -40,12 +44,14 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return RepairCardErrors.RepairCardNotFound;
         }
 
-        // if (currentRepairCard.IsPaid)
-        // {
-        //     _logger.LogError("RepairCard with id {RepairCardId} is readonly because it is paid", command.RepairCardId);
+        var isPaid = await _context.Payments.FirstOrDefaultAsync(p=> p.DiagnosisId == currentRepairCard.DiagnosisId && p.IsCompleted);
+        
+        if(isPaid is not null)
+        {
+            _logger.LogError("RepairCard with id {RepairCardId} is readonly because it is paid", command.RepairCardId);
             
-        //     return RepairCardErrors.Readonly;
-        // }
+            return RepairCardErrors.Readonly;
+        }
 
         if (currentRepairCard.Status != RepairCardStatus.New)
         {
@@ -83,22 +89,15 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 
         foreach (var part in command.IndustrialParts)
         {
-            var partUnit = await _unitOfWork.IndustrialParts.GetByIdAndUnitId(part.IndustrialPartId, part.UnitId, ct);
+            var partUnit = await _context.IndustrialPartUnits.FirstOrDefaultAsync(i=> i.IndustrialPartId == part.IndustrialPartId && i.UnitId == part.UnitId, ct);
             if (partUnit is null)
             {
                 _logger.LogError("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", part.IndustrialPartId, part.UnitId);
 
                 return IndustrialPartUnitErrors.IndustrialPartUnitNotFound;
             }
-
-            if (part.Price != partUnit.PricePerUnit)
-            {
-                _logger.LogError("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", part.Price, partUnit.PricePerUnit);
-
-                return IndustrialPartUnitErrors.InconsistentPrice;
-            }
-
-            incoming.Add((partUnit.Id, part.Quantity, part.Price));
+            
+            incoming.Add((partUnit.Id, part.Quantity, partUnit.PricePerUnit));
         }
 
         var upsertDiagnosisPartsResult = updatedDiagnosis.UpsertDiagnosisIndustrialParts(incoming);
@@ -118,7 +117,7 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return upsertRepairResult.Errors;
         }
 
-        var currentPayment = currentRepairCard.Diagnosis.Payments.FirstOrDefault(r=> r.PaymentReference == PaymentReference.Repair);
+        var currentPayment = _context.Payments.FirstOrDefault(p=> p.DiagnosisId == currentRepairCard.DiagnosisId);
 
         if (currentPayment is null)
         {
@@ -138,12 +137,13 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
             return updatePaymentResult.Errors;
         }
 
-        updatedDiagnosis.AssignPayment(currentPayment);
         updatedDiagnosis.AssignRepairCard(currentRepairCard);
+        updatedDiagnosis.AssignPayment(currentPayment);
 
-        await _unitOfWork.Diagnoses.UpdateAsync(updatedDiagnosis, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
-
+        _context.Diagnoses.Update(updatedDiagnosis);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("repair-card");
+        
         _logger.LogInformation("Repair Card with id {RepairCardId} updated successfully", command.RepairCardId);
         
         return Result.Updated;

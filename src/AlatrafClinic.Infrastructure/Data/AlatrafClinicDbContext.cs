@@ -106,6 +106,7 @@ public class AlatrafClinicDbContext
 
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
 
+
     // Inventory entities
     public DbSet<Item> Items => Set<Item>();
     public DbSet<ItemUnit> ItemUnits => Set<ItemUnit>();

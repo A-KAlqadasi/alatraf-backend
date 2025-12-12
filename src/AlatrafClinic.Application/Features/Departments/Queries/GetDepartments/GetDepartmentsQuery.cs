@@ -8,9 +8,9 @@ public sealed record GetDepartmentsQuery(
     
 ) : ICachedQuery<Result<List<DepartmentDto>>>
 {
-    public string CacheKey => "department";
+    public string CacheKey => "get-departments";
 
-    public string[] Tags => ["departments"];
+    public string[] Tags => ["department"];
 
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }

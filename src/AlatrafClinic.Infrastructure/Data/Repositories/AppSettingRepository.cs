@@ -1,4 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Settings;
 
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ public class AppSettingRepository : GenericRepository<AppSetting, int>, IAppSett
     public Task<string> GetAllowedAppointmentDaysAsync(CancellationToken ct = default)
     {
         return dbContext.AppSettings
-            .Where(a => a.Key == "AllowedAppointmentDays")
+            .Where(a => a.Key == AlatrafClinicConstants.AllowedDaysKey)
             .Select(a => a.Value)
             .FirstOrDefaultAsync(ct)!;
     }

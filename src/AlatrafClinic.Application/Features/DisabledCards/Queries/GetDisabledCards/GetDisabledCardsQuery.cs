@@ -11,8 +11,8 @@ public sealed record GetDisabledCardsQuery(
     string? SearchTerm = null,
     bool? IsExpired = null,
     int? PatientId = null,
-    DateTime? ExpirationFrom = null,
-    DateTime? ExpirationTo = null,
+    DateOnly? ExpirationFrom = null,
+    DateOnly? ExpirationTo = null,
     string SortColumn = "ExpirationDate",
     string SortDirection = "desc"
 ) : ICachedQuery<Result<PaginatedList<DisabledCardDto>>>
@@ -26,7 +26,7 @@ public sealed record GetDisabledCardsQuery(
         $":expTo={(ExpirationTo?.ToString("yyyyMMdd") ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
-    public string[] Tags => ["disabledcard"];
+    public string[] Tags => ["disabled-card"];
 
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }

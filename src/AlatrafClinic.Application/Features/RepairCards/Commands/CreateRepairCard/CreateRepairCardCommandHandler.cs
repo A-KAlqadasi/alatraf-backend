@@ -1,7 +1,4 @@
-using Microsoft.Extensions.Caching.Hybrid;
-using Microsoft.Extensions.Logging;
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Mappers;
@@ -14,30 +11,35 @@ using AlatrafClinic.Domain.Payments;
 
 using MediatR;
 
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Logging;
+using AlatrafClinic.Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCard;
 
 public sealed class CreateRepairCardCommandHandler
-    : IRequestHandler<CreateRepairCardCommand, Result<RepairCardDto>>
+    : IRequestHandler<CreateRepairCardCommand, Result<RepairCardDiagnosisDto>>
 {
     private readonly ILogger<CreateRepairCardCommandHandler> _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly IDiagnosisCreationService _diagnosisService;
 
     public CreateRepairCardCommandHandler(
         ILogger<CreateRepairCardCommandHandler> logger,
         HybridCache cache,
-        IUnitOfWork unitOfWork,
+        IAppDbContext context,
         IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
         _cache = cache;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _diagnosisService = diagnosisService;
     }
 
-    public async Task<Result<RepairCardDto>> Handle(CreateRepairCardCommand command, CancellationToken ct)
+    public async Task<Result<RepairCardDiagnosisDto>> Handle(CreateRepairCardCommand command, CancellationToken ct)
     {
         if (command.IndustrialParts is null || command.IndustrialParts.Count == 0)
         {
@@ -65,20 +67,18 @@ public sealed class CreateRepairCardCommandHandler
         var incoming = new List<(int industrialPartUnitId, int quantity, decimal price)>();
         foreach (var part in command.IndustrialParts)
         {
-            var partUnit = await _unitOfWork.IndustrialParts.GetByIdAndUnitId(part.IndustrialPartId, part.UnitId, ct);
+            var partUnit = await _context.IndustrialPartUnits
+            .Include(i=> i.Unit)
+            .Include(i=> i.IndustrialPart)
+            .FirstOrDefaultAsync(i=> i.IndustrialPartId == part.IndustrialPartId && i.UnitId == part.UnitId, ct);
+            
             if (partUnit is null)
             {
                 _logger.LogError("IndustrialPartUnit not found (PartId={PartId}, UnitId={UnitId}).", part.IndustrialPartId, part.UnitId);
                 return IndustrialPartUnitErrors.IndustrialPartUnitNotFound;
             }
             
-            if (part.Price != partUnit.PricePerUnit)
-            {
-                _logger.LogError("Price for unit is not consistant incoming {incomingPrice} and storedPrice {storedPrice}", part.Price, partUnit.PricePerUnit);
-                return IndustrialPartUnitErrors.InconsistentPrice;
-            }
-            
-            incoming.Add((partUnit.Id, part.Quantity, part.Price));
+            incoming.Add((partUnit.Id, part.Quantity, partUnit.PricePerUnit));
         }
 
         diagnosis.UpsertDiagnosisIndustrialParts(incoming);
@@ -106,12 +106,12 @@ public sealed class CreateRepairCardCommandHandler
         diagnosis.AssignPayment(payment);
         diagnosis.AssignRepairCard(repairCard);
         
-        await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
-
+        await _context.Diagnoses.AddAsync(diagnosis, ct);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("repair-card");
         
         _logger.LogInformation("Successfully created RepairCard {RepairCardId} for Diagnosis {DiagnosisId}.", repairCard.Id, diagnosis.Id);
 
-        return repairCard.ToDto();
+        return repairCard.ToDiagnosisDto();
     }
 }

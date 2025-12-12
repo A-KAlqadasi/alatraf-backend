@@ -1,27 +1,30 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.MedicalPrograms.Dtos;
 using AlatrafClinic.Application.Features.MedicalPrograms.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace AlatrafClinic.Application.Features.MedicalPrograms.Queries.GetMedicalPrograms;
 
-public class GetMedicalProgramsQueryHandler : IRequestHandler<GetMedicalProgramsQuery, Result<List<MedicalProgramDto>>>
+public class GetMedicalProgramsQueryHandler
+    : IRequestHandler<GetMedicalProgramsQuery, Result<List<MedicalProgramDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
-    public GetMedicalProgramsQueryHandler(IUnitOfWork unitOfWork)
+    public GetMedicalProgramsQueryHandler(IAppDbContext context)
     {
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
-    public async Task<Result<List<MedicalProgramDto>>> Handle(GetMedicalProgramsQuery query, CancellationToken ct)
+
+    public async Task<Result<List<MedicalProgramDto>>> Handle(
+        GetMedicalProgramsQuery query,
+        CancellationToken ct)
     {
-        var medicalPrograms = await _unitOfWork.MedicalPrograms.GetAllAsync(ct);
-        if (medicalPrograms is null || !medicalPrograms.Any())
-        {
-           return Error.NotFound("Medical programs not found.");
-        }
-        return medicalPrograms.ToDtos();
+        var programs = await _context.MedicalPrograms.ToListAsync(ct);
+
+        return programs.ToDtos();
     }
 }

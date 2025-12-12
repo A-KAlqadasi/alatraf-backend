@@ -1,46 +1,143 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.WoundedCards.Dtos;
 using AlatrafClinic.Application.Features.WoundedCards.Mappers;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.WoundedCards;
 
 using MediatR;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.WoundedCards.Queries.GetWoundedCards;
 
 public class GetWoundedCardsQueryHandler
     : IRequestHandler<GetWoundedCardsQuery, Result<PaginatedList<WoundedCardDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
-    public GetWoundedCardsQueryHandler(IUnitOfWork unitOfWork)
+    public GetWoundedCardsQueryHandler(IAppDbContext context)
     {
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
     public async Task<Result<PaginatedList<WoundedCardDto>>> Handle(
         GetWoundedCardsQuery query,
         CancellationToken ct)
     {
-        var specification = new WoundedCardsFilter(query);
+        IQueryable<WoundedCard> cardsQuery = _context.WoundedCards
+            .Include(wc => wc.Patient)
+                .ThenInclude(p => p.Person)
+            .AsNoTracking();
 
-        var totalCount = await _unitOfWork.WoundedCards.CountAsync(specification, ct);
+        cardsQuery = ApplyFilters(cardsQuery, query);
+        cardsQuery = ApplySearch(cardsQuery, query);
+        cardsQuery = ApplySorting(cardsQuery, query);
 
-        var cards = await _unitOfWork.WoundedCards
-            .ListAsync(specification, specification.Page, specification.PageSize, ct);
+        var totalCount = await cardsQuery.CountAsync(ct);
 
-        var today = DateTime.Today;
+        var page = query.Page;
+        var pageSize = query.PageSize;
+        var skip = (page - 1) * pageSize;
 
-        var items = cards.ToDtos()
-            .ToList();
+        var cards = await cardsQuery
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync(ct);
+
+        var items = cards
+            .ToDtos();
 
         return new PaginatedList<WoundedCardDto>
         {
             Items      = items,
-            PageNumber = specification.Page,
-            PageSize   = specification.PageSize,
+            PageNumber = page,
+            PageSize   = pageSize,
             TotalCount = totalCount,
-            TotalPages = (int)Math.Ceiling(totalCount / (double)specification.PageSize)
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+        };
+    }
+
+    private static IQueryable<WoundedCard> ApplyFilters(
+        IQueryable<WoundedCard> query,
+        GetWoundedCardsQuery q)
+    {
+        var today = AlatrafClinicConstants.TodayDate;
+
+        if (q.IsExpired.HasValue)
+        {
+            if (q.IsExpired.Value)
+            {
+                query = query.Where(wc => wc.Expiration < today);
+            }
+            else
+            {
+                query = query.Where(wc => wc.Expiration >= today);
+            }
+        }
+
+        if (q.PatientId.HasValue && q.PatientId.Value > 0)
+        {
+            var patientId = q.PatientId.Value;
+            query = query.Where(wc => wc.PatientId == patientId);
+        }
+
+        if (q.ExpirationFrom.HasValue)
+        {
+            var from = q.ExpirationFrom.Value;
+            query = query.Where(wc => wc.Expiration >= from);
+        }
+
+        if (q.ExpirationTo.HasValue)
+        {
+            var to = q.ExpirationTo.Value;
+            query = query.Where(wc => wc.Expiration <= to);
+        }
+
+        return query;
+    }
+
+    private static IQueryable<WoundedCard> ApplySearch(
+        IQueryable<WoundedCard> query,
+        GetWoundedCardsQuery q)
+    {
+        if (string.IsNullOrWhiteSpace(q.SearchTerm))
+            return query;
+
+        var pattern = $"%{q.SearchTerm!.Trim().ToLower()}%";
+
+        return query.Where(wc =>
+            EF.Functions.Like(wc.CardNumber.ToLower(), pattern) ||
+            (wc.Patient != null &&
+             wc.Patient.Person != null &&
+             EF.Functions.Like(wc.Patient.Person.FullName.ToLower(), pattern)));
+    }
+
+    private static IQueryable<WoundedCard> ApplySorting(
+        IQueryable<WoundedCard> query,
+        GetWoundedCardsQuery q)
+    {
+        var col = q.SortColumn?.Trim().ToLowerInvariant() ?? "expiration";
+        var isDesc = string.Equals(q.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
+
+        return col switch
+        {
+            "cardnumber" => isDesc
+                ? query.OrderByDescending(wc => wc.CardNumber)
+                : query.OrderBy(wc => wc.CardNumber),
+
+            "patient" => isDesc
+                ? query.OrderByDescending(wc => wc.Patient!.Person!.FullName)
+                : query.OrderBy(wc => wc.Patient!.Person!.FullName),
+
+            "expiration" => isDesc
+                ? query.OrderByDescending(wc => wc.Expiration)
+                : query.OrderBy(wc => wc.Expiration),
+
+            _ => isDesc
+                ? query.OrderByDescending(wc => wc.Expiration)
+                : query.OrderBy(wc => wc.Expiration),
         };
     }
 }

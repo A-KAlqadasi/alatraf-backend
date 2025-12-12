@@ -8,10 +8,10 @@ namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCa
 public sealed record CreateRepairCardCommand(
     int TicketId,
     string DiagnosisText,
-    DateTime InjuryDate,
+    DateOnly InjuryDate,
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,
     List<CreateRepairCardIndustrialPartCommand> IndustrialParts,
     string? Notes = null
-) : IRequest<Result<RepairCardDto>>;
+) : IRequest<Result<RepairCardDiagnosisDto>>;

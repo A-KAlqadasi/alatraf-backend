@@ -1,26 +1,31 @@
-using Microsoft.Extensions.Logging;
-using MediatR;
-
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Inventory.Units;
+using AlatrafClinic.Application.Common.Interfaces;
+using Microsoft.Extensions.Caching.Hybrid;
+
+using MediatR;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.IndustrialParts.Commands.UpdateIndustrialPart;
 
 public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustrialPartCommand, Result<Updated>>
 {
     private readonly ILogger<UpdateIndustrialPartCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
+    private readonly HybridCache _cache;
 
-    public UpdateIndustrialPartCommandHandler(ILogger<UpdateIndustrialPartCommandHandler> logger, IUnitOfWork unitOfWork)
+    public UpdateIndustrialPartCommandHandler(ILogger<UpdateIndustrialPartCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
+        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(UpdateIndustrialPartCommand command, CancellationToken ct)
     {
-        var industrialPart = await _unitOfWork.IndustrialParts.GetByIdAsync(command.IndustrialPartId, ct);
+        var industrialPart = await _context.IndustrialParts.FirstOrDefaultAsync(i=> i.Id == command.IndustrialPartId, ct);
 
         if (industrialPart is null)
         {
@@ -30,13 +35,14 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
 
         if(industrialPart.Name.Trim() != command.Name.Trim())
         {
-            var isExistsName = await _unitOfWork.IndustrialParts.IsExistsByName(command.Name, ct);
+            var isExistsName = await _context.IndustrialParts.AnyAsync(i=> i.Name == command.Name.Trim(), ct);
             if (isExistsName)
             {
                 _logger.LogWarning("Industrial part with name {Name} already exists", command.Name);
                 return IndustrialPartErrors.NameAlreadyExists;
             }
         }
+
         var updateResult = industrialPart.Update(command.Name, command.Description);
         if (updateResult.IsError)
         {
@@ -48,7 +54,7 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
 
         foreach (var unit in command.Units)
         {
-            var existUnit = await _unitOfWork.Units.GetByIdAsync(unit.UnitId, ct);
+            var existUnit = await _context.Units.FirstOrDefaultAsync(u=> u.Id == unit.UnitId, ct);
             if (existUnit is null)
             {
                 _logger.LogError("Unit with id {UnitId} not found", unit.UnitId);
@@ -65,8 +71,9 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
             _logger.LogError("Error occurred while assigning units to industrial part {IndustrialPartName}", command.Name);
             return result.Errors;
         }
-        await _unitOfWork.IndustrialParts.UpdateAsync(industrialPart, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.IndustrialParts.Update(industrialPart);
+        await _context.SaveChangesAsync(ct);
+        
         _logger.LogInformation("Industrial part {IndustrialPartName} updated successfully", command.Name);
 
         return Result.Updated;

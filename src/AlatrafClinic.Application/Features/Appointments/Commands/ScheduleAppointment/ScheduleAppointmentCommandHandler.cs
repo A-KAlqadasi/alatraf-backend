@@ -1,8 +1,8 @@
 
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Appointments.Mappers;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Domain.Services.Enums;
@@ -10,6 +10,7 @@ using AlatrafClinic.Domain.Services.Tickets;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -18,20 +19,24 @@ namespace AlatrafClinic.Application.Features.Appointments.Commands.ScheduleAppoi
 public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppointmentCommand, Result<AppointmentDto>>
 {
     private readonly ILogger<ScheduleAppointmentCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly HybridCache _cache;
 
 
-    public ScheduleAppointmentCommandHandler(ILogger<ScheduleAppointmentCommandHandler> logger, IUnitOfWork unitOfWork,HybridCache cache)
+    public ScheduleAppointmentCommandHandler(ILogger<ScheduleAppointmentCommandHandler> logger, IAppDbContext context,HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _cache = cache;
     }
 
     public async Task<Result<AppointmentDto>> Handle(ScheduleAppointmentCommand command, CancellationToken ct)
     {
-        Ticket? ticket = await _unitOfWork.Tickets.GetByIdAsync(command.TicketId, ct);
+        Ticket? ticket = await _context.Tickets
+        .Include(t=> t.Patient!)
+            .ThenInclude(t=> t.Person)
+        .FirstOrDefaultAsync(t=> t.Id == command.TicketId, ct);
+
         if (ticket is null)
         {
             _logger.LogError("Ticket {ticketId} is not found!", command.TicketId);
@@ -50,20 +55,26 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
             return TicketErrors.TicketAlreadHasAppointment;
         }
 
-        DateTime lastAppointmentDate = await _unitOfWork.Appointments.GetLastAppointmentAttendDate(ct);
+        var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
 
-        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+        DateOnly lastAppointmentDate = lastAppointment?.AttendDate ?? DateOnly.MinValue;
 
-        if (command.RequestedDate.HasValue && command.RequestedDate.Value.Date > baseDate)
+        DateOnly baseDate = lastAppointmentDate < AlatrafClinicConstants.TodayDate ? AlatrafClinicConstants.TodayDate : lastAppointmentDate;
+
+        if (command.RequestedDate.HasValue && command.RequestedDate.Value > baseDate)
         {
-            baseDate = command.RequestedDate.Value.Date;
+            baseDate = command.RequestedDate.Value;
         }
 
-        var allowedDaysString = await _unitOfWork.AppSettings.GetAllowedAppointmentDaysAsync(ct);
+        var allowedDaysString = await _context.AppSettings
+            .Where(a => a.Key == AlatrafClinicConstants.AllowedDaysKey)
+            .Select(a => a.Value)
+            .FirstOrDefaultAsync(ct);
         
-        var allowedDays = allowedDaysString.Split(',').Select(day => Enum.Parse<DayOfWeek>(day.Trim())).ToList();
+        
+        var allowedDays = allowedDaysString?.Split(',').Select(day => Enum.Parse<DayOfWeek>(day.Trim())).ToList() ?? [DayOfWeek.Saturday, DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday];
 
-        var holidays = await _unitOfWork.Holidays.GetAllAsync(ct);
+        var holidays = await _context.Holidays.ToListAsync(ct);
 
 
         while (!allowedDays.Contains(baseDate.DayOfWeek) || baseDate.DayOfWeek == DayOfWeek.Friday || holidays.Any(h => h.Matches(baseDate)))
@@ -73,7 +84,7 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 
         var appointmentResult = Appointment.Schedule(
             ticketId: ticket.Id,
-            patientType: command.PatientType,
+            patientType: ticket.Patient!.PatientType,
             attendDate: baseDate,
             notes: command.Notes
         );
@@ -87,8 +98,10 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
         appointment.Ticket = ticket;
         ticket.Pause();
 
-        await _unitOfWork.Appointments.AddAsync(appointment, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.Appointments.AddAsync(appointment, ct);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("appointment", ct);
+
         _logger.LogInformation("Appointment {appointmentId} scheduled for Ticket {ticketId} on {attendDate}", appointment.Id, ticket.Id, appointment.AttendDate);
 
         return appointment.ToDto();

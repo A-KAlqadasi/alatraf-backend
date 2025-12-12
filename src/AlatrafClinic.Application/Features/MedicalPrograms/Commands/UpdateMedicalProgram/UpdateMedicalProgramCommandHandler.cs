@@ -6,6 +6,8 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 
 using MediatR;
+using AlatrafClinic.Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AlatrafClinic.Application.Features.MedicalPrograms.Commands.UpdateMedicalProgram;
@@ -13,18 +15,18 @@ namespace AlatrafClinic.Application.Features.MedicalPrograms.Commands.UpdateMedi
 public class UpdateMedicalProgramCommandHandler : IRequestHandler<UpdateMedicalProgramCommand, Result<Updated>>
 {
     private readonly ILogger<UpdateMedicalProgramCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
     private readonly HybridCache _cache;
 
-    public UpdateMedicalProgramCommandHandler(ILogger<UpdateMedicalProgramCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public UpdateMedicalProgramCommandHandler(ILogger<UpdateMedicalProgramCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
         _cache = cache;
     }
     public async Task<Result<Updated>> Handle(UpdateMedicalProgramCommand command, CancellationToken ct)
     {
-        var medicalProgram = await _unitOfWork.MedicalPrograms.GetByIdAsync(command.MedicalProgramId, ct);
+        var medicalProgram = await _context.MedicalPrograms.FirstOrDefaultAsync(mp => mp.Id == command.MedicalProgramId, ct);
 
         if (medicalProgram is null)
         {
@@ -40,8 +42,11 @@ public class UpdateMedicalProgramCommandHandler : IRequestHandler<UpdateMedicalP
             return updateResult.TopError;
         }
 
-        await _unitOfWork.MedicalPrograms.UpdateAsync(medicalProgram, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.MedicalPrograms.Update(medicalProgram);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("medical-program");
+
+        _logger.LogInformation("Medical program with ID {MedicalProgramId} updated successfully.", command.MedicalProgramId);
 
         return Result.Updated;
     }

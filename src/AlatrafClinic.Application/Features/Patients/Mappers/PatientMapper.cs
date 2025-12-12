@@ -4,7 +4,6 @@ using AlatrafClinic.Application.Features.Patients.Mappers;
 using AlatrafClinic.Application.Features.People.Mappers;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.People;
 
 namespace AlatrafClinic.Application.Features.Patients.Mappers;
 

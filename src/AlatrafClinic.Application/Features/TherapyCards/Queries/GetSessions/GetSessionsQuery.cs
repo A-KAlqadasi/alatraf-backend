@@ -13,8 +13,8 @@ public sealed record GetSessionsQuery(
     int? PatientId = null,
     int? TherapyCardId = null,
     bool? IsTaken = null,
-    DateTime? FromDate = null,
-    DateTime? ToDate = null,
+    DateOnly? FromDate = null,
+    DateOnly? ToDate = null,
     string SortColumn = "SessionDate",
     string SortDirection = "desc"
 ) : ICachedQuery<Result<PaginatedList<SessionListDto>>>
@@ -31,5 +31,5 @@ public sealed record GetSessionsQuery(
         $":sort={SortColumn}:{SortDirection}";
 
     public string[] Tags => ["session"];
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+    public TimeSpan Expiration => TimeSpan.FromMinutes(20);
 }

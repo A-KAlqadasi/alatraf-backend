@@ -1,10 +1,12 @@
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateDeliveryTime;
@@ -12,16 +14,18 @@ namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateDelivery
 public class CreateDeliveryTimeCommandHandler : IRequestHandler<CreateDeliveryTimeCommand, Result<Created>>
 {
     private readonly ILogger<CreateDeliveryTimeCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
+    private readonly HybridCache _cache;
 
-    public CreateDeliveryTimeCommandHandler(ILogger<CreateDeliveryTimeCommandHandler> logger, IUnitOfWork unitOfWork)
+    public CreateDeliveryTimeCommandHandler(ILogger<CreateDeliveryTimeCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
+        _cache = cache;
     }
     public async Task<Result<Created>> Handle(CreateDeliveryTimeCommand command, CancellationToken ct)
     {
-        RepairCard? repairCard = await _unitOfWork.RepairCards.GetByIdAsync(command.RepairCardId, ct);
+        RepairCard? repairCard = await _context.RepairCards.FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
 
         if (repairCard is null)
         {
@@ -36,8 +40,9 @@ public class CreateDeliveryTimeCommandHandler : IRequestHandler<CreateDeliveryTi
             return result.TopError;
         }
         
-        await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.RepairCards.Update(repairCard);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("repair-card");
 
         _logger.LogInformation("Delivery time created for repair card {repairCardId}", command.RepairCardId);
 

@@ -13,8 +13,8 @@ public sealed record GetAppointmentsQuery(
     string? SearchTerm = null,
     AppointmentStatus? Status = null,
     PatientType? PatientType = null,
-    DateTime? FromDate = null,
-    DateTime? ToDate = null,
+    DateOnly? FromDate = null,
+    DateOnly? ToDate = null,
     string SortColumn = "AttendDate",
     string SortDirection = "asc"
 ) : ICachedQuery<Result<PaginatedList<AppointmentDto>>>

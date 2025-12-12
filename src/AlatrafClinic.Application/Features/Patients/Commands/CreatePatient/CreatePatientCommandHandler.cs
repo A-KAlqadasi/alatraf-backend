@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.Patients.Mappers;
@@ -15,14 +14,14 @@ using Microsoft.Extensions.Logging;
 namespace AlatrafClinic.Application.Features.Patients.Commands.CreatePatient;
 
 public class CreatePatientCommandHandler(
-    IUnitOfWork unitWork,
+IAppDbContext context,
 ILogger<CreatePatientCommandHandler> logger,
 IPersonCreateService personCreateService,
     HybridCache cache
 
 ) : IRequestHandler<CreatePatientCommand, Result<PatientDto>>
 {
-    private readonly IUnitOfWork _unitWork = unitWork;
+    private readonly IAppDbContext _context = context;
     private readonly ILogger<CreatePatientCommandHandler> _logger = logger;
     private readonly IPersonCreateService _personCreateService = personCreateService;
     private readonly HybridCache _cache = cache;
@@ -58,12 +57,11 @@ IPersonCreateService personCreateService,
         var patient = patientResult.Value;
         person.AssignPatient(patient);
 
-        await _unitWork.People.AddAsync(person, ct);
-        await _unitWork.SaveChangesAsync(ct);
+        await _context.People.AddAsync(person, ct);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("patient", ct);
 
         _logger.LogInformation("Patient created successfully with ID: {patient}", patient.Id);
-        
-        await _cache.RemoveByTagAsync("patient", ct);
 
         return patient.ToDto();
     }

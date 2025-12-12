@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Services;
@@ -7,6 +7,8 @@ using AlatrafClinic.Domain.TherapyCards;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.DamageReplacementTherapy;
@@ -14,16 +16,21 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Commands.DamageReplace
 public class DamageReplacementTherapyCommandHandler : IRequestHandler<DamageReplacementTherapyCommand, Result<Success>>
 {
     private readonly ILogger<DamageReplacementTherapyCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
+    private readonly HybridCache _cache;
 
-    public DamageReplacementTherapyCommandHandler(ILogger<DamageReplacementTherapyCommandHandler> logger, IUnitOfWork unitOfWork)
+    public DamageReplacementTherapyCommandHandler(ILogger<DamageReplacementTherapyCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _context = context;
+        _cache = cache;
     }
     public async Task<Result<Success>> Handle(DamageReplacementTherapyCommand command, CancellationToken ct)
     {
-        var therapyCard = await _unitOfWork.TherapyCards.GetByIdAsync(command.TherapyCardId, ct);
+        var therapyCard = await _context.TherapyCards
+        .Include(d=> d.Diagnosis)
+            .ThenInclude(p=> p.Payments)
+        .FirstOrDefaultAsync(th=> th.Id == command.TherapyCardId, ct);
         if (therapyCard is null)
         {
             _logger.LogWarning("Therapy card with id {TherapyCardId} not found.", command.TherapyCardId);
@@ -41,7 +48,7 @@ public class DamageReplacementTherapyCommandHandler : IRequestHandler<DamageRepl
             return TherapyCardErrors.Readonly;
         }
 
-        var ticket = await _unitOfWork.Tickets.GetByIdAsync(command.TicketId, ct);
+        var ticket = await _context.Tickets.Include(s=> s.Service).FirstOrDefaultAsync(t=> t.Id == command.TicketId, ct);
 
         if (ticket is null)
         {
@@ -72,8 +79,10 @@ public class DamageReplacementTherapyCommandHandler : IRequestHandler<DamageRepl
 
         diagnosis.AssignPayment(payment);
 
-        await _unitOfWork.Payments.AddAsync(payment, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.Diagnoses.Update(diagnosis);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("therapy-card", ct);
+        
         
         _logger.LogInformation("Payment {PaymentId} created for damage replacement of TherapyCard {TherapyCardId}.", payment.Id, therapyCard.Id);
 

@@ -1,4 +1,5 @@
 using AlatrafClinic.Application.Features.WoundedCards.Commands.UpdateWoundedCard;
+using AlatrafClinic.Domain.Common.Constants;
 
 using FluentValidation;
 
@@ -16,6 +17,6 @@ public class UpdateWoundedCardCommandValidator : AbstractValidator<UpdateWounded
         RuleFor(x => x.PatientId)
             .GreaterThan(0).WithMessage("Patient Id is invalid");
         RuleFor(x => x.ExpirationDate)
-            .GreaterThanOrEqualTo(DateTime.Now.Date).WithMessage("Card is Expired!");
+            .GreaterThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Card is Expired!");
     }
 }

@@ -15,9 +15,9 @@ public sealed record GetRepairCardsQuery(
     RepairCardStatus? Status = null,
     int? DiagnosisId = null,
     int? PatientId = null,
-    string SortColumn = "DeliveryDate",
+    string SortColumn = "repaircardid",
     string SortDirection = "desc"
-) : ICachedQuery<Result<PaginatedList<RepairCardDto>>>
+) : ICachedQuery<Result<PaginatedList<RepairCardDiagnosisDto>>>
 {
     public string CacheKey =>
         $"repaircards:p={Page}:ps={PageSize}" +
@@ -29,6 +29,6 @@ public sealed record GetRepairCardsQuery(
         $":pat={(PatientId?.ToString() ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
-    public string[] Tags => ["repaircard"];
+    public string[] Tags => ["repair-card"];
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }
