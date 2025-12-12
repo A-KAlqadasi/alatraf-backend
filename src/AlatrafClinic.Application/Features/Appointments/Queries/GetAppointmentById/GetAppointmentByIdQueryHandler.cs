@@ -23,7 +23,11 @@ public class GetAppointmentByIdQueryHandler : IRequestHandler<GetAppointmentById
     }
     public async Task<Result<AppointmentDto>> Handle(GetAppointmentByIdQuery query, CancellationToken ct)
     {
-        Appointment? appointment = await _context.Appointments.Include(a=> a.Ticket).FirstOrDefaultAsync(a=> a.Id ==query.AppointmentId, ct);
+        Appointment? appointment = await _context.Appointments
+        .Include(a=> a.Ticket)
+            .ThenInclude(a=> a.Patient!)
+                .ThenInclude(p=> p.Person)
+        .FirstOrDefaultAsync(a=> a.Id ==query.AppointmentId, ct);
 
         if (appointment is null)
         {

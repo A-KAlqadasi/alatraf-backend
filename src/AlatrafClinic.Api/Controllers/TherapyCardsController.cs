@@ -79,14 +79,14 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
         );
     }
 
-    [HttpGet("{therapyCardId:int}", Name = "GetTherapyCardId")]
+    [HttpGet("{therapyCardId:int}", Name = "GetTherapyCardById")]
     [ProducesResponseType(typeof(TherapyCardDiagnosisDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Retrieves a therapy card details by Id, without sessions info.")]
     [EndpointDescription("Fetches person, diagnosis and programs info about a specific therapy card using its unique identifier.")]
-    [EndpointName("GetTherapyCardId")]
+    [EndpointName("GetTherapyCardById")]
     [ApiVersion("1.0")]
     public async Task<IActionResult> GetTherpyCardById(int therapyCardId, CancellationToken ct = default)
     {

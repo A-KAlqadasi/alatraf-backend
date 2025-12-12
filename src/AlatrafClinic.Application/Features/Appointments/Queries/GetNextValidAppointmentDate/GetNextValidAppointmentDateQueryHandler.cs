@@ -15,7 +15,7 @@ public class GetNextValidAppointmentDateQueryHandler(
     public async Task<Result<DateOnly>> Handle(GetNextValidAppointmentDateQuery query, CancellationToken ct)
     {
        
-       var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
+        var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
 
         DateOnly lastAppointmentDate = lastAppointment?.AttendDate ?? DateOnly.MinValue;
 
@@ -41,6 +41,7 @@ public class GetNextValidAppointmentDateQueryHandler(
         {
             baseDate = baseDate.AddDays(1);
         }
+        
 
         return baseDate;
     }

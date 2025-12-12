@@ -22,7 +22,7 @@ public class TherapyCard : AuditableEntity<int>
     public TherapyCardType Type { get; private set; }
     public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
-    public decimal TotalCost => SessionPricePerType * (ProgramEndDate.DayNumber - ProgramStartDate.DayNumber + 1);
+    public decimal TotalCost => SessionPricePerType * (ProgramEndDate.DayNumber - ProgramStartDate.DayNumber);
     public bool IsExpired => AlatrafClinicConstants.TodayDate > ProgramEndDate;
     public bool IsEditable => IsActive && !IsExpired && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();

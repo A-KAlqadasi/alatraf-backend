@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Features.Appointments.Dtos;
-using AlatrafClinic.Application.Features.Tickets.Mappers;
 using AlatrafClinic.Domain.Services.Appointments;
 
 
@@ -14,13 +13,12 @@ public static class AppointmentMapper
         {
             Id = appointment.Id,
             TicketId = appointment.TicketId,
-            Ticket = appointment.Ticket?.ToDto(),
+            PatientName = appointment.Ticket?.Patient?.Person.FullName ?? string.Empty,
             PatientType = appointment.PatientType,
             AttendDate = appointment.AttendDate,
             Status = appointment.Status,
             Notes = appointment.Notes,
             CreatedAt = DateOnly.FromDateTime(appointment.CreatedAtUtc.DateTime),
-            IsEditable = appointment.IsEditable,
             IsAppointmentTomorrow = appointment.IsAppointmentTomorrow()
         };
     }
