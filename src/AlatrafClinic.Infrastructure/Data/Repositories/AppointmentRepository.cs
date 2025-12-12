@@ -13,25 +13,25 @@ public class AppointmentRepository : GenericRepository<Appointment, int>, IAppoi
     {
     }
 
-    public async Task<int> GetAppointmentCountByDate(DateTime date, CancellationToken ct = default)
+    public async Task<int> GetAppointmentCountByDate(DateOnly date, CancellationToken ct = default)
     {
         return await dbContext.Appointments
-            .CountAsync(a => a.CreatedAtUtc.DateTime.Date == date.Date, ct);
+            .CountAsync(a => DateOnly.FromDateTime(a.CreatedAtUtc.DateTime) == date, ct);
     }
 
-    public async Task<int> GetAppointmentCountByDateAndPatientType(DateTime date, PatientType patientType, CancellationToken ct = default)
+    public async Task<int> GetAppointmentCountByDateAndPatientType(DateOnly date, PatientType patientType, CancellationToken ct = default)
     {
         return await dbContext.Appointments
-            .Where(a => a.CreatedAtUtc.DateTime.Date == date.Date && a.PatientType == patientType)
+            .Where(a => DateOnly.FromDateTime(a.CreatedAtUtc.DateTime) == date && a.PatientType == patientType)
             .CountAsync(ct);
     }
 
-    public async Task<DateTime> GetLastAppointmentAttendDate(CancellationToken ct = default)
+    public async Task<DateOnly> GetLastAppointmentAttendDate(CancellationToken ct = default)
     {
         var lastAppointment = await dbContext.Appointments
             .OrderByDescending(a => a.AttendDate)
             .FirstOrDefaultAsync(ct);
 
-        return lastAppointment?.AttendDate ?? DateTime.MinValue;
+        return lastAppointment?.AttendDate ?? DateOnly.MinValue;
     }
 }

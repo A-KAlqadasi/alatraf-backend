@@ -7,7 +7,7 @@ namespace AlatrafClinic.Application.Features.Doctors.Commands.CreateDoctor;
 
 public sealed record CreateDoctorCommand(
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string NationalNo,
     string Address,

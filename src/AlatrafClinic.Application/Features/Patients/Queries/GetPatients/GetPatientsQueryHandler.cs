@@ -89,13 +89,13 @@ public class GetPatientsQueryHandler
 
         if (q.BirthdateFrom.HasValue)
         {
-            var from = q.BirthdateFrom.Value.Date;
+            var from = q.BirthdateFrom.Value;
             query = query.Where(p => p.Person != null && p.Person.Birthdate >= from);
         }
 
         if (q.BirthdateTo.HasValue)
         {
-            var to = q.BirthdateTo.Value.Date;
+            var to = q.BirthdateTo.Value;
             query = query.Where(p => p.Person != null && p.Person.Birthdate <= to);
         }
 

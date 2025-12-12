@@ -11,10 +11,12 @@ public class RenewTherapyCardRequest
     public int TicketId { get; set; }
 
     [Required(ErrorMessage = "ProgramStartDate is required.")]
-    public DateTime ProgramStartDate { get; set; }
+    [DataType(DataType.Date)]
+    public DateOnly ProgramStartDate { get; set; }
 
     [Required(ErrorMessage = "ProgramEndDate is required.")]
-    public DateTime ProgramEndDate { get; set; }
+    [DataType(DataType.Date)]
+    public DateOnly ProgramEndDate { get; set; }
 
     [Required(ErrorMessage= "TherapyCardType is required.")]
     [EnumDataType(typeof(TherapyCardType), ErrorMessage = "Invalid Therapy Card Type.")]

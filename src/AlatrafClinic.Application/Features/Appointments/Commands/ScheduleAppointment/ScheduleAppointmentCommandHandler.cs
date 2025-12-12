@@ -32,7 +32,11 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 
     public async Task<Result<AppointmentDto>> Handle(ScheduleAppointmentCommand command, CancellationToken ct)
     {
-        Ticket? ticket = await _context.Tickets.FirstOrDefaultAsync(t=> t.Id == command.TicketId, ct);
+        Ticket? ticket = await _context.Tickets
+        .Include(t=> t.Patient!)
+            .ThenInclude(t=> t.Person)
+        .FirstOrDefaultAsync(t=> t.Id == command.TicketId, ct);
+
         if (ticket is null)
         {
             _logger.LogError("Ticket {ticketId} is not found!", command.TicketId);
@@ -53,13 +57,13 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 
         var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
 
-        DateTime lastAppointmentDate = lastAppointment?.AttendDate ?? DateTime.MinValue;
+        DateOnly lastAppointmentDate = lastAppointment?.AttendDate ?? DateOnly.MinValue;
 
-        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+        DateOnly baseDate = lastAppointmentDate < AlatrafClinicConstants.TodayDate ? AlatrafClinicConstants.TodayDate : lastAppointmentDate;
 
-        if (command.RequestedDate.HasValue && command.RequestedDate.Value.Date > baseDate)
+        if (command.RequestedDate.HasValue && command.RequestedDate.Value > baseDate)
         {
-            baseDate = command.RequestedDate.Value.Date;
+            baseDate = command.RequestedDate.Value;
         }
 
         var allowedDaysString = await _context.AppSettings
@@ -80,7 +84,7 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 
         var appointmentResult = Appointment.Schedule(
             ticketId: ticket.Id,
-            patientType: command.PatientType,
+            patientType: ticket.Patient!.PatientType,
             attendDate: baseDate,
             notes: command.Notes
         );

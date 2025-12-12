@@ -7,7 +7,7 @@ namespace AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
 
 public sealed record class CreateUserCommand(
     string Fullname,
-    DateTime Birthdate,
+    DateOnly Birthdate,
     string Phone,
     string NationalNo,
     string Address,

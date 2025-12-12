@@ -7,7 +7,7 @@ public interface IPersonCreateService
 {
     Task<Result<Person>> CreateAsync(
         string Fullname,
-        DateTime Birthdate,
+        DateOnly Birthdate,
         string Phone,
         string? NationalNo,
         string Address,

@@ -71,22 +71,22 @@ public sealed class GetHolidaysQueryHandler
 
         if (q.EndDate.HasValue)
         {
-            var end = q.EndDate.Value.Date;
+            var end = q.EndDate.Value;
             query = query.Where(h =>
-                h.EndDate.HasValue && h.EndDate.Value.Date == end);
+                h.EndDate.HasValue && h.EndDate.Value == end);
         }
 
         if (q.SpecificDate.HasValue)
         {
-            var date = q.SpecificDate.Value.Date;
+            var date = q.SpecificDate.Value;
 
             query = query.Where(h =>
                 h.IsActive &&
                 (
                     // Recurring range holiday (same month/day range)
                     (h.IsRecurring && h.EndDate.HasValue &&
-                     new DateTime(date.Year, h.StartDate.Month, h.StartDate.Day) <= date &&
-                     new DateTime(date.Year, h.EndDate.Value.Month, h.EndDate.Value.Day) >= date)
+                     new DateOnly(date.Year, h.StartDate.Month, h.StartDate.Day) <= date &&
+                     new DateOnly(date.Year, h.EndDate.Value.Month, h.EndDate.Value.Day) >= date)
                     ||
                     // Recurring one-day holiday
                     (h.IsRecurring && !h.EndDate.HasValue &&
@@ -95,11 +95,11 @@ public sealed class GetHolidaysQueryHandler
                     ||
                     // Temporary range holiday
                     (!h.IsRecurring && h.EndDate.HasValue &&
-                     h.StartDate.Date <= date && h.EndDate.Value.Date >= date)
+                     h.StartDate <= date && h.EndDate.Value >= date)
                     ||
                     // Temporary one-day holiday
                     (!h.IsRecurring && !h.EndDate.HasValue &&
-                     h.StartDate.Date == date)
+                     h.StartDate == date)
                 )
             );
         }

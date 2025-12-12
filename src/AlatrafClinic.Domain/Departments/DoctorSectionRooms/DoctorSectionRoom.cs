@@ -1,5 +1,6 @@
 
 using AlatrafClinic.Domain.Common;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.Sections;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
@@ -20,8 +21,8 @@ public class DoctorSectionRoom : AuditableEntity<int>
     public int? RoomId { get; private set; }     // optional now
     public Room? Room { get; private set; }
 
-    public DateTime AssignDate { get; private set; }
-    public DateTime? EndDate { get; private set; }
+    public DateOnly AssignDate { get; private set; }
+    public DateOnly? EndDate { get; private set; }
     public bool IsActive { get; private set; }
     public string? Notes { get; private set; }
 
@@ -36,7 +37,7 @@ public class DoctorSectionRoom : AuditableEntity<int>
         DoctorId = doctorId;
         SectionId = sectionId;
         RoomId = roomId;
-        AssignDate = DateTime.UtcNow;
+        AssignDate = AlatrafClinicConstants.TodayDate;
         IsActive = true;
         Notes = notes;
     }
@@ -79,18 +80,18 @@ public class DoctorSectionRoom : AuditableEntity<int>
             return DoctorSectionRoomErrors.AssignmentAlreadyEnded;
 
         IsActive = false;
-        EndDate = DateTime.UtcNow;
+        EndDate = AlatrafClinicConstants.TodayDate;
         return Result.Updated;
     }
 
     public int GetTodayIndustrialPartsCount()
     {
-        var today = DateTime.UtcNow.Date;
-        return DiagnosisIndustrialParts.Count(dip => dip.CreatedAtUtc.Date == today);
+        var today = AlatrafClinicConstants.TodayDate;
+        return DiagnosisIndustrialParts.Count(dip => DateOnly.FromDateTime(dip.CreatedAtUtc.Date) == today);
     }
     public int GetTodaySessionsCount()
     {
-        var today = DateTime.UtcNow.Date;
-        return SessionPrograms.Count(sp => sp.CreatedAtUtc.Date == today);
+        var today = AlatrafClinicConstants.TodayDate;
+        return SessionPrograms.Count(sp => DateOnly.FromDateTime(sp.CreatedAtUtc.Date) == today);
     }
 }

@@ -1,4 +1,5 @@
 using AlatrafClinic.Domain.Common;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 
 namespace AlatrafClinic.Domain.TherapyCards.Sessions;
@@ -9,7 +10,7 @@ public class Session : AuditableEntity<int>
     public int Number { get; private set; }
     public int TherapyCardId { get; private set; }
     public TherapyCard TherapyCard { get; private set; } = default!;
-    public DateTime SessionDate { get; private set; }
+    public DateOnly SessionDate { get; private set; }
 
     private readonly List<SessionProgram> _sessionPrograms = new();
     public IEnumerable<SessionProgram> SessionPrograms => _sessionPrograms.AsReadOnly();
@@ -21,15 +22,15 @@ public class Session : AuditableEntity<int>
     {
         TherapyCardId = therapyCardId;
         Number = number;
-        SessionDate = DateTime.Now;
+        SessionDate = AlatrafClinicConstants.TodayDate;
     }
-    private Session(int therapyCardId, int number, DateTime date)
+    private Session(int therapyCardId, int number, DateOnly date)
     {
         TherapyCardId = therapyCardId;
         Number = number;
         SessionDate = date;
     }
-    public static Result<Session> Create(int therapyCardId, int number, DateTime date)
+    public static Result<Session> Create(int therapyCardId, int number, DateOnly date)
     {
         if (therapyCardId <= 0)
         {
@@ -63,7 +64,7 @@ public class Session : AuditableEntity<int>
         {
             return SessionErrors.SessionAlreadyTaken;
         }
-        if (SessionDate.Date != DateTime.Now.Date)
+        if (SessionDate != AlatrafClinicConstants.TodayDate)
         {
             return SessionErrors.InvalidSessionDate(SessionDate);
         }

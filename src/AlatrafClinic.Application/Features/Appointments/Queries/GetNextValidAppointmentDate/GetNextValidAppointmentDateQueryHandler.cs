@@ -9,21 +9,21 @@ using Microsoft.EntityFrameworkCore;
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetNextValidAppointmentDate;
 
 public class GetNextValidAppointmentDateQueryHandler(
-    IAppDbContext _context) : IRequestHandler<GetNextValidAppointmentDateQuery, Result<DateTime>>
+    IAppDbContext _context) : IRequestHandler<GetNextValidAppointmentDateQuery, Result<DateOnly>>
 {
 
-    public async Task<Result<DateTime>> Handle(GetNextValidAppointmentDateQuery query, CancellationToken ct)
+    public async Task<Result<DateOnly>> Handle(GetNextValidAppointmentDateQuery query, CancellationToken ct)
     {
        
-       var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
+        var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
 
-        DateTime lastAppointmentDate = lastAppointment?.AttendDate ?? DateTime.MinValue;
+        DateOnly lastAppointmentDate = lastAppointment?.AttendDate ?? DateOnly.MinValue;
 
-        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+        DateOnly baseDate = lastAppointmentDate < AlatrafClinicConstants.TodayDate ? DateOnly.FromDateTime(DateTime.Now) : lastAppointmentDate;
 
-        if (query.RequestedDate.HasValue && query.RequestedDate.Value.Date > baseDate)
+        if (query.RequestedDate.HasValue && query.RequestedDate.Value > baseDate)
         {
-            baseDate = query.RequestedDate.Value.Date;
+            baseDate = query.RequestedDate.Value;
         }
 
          var allowedDaysString = await _context.AppSettings
@@ -41,6 +41,7 @@ public class GetNextValidAppointmentDateQueryHandler(
         {
             baseDate = baseDate.AddDays(1);
         }
+        
 
         return baseDate;
     }

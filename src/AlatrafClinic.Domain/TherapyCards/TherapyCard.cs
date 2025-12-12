@@ -1,4 +1,5 @@
 using AlatrafClinic.Domain.Common;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
@@ -9,10 +10,10 @@ namespace AlatrafClinic.Domain.TherapyCards;
 
 public class TherapyCard : AuditableEntity<int>
 {
-    public DateTime ProgramStartDate { get; private set; }
-    public DateTime ProgramEndDate { get; private set; }
+    public DateOnly ProgramStartDate { get; private set; }
+    public DateOnly ProgramEndDate { get; private set; }
     public int NumberOfTakenSessions => _sessions.Where(s=> s.IsTaken == true).Count();
-    public int TotalSessions => ProgramEndDate.Subtract(ProgramStartDate).Days + 1;
+    public int TotalSessions => ProgramEndDate.DayNumber - ProgramStartDate.DayNumber;
 
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
@@ -21,8 +22,8 @@ public class TherapyCard : AuditableEntity<int>
     public TherapyCardType Type { get; private set; }
     public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
-    public decimal TotalCost => SessionPricePerType * (ProgramEndDate.Subtract(ProgramStartDate).Days + 1);
-    public bool IsExpired => DateTime.Now.Date > ProgramEndDate.Date;
+    public decimal TotalCost => SessionPricePerType * (ProgramEndDate.DayNumber - ProgramStartDate.DayNumber);
+    public bool IsExpired => AlatrafClinicConstants.TodayDate > ProgramEndDate;
     public bool IsEditable => IsActive && !IsExpired && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();
     public IReadOnlyCollection<Session> Sessions => _sessions.AsReadOnly();
@@ -36,7 +37,7 @@ public class TherapyCard : AuditableEntity<int>
     {
 
     }
-    private TherapyCard(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status = TherapyCardStatus.New, int? parentCardId = null, string? notes = null)
+    private TherapyCard(int diagnosisId, DateOnly programStartDate, DateOnly programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status = TherapyCardStatus.New, int? parentCardId = null, string? notes = null)
     {
         DiagnosisId = diagnosisId;
         ProgramStartDate = programStartDate;
@@ -50,9 +51,10 @@ public class TherapyCard : AuditableEntity<int>
         ParentCardId = parentCardId;
     }
 
-    public static Result<TherapyCard> Create(int diagnosisId, DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status, int? parentCardId = null, string? notes = null)
+    public static Result<TherapyCard> Create(int diagnosisId, DateOnly programStartDate, 
+     DateOnly programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status, int? parentCardId = null, string? notes = null)
     {
-        if (programStartDate < DateTime.Now)
+        if (programStartDate < AlatrafClinicConstants.TodayDate)
         {
             return TherapyCardErrors.ProgramStartDateNotInPast;
         }
@@ -79,14 +81,14 @@ public class TherapyCard : AuditableEntity<int>
         return new TherapyCard(diagnosisId, programStartDate, programEndDate, type, sessionPricePerType, diagnosisPrograms, status, parentCardId, notes);
     }
 
-    public Result<Updated> Update(DateTime programStartDate, DateTime programEndDate, TherapyCardType type, decimal sessionPricePerType, string? notes = null)
+    public Result<Updated> Update(DateOnly programStartDate, DateOnly programEndDate, TherapyCardType type, decimal sessionPricePerType, string? notes = null)
     {
         if (!IsEditable)
         {
             return TherapyCardErrors.Readonly;
         }
 
-        if (programStartDate < DateTime.Now)
+        if (programStartDate < AlatrafClinicConstants.TodayDate)
         {
             return TherapyCardErrors.ProgramStartDateNotInPast;
         }
@@ -144,8 +146,7 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.Readonly;
         }
 
-        
-        if (DateTime.Now > ProgramEndDate)
+        if (AlatrafClinicConstants.TodayDate > ProgramEndDate)
         {
             return TherapyCardErrors.ProgramEnded;
         }

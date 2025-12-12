@@ -18,8 +18,9 @@ IUnitOfWork unitOfWork
   public async Task<Result<AppSettingDto>> Handle(CreateAppSettingCommand request, CancellationToken cancellationToken)
   {
     var existing = await _unitOfWork.AppSettings.GetByKeyAsync(request.Key, cancellationToken);
+    
     if (existing is not null)
-      return AppSettingErrors.KeyAlreadyExists;
+        return AppSettingErrors.KeyAlreadyExists;
 
     var result = AppSetting.Create(
         request.Key,
@@ -29,7 +30,8 @@ IUnitOfWork unitOfWork
     );
 
     if (result.IsError)
-      return result.Errors;
+        return result.Errors;
+
     var newAppSetting = result.Value;
     await _unitOfWork.AppSettings.AddAsync(newAppSetting, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);

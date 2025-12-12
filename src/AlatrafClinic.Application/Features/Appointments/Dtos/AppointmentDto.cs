@@ -9,12 +9,11 @@ public class AppointmentDto
 {
     public int Id { get; set; }
     public int TicketId { get; set; }
-    public TicketDto? Ticket { get; set; }
+    public string PatientName { get; set; } = string.Empty;
     public PatientType PatientType { get; set; } 
-    public DateTime AttendDate { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateOnly AttendDate { get; set; }
+    public DateOnly CreatedAt { get; set; }
     public AppointmentStatus Status { get; set; } 
     public string? Notes { get; set; }
-    public bool IsEditable { get; set; }
     public bool IsAppointmentTomorrow { get; set; }
 }

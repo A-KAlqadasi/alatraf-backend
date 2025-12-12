@@ -18,7 +18,7 @@ public static class RepairCardMapper
             IsLate = repairCard.IsLate,
             CardStatus = repairCard.Status.ToArabicRepairCardStatus(),
             TotalCost = repairCard.TotalCost,
-            DeliveryDate = repairCard.DeliveryTime?.DeliveryDate ?? repairCard.CreatedAtUtc.ToLocalTime().Date,
+            DeliveryDate = repairCard.DeliveryTime?.DeliveryDate ?? DateOnly.FromDateTime( repairCard.CreatedAtUtc.Date),
             DiagnosisIndustrialParts = repairCard.DiagnosisIndustrialParts.ToDtos()
             
         };
@@ -40,6 +40,7 @@ public static class RepairCardMapper
             Gender  = entity.Diagnosis.Patient.Person.Gender ? "ذكر" : "أنثى",
             Age = DateTime.Now.Year - entity.Diagnosis.Patient.Person.Birthdate.Year,
             DiagnosisId = entity.DiagnosisId,
+            IsActive = entity.IsActive,
             DiagnosisText = entity.Diagnosis.DiagnosisText,
             InjuryDate  = entity.Diagnosis.InjuryDate,
             DiagnosisType = entity.Diagnosis.DiagnoType.ToArabicDiagnosisType(),

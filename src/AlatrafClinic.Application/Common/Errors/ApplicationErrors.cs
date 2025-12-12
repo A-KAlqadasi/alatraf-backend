@@ -62,7 +62,7 @@ Error.Conflict("Department.AlreadyExists", $"Department with name '{name}' alrea
 public static readonly Error RoomHasActiveDoctorAssignment =
     Error.Conflict("Room.HasActiveDoctorAssignment", "Room cannot be deleted because it has active doctor assignments.");
 
-  public static Error HolidayAlreadyExists(DateTime date) =>
+  public static Error HolidayAlreadyExists(DateOnly date) =>
     Error.Conflict("Holiday.AlreadyExists", $"Holiday with date '{date}' already exists.");
 
     public static readonly Error HolidayNotFound = Error.Validation(

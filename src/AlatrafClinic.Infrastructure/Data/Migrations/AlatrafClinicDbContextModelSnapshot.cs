@@ -96,7 +96,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AssignDate")
+                    b.Property<DateOnly>("AssignDate")
                         .HasColumnType("date");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -114,7 +114,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("EndDate")
+                    b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
                     b.Property<bool>("IsActive")
@@ -153,7 +153,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            AssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AssignDate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DoctorId = 1,
@@ -168,7 +168,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 2,
-                            AssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AssignDate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DoctorId = 2,
@@ -182,11 +182,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 3,
-                            AssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AssignDate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DoctorId = 3,
-                            EndDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndDate = new DateOnly(2025, 1, 1),
                             IsActive = false,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
@@ -390,7 +390,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("InjuryDate")
+                    b.Property<DateOnly>("InjuryDate")
                         .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
@@ -425,7 +425,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CreatedBy = "Seed",
                             DiagnoType = "Limbs",
                             DiagnosisText = "Lower back pain due to muscle strain",
-                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            InjuryDate = new DateOnly(2025, 1, 1),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -439,7 +439,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CreatedBy = "Seed",
                             DiagnoType = "Therapy",
                             DiagnosisText = "Right knee ligament sprain",
-                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            InjuryDate = new DateOnly(2025, 1, 1),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -453,7 +453,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CreatedBy = "Seed",
                             DiagnoType = "Sales",
                             DiagnosisText = "Neck pain caused by whiplash injury",
-                            InjuryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            InjuryDate = new DateOnly(2025, 1, 1),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -486,7 +486,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("DiagnosisId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DoctorAssignDate")
+                    b.Property<DateOnly?>("DoctorAssignDate")
                         .HasColumnType("date");
 
                     b.Property<int?>("DoctorSectionRoomId")
@@ -533,7 +533,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DoctorAssignDate = new DateOnly(2025, 1, 1),
                             IndustrialPartUnitId = 1,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
@@ -548,7 +548,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DoctorAssignDate = new DateOnly(2025, 1, 1),
                             IndustrialPartUnitId = 2,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
@@ -563,7 +563,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             DiagnosisId = 1,
-                            DoctorAssignDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DoctorAssignDate = new DateOnly(2025, 1, 1),
                             IndustrialPartUnitId = 3,
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
@@ -926,7 +926,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ExpirationDate")
+                    b.Property<DateOnly>("ExpirationDate")
                         .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
@@ -958,7 +958,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "DC-0001",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpirationDate = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -970,7 +970,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "DC-0002",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpirationDate = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -982,7 +982,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "DC-0003",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpirationDate = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -2283,7 +2283,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasComputedColumnSql("CONVERT(char(4), YEAR([CreatedAtUtc])) + '_' + RIGHT('0' + CONVERT(varchar(2), MONTH([CreatedAtUtc])), 2) + '_' + RIGHT('0' + CONVERT(varchar(2), DAY([CreatedAtUtc])), 2) + '_' + CONVERT(varchar(20), [PersonId])", true);
 
-                    b.Property<DateTime>("Birthdate")
+                    b.Property<DateOnly>("Birthdate")
                         .HasColumnType("date");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -2342,7 +2342,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             Address = "صنعاء",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Birthdate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "علي أحمد",
@@ -2357,7 +2357,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 2,
                             Address = "عدن",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Birthdate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "محمد صالح",
@@ -2372,7 +2372,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 3,
                             Address = "تعز",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Birthdate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "سارة علي",
@@ -2387,7 +2387,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         {
                             Id = 4,
                             Address = "تعز",
-                            Birthdate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Birthdate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             FullName = "عبدالكريم شوقي يوسف أحمد",
@@ -2421,7 +2421,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DeliveryDate")
+                    b.Property<DateOnly>("DeliveryDate")
                         .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
@@ -2906,7 +2906,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AttendDate")
+                    b.Property<DateOnly>("AttendDate")
                         .HasColumnType("date");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -2964,7 +2964,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            AttendDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AttendDate = new DateOnly(2025, 1, 1),
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
                             IsDeleted = false,
@@ -2998,7 +2998,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EndDate")
+                    b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
                     b.Property<bool>("IsActive")
@@ -3021,7 +3021,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
                     b.Property<string>("Type")
@@ -3047,7 +3047,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "عيد العمال العالمي",
-                            StartDate = new DateTime(1, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateOnly(1, 5, 1),
                             Type = "Fixed"
                         },
                         new
@@ -3061,7 +3061,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "عيد الوحدة اليمنية",
-                            StartDate = new DateTime(1, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateOnly(1, 5, 22),
                             Type = "Fixed"
                         },
                         new
@@ -3075,7 +3075,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "ثورة 26 سبتمبر",
-                            StartDate = new DateTime(1, 9, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateOnly(1, 9, 26),
                             Type = "Fixed"
                         },
                         new
@@ -3089,7 +3089,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "ثورة 14 أكتوبر",
-                            StartDate = new DateTime(1, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateOnly(1, 10, 14),
                             Type = "Fixed"
                         },
                         new
@@ -3103,7 +3103,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "عيد الجلاء",
-                            StartDate = new DateTime(1, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartDate = new DateOnly(1, 11, 30),
                             Type = "Fixed"
                         });
                 });
@@ -3535,7 +3535,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("SessionDate")
+                    b.Property<DateOnly>("SessionDate")
                         .HasColumnType("date");
 
                     b.Property<int>("TherapyCardId")
@@ -3559,7 +3559,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Number = 1,
-                            SessionDate = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SessionDate = new DateOnly(2025, 1, 10),
                             TherapyCardId = 1
                         },
                         new
@@ -3572,7 +3572,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Number = 2,
-                            SessionDate = new DateTime(2025, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SessionDate = new DateOnly(2025, 1, 11),
                             TherapyCardId = 1
                         });
                 });
@@ -3674,10 +3674,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int?>("ParentCardId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ProgramEndDate")
+                    b.Property<DateOnly>("ProgramEndDate")
                         .HasColumnType("date");
 
-                    b.Property<DateTime>("ProgramStartDate")
+                    b.Property<DateOnly>("ProgramStartDate")
                         .HasColumnType("date");
 
                     b.Property<decimal>("SessionPricePerType")
@@ -3709,8 +3709,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            ProgramEndDate = new DateTime(2025, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProgramStartDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgramEndDate = new DateOnly(2025, 1, 20),
+                            ProgramStartDate = new DateOnly(2025, 1, 1),
                             SessionPricePerType = 200m,
                             Type = "General"
                         });
@@ -3826,7 +3826,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Expiration")
+                    b.Property<DateOnly>("Expiration")
                         .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
@@ -3858,7 +3858,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "WC-0001",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Expiration = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -3870,7 +3870,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "WC-0002",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Expiration = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
@@ -3882,7 +3882,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "WC-0003",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            Expiration = new DateTime(2025, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Expiration = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),

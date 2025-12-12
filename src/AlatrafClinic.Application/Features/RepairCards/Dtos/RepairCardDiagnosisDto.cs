@@ -1,3 +1,5 @@
+using System.Security.Cryptography.X509Certificates;
+
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Dtos;
@@ -10,12 +12,12 @@ public class RepairCardDiagnosisDto
     public string PatientName { get; set; } = string.Empty;
     public string Gender {get; set; } = string.Empty;
     public int Age { get; set; }
+    public bool IsActive { get; set; }
 
     public int DiagnosisId { get; set; }
     public string DiagnosisText { get; set; } = string.Empty;
-    public DateTime InjuryDate { get; set; }
+    public DateOnly InjuryDate { get; set; }
     public string DiagnosisType { get; set; } = string.Empty;
-    public bool IsActive { get; set; }
     public string CardStatus { get; set; } = string.Empty;
 
     public List<InjuryDto> InjuryReasons { get; set; } = new();

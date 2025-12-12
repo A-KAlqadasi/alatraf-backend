@@ -6,4 +6,4 @@ namespace AlatrafClinic.Application.Features.Appointments.Commands.RescheduleApp
 
 public sealed record class RescheduleAppointmentCommand(
     int AppointmentId,
-    DateTime NewAttendDate) : IRequest<Result<Updated>>;
+    DateOnly NewAttendDate) : IRequest<Result<Updated>>;

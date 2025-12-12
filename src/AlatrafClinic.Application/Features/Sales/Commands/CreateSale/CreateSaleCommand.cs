@@ -8,7 +8,7 @@ namespace AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
 public sealed record class CreateSaleCommand(
     int TicketId,
     string DiagnosisText,
-    DateTime InjuryDate,
+    DateOnly InjuryDate,
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,

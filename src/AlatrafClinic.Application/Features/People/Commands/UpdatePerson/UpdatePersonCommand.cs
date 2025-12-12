@@ -7,7 +7,7 @@ namespace AlatrafClinic.Application.Features.People.Commands.UpdatePerson;
 public sealed record UpdatePersonCommand(
   int PersonId,
   string Fullname,
-  DateTime Birthdate,
+  DateOnly Birthdate,
   string Phone,
   string? NationalNo,
   string Address,

@@ -6,8 +6,8 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.Holidays.Commands.CreateHoliday;
 
 public sealed record CreateHolidayCommand(
-    DateTime StartDate,
-    DateTime? EndDate,
+    DateOnly StartDate,
+    DateOnly? EndDate,
     string Name,
     bool IsRecurring,
     HolidayType Type,

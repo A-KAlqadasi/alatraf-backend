@@ -34,13 +34,13 @@ public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleApp
 
         var lastAppointment = await _context.Appointments.OrderByDescending(a=> a.AttendDate).FirstOrDefaultAsync(ct);
 
-        DateTime lastAppointmentDate = lastAppointment?.AttendDate ?? DateTime.MinValue;
+        DateOnly lastAppointmentDate = lastAppointment?.AttendDate ?? DateOnly.MinValue;
 
-        DateTime baseDate = lastAppointmentDate.Date < DateTime.Now.Date ? DateTime.Now.Date : lastAppointmentDate.Date;
+        DateOnly baseDate = lastAppointmentDate < AlatrafClinicConstants.TodayDate ? AlatrafClinicConstants.TodayDate : lastAppointmentDate;
 
-        if (command.NewAttendDate.Date > baseDate)
+        if (command.NewAttendDate > baseDate)
         {
-            baseDate = command.NewAttendDate.Date;
+            baseDate = command.NewAttendDate;
         }
 
       var allowedDaysString = await _context.AppSettings

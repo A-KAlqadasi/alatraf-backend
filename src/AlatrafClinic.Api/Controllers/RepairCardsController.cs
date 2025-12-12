@@ -57,7 +57,7 @@ public sealed class RepairCardsController(ISender sender) : ApiController
     }
 
     [HttpGet("{repairCardId:int}", Name = "GetRepairCardById")]
-    [ProducesResponseType(typeof(PaginatedList<RepairCardDiagnosisDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RepairCardDiagnosisDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Retrieves a repair card by its ID.")]

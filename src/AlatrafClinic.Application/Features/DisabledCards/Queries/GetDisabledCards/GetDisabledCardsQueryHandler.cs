@@ -1,9 +1,9 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.DisabledCards.Dtos;
 using AlatrafClinic.Application.Features.DisabledCards.Mappers;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.DisabledCards;
 
@@ -73,14 +73,14 @@ public sealed class GetDisabledCardsQueryHandler
         // filter by "expired" using ExpirationDate vs today
         if (q.IsExpired.HasValue)
         {
-            var today = DateTime.Today;
+            
             if (q.IsExpired.Value)
             {
-                query = query.Where(dc => dc.ExpirationDate < today);
+                query = query.Where(dc => dc.ExpirationDate < AlatrafClinicConstants.TodayDate);
             }
             else
             {
-                query = query.Where(dc => dc.ExpirationDate >= today);
+                query = query.Where(dc => dc.ExpirationDate >= AlatrafClinicConstants.TodayDate);
             }
         }
 
@@ -92,13 +92,13 @@ public sealed class GetDisabledCardsQueryHandler
 
         if (q.ExpirationFrom.HasValue)
         {
-            var from = q.ExpirationFrom.Value.Date;
+            var from = q.ExpirationFrom.Value;
             query = query.Where(dc => dc.ExpirationDate >= from);
         }
 
         if (q.ExpirationTo.HasValue)
         {
-            var to = q.ExpirationTo.Value.Date;
+            var to = q.ExpirationTo.Value;
             query = query.Where(dc => dc.ExpirationDate <= to);
         }
 

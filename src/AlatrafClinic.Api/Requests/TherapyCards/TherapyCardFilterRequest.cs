@@ -14,13 +14,13 @@ public sealed class TherapyCardFilterRequest
 
     public TherapyCardStatus? TherapyCardStatus { get; set; }
 
-    public DateTime? ProgramStartFrom { get; set; }
+    public DateOnly? ProgramStartFrom { get; set; }
 
-    public DateTime? ProgramStartTo { get; set; }
+    public DateOnly? ProgramStartTo { get; set; }
 
-    public DateTime? ProgramEndFrom { get; set; }
+    public DateOnly? ProgramEndFrom { get; set; }
 
-    public DateTime? ProgramEndTo { get; set; }
+    public DateOnly? ProgramEndTo { get; set; }
 
     public int? DiagnosisId { get; set; }
 

@@ -4,13 +4,14 @@ using AlatrafClinic.Domain.Patients.Enums;
 using AlatrafClinic.Domain.Services.Enums;
 using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Common.Constants;
 
 namespace AlatrafClinic.Domain.Services.Appointments;
 
 public class Appointment : AuditableEntity<int>
 {
     public PatientType PatientType { get; private set; }
-    public DateTime AttendDate { get; private set; }
+    public DateOnly AttendDate { get; private set; }
     public AppointmentStatus Status { get; private set; } 
     public string? Notes { get; private set; }
     public int TicketId { get; private set; }
@@ -23,7 +24,7 @@ public class Appointment : AuditableEntity<int>
     private Appointment(
         int ticketId,
         PatientType patientType,
-        DateTime attendDate,
+        DateOnly attendDate,
         AppointmentStatus state,
         string? notes)
     {
@@ -37,7 +38,7 @@ public class Appointment : AuditableEntity<int>
     public static Result<Appointment> Schedule(
         int ticketId,
         PatientType patientType,
-        DateTime attendDate,
+        DateOnly attendDate,
         string? notes)
     {
         if (ticketId <= 0)
@@ -51,17 +52,17 @@ public class Appointment : AuditableEntity<int>
         }
         
 
-        if (attendDate < DateTime.Now.Date)
+        if (attendDate < AlatrafClinicConstants.TodayDate)
             return AppointmentErrors.AttendDateMustBeInFuture;
 
         return new Appointment(ticketId, patientType, attendDate, AppointmentStatus.Scheduled, notes);
     }
     
-    public Result<Updated> Reschedule(DateTime newDate)
+    public Result<Updated> Reschedule(DateOnly newDate)
     {
         if (!IsEditable) return AppointmentErrors.Readonly;
 
-        if (newDate < DateTime.Now.Date)
+        if (newDate < AlatrafClinicConstants.TodayDate)
             return AppointmentErrors.AttendDateMustBeInFuture;
 
         AttendDate = newDate;
@@ -99,7 +100,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Today);
         }
 
-        if (AttendDate.Date != DateTime.Now.Date)
+        if (AttendDate != AlatrafClinicConstants.TodayDate)
         {
             return AppointmentErrors.InvalidTodayMark(AttendDate);
         }
@@ -116,7 +117,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Attended);
         }
 
-        if (AttendDate.Date > DateTime.Now.Date)
+        if (AttendDate > AlatrafClinicConstants.TodayDate)
         {
             return AppointmentErrors.CannotMarkFutureAsAttended(AttendDate);
         }
@@ -132,7 +133,7 @@ public class Appointment : AuditableEntity<int>
             return AppointmentErrors.InvalidStateTransition(Status, AppointmentStatus.Absent);
         }
 
-        if (AttendDate.Date >= DateTime.Now.Date)
+        if (AttendDate >= AlatrafClinicConstants.TodayDate)
         {
             return AppointmentErrors.CannotMarkFutureAsAbsent(AttendDate);
         }
@@ -156,6 +157,7 @@ public class Appointment : AuditableEntity<int>
 
     public bool IsAppointmentTomorrow()
     {
-        return AttendDate.Date == DateTime.Now.Date.AddDays(1);
+        var today = AlatrafClinicConstants.TodayDate;
+        return AttendDate == today.AddDays(1);
     }
 }

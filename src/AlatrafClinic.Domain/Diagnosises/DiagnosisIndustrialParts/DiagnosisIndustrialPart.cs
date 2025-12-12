@@ -1,4 +1,5 @@
 using AlatrafClinic.Domain.Common;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.RepairCards;
@@ -16,7 +17,7 @@ public class DiagnosisIndustrialPart : AuditableEntity<int>
     public DoctorSectionRoom? DoctorSectionRoom { get; set; }
     public int Quantity { get; private set; }
     public decimal Price { get; private set; }
-    public DateTime? DoctorAssignDate { get; private set; }
+    public DateOnly? DoctorAssignDate { get; private set; }
     public RepairCard? RepairCard { get; set; }
     public int RepairCardId { get; private set; }
     private DiagnosisIndustrialPart() { }
@@ -78,7 +79,7 @@ public class DiagnosisIndustrialPart : AuditableEntity<int>
         }
         
         DoctorSectionRoomId = doctorSectionRoomId;
-        DoctorAssignDate = DateTime.UtcNow;
+        DoctorAssignDate = AlatrafClinicConstants.TodayDate;
         return Result.Updated;
     }
 }

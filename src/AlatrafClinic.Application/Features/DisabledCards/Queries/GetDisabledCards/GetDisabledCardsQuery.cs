@@ -11,8 +11,8 @@ public sealed record GetDisabledCardsQuery(
     string? SearchTerm = null,
     bool? IsExpired = null,
     int? PatientId = null,
-    DateTime? ExpirationFrom = null,
-    DateTime? ExpirationTo = null,
+    DateOnly? ExpirationFrom = null,
+    DateOnly? ExpirationTo = null,
     string SortColumn = "ExpirationDate",
     string SortDirection = "desc"
 ) : ICachedQuery<Result<PaginatedList<DisabledCardDto>>>

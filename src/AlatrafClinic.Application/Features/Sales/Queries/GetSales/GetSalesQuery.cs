@@ -13,8 +13,8 @@ public sealed record GetSalesQuery(
     SaleStatus? Status = null,
     int? DiagnosisId = null,
     int? PatientId = null,
-    DateTime? FromDate = null,
-    DateTime? ToDate = null,
+    DateOnly? FromDate = null,
+    DateOnly? ToDate = null,
     string SortColumn = "SaleDate",
     string SortDirection = "desc"
 ) : ICachedQuery<Result<PaginatedList<SaleDto>>>

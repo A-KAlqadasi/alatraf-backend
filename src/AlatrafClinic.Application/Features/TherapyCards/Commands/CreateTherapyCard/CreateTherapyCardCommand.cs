@@ -9,12 +9,12 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapy
 public sealed record CreateTherapyCardCommand(
     int TicketId,
     string DiagnosisText,
-    DateTime InjuryDate,
+    DateOnly InjuryDate,
     List<int> InjuryReasons,
     List<int> InjurySides,
     List<int> InjuryTypes,
-    DateTime ProgramStartDate,
-    DateTime ProgramEndDate,
+    DateOnly ProgramStartDate,
+    DateOnly ProgramEndDate,
     TherapyCardType TherapyCardType,
     List<CreateTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null
