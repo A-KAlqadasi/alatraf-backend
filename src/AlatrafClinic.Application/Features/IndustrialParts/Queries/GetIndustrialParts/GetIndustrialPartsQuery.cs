@@ -7,14 +7,9 @@ using AlatrafClinic.Domain.Common.Results;
 namespace AlatrafClinic.Application.Features.IndustrialParts.Queries.GetIndustrialParts;
 
 public sealed record GetIndustrialPartsQuery(
-    int Page,
-    int PageSize,
-    string? SearchTerm = null
-) : ICachedQuery<Result<PaginatedList<IndustrialPartDto>>>
+) : ICachedQuery<Result<List<IndustrialPartDto>>>
 {
-    public string CacheKey =>
-        $"industrialparts-dropdown:p={Page}:ps={PageSize}" +
-        $":q={(SearchTerm ?? "-")}";
+    public string CacheKey => "industrial-parts";
 
     public string[] Tags => ["industrial-part"];
 

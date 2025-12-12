@@ -27,9 +27,9 @@ public sealed class MedicalProgramsController(ISender sender) : ApiController
     [EndpointDescription("Supports filtering medical programs by search term. Sorting is by name.")]
     [EndpointName("GetMedicalPrograms")]
     [ApiVersion("1.0")]
-    public async Task<IActionResult> Get(string? searchTerm, [FromQuery] PageRequest pageRequest, CancellationToken ct)
+    public async Task<IActionResult> Get(CancellationToken ct)
     {
-        var result = await sender.Send(new GetMedicalProgramsQuery(pageRequest.Page, pageRequest.PageSize, searchTerm), ct);
+        var result = await sender.Send(new GetMedicalProgramsQuery(), ct);
         return result.Match(
             response => Ok(response),
             Problem
