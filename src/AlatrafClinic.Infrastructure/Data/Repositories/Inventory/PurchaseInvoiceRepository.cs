@@ -1,6 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories.Inventory;
 using AlatrafClinic.Application.Features.Inventory.Purchases.Dtos;
 using AlatrafClinic.Domain.Inventory.Purchases;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Infrastructure.Data.Repositories.Inventory;

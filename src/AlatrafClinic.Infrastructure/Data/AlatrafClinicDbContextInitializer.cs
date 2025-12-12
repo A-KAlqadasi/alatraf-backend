@@ -49,7 +49,7 @@ namespace AlatrafClinic.Infrastructure.Data;
 
 public static class AlatrafClinicDbContextInitializer
 {
-    private static readonly DateTimeOffset  SeedTimestamp =
+    private static readonly DateTimeOffset SeedTimestamp =
        new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
     private static readonly DateTime SeedDate = new DateTime(2025, 1, 1);

@@ -16,7 +16,7 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
     private IDoctorRepository? _doctor;
     public IDoctorRepository Doctors => _doctor ??= new DoctorRepository(_dbContext);
 
-    private IDiagnosisRepository? _diagnosis ;
+    private IDiagnosisRepository? _diagnosis;
     public IDiagnosisRepository Diagnoses => _diagnosis ??= new DiagnosisRepository(_dbContext);
 
     private ITicketRepository? _ticket;
@@ -52,7 +52,7 @@ public class UnitOfWork(AlatrafClinicDbContext dbContext) : IUnitOfWork
     private IIndustrialPartRepository? _industrialPart;
     public IIndustrialPartRepository IndustrialParts => _industrialPart ??= new IndustrialPartRepository(_dbContext);
 
-    
+
     private IItemRepository? _item;
     public IItemRepository Items => _item ??= new Inventory.ItemRepository(_dbContext);
 

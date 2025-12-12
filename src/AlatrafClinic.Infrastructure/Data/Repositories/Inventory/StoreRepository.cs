@@ -1,6 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories.Inventory;
 using AlatrafClinic.Application.Features.Inventory.Stores.Dtos;
 using AlatrafClinic.Domain.Inventory.Stores;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Infrastructure.Data.Repositories.Inventory;
@@ -25,6 +26,8 @@ public class StoreRepository : GenericRepository<Store, int>, IStoreRepository
         return await dbContext.StoreItemUnits
             .AsNoTracking()
             .Where(siu => siu.StoreId == storeId)
+            .Include(siu => siu.ItemUnit)
+                .ThenInclude(iu => iu.Item)
             .Select(siu => new StoreItemUnitDto
             {
                 StoreItemUnitId = siu.Id,
