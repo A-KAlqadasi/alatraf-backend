@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AlatrafClinic.Api.Requests.Doctors;
 
-public class CreateDoctorRequest
+public class UpdateDoctortRequest
 {
     [Required(ErrorMessage = "Fullname is required.")]
     public string Fullname { get; set; } = default!;
