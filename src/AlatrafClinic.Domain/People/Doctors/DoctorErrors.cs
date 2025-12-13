@@ -46,5 +46,6 @@ public static class DoctorErrors
     public static readonly Error DoctorHasSessionsToday = Error.Validation(
         code: "Doctor.DoctorHasSessionsToday",
         description: "The doctor has sessions scheduled for today and cannot be unassigned from the section/room.");
+    public static readonly Error NotFound = Error.NotFound("Doctor.NotFound", "Doctor is not found");
 
 }

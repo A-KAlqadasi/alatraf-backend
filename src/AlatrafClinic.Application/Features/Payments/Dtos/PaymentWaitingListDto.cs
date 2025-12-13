@@ -1,3 +1,5 @@
+using AlatrafClinic.Domain.Payments;
+
 namespace AlatrafClinic.Application.Features.Payments.Dtos;
 
 public class PaymentWaitingListDto
@@ -8,6 +10,6 @@ public class PaymentWaitingListDto
     public string? Gender {get; set; }
     public int Age { get; set; }
     public string? Phone { get; set; }
-    public string PaymentReference { get; set; } = null!;
+    public PaymentReference PaymentReference { get; set; } 
     
 }

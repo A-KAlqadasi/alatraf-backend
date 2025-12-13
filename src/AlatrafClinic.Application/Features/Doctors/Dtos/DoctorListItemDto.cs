@@ -9,10 +9,10 @@ public sealed class DoctorListItemDto
   public int DepartmentId { get; set; }
   public string DepartmentName { get; set; } = string.Empty;
 
-  public int? CurrentSectionId { get; set; }
-  public string? CurrentSectionName { get; set; }
-  public int? CurrentRoomId { get; set; }
-  public string? CurrentRoomName { get; set; }
+  public int? SectionId { get; set; }
+  public string? SectionName { get; set; }
+  public int? RoomId { get; set; }
+  public string? RoomName { get; set; }
 
   public DateOnly? AssignDate { get; set; }
   public bool IsActiveAssignment { get; set; }

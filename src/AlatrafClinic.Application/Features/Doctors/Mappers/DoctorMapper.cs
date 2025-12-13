@@ -16,7 +16,6 @@ public static class DoctorMapper
         return new DoctorDto
         {
             DoctorId = entity.Id,
-            PersonId = entity.PersonId,
             PersonDto = entity.Person!.ToDto(),
             DepartmentId = entity.DepartmentId,
             Specialization = entity.Specialization
