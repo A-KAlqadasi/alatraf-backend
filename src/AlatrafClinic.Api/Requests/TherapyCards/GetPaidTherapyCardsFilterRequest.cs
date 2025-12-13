@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AlatrafClinic.Api.Requests.TherapyCards;
 
-public sealed class GetTherapyDiagnosesRequest
+public sealed class GetPaidTherapyCardsFilterRequest
 {
     [StringLength(100)]
     public string? SearchTerm { get; set; }

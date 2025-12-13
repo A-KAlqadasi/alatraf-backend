@@ -11,23 +11,22 @@ using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 
-namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardByIdWithSessions;
+namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetPaidTherapyCards;
 
-public sealed class GetTherapyDiagnosesQueryHandler
-    : IRequestHandler<GetTherapyDiagnosesQuery, Result<PaginatedList<TherapyCardDiagnosisDto>>>
+public sealed class GetPaidTherapyCardsQueryHandler
+    : IRequestHandler<GetPaidTherapyCardsQuery, Result<PaginatedList<TherapyCardDiagnosisDto>>>
 {
     private readonly IAppDbContext _context;
 
-    public GetTherapyDiagnosesQueryHandler(IAppDbContext context)
+    public GetPaidTherapyCardsQueryHandler(IAppDbContext context)
     {
         _context = context;
     }
 
     public async Task<Result<PaginatedList<TherapyCardDiagnosisDto>>> Handle(
-        GetTherapyDiagnosesQuery query,
+        GetPaidTherapyCardsQuery query,
         CancellationToken ct)
     {
-        // Base query + includes (readable, consistent with your production style)
         IQueryable<Diagnosis> diagnosesQuery = _context.Diagnoses
             .Include(d => d.Patient)
                 .ThenInclude(p => p.Person)
@@ -40,7 +39,6 @@ public sealed class GetTherapyDiagnosesQueryHandler
                 .ThenInclude(dp => dp.MedicalProgram)
             .AsNoTracking();
 
-        // Apply filters, search, sorting
         diagnosesQuery = ApplyFilters(diagnosesQuery);
         diagnosesQuery = ApplySearch(diagnosesQuery, query);
         diagnosesQuery = ApplySorting(diagnosesQuery, query);
@@ -51,13 +49,11 @@ public sealed class GetTherapyDiagnosesQueryHandler
         var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
         var skip = (page - 1) * pageSize;
 
-        // Paging
         var diagnoses = await diagnosesQuery
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(ct);
 
-        // Mapping
         var items = diagnoses
             .Select(MapToDto)
             .ToList();
@@ -72,39 +68,32 @@ public sealed class GetTherapyDiagnosesQueryHandler
         };
     }
 
-    // ---------------- FILTERS ----------------
     private static IQueryable<Diagnosis> ApplyFilters(IQueryable<Diagnosis> query)
     {
-        // Therapy diagnoses only
         query = query.Where(d => d.DiagnoType == DiagnosisType.Therapy);
 
-        // Must have a TherapyCard
         query = query.Where(d => d.TherapyCard != null);
 
-        // Must be paid: completed + fully paid + payment date exists
         query = query.Where(d =>
             d.Payments.Any(p => p.IsCompleted && p.PaymentDate != null));
 
         return query;
     }
 
-    // ---------------- SEARCH ----------------
     private static IQueryable<Diagnosis> ApplySearch(
         IQueryable<Diagnosis> query,
-        GetTherapyDiagnosesQuery q)
+        GetPaidTherapyCardsQuery q)
     {
         if (string.IsNullOrWhiteSpace(q.SearchTerm))
             return query;
 
         var term = q.SearchTerm.Trim();
 
-        // If number => search by TherapyCardId
         if (int.TryParse(term, out var therapyCardId))
         {
             return query.Where(d => d.TherapyCard!.Id == therapyCardId);
         }
 
-        // Else => search by PatientName (LIKE)
         var pattern = $"%{term.ToLower()}%";
 
         return query.Where(d =>
@@ -113,16 +102,13 @@ public sealed class GetTherapyDiagnosesQueryHandler
             EF.Functions.Like(d.Patient.Person.FullName.ToLower(), pattern));
     }
 
-    // ---------------- SORTING ----------------
     private static IQueryable<Diagnosis> ApplySorting(
         IQueryable<Diagnosis> query,
-        GetTherapyDiagnosesQuery q)
+        GetPaidTherapyCardsQuery q)
     {
         var col = q.SortColumn?.Trim().ToLowerInvariant() ?? "paymentdate";
         var isDesc = string.Equals(q.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
 
-        // Order by earliest fully-paid payment date per diagnosis
-        // (This matches your business requirement precisely)
         return col switch
         {
             "paymentdate" => isDesc
@@ -147,7 +133,6 @@ public sealed class GetTherapyDiagnosesQueryHandler
         };
     }
 
-    // ---------------- MAPPING ----------------
     private static TherapyCardDiagnosisDto MapToDto(Diagnosis d)
     {
         var person = d.Patient.Person;
@@ -158,7 +143,7 @@ public sealed class GetTherapyDiagnosesQueryHandler
             PatientId = d.PatientId,
             PatientName = person.FullName,
             Gender = person.Gender ? "Male" : "Female",
-            Age = CalculateAge(person.Birthdate, AlatrafClinicConstants.TodayDate),
+            Age = UtilityService.CalculateAge(person.Birthdate, AlatrafClinicConstants.TodayDate),
 
             DiagnosisId = d.Id,
             DiagnosisText = d.DiagnosisText,
@@ -195,12 +180,5 @@ public sealed class GetTherapyDiagnosesQueryHandler
             CardStatus = d.TherapyCard.CardStatus.ToArabicTherapyCardStatus(),
             Notes = d.TherapyCard.Notes
         };
-    }
-
-    private static int CalculateAge(DateOnly birthdate, DateOnly today)
-    {
-        var age = today.Year - birthdate.Year;
-        if (birthdate > today.AddYears(-age)) age--;
-        return age;
     }
 }

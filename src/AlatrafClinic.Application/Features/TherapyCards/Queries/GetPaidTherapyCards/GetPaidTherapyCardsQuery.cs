@@ -4,9 +4,9 @@ using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
 
-namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardByIdWithSessions;
+namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetPaidTherapyCards;
 
-public sealed record GetTherapyDiagnosesQuery(
+public sealed record GetPaidTherapyCardsQuery(
     int Page,
     int PageSize,
     string? SearchTerm = null,
