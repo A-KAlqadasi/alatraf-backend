@@ -30,6 +30,9 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
     {
         var therapyCard = await _context.TherapyCards
         .Include(x => x.DiagnosisPrograms)
+            .ThenInclude(x=> x.MedicalProgram)
+        .Include(x => x.Sessions)
+            .ThenInclude(x=> x.SessionPrograms)
         .FirstOrDefaultAsync(x=> x.Id == command.TherapyCardId, ct);
 
         if (therapyCard is null)
@@ -48,6 +51,10 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
         foreach (var sessionProgram in command.SessionProgramsData)
         {
             var doctorSectionRoom = await _context.DoctorSectionRooms
+                .Include(x => x.Doctor)
+                    .ThenInclude(x=> x.Person)
+                .Include(x => x.Section)
+                .Include(x => x.Room)
                 .FirstOrDefaultAsync(x => x.DoctorId == sessionProgram.DocotorId 
                                           && x.SectionId == sessionProgram.SectionId 
                                           && x.RoomId == sessionProgram.RoomId, ct);
@@ -83,8 +90,8 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
 
 
         _logger.LogInformation("TherapyCard {TherapyCardId} updated with new session {Number}.", therapyCard.Id, session.Value.Number);
+        var s = session.Value;
         
-       
-        return session.Value.ToDto();
+        return s.ToDto();
     }
 }

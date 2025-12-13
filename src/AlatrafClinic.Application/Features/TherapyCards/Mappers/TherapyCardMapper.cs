@@ -24,7 +24,7 @@ public static class TherapyCardMapper
             TherapyCardType = entity.Type.ToArabicTherapyCardType(),
             CardStatus = entity.CardStatus.ToArabicTherapyCardStatus(),
             Notes = entity.Notes,
-            Programs = entity.DiagnosisPrograms?.ToDtos(),
+            Programs = entity.Diagnosis?.DiagnosisPrograms?.ToDtos(),
             Sessions = entity.Sessions?.ToDtos()
         };
     }
@@ -65,9 +65,9 @@ public static class TherapyCardMapper
     public static SessionProgramDto ToDto(this SessionProgram program)
     {
         if (program is null) return new SessionProgramDto();
-        string roomSectionName = program.DoctorSectionRoom?.Section.Name + " - " + program.DoctorSectionRoom?.Room?.Name.ToString();
-
-        roomSectionName = roomSectionName.Trim(new char[] { ' ', '-' });
+        var sectionName = program.DoctorSectionRoom?.Section?.Name ?? string.Empty;
+        var roomName = program.DoctorSectionRoom?.Room?.Name ?? string.Empty;
+        string roomSectionName = ($"{sectionName} - {roomName}").Trim(' ', '-');
         
         return new SessionProgramDto
         {

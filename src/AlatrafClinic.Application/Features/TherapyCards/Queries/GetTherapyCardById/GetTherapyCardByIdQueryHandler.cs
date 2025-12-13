@@ -36,6 +36,9 @@ public class GetTherapyCardByIdQueryHandler : IRequestHandler<GetTherapyCardById
                 .ThenInclude(it=> it.InjuryTypes)
             .Include(tc => tc.DiagnosisPrograms)
                 .ThenInclude(d=> d.MedicalProgram)
+            .Include(tx=> tx.Diagnosis)
+                .ThenInclude(tc => tc.DiagnosisPrograms)
+                    .ThenInclude(sp => sp.MedicalProgram)  
             .FirstOrDefaultAsync(tc => tc.Id == query.TherapyCardId, ct);
 
         if(therpayCard is null)
