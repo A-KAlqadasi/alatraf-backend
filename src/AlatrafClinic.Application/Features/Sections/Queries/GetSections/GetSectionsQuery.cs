@@ -9,9 +9,6 @@ public sealed record GetSectionsQuery(
     int Page,
     int PageSize,
     string? SearchTerm = null,
-    int? DepartmentId = null,
-    int? DoctorId = null,
-    int? RoomId = null,
     string SortColumn = "name",
     string SortDirection = "asc"
 ) : ICachedQuery<Result<PaginatedList<SectionDto>>>
@@ -19,9 +16,6 @@ public sealed record GetSectionsQuery(
     public string CacheKey =>
         $"sections:p={Page}:ps={PageSize}" +
         $":q={(SearchTerm ?? "-")}" +
-        $":dep={(DepartmentId?.ToString() ?? "-")}" +
-        $":doc={(DoctorId?.ToString() ?? "-")}" +
-        $":room={(RoomId?.ToString() ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
     public string[] Tags => ["section"];

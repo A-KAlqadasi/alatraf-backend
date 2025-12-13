@@ -11,7 +11,7 @@ public class Section :AuditableEntity<int>
 {
     public string Name { get; private set; } = default!;
     public int DepartmentId { get; private set; }
-    public Department Department { get; private set; } = default!;
+    public Department Department { get; set; } = default!;
     private readonly List<Room> _rooms = new();
     public IReadOnlyCollection<Room> Rooms => _rooms.AsReadOnly();
     private readonly List<DoctorSectionRoom> _doctorAssignments = new();

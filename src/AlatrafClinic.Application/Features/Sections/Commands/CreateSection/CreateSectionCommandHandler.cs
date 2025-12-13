@@ -10,6 +10,7 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -17,24 +18,23 @@ using Microsoft.Extensions.Logging;
 namespace AlatrafClinic.Application.Features.Sections.Commands.CreateSection;
 
 public sealed class CreateSectionCommandHandler(
-    IUnitOfWork unitOfWork,
-    HybridCache cache,
-    ILogger<CreateSectionCommandHandler> logger
+    IAppDbContext _context,
+    HybridCache _cache,
+    ILogger<CreateSectionCommandHandler> _logger
 ) : IRequestHandler<CreateSectionCommand, Result<SectionDto>>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly HybridCache _cache = cache;
-    private readonly ILogger<CreateSectionCommandHandler> _logger = logger;
+
 
     public async Task<Result<SectionDto>> Handle(CreateSectionCommand command, CancellationToken ct)
     {
-        var department = await _unitOfWork.Departments.GetByIdAsync(command.DepartmentId, ct);
+        var department = await _context.Departments.FirstOrDefaultAsync(d=> d.Id == command.DepartmentId, ct);
+
         if (department is null)
         {
             _logger.LogWarning("Department {DepartmentId} not found when creating sections.", command.DepartmentId);
             return ApplicationErrors.DepartmentNotFound;
         }
-        var isExists = await _unitOfWork.Departments.IsExistAsync(command.Name, ct);
+        var isExists = await _context.Sections.AnyAsync(s=> s.Name == command.Name, ct);
         if (isExists)
         {
             _logger.LogWarning("Section with name {Name} already exists.", command.Name);
@@ -49,8 +49,8 @@ public sealed class CreateSectionCommandHandler(
         var section = createResult.Value;
 
 
-        await _unitOfWork.Sections.AddAsync(section, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.Sections.AddAsync(section, ct);
+        await _context.SaveChangesAsync(ct);
 
         _logger.LogInformation("Section {SectionName} created successfully for Department {DepartmentId}.",
             section.Name, command.DepartmentId);

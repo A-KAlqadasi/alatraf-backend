@@ -70,7 +70,7 @@ public static class PaymentMapper
             Age = UtilityService.CalculateAge(birthdate, AlatrafClinicConstants.TodayDate),
             Gender = UtilityService.AgeToArabicString(entity.Diagnosis?.Patient.Person.Gender ?? true),
             Phone = entity.Diagnosis?.Patient.Person.Phone,
-            PaymentReference = entity.PaymentReference.ToArabicPaymentReference()
+            PaymentReference = entity.PaymentReference
             
         };
     }
