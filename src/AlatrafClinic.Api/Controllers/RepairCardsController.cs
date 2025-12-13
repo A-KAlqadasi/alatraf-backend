@@ -8,6 +8,7 @@ using AlatrafClinic.Application.Features.RepairCards.Commands.CreateDeliveryTime
 using AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCard;
 using AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCard;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
+using AlatrafClinic.Application.Features.RepairCards.Queries.GetPaidRepairCards;
 using AlatrafClinic.Application.Features.RepairCards.Queries.GetRepairCardById;
 using AlatrafClinic.Application.Features.RepairCards.Queries.GetRepairCards;
 
@@ -222,6 +223,25 @@ public sealed class RepairCardsController(ISender sender) : ApiController
         );
     }
     
+    [HttpGet("paid")]
+    [ProducesResponseType(typeof(PaginatedList<RepairCardDiagnosisDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves a paginated list of paid repair diagnoses.")]
+    [EndpointDescription("Returns paid repair/limbs diagnoses that have a repair card. Supports searching by patient name or repair card ID. Sorting is customizable and defaults to PaymentDate asc.")]
+    [EndpointName("GetPaidRepairCards")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> GetPaidRepairCards([FromQuery] GetPaidRepairCardsFilterRequest request, [FromQuery] PageRequest pageRequest, CancellationToken ct = default)
+    {
+        var query = new GetPaidRepairCardsQuery(
+            Page: pageRequest.Page,
+            PageSize: pageRequest.PageSize,
+            SearchTerm: request.SearchTerm,
+            SortColumn: request.SortColumn,
+            SortDirection: request.SortDirection
+        );
 
-
+        var result = await sender.Send(query, ct);
+        return result.Match(response => Ok(response), Problem);
+    }
 }

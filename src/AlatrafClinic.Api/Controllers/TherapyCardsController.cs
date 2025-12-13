@@ -6,8 +6,8 @@ using AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapySess
 using AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
+using AlatrafClinic.Application.Features.TherapyCards.Queries.GetPaidTherapyCards;
 using AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardById;
-using AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardByIdWithSessions;
 using AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCards;
 using AlatrafClinic.Application.Features.TherapyCards.Queries.GetTherapyCardSessions;
 
@@ -213,14 +213,14 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
         "Supports searching by patient name or therapy card ID. " +
         "Results are ordered by payment date and support pagination."
     )]
-    [EndpointName("GetPaidTherapyDiagnoses")]
+    [EndpointName("GetPaidTherapyCards")]
     [ApiVersion("1.0")]
-    public async Task<IActionResult> GetPaidTherapyDiagnoses(
-        [FromQuery] GetTherapyDiagnosesRequest request,
+    public async Task<IActionResult> GetPaidTherapyCards(
+        [FromQuery] GetPaidTherapyCardsFilterRequest request,
         [FromQuery] PageRequest pageRequest,
         CancellationToken ct = default)
     {
-        var query = new GetTherapyDiagnosesQuery(
+        var query = new GetPaidTherapyCardsQuery(
             Page: pageRequest.Page,
             PageSize: pageRequest.PageSize,
             SearchTerm: request.SearchTerm,
@@ -257,9 +257,4 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
             Problem
         );
     }
-
-
-
-
-
 }
