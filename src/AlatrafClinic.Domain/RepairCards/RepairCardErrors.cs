@@ -27,5 +27,6 @@ public static class RepairCardErrors
     public static readonly Error RepairCardNotFound = Error.NotFound("RepairCard.NotFound", "Repair card not found.");
     public static readonly Error InvalidStatus = Error.Validation("RepairCard.InvalidStatus", "Invalid status.");
     public static readonly Error PaymentNotFound = Error.NotFound("RepairCard.PaymentNotFound", "Payment for the repair card not found.");
+    public static readonly Error NoRepairCardsForPaitent = Error.NotFound("RepairCard.NoRepairCardsForPaitent", "No repair cards found for the patient.");
 
 }
