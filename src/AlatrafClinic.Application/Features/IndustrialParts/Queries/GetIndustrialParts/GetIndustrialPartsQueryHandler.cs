@@ -23,7 +23,10 @@ public sealed class GetIndustrialPartsQueryHandler
         GetIndustrialPartsQuery query,
         CancellationToken ct)
     {
-        var parts = await _context.IndustrialParts.ToListAsync(ct);
+        var parts = await _context.IndustrialParts
+        .Include(i=> i.IndustrialPartUnits)
+            .ThenInclude(i=> i.Unit)
+        .ToListAsync(ct);
 
         return parts.ToDtos();
     }

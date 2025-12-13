@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 
@@ -35,7 +34,7 @@ public class PayPaymentCommandHandler : IRequestHandler<PayPaymentCommand, Resul
             _logger.LogWarning("Payment with Id {PaymentId} not found", command.PaymentId);
             return PaymentErrors.PaymentNotFound;
         }
-            
+
 
         var handler = _handlers.FirstOrDefault(h => h.Kind == command.AccountKind);
         if (handler == null)
@@ -61,7 +60,7 @@ public class PayPaymentCommandHandler : IRequestHandler<PayPaymentCommand, Resul
         {
             _logger.LogWarning("Error handling payment type for Payment Id {PaymentId}: {Errors}", command.PaymentId, result.Errors);
             return result.Errors;
-        } 
+        }
 
         await _context.SaveChangesAsync(ct);
         _logger.LogInformation("Payment with Id {PaymentId} paid successfully", command.PaymentId);

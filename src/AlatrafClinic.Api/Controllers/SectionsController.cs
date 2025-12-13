@@ -31,7 +31,7 @@ public sealed class SectionsController(ISender sender) : ApiController
           Problem);
     }
 
-    [HttpGet("{sectionId:int}/rooms/{roomId:int}/doctors", Name = "GetDoctorsBySectionRoom")]
+    [HttpGet("{sectionId:int}/rooms/{roomId}/doctors", Name = "GetDoctorsBySectionRoom")]
     [ProducesResponseType(typeof(List<GetDoctorDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

@@ -8,4 +8,8 @@ public static class UtilityService
         if (birthdate > today.AddYears(-age)) age--;
         return age;
     }
+    public static string AgeToArabicString(bool age)
+    {
+        return age ? "ذكر" : "أنثى";
+    }
 }
