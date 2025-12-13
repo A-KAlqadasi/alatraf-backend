@@ -8,6 +8,5 @@ public class SectionDto
     public string Name { get; set; } = string.Empty;
     public int DepartmentId { get; set; }
     public string DepartmentName { get; set; } = string.Empty;
-    public List<RoomDto>? Rooms { get; set; }
-    public List<DoctorDto> Doctors { get; set; } = new();
+    public int? RoomsCount { get; set; }
 }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AlatrafClinic.Api.Requests.Sections;
 
-public sealed class CreateSectionRequest
+public sealed class UpdateSectionRequest
 {
     [Range(1,int.MaxValue, ErrorMessage = "Department Id must be greater than 0")]
     [Required(ErrorMessage = "Department Id is required")]
