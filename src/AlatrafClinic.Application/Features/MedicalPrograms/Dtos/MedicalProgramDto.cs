@@ -6,4 +6,5 @@ public class MedicalProgramDto
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
     public int? SectionId { get; set; }
+    public string? SectionName { get; set; }
 }

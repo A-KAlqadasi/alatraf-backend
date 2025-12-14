@@ -12,7 +12,8 @@ public static class MedicalProgramMapper
             Id = medicalProgram.Id,
             Name = medicalProgram.Name,
             Description = medicalProgram.Description,
-            SectionId = medicalProgram.SectionId
+            SectionId = medicalProgram.SectionId,
+            SectionName = medicalProgram.Section?.Name
         };
     }
 

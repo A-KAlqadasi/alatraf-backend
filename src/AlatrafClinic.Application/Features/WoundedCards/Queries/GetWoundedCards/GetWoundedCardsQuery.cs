@@ -31,4 +31,3 @@ public sealed record GetWoundedCardsQuery(
 
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }
-

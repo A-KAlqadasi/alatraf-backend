@@ -1,6 +1,5 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 
 namespace AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
