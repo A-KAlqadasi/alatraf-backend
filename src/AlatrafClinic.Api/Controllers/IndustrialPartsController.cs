@@ -1,10 +1,13 @@
+using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.IndustrialParts;
+using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.IndustrialParts.Commands.CreateIndustrialPart;
 using AlatrafClinic.Application.Features.IndustrialParts.Commands.DeleteIndustrialPart;
 using AlatrafClinic.Application.Features.IndustrialParts.Commands.UpdateIndustrialPart;
 using AlatrafClinic.Application.Features.IndustrialParts.Dtos;
 using AlatrafClinic.Application.Features.IndustrialParts.Queries.GetIndustrialPartById;
 using AlatrafClinic.Application.Features.IndustrialParts.Queries.GetIndustrialParts;
+using AlatrafClinic.Application.Features.IndustrialParts.Queries.GetIndustrialPartsWithFilters;
 
 using Asp.Versioning;
 
@@ -37,6 +40,36 @@ public sealed class IndustrialPartsController(ISender sender) : ApiController
             Problem
         );
     }
+
+    [HttpGet("with-filters")]
+    [ProducesResponseType(typeof(PaginatedList<IndustrialPartDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves a paginated list of industrial parts.")]
+    [EndpointDescription("Supports pagination and searching by either part name or part ID (when the search term is numeric). Sorting is customizable.")]
+    [EndpointName("GetIndustrialPartsWithFilters")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> Get(
+        [FromQuery] IndustrialPartFilterRequest filter,
+        [FromQuery] PageRequest pageRequest,
+        CancellationToken ct = default)
+    {
+        var query = new GetIndustrialPartsWithFiltersQuery(
+            pageRequest.Page,
+            pageRequest.PageSize,
+            filter.SearchTerm,
+            filter.SortColumn,
+            filter.SortDirection
+        );
+
+        var result = await sender.Send(query, ct);
+
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
+    }
+
 
     [HttpGet("{industrialPartId:int}", Name = "GetIndustrialPartById")]
     [ProducesResponseType(typeof(IndustrialPartDto), StatusCodes.Status200OK)]

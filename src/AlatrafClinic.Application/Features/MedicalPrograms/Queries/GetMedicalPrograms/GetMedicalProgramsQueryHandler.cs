@@ -23,7 +23,7 @@ public class GetMedicalProgramsQueryHandler
         GetMedicalProgramsQuery query,
         CancellationToken ct)
     {
-        var programs = await _context.MedicalPrograms.ToListAsync(ct);
+        var programs = await _context.MedicalPrograms.Include(m=> m.Section).ToListAsync(ct);
 
         return programs.ToDtos();
     }

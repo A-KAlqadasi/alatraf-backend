@@ -27,13 +27,11 @@ public sealed class GetDisabledCardsQueryHandler
         GetDisabledCardsQuery query,
         CancellationToken ct)
     {
-        // Base query + includes
         IQueryable<DisabledCard> cardsQuery = _context.DisabledCards
             .Include(dc => dc.Patient)
                 .ThenInclude(p => p.Person)
             .AsNoTracking();
 
-        // Apply filters, search, sorting
         cardsQuery = ApplyFilters(cardsQuery, query);
         cardsQuery = ApplySearch(cardsQuery, query);
         cardsQuery = ApplySorting(cardsQuery, query);
@@ -50,7 +48,6 @@ public sealed class GetDisabledCardsQueryHandler
             .Take(pageSize)
             .ToListAsync(ct);
 
-        // Mapping – same as before (using your extension)
         var items = cards
             .Select(dc => dc.ToDto())
             .ToList();
@@ -65,12 +62,10 @@ public sealed class GetDisabledCardsQueryHandler
         };
     }
 
-    // ---------------- FILTERS ----------------
     private static IQueryable<DisabledCard> ApplyFilters(
         IQueryable<DisabledCard> query,
         GetDisabledCardsQuery q)
     {
-        // filter by "expired" using ExpirationDate vs today
         if (q.IsExpired.HasValue)
         {
             
@@ -105,7 +100,6 @@ public sealed class GetDisabledCardsQueryHandler
         return query;
     }
 
-    // ---------------- SEARCH ----------------
     private static IQueryable<DisabledCard> ApplySearch(
         IQueryable<DisabledCard> query,
         GetDisabledCardsQuery q)
@@ -122,7 +116,6 @@ public sealed class GetDisabledCardsQueryHandler
              EF.Functions.Like(dc.Patient.Person.FullName.ToLower(), pattern)));
     }
 
-    // ---------------- SORTING ----------------
     private static IQueryable<DisabledCard> ApplySorting(
         IQueryable<DisabledCard> query,
         GetDisabledCardsQuery q)

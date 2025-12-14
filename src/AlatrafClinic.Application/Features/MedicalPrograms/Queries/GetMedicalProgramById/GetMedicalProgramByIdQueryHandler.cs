@@ -24,7 +24,9 @@ public class GetMedicalProgramByIdQueryHandler : IRequestHandler<GetMedicalProgr
     }
     public async Task<Result<MedicalProgramDto>> Handle(GetMedicalProgramByIdQuery query, CancellationToken ct)
     {
-        var medicalProgram = await _context.MedicalPrograms.FirstOrDefaultAsync(mp => mp.Id == query.MedicalProgramId, ct);
+        var medicalProgram = await _context.MedicalPrograms
+        .Include(m=> m.Section)
+        .FirstOrDefaultAsync(mp => mp.Id == query.MedicalProgramId, ct);
         
         if (medicalProgram is null)
         {
