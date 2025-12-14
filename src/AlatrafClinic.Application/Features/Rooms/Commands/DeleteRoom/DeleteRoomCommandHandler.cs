@@ -1,37 +1,33 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 
 using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Rooms.Commands.DeleteRoom;
 
 public sealed class DeleteRoomCommandHandler(
-    IUnitOfWork unitOfWork,
-    ILogger<DeleteRoomCommandHandler> logger,
-    HybridCache cache
+    IAppDbContext _context,
+    ILogger<DeleteRoomCommandHandler> _logger,
+    HybridCache _cache
 ) : IRequestHandler<DeleteRoomCommand, Result<Deleted>>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly ILogger<DeleteRoomCommandHandler> _logger = logger;
-    private readonly HybridCache _cache = cache;
-
-    public async Task<Result<Deleted>> Handle(DeleteRoomCommand request, CancellationToken ct)
+    public async Task<Result<Deleted>> Handle(DeleteRoomCommand command, CancellationToken ct)
     {
-        var room = await _unitOfWork.Rooms.GetByIdAsync(request.RoomId, ct);
+        var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == command.RoomId, ct);
         if (room is null)
         {
-            _logger.LogError(" Room {RoomId} not found for deletion.", request.RoomId);
+            _logger.LogError(" Room {RoomId} not found for deletion.", command.RoomId);
             return ApplicationErrors.RoomNotFound;
         }
 
-        await _unitOfWork.Rooms.DeleteAsync(room, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.Rooms.Remove(room);
+        await _context.SaveChangesAsync(ct);
 
         _logger.LogInformation("Room {RoomId} deleted successfully.", room.Id);
 

@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Rooms.Dtos;
 using AlatrafClinic.Application.Features.Rooms.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -9,24 +8,21 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Rooms.Commands.CreateRoom;
 
 public sealed class CreateRoomCommandHandler(
-    IUnitOfWork unitOfWork,
-    ILogger<CreateRoomCommandHandler> logger,
-    HybridCache cache
+    IAppDbContext _context,
+    ILogger<CreateRoomCommandHandler> _logger,
+    HybridCache _cache
 ) : IRequestHandler<CreateRoomCommand, Result<RoomDto>>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly ILogger<CreateRoomCommandHandler> _logger = logger;
-    private readonly HybridCache _cacheService = cache;
-
     public async Task<Result<RoomDto>> Handle(CreateRoomCommand command, CancellationToken ct)
     {
-        var section = await _unitOfWork.Sections.GetByIdAsync(command.SectionId, ct);
+        var section = await _context.Sections.FirstOrDefaultAsync(s => s.Id == command.SectionId, ct);
         
         if (section is null)
         {
@@ -44,7 +40,10 @@ public sealed class CreateRoomCommandHandler(
         }
         var room = createRoom.Value;
 
-        var isRoomExists = await _unitOfWork.Sections.IsSectionHasRoomNameAsync(section.Id, command.Name, ct);
+        var isRoomExists = await _context.Sections
+            .Where(s => s.Id == command.SectionId)
+            .SelectMany(s => s.Rooms)
+            .AnyAsync(r => r.Name == command.Name, ct);
         if (isRoomExists)
         {
             _logger.LogError(" Room with name {RoomName} already exists in Section {SectionId}.",
@@ -53,13 +52,12 @@ public sealed class CreateRoomCommandHandler(
         }
 
 
-        
-        await _unitOfWork.Rooms.AddAsync(room, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.Rooms.AddAsync(room, ct);
+        await _context.SaveChangesAsync(ct);
 
         _logger.LogInformation(" Room created successfully for Section {SectionId}.",
              command.SectionId);
-        await _cacheService.RemoveByTagAsync("room", ct);
+        await _cache.RemoveByTagAsync("room", ct);
 
         return room.ToDto();
     }

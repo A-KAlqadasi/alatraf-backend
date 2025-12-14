@@ -1,7 +1,4 @@
-using AlatrafClinic.Application.Features;
-using AlatrafClinic.Application.Features.Doctors.Mappers;
 using AlatrafClinic.Application.Features.Rooms.Dtos;
-using AlatrafClinic.Application.Features.Rooms.Mappers;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
 
 namespace AlatrafClinic.Application.Features.Rooms.Mappers;
@@ -23,12 +20,6 @@ public static class RoomMapper
             SectionName     = section?.Name ?? string.Empty,
             DepartmentId    = section?.DepartmentId ?? 0,
             DepartmentName  = department?.Name ?? string.Empty,
-            Doctors         = room.DoctorAssignments
-                .Select(dsr => dsr.Doctor)
-                .Where(d => d != null)
-                .Distinct()
-                .Select(d => d.ToDto())
-                .ToList()
         };
     }
 
