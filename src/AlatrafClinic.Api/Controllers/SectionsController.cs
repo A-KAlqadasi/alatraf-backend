@@ -11,7 +11,6 @@ using AlatrafClinic.Application.Features.Sections.Commands.UpdateSection;
 using AlatrafClinic.Application.Features.Sections.Dtos;
 using AlatrafClinic.Application.Features.Sections.Queries.GetSectionById;
 using AlatrafClinic.Application.Features.Sections.Queries.GetSections;
-using AlatrafClinic.Domain.Departments.Sections;
 
 using Asp.Versioning;
 
@@ -73,7 +72,7 @@ public sealed class SectionsController(ISender sender) : ApiController
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(PaginatedList<Section>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedList<SectionDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Retrieves a paginated list of sections.")]
