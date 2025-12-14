@@ -18,6 +18,7 @@ public static class ItemMapper
             Units = item.ItemUnits.Select(u => new ItemUnitDto
             {
                 UnitId = u.UnitId,
+                Name=u.Unit.Name,
                 Price = u.Price,
                 ConversionFactor = u.ConversionFactor,
                 MinPriceToPay = u.MinPriceToPay,

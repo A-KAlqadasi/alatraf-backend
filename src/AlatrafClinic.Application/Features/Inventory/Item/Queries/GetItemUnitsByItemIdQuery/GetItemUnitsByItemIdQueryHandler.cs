@@ -4,11 +4,12 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Items.Queries.GetItemUnitsByItemIdQuery;
 
-public sealed class GetItemUnitsByItemIdQueryHandler 
+public sealed class GetItemUnitsByItemIdQueryHandler
     : IRequestHandler<GetItemUnitsByItemIdQuery, Result<List<ItemUnitDto>>>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -23,7 +24,7 @@ public sealed class GetItemUnitsByItemIdQueryHandler
     }
 
     public async Task<Result<List<ItemUnitDto>>> Handle(
-        GetItemUnitsByItemIdQuery request, 
+        GetItemUnitsByItemIdQuery request,
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("Fetching units for item with ID: {ItemId}", request.ItemId);
@@ -38,6 +39,7 @@ public sealed class GetItemUnitsByItemIdQueryHandler
         var units = item.ItemUnits.Select(u => new ItemUnitDto
         {
             UnitId = u.UnitId,
+            Name = u.Unit.Name,
             Price = u.Price,
             ConversionFactor = u.ConversionFactor,
             MinPriceToPay = u.MinPriceToPay,

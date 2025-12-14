@@ -17,7 +17,7 @@ public interface IIdentityService
     Task<string?> GetUserNameAsync(string userId);
     Task<bool> IsUserNameExistsAsync(string userName);
     Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId);
-    
+
     Task<Result<bool>> AddPermissionToRoleAsync(string roleName, string permissionName, CancellationToken ct = default);
     Task<Result<bool>> RemovePermissionFromRoleAsync(string roleName, string permissionName, CancellationToken ct = default);
 
@@ -30,7 +30,7 @@ public interface IIdentityService
     Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string oldPassword, string newPassword);
 
     public Task<IQueryable<UserDto>> GetUsersAsync();
-    
+
     public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive);
 
 }

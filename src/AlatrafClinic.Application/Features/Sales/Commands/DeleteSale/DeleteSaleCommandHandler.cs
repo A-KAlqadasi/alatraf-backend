@@ -7,21 +7,21 @@ using MediatR;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
-namespace AlatrafClinic.Application.Features.Sales.Commands.CancelSale;
+namespace AlatrafClinic.Application.Features.Sales.Commands.DeleteSale;
 
-public class CancelSaleCommandHandler : IRequestHandler<CancelSaleCommand, Result<Updated>>
+public class DeleteSaleCommandHandler : IRequestHandler<DeleteSaleCommand, Result<Updated>>
 {
-    private readonly ILogger<CancelSaleCommandHandler> _logger;
+    private readonly ILogger<DeleteSaleCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly HybridCache _cache;
 
-    public CancelSaleCommandHandler(ILogger<CancelSaleCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public DeleteSaleCommandHandler(ILogger<DeleteSaleCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _cache = cache;
     }
-    public async Task<Result<Updated>> Handle(CancelSaleCommand command, CancellationToken ct)
+    public async Task<Result<Updated>> Handle(DeleteSaleCommand command, CancellationToken ct)
     {
         var sale = await _unitOfWork.Sales.GetByIdAsync(command.SaleId, ct);
         if (sale is null)
@@ -35,7 +35,7 @@ public class CancelSaleCommandHandler : IRequestHandler<CancelSaleCommand, Resul
             _logger.LogError("Failed to cancel sale with ID {SaleId}. Error: {Error}", command.SaleId, result.TopError);
             return result;
         }
-        await _unitOfWork.Sales.UpdateAsync(sale, ct);
+        await _unitOfWork.Sales.DeleteAsync(sale, ct);
         await _unitOfWork.SaveChangesAsync(ct);
         return Result.Updated;
     }

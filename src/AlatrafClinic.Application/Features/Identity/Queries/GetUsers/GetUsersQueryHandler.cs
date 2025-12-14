@@ -6,6 +6,7 @@ using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 
 
@@ -34,7 +35,7 @@ public sealed class GetUsersQueryHandler
 
         usersQuery = ApplySorting(usersQuery, query.SortColumn, query.SortDirection);
 
-        var page     = query.Page     <= 0 ? 1  : query.Page;
+        var page = query.Page <= 0 ? 1 : query.Page;
         var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
 
         var count = await usersQuery.CountAsync(ct);
@@ -46,9 +47,9 @@ public sealed class GetUsersQueryHandler
 
         var result = new PaginatedList<UserDto>
         {
-            Items      = items,
+            Items = items,
             PageNumber = page,
-            PageSize   = pageSize,
+            PageSize = pageSize,
             TotalCount = count,
             TotalPages = (int)Math.Ceiling(count / (double)pageSize)
         };
