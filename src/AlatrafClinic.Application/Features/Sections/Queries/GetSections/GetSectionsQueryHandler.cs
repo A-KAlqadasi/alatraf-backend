@@ -35,8 +35,8 @@ public class GetSectionsQueryHandler
 
         var totalCount = await sectionsQuery.CountAsync(ct);
 
-        var page = query.Page <=0 ? 1 : query.Page;
-        var pageSize = query.PageSize <= 0 ? 10 : query.Page;
+        var page = query.Page < 1 ? 1 : query.Page;
+        var pageSize = query.PageSize < 1 ? 10 : query.PageSize;
         var skip = (page - 1) * pageSize;
 
         var sections = await sectionsQuery
