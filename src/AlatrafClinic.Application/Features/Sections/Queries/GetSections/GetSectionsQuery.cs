@@ -8,6 +8,7 @@ namespace AlatrafClinic.Application.Features.Sections.Queries.GetSections;
 public sealed record GetSectionsQuery(
     int Page,
     int PageSize,
+    int? DepartmentId = null,
     string? SearchTerm = null,
     string SortColumn = "name",
     string SortDirection = "asc"
@@ -15,6 +16,7 @@ public sealed record GetSectionsQuery(
 {
     public string CacheKey =>
         $"sections:p={Page}:ps={PageSize}" +
+        $"{(DepartmentId.HasValue ? $":d={DepartmentId.Value}" : string.Empty)}" +
         $":q={(SearchTerm ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 

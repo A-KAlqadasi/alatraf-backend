@@ -1,18 +1,18 @@
 using FluentValidation;
 
-namespace AlatrafClinic.Application.Features.Identity.Commands.AddPermissionToUser;
+namespace AlatrafClinic.Application.Features.Identity.Commands.AddPermissionsToUser;
 
-public sealed class AddPermissionToUserCommandValidator
-    : AbstractValidator<AddPermissionToUserCommand>
+public sealed class AddPermissionsToUserCommandValidator
+    : AbstractValidator<AddPermissionsToUserCommand>
 {
-    public AddPermissionToUserCommandValidator()
+    public AddPermissionsToUserCommandValidator()
     {
         RuleFor(x => x.UserId)
             .NotEmpty()
             .WithMessage("User id is required.")
             .MaximumLength(450);
 
-        RuleFor(x => x.PermissionName)
+        RuleForEach(x => x.PermissionNames)
             .NotEmpty()
             .WithMessage("Permission name is required.")
             .MaximumLength(200);
