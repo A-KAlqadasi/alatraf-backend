@@ -18,4 +18,5 @@ public static class SaleErrors
     public static readonly Error SaleNotFound = Error.NotFound("Sale.NotFound", "Sale not found.");
     public static readonly Error Readonly = Error.Conflict("Sale.Readonly", "Sale is read-only");
     public static readonly Error PaymentNotFound = Error.NotFound("Sale.PaymentNotFound", "Payment for this sale not found.");
+    public static readonly Error PaymentNotCompleted = Error.Validation("Sale.PaymentNotCompleted", "Payment for this sale is not completed.");
 }

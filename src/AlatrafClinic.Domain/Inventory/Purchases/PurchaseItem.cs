@@ -7,7 +7,7 @@ namespace AlatrafClinic.Domain.Inventory.Purchases;
 
 public class PurchaseItem : AuditableEntity<int>
 {
-   public int PurchaseInvoiceId { get; private set; }
+    public int PurchaseInvoiceId { get; private set; }
     public PurchaseInvoice PurchaseInvoice { get; private set; } = default!;
     public int StoreItemUnitId { get; private set; }
     public StoreItemUnit StoreItemUnit { get; private set; } = default!;
@@ -29,18 +29,21 @@ public class PurchaseItem : AuditableEntity<int>
         Notes = notes;
     }
 
-    public static Result<PurchaseItem> Create(int invoiceId, StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes = null)
+
+    public static Result<PurchaseItem> Create(
+    StoreItemUnit storeItemUnit,
+    decimal quantity,
+    decimal unitPrice,
+    string? notes = null)
     {
-        if (invoiceId <= 0)
-        {
-            return PurchaseItemErrors.PurchaseInvoiceIsRequired;
-        }
         if (storeItemUnit is null) return PurchaseItemErrors.InvalidItem;
         if (quantity <= 0) return PurchaseItemErrors.InvalidQuantity;
         if (unitPrice <= 0) return PurchaseItemErrors.InvalidUnitPrice;
 
-        return new PurchaseItem(invoiceId, storeItemUnit, quantity, unitPrice, notes);
+        return new PurchaseItem(0, storeItemUnit, quantity, unitPrice, notes);
     }
+
+    
 
     internal Result<Updated> Update(int invoiceId, StoreItemUnit storeItemUnit, decimal quantity, decimal unitPrice, string? notes)
     {

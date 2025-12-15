@@ -93,15 +93,14 @@ public class PurchaseInvoice : AuditableEntity<int>
             return Result.Updated;
         }
 
-        var created = PurchaseItem.Create(this.Id, storeItemUnit, quantity, unitPrice, notes);
+        var created = PurchaseItem.Create(storeItemUnit, quantity, unitPrice, notes);
         if (created.IsError) return created.Errors;
 
-        // Set back-reference
         var line = created.Value;
-
         line.AssignPurchaseInvoice(this);
-
         _items.Add(line);
+
+
         return Result.Updated;
     }
 
