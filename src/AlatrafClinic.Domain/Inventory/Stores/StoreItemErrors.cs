@@ -27,4 +27,15 @@ public static class StoreItemUnitErrors
 
     public static readonly Error CannotDelete =
         Error.Conflict("StoreItem.CannotDelete", "Store item cannot be deleted due to active references.");
+
+    public static readonly Error CannotAdjustStock =
+    Error.Conflict("StoreItem.CannotAdjustStock", "Stock adjustment cannot be performed for this item.");
+    public static readonly Error UnitIsRequired =
+    Error.Validation("StoreItem.UnitIsRequired", "Unit reference is required.");
+    public static readonly Error ItemUnitIsRequired =
+Error.Validation("StoreItem.ItemUnitIsRequired", "ItemUnit reference is required.");
+    public static readonly Error StoreItemUnitNotFound =
+Error.NotFound("StoreItem.StoreItemUnitNotFound", "Store item unit not found.");
+public static readonly Error ItemUnitNotFound =
+Error.NotFound("StoreItem.ItemUnitNotFound", "Item unit not found.");
 }

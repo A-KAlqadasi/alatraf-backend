@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    [Migration("20251212070848_ChangingDateTimeToDateOnly")]
-    partial class ChangingDateTimeToDateOnly
+    [Migration("20251212225812_updatesalesopration")]
+    partial class updatesalesopration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1151,6 +1151,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RelatedOrderId");
+
+                    b.HasIndex("RelatedSaleId");
 
                     b.HasIndex("StoreId");
 
@@ -2814,9 +2818,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("DiagnosisId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ExchangeOrderId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -2838,8 +2839,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("DiagnosisId")
                         .IsUnique();
-
-                    b.HasIndex("ExchangeOrderId");
 
                     b.ToTable("Sales", (string)null);
                 });
@@ -5329,6 +5328,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
                 {
+                    b.HasOne("AlatrafClinic.Domain.RepairCards.Orders.Order", null)
+                        .WithMany()
+                        .HasForeignKey("RelatedOrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AlatrafClinic.Domain.Sales.Sale", null)
+                        .WithMany()
+                        .HasForeignKey("RelatedSaleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("AlatrafClinic.Domain.Inventory.Stores.Store", "Store")
                         .WithMany()
                         .HasForeignKey("StoreId")
@@ -5628,13 +5637,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", "ExchangeOrder")
-                        .WithMany()
-                        .HasForeignKey("ExchangeOrderId");
-
                     b.Navigation("Diagnosis");
-
-                    b.Navigation("ExchangeOrder");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.SalesItems.SaleItem", b =>

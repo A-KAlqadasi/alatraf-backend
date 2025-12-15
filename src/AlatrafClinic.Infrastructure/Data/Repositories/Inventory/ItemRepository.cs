@@ -11,6 +11,11 @@ public class ItemRepository : GenericRepository<Item, int>, IItemRepository
     {
     }
 
+    public new async Task<IReadOnlyList<Item>> GetAllAsync(CancellationToken ct = default)
+    {
+        return await dbContext.Items.Include(x => x.ItemUnits).ThenInclude(d => d.Unit).Include(x => x.BaseUnit).ToListAsync(ct);
+    }
+
     public async Task<ItemUnit?> GetByIdAndUnitIdAsync(int id, int unitId, CancellationToken ct)
     {
         return await dbContext.ItemUnits
@@ -38,7 +43,7 @@ public class ItemRepository : GenericRepository<Item, int>, IItemRepository
     {
         return await dbContext.Items
             .AsQueryable()
-            .Include(i => i.ItemUnits)
+            .Include(i => i.ItemUnits).ThenInclude(u => u.Unit)
             .SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
     }
 
