@@ -6,6 +6,7 @@ using AlatrafClinic.Domain.People;
 using MediatR;
 using AlatrafClinic.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Errors;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Identity.Commands.UpdateUser;
 
@@ -13,13 +14,13 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
 {
     private readonly ILogger<UpdateUserCommandHandler> _logger;
     private readonly IIdentityService _identityService;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _context;
 
-    public UpdateUserCommandHandler(ILogger<UpdateUserCommandHandler> logger, IIdentityService identityService, IUnitOfWork unitOfWork)
+    public UpdateUserCommandHandler(ILogger<UpdateUserCommandHandler> logger, IIdentityService identityService, IAppDbContext context)
     {
         _logger = logger;
         _identityService = identityService;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
     public async Task<Result<Updated>> Handle(UpdateUserCommand command, CancellationToken ct)
@@ -32,15 +33,15 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             return ApplicationErrors.UserIsNotFound;
         }
         var user = userResult.Value;
-        var person = await _unitOfWork.People.GetByIdAsync(user.PersonId, ct);
+        var person = await _context.People.FirstOrDefaultAsync(p => p.Id == user.PersonId, ct);
         if(person is null)
         {
             _logger.LogError("Person {personId}, is not found for user {userId}", user.PersonId, user.UserId);
             return PersonErrors.NotFound;
         }
         
-        bool isNationalNoExist = await _unitOfWork.People
-            .IsNationalNumberExistAsync(command.NationalNo.Trim(), ct);
+        bool isNationalNoExist = await _context.People
+            .AnyAsync(p => p.NationalNo == command.NationalNo.Trim(), ct);
 
         if (isNationalNoExist && person.NationalNo?.Trim() != command.NationalNo.Trim())
         {
@@ -48,14 +49,16 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             return PersonErrors.NationalNoExists;
         }
 
-        bool isPhoneNumberExist = await _unitOfWork.People.IsPhoneNumberExistAsync(command.Phone.Trim(), ct);
+        bool isPhoneNumberExist = await _context.People
+            .AnyAsync(p => p.Phone == command.Phone.Trim(), ct);
 
         if (isPhoneNumberExist && person.Phone.Trim() != command.Phone.Trim())
         {
             _logger.LogWarning("Phone number already exists: {Phone}", command.Phone);
             return PersonErrors.PhoneExists;
         }
-        bool isNameExist = await _unitOfWork.People.IsNameExistAsync(command.Fullname.Trim(), ct);
+        bool isNameExist = await _context.People
+            .AnyAsync(p => p.FullName == command.Fullname.Trim(), ct);
 
         if (isNameExist && person.FullName.Trim() != command.Fullname.Trim())
         {
@@ -70,8 +73,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             return updateResult.Errors;
         }
 
-        await _unitOfWork.People.UpdateAsync(person, ct);
-        await _unitOfWork.SaveChangesAsync();
+        _context.People.Update(person);
+        await _context.SaveChangesAsync(ct);
 
         await _identityService.ChangeUserActivationAsync(user.UserId, command.IsActive);
         
