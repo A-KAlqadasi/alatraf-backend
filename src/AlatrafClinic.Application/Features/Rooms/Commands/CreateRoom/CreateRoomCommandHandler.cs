@@ -22,7 +22,7 @@ public sealed class CreateRoomCommandHandler(
 {
     public async Task<Result<RoomDto>> Handle(CreateRoomCommand command, CancellationToken ct)
     {
-        var section = await _context.Sections.FirstOrDefaultAsync(s => s.Id == command.SectionId, ct);
+        var section = await _context.Sections.Include(s=> s.Department).FirstOrDefaultAsync(s => s.Id == command.SectionId, ct);
         
         if (section is null)
         {
