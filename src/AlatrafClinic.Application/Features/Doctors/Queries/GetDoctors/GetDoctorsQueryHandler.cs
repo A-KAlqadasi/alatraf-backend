@@ -24,7 +24,6 @@ public class GetDoctorsQueryHandler
         GetDoctorsQuery query,
         CancellationToken ct)
     {
-        // Base query + includes needed for filters/search/sorting/mapping
         IQueryable<Doctor> doctorsQuery = _context.Doctors
             .Include(d => d.Person)
             .Include(d => d.Department)
@@ -60,22 +59,22 @@ public class GetDoctorsQueryHandler
                 DepartmentId  = d.DepartmentId,
                 DepartmentName = d.Department.Name,
 
-                CurrentSectionId = d.Assignments
+                SectionId = d.Assignments
                     .Where(a => a.IsActive)
                     .Select(a => a.SectionId)
                     .FirstOrDefault(),
 
-                CurrentSectionName = d.Assignments
+                SectionName = d.Assignments
                     .Where(a => a.IsActive)
                     .Select(a => a.Section.Name)
                     .FirstOrDefault(),
 
-                CurrentRoomId = d.Assignments
+                RoomId = d.Assignments
                     .Where(a => a.IsActive)
                     .Select(a => a.RoomId)
                     .FirstOrDefault(),
 
-                CurrentRoomName = d.Assignments
+                RoomName = d.Assignments
                     .Where(a => a.IsActive && a.Room != null)
                     .Select(a => a.Room!.Name ?? string.Empty)
                     .FirstOrDefault(),

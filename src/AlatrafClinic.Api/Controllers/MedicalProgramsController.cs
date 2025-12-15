@@ -1,11 +1,13 @@
 using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.MedicalPrograms;
+using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.MedicalPrograms.Commands.CreateMedicalProgram;
 using AlatrafClinic.Application.Features.MedicalPrograms.Commands.DeleteMedicalProgram;
 using AlatrafClinic.Application.Features.MedicalPrograms.Commands.UpdateMedicalProgram;
 using AlatrafClinic.Application.Features.MedicalPrograms.Dtos;
 using AlatrafClinic.Application.Features.MedicalPrograms.Queries.GetMedicalProgramById;
 using AlatrafClinic.Application.Features.MedicalPrograms.Queries.GetMedicalPrograms;
+using AlatrafClinic.Application.Features.MedicalPrograms.Queries.GetMedicalProgramsWithFilters;
 
 using Asp.Versioning;
 
@@ -35,6 +37,41 @@ public sealed class MedicalProgramsController(ISender sender) : ApiController
             Problem
         );
     }
+
+    [HttpGet("with-filters")]
+    [ProducesResponseType(typeof(PaginatedList<MedicalProgramDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves a paginated list of medical programs.")]
+    [EndpointDescription(
+        "Supports filtering medical programs by search term, section, and section assignment status. " +
+        "Results are paginated and sortable."
+    )]
+    [EndpointName("GetMedicalProgramsWithFilters")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> Get(
+        [FromQuery] MedicalProgramsFilterRequest filter,
+        [FromQuery] PageRequest pageRequest,
+        CancellationToken ct = default)
+    {
+        var query = new GetMedicalProgramsWithFilterQuery(
+            pageRequest.Page,
+            pageRequest.PageSize,
+            filter.SearchTerm,
+            filter.SectionId,
+            filter.HasSection,
+            filter.SortColumn,
+            filter.SortDirection
+        );
+
+        var result = await sender.Send(query, ct);
+
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
+    }
+
 
     [HttpGet("{medicalProgramId:int}", Name = "GetMedicalProgramById")]
     [ProducesResponseType(typeof(MedicalProgramDto), StatusCodes.Status200OK)]

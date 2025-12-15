@@ -4,8 +4,7 @@ namespace AlatrafClinic.Api.Requests.TherapyCards;
 
 public sealed class CreateSessionRequest
 {
-    [Required( ErrorMessage = "TherapyCardId is required.")]
-    [Range(1, int.MaxValue, ErrorMessage = "TherapyCardId must be greater than 0.")]
+    [Required( ErrorMessage = "SessionPrograms are required.")]
     public List<SessionProgramRequest> SessionPrograms { get; set; } = new();
 }
 

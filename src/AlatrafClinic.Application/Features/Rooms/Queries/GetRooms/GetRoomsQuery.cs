@@ -11,8 +11,6 @@ public sealed record GetRoomsQuery(
     string? SearchTerm = null,
     int? SectionId = null,
     int? DepartmentId = null,
-    int? DoctorId = null,
-    bool? OnlyActiveAssignments = null,
     string SortColumn = "name",
     string SortDirection = "asc"
 ) : ICachedQuery<Result<PaginatedList<RoomDto>>>
@@ -22,11 +20,9 @@ public sealed record GetRoomsQuery(
         $":q={(SearchTerm ?? "-")}" +
         $":sec={(SectionId?.ToString() ?? "-")}" +
         $":dep={(DepartmentId?.ToString() ?? "-")}" +
-        $":doc={(DoctorId?.ToString() ?? "-")}" +
-        $":active={(OnlyActiveAssignments?.ToString() ?? "-")}" +
         $":sort={SortColumn}:{SortDirection}";
 
     public string[] Tags => ["room"];
 
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+    public TimeSpan Expiration => TimeSpan.FromMinutes(20);
 }

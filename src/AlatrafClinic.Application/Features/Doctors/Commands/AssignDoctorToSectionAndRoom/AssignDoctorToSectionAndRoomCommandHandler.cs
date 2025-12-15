@@ -20,7 +20,10 @@ public class AssignDoctorToSectionAndRoomCommandHandler(
     
     public async Task<Result<Updated>> Handle(AssignDoctorToSectionAndRoomCommand command, CancellationToken ct)
     {
-        var doctor = await _context.Doctors.FirstOrDefaultAsync(d=> d.Id == command.DoctorId, ct);
+        var doctor = await _context.Doctors
+        .Include(d=> d.Assignments)
+        
+        .FirstOrDefaultAsync(d=> d.Id == command.DoctorId, ct);
         if (doctor is null)
         {
             _logger.LogWarning("Doctor {DoctorId} not found.", command.DoctorId);

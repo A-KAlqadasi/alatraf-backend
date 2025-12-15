@@ -1,4 +1,3 @@
-using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Doctors.Mappers;
 using AlatrafClinic.Application.Features.Rooms.Mappers;
 using AlatrafClinic.Application.Features.Sections.Dtos;
@@ -19,10 +18,7 @@ public static class SectionMapper
             Name = entity.Name,
             DepartmentId = entity.DepartmentId,
             DepartmentName = entity.Department.Name,
-            Rooms = entity.Rooms.Any() ? entity.Rooms.ToDtos() : null,
-            Doctors = entity.DoctorAssignments
-                        .Select(da => da.Doctor.ToDto())
-                        .ToList()
+            RoomsCount = entity.Rooms.Any() ? entity.Rooms.Count() : null,
         };
     }
 
