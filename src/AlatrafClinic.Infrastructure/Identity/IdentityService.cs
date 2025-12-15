@@ -1,7 +1,6 @@
 using System.Security.Claims;
 
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Features.Identity;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Application.Features.People.Mappers;
 using AlatrafClinic.Domain.Common.Results;

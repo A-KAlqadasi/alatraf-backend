@@ -14,7 +14,7 @@ public static class DepartmentMapper
         return new DepartmentDto(
             Id: entity.Id,
             Name: entity.Name,
-            Sections: entity.Sections.ToDtos()
+            Sections: entity.Sections.Count() > 0 ? entity.Sections.ToDtos() : null
         );
     }
 
