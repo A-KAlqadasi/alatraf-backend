@@ -29,7 +29,8 @@ public class GetSectionsQueryHandler
             .Include(s => s.Department)
             .Include(s => s.Rooms)
             .AsNoTracking();
-
+            
+        sectionsQuery = ApplyFilter(sectionsQuery, query);
         sectionsQuery = ApplySearch(sectionsQuery, query);
         sectionsQuery = ApplySorting(sectionsQuery, query);
 
@@ -54,6 +55,18 @@ public class GetSectionsQueryHandler
             TotalCount = totalCount,
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
+    }
+
+     private static IQueryable<Section> ApplyFilter(
+        IQueryable<Section> query,
+        GetSectionsQuery q)
+    {
+        if (q.DepartmentId.HasValue)
+        {
+            var departmentId = q.DepartmentId.Value;
+            query = query.Where(s => s.DepartmentId == departmentId);
+        }
+        return query;
     }
 
     private static IQueryable<Section> ApplySearch(

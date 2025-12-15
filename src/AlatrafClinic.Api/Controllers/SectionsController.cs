@@ -84,6 +84,7 @@ public sealed class SectionsController(ISender sender) : ApiController
         var result = await sender.Send(new GetSectionsQuery(
             pageRequest.Page,
             pageRequest.PageSize,
+            request.DepartmentId,
             request.SearchTerm,
             request.SortColumn,
             request.SortDirection
