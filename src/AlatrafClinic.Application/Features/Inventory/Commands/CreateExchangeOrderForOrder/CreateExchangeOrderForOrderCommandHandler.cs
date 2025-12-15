@@ -3,147 +3,120 @@ using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Dtos;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
+using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.RepairCards.Orders;
 
 using MediatR;
-
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.CreateExchangeOrderForOrder;
 
-public sealed class CreateExchangeOrderForOrderCommandHandler : IRequestHandler<CreateExchangeOrderForOrderCommand, Result<ExchangeOrderDto>>
+public sealed class CreateExchangeOrderForOrderCommandHandler
+    : IRequestHandler<CreateExchangeOrderForOrderCommand, Result<ExchangeOrderDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateExchangeOrderForOrderCommandHandler> _logger;
 
-    public CreateExchangeOrderForOrderCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateExchangeOrderForOrderCommandHandler> logger)
+    public CreateExchangeOrderForOrderCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<CreateExchangeOrderForOrderCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
-    public async Task<Result<ExchangeOrderDto>> Handle(CreateExchangeOrderForOrderCommand request, CancellationToken ct)
+    public async Task<Result<ExchangeOrderDto>> Handle(
+        CreateExchangeOrderForOrderCommand request,
+        CancellationToken ct)
     {
         _logger.LogInformation("Creating exchange order for Order {OrderId}...", request.OrderId);
 
+        // 1) Load order
         var order = await _unitOfWork.Orders.GetByIdAsync(request.OrderId, ct);
         if (order is null)
-        {
-            _logger.LogWarning("Order {OrderId} not found.", request.OrderId);
-            return AlatrafClinic.Domain.RepairCards.Orders.OrderErrors.OrderNotFound;
-        }
+            return OrderErrors.OrderNotFound;
 
+        // 2) Load store with item units
         var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(request.StoreId, ct);
-        if (store is null)
+        if (store is null) return StoreErrors.StoreNotFound;
+        if (store.StoreItemUnits == null || !store.StoreItemUnits.Any())
+            return StoreItemUnitErrors.NotFound;
+
+        // 3) Build ExchangeOrderItems
+        var exchangeOrderItems = new List<ExchangeOrderItem>();
+        var unitsDict = store.StoreItemUnits.ToDictionary(u => u.Id);
+        foreach (var item in request.Items)
         {
-            _logger.LogWarning("Store {StoreId} not found.", request.StoreId);
-            return AlatrafClinic.Domain.Inventory.Stores.StoreErrors.StoreNotFound;
+            if (!unitsDict.TryGetValue(item.StoreItemUnitId, out var storeUnit))
+                return StoreItemUnitErrors.NotFound;
+
+            if (storeUnit.ItemUnit is null)
+                return StoreItemUnitErrors.ItemUnitNotFound;
+
+            var itemResult = ExchangeOrderItem.Create(storeUnit.Id, item.Quantity); // aggregate sets ExchangeOrderId later
+            if (itemResult.IsError) return itemResult.Errors;
+
+            exchangeOrderItems.Add(itemResult.Value);
         }
 
-        if (store.StoreItemUnits is null)
-        {
-            _logger.LogWarning("Store {StoreId} has no StoreItemUnits.", store.Id);
-            return AlatrafClinic.Domain.Inventory.Stores.StoreItemUnitErrors.NotFound;
-        }
+        // 4) Create ExchangeOrder aggregate
+        var createResult = ExchangeOrder.CreateForOrder(
+            orderId: order.Id,
+            storeId: store.Id,
+            number: request.Number,
+            items: exchangeOrderItems,
+            notes: request.Notes
+        );
+        if (createResult.IsError) return createResult.Errors;
 
-        var createResult = ExchangeOrder.Create(request.StoreId, request.Notes);
-        if (createResult.IsError)
-        {
-            _logger.LogWarning("Failed creating exchange order: {Errors}", createResult.Errors);
-            return createResult.Errors;
-        }
         var exchangeOrder = createResult.Value;
 
-        var unitsDict = store.StoreItemUnits.ToDictionary(s => s.Id, s => s);
-        var items = new List<ExchangeOrderItem>();
-        foreach (var it in request.Items)
-        {
-            if (!unitsDict.TryGetValue(it.StoreItemUnitId, out var siu))
-            {
-                _logger.LogWarning("StoreItemUnit {StoreItemUnitId} not found in Store {StoreId}.", it.StoreItemUnitId, store.Id);
-                return AlatrafClinic.Domain.Inventory.Stores.StoreItemUnitErrors.NotFound;
-            }
-
-            var createItem = ExchangeOrderItem.Create(exchangeOrder.Id, siu.Id, it.Quantity);
-            if (createItem.IsError)
-            {
-                _logger.LogWarning("Invalid exchange order item: {Errors}", createItem.Errors);
-                return createItem.Errors;
-            }
-            // Do not mutate store navs here; store adjustments will be done by Store aggregate methods below.
-            items.Add(createItem.Value);
-        }
-
-        var upsertResult = exchangeOrder.UpsertItems(items);
-        if (upsertResult.IsError)
-        {
-            _logger.LogWarning("Failed upserting items to exchange order: {Errors}", upsertResult.Errors);
-            return upsertResult.Errors;
-        }
-
-        var assignResult = exchangeOrder.AssignOrder(order.Id, request.Number);
-        if (assignResult.IsError)
-        {
-            _logger.LogWarning("Failed assigning order to exchange order: {Errors}", assignResult.Errors);
-            return assignResult.Errors;
-        }
-
+        // 5) Persist ExchangeOrder
         await _unitOfWork.ExchangeOrders.AddAsync(exchangeOrder, ct);
 
-        // approve exchange order (decrease stock) via domain method
-        var exchangeApproveResult = exchangeOrder.Approve();
-        if (exchangeApproveResult.IsError)
-        {
-            _logger.LogWarning("Failed approving exchange order {ExchangeOrderId}: {Errors}", exchangeOrder.Id, exchangeApproveResult.Errors);
-            return exchangeApproveResult.Errors;
-        }
+        // 6) Approve ExchangeOrder
+        var approveResult = exchangeOrder.Approve();
+        if (approveResult.IsError) return approveResult.Errors;
 
-        // Now decrease store quantities through Store aggregate methods (so store owns the mutation)
+        // 7) Adjust store stock
         foreach (var line in exchangeOrder.Items)
         {
-            var storeItem = store.StoreItemUnits.FirstOrDefault(s => s.Id == line.StoreItemUnitId);
-            if (storeItem is null)
-            {
-                _logger.LogWarning("StoreItemUnit {StoreItemUnitId} not found in Store {StoreId} during approve.", line.StoreItemUnitId, store.Id);
-                return AlatrafClinic.Domain.Inventory.Stores.StoreItemUnitErrors.NotFound;
-            }
+            var storeUnit = store.StoreItemUnits.FirstOrDefault(s => s.Id == line.StoreItemUnitId);
+            if (storeUnit is null) return StoreItemUnitErrors.NotFound;
 
-            var dec = store.AdjustItemUnit(storeItem.ItemUnit, -line.Quantity);
-            if (dec.IsError)
-            {
-                _logger.LogWarning("Failed to decrease store item unit {StoreItemUnitId}: {Errors}", storeItem.Id, dec.Errors);
-                return dec.Errors;
-            }
+            if (storeUnit.ItemUnit is null)
+                return StoreItemUnitErrors.ItemUnitNotFound;
+
+            var adjustResult = store.AdjustItemUnit(storeUnit.ItemUnit, -line.Quantity);
+            if (adjustResult.IsError) return adjustResult.Errors;
         }
+
         await _unitOfWork.Stores.UpdateAsync(store, ct);
 
-        // approve order and persist the change via repository
-        var approveOrderResult = order.Approve();
-        if (approveOrderResult.IsError)
-        {
-            _logger.LogWarning("Failed approving order {OrderId}: {Errors}", order.Id, approveOrderResult.Errors);
-            return approveOrderResult.Errors;
-        }
+        // 8) Approve order
+        var orderApprove = order.Approve();
+        if (orderApprove.IsError) return orderApprove.Errors;
         await _unitOfWork.Orders.UpdateAsync(order, ct);
+
+        // 9) Save changes
         await _unitOfWork.SaveChangesAsync(ct);
 
+        // 10) Map to DTO
         var dto = exchangeOrder.ToDto();
         dto.StoreName = store.Name;
+        if(dto.Items is null)
+            return StoreItemUnitErrors.NotFound;
 
-        if (dto.Items is not null && store.StoreItemUnits is not null)
+        foreach (var item in dto.Items)
         {
-            var units = store.StoreItemUnits.ToDictionary(s => s.Id, s => s);
-            foreach (var it in dto.Items)
+            if (unitsDict.TryGetValue(item.StoreItemUnitId, out var storeUnit))
             {
-                if (units.TryGetValue(it.StoreItemUnitId, out var storeItemUnit))
-                {
-                    it.ItemName = storeItemUnit.ItemUnit?.Item?.Name ?? it.ItemName;
-                    it.UnitName = storeItemUnit.ItemUnit?.Unit?.Name ?? it.UnitName;
-                }
+                item.ItemName = storeUnit.ItemUnit?.Item?.Name;
+                item.UnitName = storeUnit.ItemUnit?.Unit?.Name;
             }
         }
 
-        _logger.LogInformation("Exchange order {ExchangeOrderId} created and assigned to order {OrderId}.", exchangeOrder.Id, request.OrderId);
+        _logger.LogInformation("Exchange order {ExchangeOrderId} created for order {OrderId}", exchangeOrder.Id, order.Id);
         return dto;
     }
 }

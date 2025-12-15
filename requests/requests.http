@@ -1,0 +1,381 @@
+GET api/v1.0/suppliers
+GET https://localhost:2004/api/v1.0/suppliers
+Content-Type: application/json
+
+GET api/v1.0/suppliers/{supplierId}
+GET https://localhost:2004/api/v1.0/suppliers/1
+Content-Type: application/json
+
+POST api/v1.0/suppliers
+POST https://localhost:2004/api/v1.0/suppliers?version=1.0
+Content-Type: application/json
+
+{
+"supplierName": "Sample Supplier",
+"phone": "1234567890"
+}
+
+PUT api/v1.0/suppliers/{supplierId}
+PUT https://localhost:2004/api/v1.0/suppliers/1?version=1.0
+Content-Type: application/json
+
+{
+"id": 1,
+"supplierName": "Updated Supplier",
+"phone": "0987654321"
+}
+
+DELETE api/v1.0/suppliers/{supplierId}
+DELETE https://localhost:2004/api/v1.0/suppliers/1?version=1.0
+Content-Type: application/json
+
+GET api/v1.0/units
+GET https://localhost:2004/api/v1.0/units
+Content-Type: application/json
+
+GET api/v1.0/units/{unitId}
+GET https://localhost:2004/api/v1.0/units/1
+Content-Type: application/json
+
+POST api/v1.0/units
+POST https://localhost:2004/api/v1.0/units?version=1.0
+Content-Type: application/json
+
+{
+"name": "Box"
+}
+
+PUT api/v1.0/units/{unitId}
+PUT https://localhost:2004/api/v1.0/units/1?version=1.0
+Content-Type: application/json
+
+{
+"id": 1,
+"name": "Package"
+}
+
+DELETE api/v1.0/units/{unitId}
+DELETE https://localhost:2004/api/v1.0/units/1?version=1.0
+Content-Type: application/json
+
+GET api/v1.0/purchases
+GET https://localhost:2004/api/v1.0/purchases
+Content-Type: application/json
+
+GET api/v1.0/purchases/{purchaseInvoiceId}
+GET https://localhost:2004/api/v1.0/purchases/1
+Content-Type: application/json
+
+GET api/v1.0/purchases/{purchaseInvoiceId}/items
+GET https://localhost:2004/api/v1.0/purchases/1/items
+Content-Type: application/json
+
+GET api/v1.0/purchases/summary
+GET https://localhost:2004/api/v1.0/purchases/summary?dateFrom=2025-01-01&dateTo=2025-12-31&supplierId=1&storeId=1
+Content-Type: application/json
+
+POST api/v1.0/purchases
+POST https://localhost:2004/api/v1.0/purchases?version=1.0
+Content-Type: application/json
+
+{
+"number": "PI-2025-001",
+"date": "2025-12-01T00:00:00Z",
+"supplierId": 1,
+"storeId": 1
+}
+
+POST api/v1.0/purchases/with-items
+POST https://localhost:2004/api/v1.0/purchases/with-items?version=1.0
+Content-Type: application/json
+
+{
+"number": "PI-2025-002",
+"date": "2025-12-02T00:00:00Z",
+"supplierId": 1,
+"storeId": 1,
+"items": [
+{
+"storeItemUnitId": 10,
+"quantity": 5,
+"unitPrice": 20,
+"notes": "Sample item"
+}
+]
+}
+
+PUT api/v1.0/purchases/{purchaseInvoiceId}
+PUT https://localhost:2004/api/v1.0/purchases/1?version=1.0
+Content-Type: application/json
+
+{
+"id": 1,
+"number": "PI-2025-001-UPDATED",
+"date": "2025-12-03T00:00:00Z",
+"supplierId": 2,
+"storeId": 1
+}
+
+POST api/v1.0/purchases/{purchaseInvoiceId}/submit
+POST https://localhost:2004/api/v1.0/purchases/1/submit?version=1.0
+Content-Type: application/json
+
+POST api/v1.0/purchases/{purchaseInvoiceId}/approve
+POST https://localhost:2004/api/v1.0/purchases/1/approve?version=1.0
+Content-Type: application/json
+
+POST api/v1.0/purchases/{purchaseInvoiceId}/cancel
+POST https://localhost:2004/api/v1.0/purchases/1/cancel?version=1.0
+Content-Type: application/json
+
+POST api/v1.0/purchases/{purchaseInvoiceId}/items
+POST https://localhost:2004/api/v1.0/purchases/1/items?version=1.0
+Content-Type: application/json
+
+{
+"purchaseInvoiceId": 1,
+"storeItemUnitId": 10,
+"quantity": 3,
+"unitPrice": 15,
+"notes": "Add item"
+}
+
+PUT api/v1.0/purchases/{purchaseInvoiceId}/items/{existingStoreItemUnitId}
+PUT https://localhost:2004/api/v1.0/purchases/1/items/10?version=1.0
+Content-Type: application/json
+
+{
+"purchaseInvoiceId": 1,
+"existingStoreItemUnitId": 10,
+"newStoreItemUnitId": 11,
+"quantity": 4,
+"unitPrice": 18,
+"notes": "Update item"
+}
+
+DELETE api/v1.0/purchases/{purchaseInvoiceId}/items/{storeItemUnitId}
+DELETE https://localhost:2004/api/v1.0/purchases/1/items/10?version=1.0
+Content-Type: application/json
+
+POST api/v1.0/purchases/{purchaseInvoiceId}/pay
+POST https://localhost:2004/api/v1.0/purchases/1/pay?version=1.0
+Content-Type: application/json
+
+{
+"purchaseInvoiceId": 1,
+"amount": 100.00,
+"method": "cash",
+"reference": "PAY-REF-001"
+}
+
+GET api/v1.0/sales
+GET https://localhost:2004/api/v1.0/sales?page=1&pageSize=20&searchTerm=&diagnosisId=&patientId=&fromDate=&toDate=&sortColumn=SaleDate&sortDirection=desc
+Content-Type: application/json
+
+GET api/v1.0/sales/{saleId}
+GET https://localhost:2004/api/v1.0/sales/1
+Content-Type: application/json
+
+POST api/v1.0/sales
+POST https://localhost:2004/api/v1.0/sales?version=1.0
+Content-Type: application/json
+
+{
+"ticketId": 100,
+"diagnosisText": "Sample diagnosis",
+"injuryDate": "2025-12-01T00:00:00Z",
+"injuryReasons": [1],
+"injurySides": [2],
+"injuryTypes": [3],
+"saleItems": [
+{
+"itemId": 1,
+"unitId": 1,
+"quantity": 2,
+"price": 50
+}
+],
+"notes": "Initial sale"
+}
+
+PUT api/v1.0/sales/{saleId}
+PUT https://localhost:2004/api/v1.0/sales/1?version=1.0
+Content-Type: application/json
+
+{
+"saleId": 1,
+"ticketId": 100,
+"diagnosisText": "Updated diagnosis",
+"injuryDate": "2025-12-02T00:00:00Z",
+"injuryReasons": [1],
+"injurySides": [2],
+"injuryTypes": [3],
+"saleItems": [
+{
+"id": 10,
+"itemId": 1,
+"unitId": 1,
+"quantity": 3,
+"price": 55
+}
+],
+"notes": "Updated sale"
+}
+
+DELETE api/v1.0/sales/{saleId}
+DELETE https://localhost:2004/api/v1.0/sales/1?version=1.0
+Content-Type: application/json
+
+GET api/v1.0/strores
+GET https://localhost:2004/api/v1.0/strores
+Content-Type: application/json
+
+GET api/v1.0/strores/with-items
+GET https://localhost:2004/api/v1.0/strores/with-items
+Content-Type: application/json
+
+GET api/v1.0/strores/{storeId}
+GET https://localhost:2004/api/v1.0/strores/1
+Content-Type: application/json
+
+GET api/v1.0/strores/{storeId}/items
+GET https://localhost:2004/api/v1.0/strores/1/items
+Content-Type: application/json
+
+GET api/v1.0/strores/{storeId}/items/{itemId}/units/{unitId}/quantity
+GET https://localhost:2004/api/v1.0/strores/1/items/10/units/1/quantity
+Content-Type: application/json
+
+POST api/v1.0/strores
+POST https://localhost:2004/api/v1.0/strores?version=1.0
+Content-Type: application/json
+
+{
+"name": "Main Store"
+}
+
+PUT api/v1.0/strores/{storeId}
+PUT https://localhost:2004/api/v1.0/strores/1?version=1.0
+Content-Type: application/json
+
+{
+"id": 1,
+"name": "Updated Store"
+}
+
+DELETE api/v1.0/strores/{storeId}
+DELETE https://localhost:2004/api/v1.0/strores/1?version=1.0
+Content-Type: application/json
+
+POST api/v1.0/strores/{storeId}/items
+POST https://localhost:2004/api/v1.0/strores/1/items?version=1.0
+Content-Type: application/json
+
+{
+"storeId": 1,
+"itemId": 10,
+"unitId": 1,
+"quantity": 5
+}
+
+PUT api/v1.0/strores/{storeId}/items/{itemId}/units/{unitId}/adjust
+PUT https://localhost:2004/api/v1.0/strores/1/items/10/units/1/adjust?version=1.0
+Content-Type: application/json
+
+{
+"storeId": 1,
+"itemId": 10,
+"unitId": 1,
+"quantity": 2,
+"increase": true
+}
+
+DELETE api/v1.0/strores/{storeId}/items/{itemId}/units/{unitId}
+DELETE https://localhost:2004/api/v1.0/strores/1/items/10/units/1?version=1.0
+Content-Type: application/json
+
+POST api/v1.0/strores/transfer
+POST https://localhost:2004/api/v1.0/strores/transfer?version=1.0
+Content-Type: application/json
+
+{
+"fromStoreId": 1,
+"toStoreId": 2,
+"itemId": 10,
+"unitId": 1,
+"quantity": 3
+}
+
+GET api/v1.0/exchange-orders
+GET https://localhost:2004/api/v1.0/exchange-orders?page=1&pageSize=10&orderId=&saleId=&storeId=&searchTerm=&sortColumn=&sortDirection=
+Content-Type: application/json
+
+GET api/v1.0/exchange-orders/all
+GET https://localhost:2004/api/v1.0/exchange-orders/all?storeId=&saleId=&orderId=&searchTerm=&sortColumn=&sortDirection=
+Content-Type: application/json
+
+GET api/v1.0/exchange-orders/{exchangeOrderId}
+GET https://localhost:2004/api/v1.0/exchange-orders/1
+Content-Type: application/json
+
+POST api/v1.0/exchange-orders/for-order
+POST https://localhost:2004/api/v1.0/exchange-orders/for-order?version=1.0
+Content-Type: application/json
+
+{
+"orderId": 100,
+"storeId": 1,
+"number": "EX-O-2025-001",
+"items": [
+{
+"storeItemUnitId": 10,
+"quantity": 2
+}
+],
+"notes": "Exchange for order"
+}
+
+POST api/v1.0/exchange-orders/for-sale
+POST https://localhost:2004/api/v1.0/exchange-orders/for-sale?version=1.0
+Content-Type: application/json
+
+{
+"saleId": 200,
+"storeId": 1,
+"number": "EX-S-2025-001",
+"items": [
+{
+"storeItemUnitId": 10,
+"quantity": 1
+}
+],
+"notes": "Exchange for sale"
+}
+
+PUT api/v1.0/exchange-orders/{exchangeOrderId}/items
+PUT https://localhost:2004/api/v1.0/exchange-orders/1/items?version=1.0
+Content-Type: application/json
+
+{
+"exchangeOrderId": 1,
+"items": [
+{
+"id": 5,
+"storeItemUnitId": 10,
+"quantity": 3
+},
+{
+"id": null,
+"storeItemUnitId": 11,
+"quantity": 2
+}
+]
+}
+
+POST api/v1.0/exchange-orders/{exchangeOrderId}/approve
+POST https://localhost:2004/api/v1.0/exchange-orders/1/approve?version=1.0
+Content-Type: application/json
+
+POST api/v1.0/exchange-orders/{exchangeOrderId}/cancel
+POST https://localhost:2004/api/v1.0/exchange-orders/1/cancel?version=1.0
+Content-Type: application/json

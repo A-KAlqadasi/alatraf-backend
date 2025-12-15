@@ -1,27 +1,18 @@
 ﻿using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Stores;
-using AlatrafClinic.Domain.RepairCards.Orders;
-using AlatrafClinic.Domain.Sales;
 
 namespace AlatrafClinic.Domain.Inventory.ExchangeOrders;
 
 public class ExchangeOrder : AuditableEntity<int>
 {
-    public string Number { get; private set; } = string.Empty;   // e.g., "EX-S-25-11-001"
-
+    public string Number { get; private set; } = string.Empty;
     public bool IsApproved { get; private set; }
     public string? Notes { get; private set; }
 
-    // public int? SaleId { get; private set; }
-    // public Sale? Sale { get; private set; }
+    public int? RelatedOrderId { get; private set; }
+    public int? RelatedSaleId { get; private set; }
 
-    // public int? OrderId { get; private set; }
-    // public Order? Order { get; set; }
-    public int? RelatedOrderId { get; private set; }        // optional link to Order by id
-    public int? RelatedSaleId { get; private set; }         // optional link to Sale by id
-
-    // store reference (which store released the items)
     public int StoreId { get; private set; }
     public Store Store { get; set; } = default!;
 
@@ -30,85 +21,108 @@ public class ExchangeOrder : AuditableEntity<int>
 
     private ExchangeOrder() { }
 
-    private ExchangeOrder(int storeId, string? notes = null)
+    private ExchangeOrder(int storeId, string number, string? notes)
     {
         StoreId = storeId;
+        Number = number;
         Notes = notes;
-        IsApproved = false;
     }
 
-    public static Result<ExchangeOrder> Create(int storeId, string? notes = null)
+    // ================================================================
+    //   FACTORY: Create exchange order for SALE
+    // ================================================================
+    public static Result<ExchangeOrder> CreateForSale(
+        int saleId,
+        int storeId,
+        string number,
+        List<ExchangeOrderItem> items,
+        string? notes)
     {
+        if (saleId <= 0)
+            return ExchangeOrderErrors.SaleRequired;
+
         if (storeId <= 0)
             return ExchangeOrderErrors.StoreRequired;
 
-        return new ExchangeOrder(storeId, notes);
+        if (string.IsNullOrWhiteSpace(number))
+            return ExchangeOrderErrors.ExchangeOrderNumberRequired;
+
+        var order = new ExchangeOrder(storeId, number, notes)
+        {
+            RelatedSaleId = saleId
+        };
+
+        foreach (var item in items)
+            order.AddItem(item);
+
+        return order;
     }
 
-    public Result<Updated> UpsertItems(List<ExchangeOrderItem> items)
+    // ================================================================
+    //   FACTORY: Create exchange order for WORK ORDER
+    // ================================================================
+    public static Result<ExchangeOrder> CreateForOrder(
+        int orderId,
+        int storeId,
+        string number,
+        List<ExchangeOrderItem> items,
+        string? notes)
+    {
+        if (orderId <= 0)
+            return ExchangeOrderErrors.OrderRequired;
+
+        if (storeId <= 0)
+            return ExchangeOrderErrors.StoreRequired;
+
+        if (string.IsNullOrWhiteSpace(number))
+            return ExchangeOrderErrors.ExchangeOrderNumberRequired;
+
+        var order = new ExchangeOrder(storeId, number, notes)
+        {
+            RelatedOrderId = orderId
+        };
+
+        foreach (var item in items)
+            order.AddItem(item);
+
+        return order;
+    }
+
+    // ================================================================
+    //     BEHAVIOR: Add an item to the exchange order
+    // ================================================================
+    public Result<Updated> AddItem(ExchangeOrderItem item)
     {
         if (IsApproved)
             return ExchangeOrderErrors.AlreadyApproved;
 
-        _items.RemoveAll(existing => items.All(v => v.Id != existing.Id));
+        _items.Add(item);
+        return Result.Updated;
+    }
 
-        foreach (var incoming in items)
-        {
-            var existing = _items.FirstOrDefault(v => v.Id == incoming.Id);
-            if (existing is null)
-            {
-                _items.Add(incoming);
-            }
-            else
-            {
-                var result = existing.Update(this.Id, incoming.StoreItemUnitId, incoming.Quantity);
+    // ================================================================
+    //     BEHAVIOR: Replace all items (UI editing case)
+    // ================================================================
+    public Result<Updated> ReplaceItems(List<ExchangeOrderItem> items)
+    {
+        if (IsApproved)
+            return ExchangeOrderErrors.AlreadyApproved;
 
-                if (result.IsError)
-                    return result.Errors;
-            }
-        }
+        _items.Clear();
+        _items.AddRange(items);
 
         return Result.Updated;
     }
 
+    // ================================================================
+    //     BEHAVIOR: Approve
+    // ================================================================
     public Result<Updated> Approve()
     {
         if (IsApproved)
             return ExchangeOrderErrors.AlreadyApproved;
-        // Mark approved - the actual stock mutation must be handled by the Store aggregate
-        // so the application layer can coordinate cross-aggregate changes.
+
         IsApproved = true;
-        return Result.Updated;
-    }
-    public Result<Updated> AssignOrder(int orderId, string number)
-    {
-        if (IsApproved)
-        {
-            return ExchangeOrderErrors.AlreadyApproved;
-        }
-        if (string.IsNullOrWhiteSpace(number))
-        {
-            return ExchangeOrderErrors.ExchangeOrderNumberRequired;
-        }
-
-
-        RelatedOrderId = orderId;
-        Number = number;
-        return Result.Updated;
-    }
-    public Result<Updated> AssignSale(int saleId, string number)
-    {
-        if (IsApproved)
-        {
-            return ExchangeOrderErrors.AlreadyApproved;
-        }
-
-        if (string.IsNullOrWhiteSpace(number))
-        {
-            return ExchangeOrderErrors.ExchangeOrderNumberRequired;
-        }
-        RelatedSaleId = saleId;
-        Number = number;
         return Result.Updated;
     }
 }

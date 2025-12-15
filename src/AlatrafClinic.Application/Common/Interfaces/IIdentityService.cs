@@ -17,14 +17,13 @@ public interface IIdentityService
     Task<string?> GetUserNameAsync(string userId);
     Task<bool> IsUserNameExistsAsync(string userName);
     Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId);
-    
     Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions);
 
     Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword);
     Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string oldPassword, string newPassword);
 
     public Task<IQueryable<UserDto>> GetUsersAsync();
-    
+
     public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive);
 
     // ---------------- USER PERMISSIONS ----------------
