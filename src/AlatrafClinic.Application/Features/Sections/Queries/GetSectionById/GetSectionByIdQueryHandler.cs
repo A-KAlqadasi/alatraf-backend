@@ -26,6 +26,7 @@ public class GetSectionByIdQueryHandler : IRequestHandler<GetSectionByIdQuery, R
     {
         var section = await _context.Sections
         .Include(s=> s.Rooms)
+        .Include(s=> s.Department)
         .FirstOrDefaultAsync(s=> s.Id == query.SectionId, ct);
         
         if (section is null)
