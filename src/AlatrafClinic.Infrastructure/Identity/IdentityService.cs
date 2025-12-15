@@ -108,164 +108,336 @@ public class IdentityService(
         return token;
     }
 
-    // ------------------------
-    // NEW: Permissions for roles
-    // ------------------------
-
-    public async Task<Result<bool>> AddPermissionToRoleAsync(string roleName, string permissionName, CancellationToken ct = default)
+    public async Task<Result<Success>> AddPermissionsToRoleAsync(
+    string roleName,
+    IList<string> permissionNames,
+    CancellationToken ct = default)
     {
-        var role = await _roleManager.FindByNameAsync(roleName);
-
-        if (role is null)
+        if (string.IsNullOrWhiteSpace(roleName))
         {
-            return Error.NotFound(
-                "Role_Not_Found",
-                $"Role '{roleName}' not found.");
+            return Error.Validation("RoleName_Required", "Role name is required.");
         }
 
-        var permission = await _dbContext.Permissions
-            .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
-
-        if (permission is null)
+        if (permissionNames is null || permissionNames.Count == 0)
         {
-            permission = new ApplicationPermission
-            {
-                Name = permissionName
-            };
+            return Error.Validation("Permissions_Required", "At least one permission is required.");
+        }
 
-            _dbContext.Permissions.Add(permission);
+        // Normalize + de-duplicate (case-insensitive)
+        var normalizedNames = permissionNames
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Select(p => p.Trim())
+            .Where(p => p.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (normalizedNames.Count == 0)
+        {
+            return Error.Validation("Permissions_Required", "At least one valid permission is required.");
+        }
+
+        // Load role
+        var role = await _roleManager.FindByNameAsync(roleName);
+        if (role is null)
+        {
+            return Error.NotFound("Role_Not_Found", $"Role '{roleName}' not found.");
+        }
+
+        // 1) Load existing permissions by name
+        var existingPermissions = await _dbContext.Permissions
+            .Where(p => normalizedNames.Contains(p.Name))
+            .ToListAsync(ct);
+
+        var permissionByName = existingPermissions
+            .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+        // 2) Create missing permissions
+        var missingNames = normalizedNames
+            .Where(n => !permissionByName.ContainsKey(n))
+            .ToList();
+
+        if (missingNames.Count > 0)
+        {
+            var newPermissions = missingNames.Select(n => new ApplicationPermission
+            {
+                Name = n
+            }).ToList();
+
+            _dbContext.Permissions.AddRange(newPermissions);
+            await _dbContext.SaveChangesAsync(ct);
+
+            foreach (var p in newPermissions)
+            {
+                permissionByName[p.Name] = p;
+            }
+        }
+
+        var permissionIds = permissionByName.Values
+            .Select(p => p.Id)
+            .Distinct()
+            .ToList();
+
+        // 3) Load existing role-permission links
+        var existingRolePermissionIds = await _dbContext.RolePermissions
+            .Where(rp => rp.RoleId == role.Id && permissionIds.Contains(rp.PermissionId))
+            .Select(rp => rp.PermissionId)
+            .ToListAsync(ct);
+
+        var existingSet = existingRolePermissionIds.ToHashSet();
+
+        // 4) Insert missing links
+        var toInsert = permissionIds
+            .Where(pid => !existingSet.Contains(pid))
+            .Select(pid => new RolePermission
+            {
+                RoleId = role.Id,      // string
+                PermissionId = pid     // int
+            })
+            .ToList();
+
+        if (toInsert.Count > 0)
+        {
+            _dbContext.RolePermissions.AddRange(toInsert);
             await _dbContext.SaveChangesAsync(ct);
         }
 
-        var exists = await _dbContext.RolePermissions
-            .AnyAsync(rp => rp.RoleId == role.Id && rp.PermissionId == permission.Id, ct);
-
-        if (exists)
-        {
-            return true;
-        }
-
-        _dbContext.RolePermissions.Add(new RolePermission
-        {
-            RoleId = role.Id,
-            PermissionId = permission.Id
-        });
-
-        await _dbContext.SaveChangesAsync(ct);
-
-        return true;
+        return Result.Success;
     }
 
-    public async Task<Result<bool>> RemovePermissionFromRoleAsync(string roleName, string permissionName, CancellationToken ct = default)
+    public async Task<Result<Success>> RemovePermissionsFromRoleAsync(
+    string roleName,
+    IList<string> permissionNames,
+    CancellationToken ct = default)
     {
-        var role = await _roleManager.FindByNameAsync(roleName);
+        if (string.IsNullOrWhiteSpace(roleName))
+        {
+            return Error.Validation("RoleName_Required", "Role name is required.");
+        }
 
+        if (permissionNames is null || permissionNames.Count == 0)
+        {
+            return Error.Validation("Permissions_Required", "At least one permission is required.");
+        }
+
+        // Normalize + de-duplicate (case-insensitive)
+        var normalizedNames = permissionNames
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Select(p => p.Trim())
+            .Where(p => p.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (normalizedNames.Count == 0)
+        {
+            return Error.Validation("Permissions_Required", "At least one valid permission is required.");
+        }
+
+        // Load role
+        var role = await _roleManager.FindByNameAsync(roleName);
         if (role is null)
         {
-            return Error.NotFound(
-                "Role_Not_Found",
-                $"Role '{roleName}' not found.");
+            return Error.NotFound("Role_Not_Found", $"Role '{roleName}' not found.");
         }
 
-        var permission = await _dbContext.Permissions
-            .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
+        // 1) Load permissions by name (ignore missing permissions)
+        var permissionIds = await _dbContext.Permissions
+            .Where(p => normalizedNames.Contains(p.Name))
+            .Select(p => p.Id)
+            .ToListAsync(ct);
 
-        if (permission is null)
+        if (permissionIds.Count == 0)
         {
-            // Nothing to remove – treat as success (idempotent)
-            return true;
+            return Result.Success;
         }
 
-        var existing = await _dbContext.RolePermissions
-            .FirstOrDefaultAsync(rp => rp.RoleId == role.Id && rp.PermissionId == permission.Id, ct);
+        // 2) Load matching role-permission links
+        var rolePermissions = await _dbContext.RolePermissions
+            .Where(rp => rp.RoleId == role.Id && permissionIds.Contains(rp.PermissionId))
+            .ToListAsync(ct);
 
-        if (existing is null)
+        if (rolePermissions.Count == 0)
         {
-            return true;
+            return Result.Success;
         }
 
-        _dbContext.RolePermissions.Remove(existing);
+        // 3) Remove in bulk
+        _dbContext.RolePermissions.RemoveRange(rolePermissions);
         await _dbContext.SaveChangesAsync(ct);
 
-        return true;
+        return Result.Success;
     }
-
-    public async Task<Result<bool>> AddPermissionToUserAsync(string userId, string permissionName, CancellationToken ct = default)
+    public async Task<Result<Success>> AddPermissionsToUserAsync(
+    string userId,
+    IList<string> permissionNames,
+    CancellationToken ct = default)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-
-        if (user is null)
+        if (string.IsNullOrWhiteSpace(userId))
         {
-            return Error.NotFound(
-                "User_Not_Found",
-                $"User with id '{userId}' not found.");
+            return Error.Validation("UserId_Required", "UserId is required.");
         }
 
-        var permission = await _dbContext.Permissions
-            .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
-
-        if (permission is null)
+        if (permissionNames is null || permissionNames.Count == 0)
         {
-            permission = new ApplicationPermission
-            {
-                Name = permissionName
-            };
+            return Error.Validation("Permissions_Required", "At least one permission is required.");
+        }
 
-            _dbContext.Permissions.Add(permission);
+        // Normalize + de-duplicate (case-insensitive)
+        var normalizedNames = permissionNames
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Select(p => p.Trim())
+            .Where(p => p.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (normalizedNames.Count == 0)
+        {
+            return Error.Validation("Permissions_Required", "At least one valid permission is required.");
+        }
+
+        // Load user (AppUser) using Identity
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return Error.NotFound("User_Not_Found", $"User with id '{userId}' not found.");
+        }
+
+        // 1) Load existing permissions by Name
+        var existingPermissions = await _dbContext.Permissions
+            .Where(p => normalizedNames.Contains(p.Name))
+            .ToListAsync(ct);
+
+        var permissionByName = existingPermissions
+            .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+        // 2) Create missing permissions (ApplicationPermission)
+        var missingNames = normalizedNames
+            .Where(n => !permissionByName.ContainsKey(n))
+            .ToList();
+
+        if (missingNames.Count > 0)
+        {
+            var newPermissions = missingNames.Select(n => new ApplicationPermission
+            {
+                Name = n
+                // Description left null intentionally
+            }).ToList();
+
+            _dbContext.Permissions.AddRange(newPermissions);
+
+            // Save so IDs are generated (PermissionId is int)
+            await _dbContext.SaveChangesAsync(ct);
+
+            // Add newly created permissions to lookup (tracked entities now have Id)
+            foreach (var p in newPermissions)
+            {
+                permissionByName[p.Name] = p;
+            }
+        }
+
+        var permissionIds = permissionByName.Values
+            .Select(p => p.Id)
+            .Distinct()
+            .ToList();
+
+        // 3) Load existing user-permission links for those permissions
+        var existingUserPermissionIds = await _dbContext.UserPermissions
+            .Where(up => up.UserId == user.Id && permissionIds.Contains(up.PermissionId))
+            .Select(up => up.PermissionId)
+            .ToListAsync(ct);
+
+        var existingSet = existingUserPermissionIds.ToHashSet();
+
+        // 4) Insert missing join rows (UserPermission)
+        var toInsert = permissionIds
+            .Where(pid => !existingSet.Contains(pid))
+            .Select(pid => new UserPermission
+            {
+                UserId = user.Id,          // string
+                PermissionId = pid         // int
+            })
+            .ToList();
+
+        if (toInsert.Count > 0)
+        {
+            _dbContext.UserPermissions.AddRange(toInsert);
             await _dbContext.SaveChangesAsync(ct);
         }
 
-        var exists = await _dbContext.UserPermissions
-            .AnyAsync(up => up.UserId == user.Id && up.PermissionId == permission.Id, ct);
-
-        if (exists)
-        {
-            return true;
-        }
-
-        _dbContext.UserPermissions.Add(new UserPermission
-        {
-            UserId = user.Id,
-            PermissionId = permission.Id
-        });
-
-        await _dbContext.SaveChangesAsync(ct);
-
-        return true;
+        return Result.Success;
     }
 
-    public async Task<Result<bool>> RemovePermissionFromUserAsync(string userId, string permissionName, CancellationToken ct = default)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
 
+    public async Task<Result<Success>> RemovePermissionsFromUserAsync(
+    string userId,
+    IList<string> permissionNames,
+    CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Error.Validation("UserId_Required", "UserId is required.");
+        }
+
+        if (permissionNames is null || permissionNames.Count == 0)
+        {
+            return Error.Validation("Permissions_Required", "At least one permission is required.");
+        }
+
+        // Normalize + de-duplicate (case-insensitive)
+        var normalizedNames = permissionNames
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Select(p => p.Trim())
+            .Where(p => p.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (normalizedNames.Count == 0)
+        {
+            return Error.Validation("Permissions_Required", "At least one valid permission is required.");
+        }
+
+        // Load user
+        var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
         {
-            return Error.NotFound(
-                "User_Not_Found",
-                $"User with id '{userId}' not found.");
+            return Error.NotFound("User_Not_Found", $"User with id '{userId}' not found.");
         }
 
-        var permission = await _dbContext.Permissions
-            .FirstOrDefaultAsync(p => p.Name == permissionName, ct);
+        // 1) Load permissions by name (ignore missing permissions)
+        var permissions = await _dbContext.Permissions
+            .Where(p => normalizedNames.Contains(p.Name))
+            .Select(p => new { p.Id })
+            .ToListAsync(ct);
 
-        if (permission is null)
+        if (permissions.Count == 0)
         {
-            return true;
+            // Nothing to remove
+            return Result.Success;
         }
 
-        var existing = await _dbContext.UserPermissions
-            .FirstOrDefaultAsync(up => up.UserId == user.Id && up.PermissionId == permission.Id, ct);
+        var permissionIds = permissions
+            .Select(p => p.Id)
+            .ToList();
 
-        if (existing is null)
+        // 2) Load matching user-permission links
+        var userPermissions = await _dbContext.UserPermissions
+            .Where(up => up.UserId == user.Id && permissionIds.Contains(up.PermissionId))
+            .ToListAsync(ct);
+
+        if (userPermissions.Count == 0)
         {
-            return true;
+            // User does not have any of these permissions
+            return Result.Success;
         }
 
-        _dbContext.UserPermissions.Remove(existing);
+        // 3) Remove in bulk
+        _dbContext.UserPermissions.RemoveRange(userPermissions);
         await _dbContext.SaveChangesAsync(ct);
 
-        return true;
+        return Result.Success;
     }
+
 
     private async Task<IList<string>> GetPermissionsForUserAsync(AppUser user, IList<string> roleNames)
     {
@@ -333,13 +505,12 @@ public class IdentityService(
             }
         }
 
-        foreach (var permission in permissions)
+        var addPermissionsResult = await AddPermissionsToUserAsync(
+            user.Id,
+            permissions);
+        if (addPermissionsResult.IsError)
         {
-            var permissionResult = await AddPermissionToUserAsync(user.Id, permission);
-            if (!permissionResult.IsSuccess)
-            {
-                return permissionResult.Errors;
-            }
+            return addPermissionsResult.Errors;
         }
 
         var dto = new AppUserDto(

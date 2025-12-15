@@ -6,7 +6,7 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
 
 public sealed record class CreateUserCommand(
-    string Fullname,
+    string FullName,
     DateOnly Birthdate,
     string Phone,
     string NationalNo,

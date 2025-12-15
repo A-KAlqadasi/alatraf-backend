@@ -18,12 +18,6 @@ public interface IIdentityService
     Task<bool> IsUserNameExistsAsync(string userName);
     Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId);
     
-    Task<Result<bool>> AddPermissionToRoleAsync(string roleName, string permissionName, CancellationToken ct = default);
-    Task<Result<bool>> RemovePermissionFromRoleAsync(string roleName, string permissionName, CancellationToken ct = default);
-
-    Task<Result<bool>> AddPermissionToUserAsync(string userId, string permissionName, CancellationToken ct = default);
-    Task<Result<bool>> RemovePermissionFromUserAsync(string userId, string permissionName, CancellationToken ct = default);
-
     Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions);
 
     Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword);
@@ -32,5 +26,48 @@ public interface IIdentityService
     public Task<IQueryable<UserDto>> GetUsersAsync();
     
     public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive);
+
+    // ---------------- USER PERMISSIONS ----------------
+
+    /// <summary>
+    /// Adds one or more permissions to a user.
+    /// Missing permissions will be created automatically.
+    /// Operation is idempotent.
+    /// </summary>
+    Task<Result<Success>> AddPermissionsToUserAsync(
+        string userId,
+        IList<string> permissionNames,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Removes one or more permissions from a user.
+    /// Operation is idempotent.
+    /// </summary>
+    Task<Result<Success>> RemovePermissionsFromUserAsync(
+        string userId,
+        IList<string> permissionNames,
+        CancellationToken ct = default);
+
+
+    // ---------------- ROLE PERMISSIONS ----------------
+
+    /// <summary>
+    /// Adds one or more permissions to a role.
+    /// Missing permissions will be created automatically.
+    /// Operation is idempotent.
+    /// </summary>
+    Task<Result<Success>> AddPermissionsToRoleAsync(
+        string roleName,
+        IList<string> permissionNames,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Removes one or more permissions from a role.
+    /// Operation is idempotent.
+    /// </summary>
+    Task<Result<Success>> RemovePermissionsFromRoleAsync(
+        string roleName,
+        IList<string> permissionNames,
+        CancellationToken ct = default);
 
 }
