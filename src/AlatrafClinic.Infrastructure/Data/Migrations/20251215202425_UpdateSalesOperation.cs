@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class UpdateSalesOperation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -1201,6 +1201,34 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Sales",
+                columns: table => new
+                {
+                    SaleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DiagnosisId = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sales", x => x.SaleId);
+                    table.ForeignKey(
+                        name: "FK_Sales_Diagnoses_DiagnosisId",
+                        column: x => x.DiagnosisId,
+                        principalTable: "Diagnoses",
+                        principalColumn: "DiagnosisId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TherapyCards",
                 columns: table => new
                 {
@@ -1480,6 +1508,89 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExitCards",
+                columns: table => new
+                {
+                    ExitCardId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Note = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    SaleId = table.Column<int>(type: "int", nullable: true),
+                    RepairCardId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExitCards", x => x.ExitCardId);
+                    table.ForeignKey(
+                        name: "FK_ExitCards_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExitCards_RepairCards_RepairCardId",
+                        column: x => x.RepairCardId,
+                        principalTable: "RepairCards",
+                        principalColumn: "RepairCardId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExitCards_Sales_SaleId",
+                        column: x => x.SaleId,
+                        principalTable: "Sales",
+                        principalColumn: "SaleId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SaleItems",
+                columns: table => new
+                {
+                    SaleItemId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SaleId = table.Column<int>(type: "int", nullable: false),
+                    StoreItemUnitId = table.Column<int>(type: "int", nullable: false),
+                    ItemUnitId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SaleItems", x => x.SaleItemId);
+                    table.ForeignKey(
+                        name: "FK_SaleItems_ItemUnits_ItemUnitId",
+                        column: x => x.ItemUnitId,
+                        principalTable: "ItemUnits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SaleItems_Sales_SaleId",
+                        column: x => x.SaleId,
+                        principalTable: "Sales",
+                        principalColumn: "SaleId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SaleItems_StoreItemUnits_StoreItemUnitId",
+                        column: x => x.StoreItemUnitId,
+                        principalTable: "StoreItemUnits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DiagnosisPrograms",
                 columns: table => new
                 {
@@ -1547,6 +1658,49 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         column: x => x.TherapyCardId,
                         principalTable: "TherapyCards",
                         principalColumn: "TherapyCardId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExchangeOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Number = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    RelatedOrderId = table.Column<int>(type: "int", nullable: true),
+                    RelatedSaleId = table.Column<int>(type: "int", nullable: true),
+                    StoreId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExchangeOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExchangeOrders_Orders_RelatedOrderId",
+                        column: x => x.RelatedOrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExchangeOrders_Sales_RelatedSaleId",
+                        column: x => x.RelatedSaleId,
+                        principalTable: "Sales",
+                        principalColumn: "SaleId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExchangeOrders_Stores_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Stores",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -1646,165 +1800,17 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_ExchangeOrderItems", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_ExchangeOrderItems_ExchangeOrders_ExchangeOrderId",
+                        column: x => x.ExchangeOrderId,
+                        principalTable: "ExchangeOrders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_ExchangeOrderItems_StoreItemUnits_StoreItemUnitId",
                         column: x => x.StoreItemUnitId,
                         principalTable: "StoreItemUnits",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExchangeOrders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Number = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    RelatedOrderId = table.Column<int>(type: "int", nullable: true),
-                    RelatedSaleId = table.Column<int>(type: "int", nullable: true),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExchangeOrders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExchangeOrders_Orders_RelatedOrderId",
-                        column: x => x.RelatedOrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExchangeOrders_Stores_StoreId",
-                        column: x => x.StoreId,
-                        principalTable: "Stores",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Sales",
-                columns: table => new
-                {
-                    SaleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DiagnosisId = table.Column<int>(type: "int", nullable: false),
-                    ExchangeOrderId = table.Column<int>(type: "int", nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sales", x => x.SaleId);
-                    table.ForeignKey(
-                        name: "FK_Sales_Diagnoses_DiagnosisId",
-                        column: x => x.DiagnosisId,
-                        principalTable: "Diagnoses",
-                        principalColumn: "DiagnosisId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Sales_ExchangeOrders_ExchangeOrderId",
-                        column: x => x.ExchangeOrderId,
-                        principalTable: "ExchangeOrders",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExitCards",
-                columns: table => new
-                {
-                    ExitCardId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Note = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    PatientId = table.Column<int>(type: "int", nullable: false),
-                    SaleId = table.Column<int>(type: "int", nullable: true),
-                    RepairCardId = table.Column<int>(type: "int", nullable: true),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExitCards", x => x.ExitCardId);
-                    table.ForeignKey(
-                        name: "FK_ExitCards_Patients_PatientId",
-                        column: x => x.PatientId,
-                        principalTable: "Patients",
-                        principalColumn: "PatientId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExitCards_RepairCards_RepairCardId",
-                        column: x => x.RepairCardId,
-                        principalTable: "RepairCards",
-                        principalColumn: "RepairCardId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExitCards_Sales_SaleId",
-                        column: x => x.SaleId,
-                        principalTable: "Sales",
-                        principalColumn: "SaleId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SaleItems",
-                columns: table => new
-                {
-                    SaleItemId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SaleId = table.Column<int>(type: "int", nullable: false),
-                    StoreItemUnitId = table.Column<int>(type: "int", nullable: false),
-                    ItemUnitId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SaleItems", x => x.SaleItemId);
-                    table.ForeignKey(
-                        name: "FK_SaleItems_ItemUnits_ItemUnitId",
-                        column: x => x.ItemUnitId,
-                        principalTable: "ItemUnits",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SaleItems_Sales_SaleId",
-                        column: x => x.SaleId,
-                        principalTable: "Sales",
-                        principalColumn: "SaleId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SaleItems_StoreItemUnits_StoreItemUnitId",
-                        column: x => x.StoreItemUnitId,
-                        principalTable: "StoreItemUnits",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -2790,11 +2796,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sales_ExchangeOrderId",
-                table: "Sales",
-                column: "ExchangeOrderId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sections_DepartmentId",
                 table: "Sections",
                 column: "DepartmentId");
@@ -2892,59 +2893,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "IX_WoundedPayments_WoundedCardId",
                 table: "WoundedPayments",
                 column: "WoundedCardId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ExchangeOrderItems_ExchangeOrders_ExchangeOrderId",
-                table: "ExchangeOrderItems",
-                column: "ExchangeOrderId",
-                principalTable: "ExchangeOrders",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ExchangeOrders_Sales_RelatedSaleId",
-                table: "ExchangeOrders",
-                column: "RelatedSaleId",
-                principalTable: "Sales",
-                principalColumn: "SaleId",
-                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Diagnoses_Tickets_TicketId",
-                table: "Diagnoses");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Patients_People_PersonId",
-                table: "Patients");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Orders_RepairCards_RepairCardId",
-                table: "Orders");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Diagnoses_Patients_PatientId",
-                table: "Diagnoses");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Sales_Diagnoses_DiagnosisId",
-                table: "Sales");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Sections_Departments_DepartmentId",
-                table: "Sections");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Orders_Sections_SectionId",
-                table: "Orders");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Sales_ExchangeOrders_ExchangeOrderId",
-                table: "Sales");
-
             migrationBuilder.DropTable(
                 name: "Appointments");
 
@@ -3039,6 +2992,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "DisabledCards");
 
             migrationBuilder.DropTable(
+                name: "ExchangeOrders");
+
+            migrationBuilder.DropTable(
                 name: "PurchaseInvoices");
 
             migrationBuilder.DropTable(
@@ -3072,10 +3028,19 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "IndustrialParts");
 
             migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Sales");
+
+            migrationBuilder.DropTable(
                 name: "Suppliers");
 
             migrationBuilder.DropTable(
                 name: "ItemUnits");
+
+            migrationBuilder.DropTable(
+                name: "Stores");
 
             migrationBuilder.DropTable(
                 name: "MedicalPrograms");
@@ -3090,7 +3055,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "TherapyCards");
 
             migrationBuilder.DropTable(
+                name: "RepairCards");
+
+            migrationBuilder.DropTable(
                 name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "Sections");
+
+            migrationBuilder.DropTable(
+                name: "Diagnoses");
 
             migrationBuilder.DropTable(
                 name: "Units");
@@ -3099,37 +3073,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "Tickets");
 
             migrationBuilder.DropTable(
+                name: "Patients");
+
+            migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
                 name: "People");
 
             migrationBuilder.DropTable(
-                name: "RepairCards");
-
-            migrationBuilder.DropTable(
-                name: "Patients");
-
-            migrationBuilder.DropTable(
-                name: "Diagnoses");
-
-            migrationBuilder.DropTable(
                 name: "Departments");
-
-            migrationBuilder.DropTable(
-                name: "Sections");
-
-            migrationBuilder.DropTable(
-                name: "ExchangeOrders");
-
-            migrationBuilder.DropTable(
-                name: "Orders");
-
-            migrationBuilder.DropTable(
-                name: "Sales");
-
-            migrationBuilder.DropTable(
-                name: "Stores");
         }
     }
 }

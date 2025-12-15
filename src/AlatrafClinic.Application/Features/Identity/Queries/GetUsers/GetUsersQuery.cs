@@ -5,7 +5,6 @@ using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
-using MediatR;
 
 public sealed record GetUsersQuery(
     int Page,

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    [Migration("20251212204548_initialMigration")]
-    partial class initialMigration
+    [Migration("20251215202425_UpdateSalesOperation")]
+    partial class UpdateSalesOperation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2818,9 +2818,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("DiagnosisId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ExchangeOrderId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -2842,8 +2839,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("DiagnosisId")
                         .IsUnique();
-
-                    b.HasIndex("ExchangeOrderId");
 
                     b.ToTable("Sales", (string)null);
                 });
@@ -5642,13 +5637,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", "ExchangeOrder")
-                        .WithMany()
-                        .HasForeignKey("ExchangeOrderId");
-
                     b.Navigation("Diagnosis");
-
-                    b.Navigation("ExchangeOrder");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.SalesItems.SaleItem", b =>

@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 using AlatrafClinic.Application.Features.Sections.Dtos;
 
 namespace AlatrafClinic.Application.Features.Departments.Dtos;

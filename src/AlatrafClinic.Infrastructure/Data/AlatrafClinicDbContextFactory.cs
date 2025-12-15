@@ -11,7 +11,7 @@ public class AlatrafClinicDbContextFactory
         var optionsBuilder = new DbContextOptionsBuilder<AlatrafClinicDbContext>();
 
         var connectionString =
-              "Server=localhost;Database=AlatrafClinicDevDb;User Id=sa;Password=sa123456;TrustServerCertificate=True;";
+              "Server =Abu-Ghaith\\AMSSQLSERVER; Database = AlatrafClinicDevDb ; Trusted_Connection=True; MultipleActiveResultSets = true ; TrustServerCertificate = True;";
 
         optionsBuilder.UseSqlServer(connectionString);
 
