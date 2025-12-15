@@ -28,7 +28,7 @@ public class CreateMedicalProgramCommandHandler : IRequestHandler<CreateMedicalP
     }
     public async Task<Result<MedicalProgramDto>> Handle(CreateMedicalProgramCommand command, CancellationToken ct)
     {
-        var isExists = await _context.MedicalPrograms.AnyAsync(mp => mp.Name == command.Name, ct);
+        var isExists = await _context.MedicalPrograms.Include(m=> m.Section).AnyAsync(mp => mp.Name == command.Name, ct);
         if (isExists)
         {
             _logger.LogWarning("Medical program {name} already exists", command.Name);
