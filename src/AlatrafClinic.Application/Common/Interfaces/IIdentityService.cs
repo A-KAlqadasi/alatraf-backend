@@ -22,7 +22,11 @@ public interface IIdentityService
     Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword);
     Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string oldPassword, string newPassword);
 
-    public Task<IQueryable<UserDto>> GetUsersAsync();
+    IQueryable<UserQueryRow> QueryUsers();
+
+    Task<List<UserDto>> EnrichUsersAsync(
+        IReadOnlyList<UserQueryRow> rows,
+        CancellationToken ct);
 
     public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive);
 

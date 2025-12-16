@@ -83,15 +83,4 @@ public class DoctorSectionRoom : AuditableEntity<int>
         EndDate = AlatrafClinicConstants.TodayDate;
         return Result.Updated;
     }
-
-    public int GetTodayIndustrialPartsCount()
-    {
-        var today = AlatrafClinicConstants.TodayDate;
-        return DiagnosisIndustrialParts.Count(dip => DateOnly.FromDateTime(dip.CreatedAtUtc.Date) == today);
-    }
-    public int GetTodaySessionsCount()
-    {
-        var today = AlatrafClinicConstants.TodayDate;
-        return SessionPrograms.Count(sp => DateOnly.FromDateTime(sp.CreatedAtUtc.Date) == today);
-    }
 }

@@ -8,6 +8,8 @@ using AlatrafClinic.Application.Features.Doctors.Commands.UpdateDoctor;
 using AlatrafClinic.Application.Features.Doctors.Dtos;
 using AlatrafClinic.Application.Features.Doctors.Queries.GetDoctor;
 using AlatrafClinic.Application.Features.Doctors.Queries.GetDoctors;
+using AlatrafClinic.Application.Features.Doctors.Queries.GetTechniciansDropdown;
+using AlatrafClinic.Application.Features.Doctors.Queries.GetTherapistDropdown;
 using AlatrafClinic.Application.Features.People.Doctors.Commands.AssignDoctorToRoom;
 
 using Asp.Versioning;
@@ -196,4 +198,68 @@ public sealed class DoctorsController(ISender sender) : ApiController
             _=> NoContent()
             , Problem);
     }
+
+    [HttpGet("technicians")]
+    [ProducesResponseType(typeof(PaginatedList<TechnicianDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves technicians for dropdown selection.")]
+    [EndpointDescription(
+        "Returns a paginated list of technicians filtered by section and optional search term. " +
+        "Designed for dropdown and autocomplete scenarios."
+    )]
+    [EndpointName("GetTechniciansDropdown")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> GetTechniciansDropdown(
+        [FromQuery] TechnicianFilterRequest filter,
+        [FromQuery] PageRequest pageRequest,
+        CancellationToken ct = default)
+    {
+        var query = new GetTechniciansDropdownQuery(
+            pageRequest.Page,
+            pageRequest.PageSize,
+            filter.SectionId,
+            filter.SearchTerm
+        );
+
+        var result = await sender.Send(query, ct);
+
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
+    }
+
+    [HttpGet("therapists")]
+    [ProducesResponseType(typeof(PaginatedList<TherapistDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves therapists for dropdown selection.")]
+    [EndpointDescription(
+        "Returns a paginated list of therapists filtered by section and optional search term. " +
+        "Designed for dropdown and autocomplete scenarios."
+    )]
+    [EndpointName("GetTherapistsDropdown")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> GetTherapistsDropdown(
+        [FromQuery] TherapistFilterRequest filter,
+        [FromQuery] PageRequest pageRequest,
+        CancellationToken ct = default)
+    {
+        var query = new GetTherapistDropdownQuery(
+            pageRequest.Page,
+            pageRequest.PageSize,
+            filter.SectionId,
+            filter.RoomId,
+            filter.SearchTerm
+        );
+
+        var result = await sender.Send(query, ct);
+
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
+    }
+    
 }

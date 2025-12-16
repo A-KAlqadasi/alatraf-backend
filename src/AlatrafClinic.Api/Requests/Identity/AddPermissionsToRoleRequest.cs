@@ -50,15 +50,19 @@ public sealed class ChangeUserNameAndPasswordRequest
     public Guid UserId { get; init; }
 
     [Required]
-    [StringLength(256, MinimumLength = 3)]
+    [StringLength(12, MinimumLength = 4)]
     public string Username { get; init; } = string.Empty;
 
     [Required]
-    [StringLength(200, MinimumLength = 6)]
+    [StringLength(12, MinimumLength = 6)]
+    [RegularExpression(@"^(?=.*[A-Za-z]).{6,12}$",
+    ErrorMessage = "Password must be 6–12 characters long and contain at least one letter.")]
     public string CurrentPassword { get; init; } = string.Empty;
 
     [Required]
-    [StringLength(200, MinimumLength = 6)]
+    [StringLength(12, MinimumLength = 6)]
+    [RegularExpression(@"^(?=.*[A-Za-z]).{6,12}$",
+    ErrorMessage = "Password must be 6–12 characters long and contain at least one letter.")]
     public string NewPassword { get; init; } = string.Empty;
 }
 
@@ -88,11 +92,13 @@ public sealed class CreateUserRequest
     public bool Gender { get; init; }
 
     [Required]
-    [StringLength(256, MinimumLength = 3)]
+    [StringLength(12, MinimumLength = 4)]
     public string UserName { get; init; } = string.Empty;
 
     [Required]
-    [StringLength(200, MinimumLength = 6)]
+    [StringLength(12, MinimumLength = 6)]
+    [RegularExpression(@"^(?=.*[A-Za-z]).{6,12}$",
+    ErrorMessage = "Password must be 6–12 characters long and contain at least one letter.")]
     public string Password { get; init; } = string.Empty;
 
     public List<string> Permissions { get; init; } = new();
