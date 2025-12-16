@@ -9,11 +9,15 @@ namespace AlatrafClinic.Application.Features.Doctors.Queries.GetTherapistDropdow
 public sealed record GetTherapistDropdownQuery(
     int Page,
     int PageSize,
+    int? SectionId = null,
+    int? RoomId = null,
     string? SearchTerm = null
 ) : ICachedQuery<Result<PaginatedList<TherapistDto>>>
 {
     public string CacheKey =>
         $"therapists-dropdown:p={Page}:ps={PageSize}" +
+        $":sec={(SectionId?.ToString() ?? "-")}" +
+        $":room={(RoomId?.ToString() ?? "-")}" +
         $":q={(SearchTerm ?? "-")}";
 
     public string[] Tags => ["doctor"];

@@ -20,10 +20,7 @@ public class Doctor : AuditableEntity<int>
     public IReadOnlyCollection<DoctorSectionRoom> Assignments => _assignments.AsReadOnly();
     private DoctorSectionRoom? ActiveAssignment => _assignments.SingleOrDefault(a => a.IsActive);
     public DoctorSectionRoom? GetCurrentAssignment() => ActiveAssignment;
-    public int TodayIndustrialPartsCount => ActiveAssignment?.GetTodayIndustrialPartsCount() ?? 0;
-
-    public int TodaySessionsCount => ActiveAssignment?.GetTodaySessionsCount() ?? 0;
-
+   
     public IReadOnlyCollection<DoctorSectionRoom> GetAssignmentHistory() => _assignments.ToList();
 
     private Doctor() { }
@@ -74,7 +71,7 @@ public class Doctor : AuditableEntity<int>
         if (room.SectionId != section.Id)
             return DoctorErrors.RoomOutsideSection;
 
-        if (ActiveAssignment is not null && TodaySessionsCount != 0 && ActiveAssignment.SectionId != section.Id && ActiveAssignment.RoomId != room.Id)
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId != section.Id && ActiveAssignment.RoomId != room.Id)
         {
             return DoctorErrors.DoctorHasSessionsToday;
         }
@@ -96,7 +93,7 @@ public class Doctor : AuditableEntity<int>
         if (section.DepartmentId != DepartmentId)
             return DoctorErrors.SectionOutsideDepartment;
 
-        if (ActiveAssignment is not null && TodayIndustrialPartsCount != 0 && ActiveAssignment.SectionId != section.Id)
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId != section.Id)
         {
             return DoctorErrors.DoctorHasIndustrialPartsToday;
         }
