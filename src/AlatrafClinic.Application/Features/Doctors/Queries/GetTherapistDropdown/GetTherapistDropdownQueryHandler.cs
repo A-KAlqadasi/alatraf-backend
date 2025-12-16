@@ -5,6 +5,7 @@ using AlatrafClinic.Domain.Common.Results;
 
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using AlatrafClinic.Domain.Common.Constants;
 
 namespace AlatrafClinic.Application.Features.Doctors.Queries.GetTherapistDropdown;
 public sealed class GetTherapistDropdownQueryHandler
@@ -21,8 +22,7 @@ public sealed class GetTherapistDropdownQueryHandler
         GetTherapistDropdownQuery query,
         CancellationToken ct)
     {
-        var todayUtc = DateTime.UtcNow.Date;
-        var tomorrowUtc = todayUtc.AddDays(1);
+        var today = AlatrafClinicConstants.TodayDate;
 
         // Base query: doctors in Therapy department (1) with their ACTIVE assignment projected
         IQueryable<TherapistDto> therapistsQuery = _context.Doctors
@@ -63,7 +63,7 @@ public sealed class GetTherapistDropdownQueryHandler
                 TodaySessions = d.Assignments
                     .Where(a => a.IsActive)
                     .SelectMany(a => a.SessionPrograms)
-                    .Count(sp => sp.CreatedAtUtc >= todayUtc && sp.CreatedAtUtc < tomorrowUtc),
+                    .Count(sp => sp.Session!.SessionDate == today),
             });
 
         // Apply filters on the projected dto (still SQL-translatable)
