@@ -4,7 +4,6 @@ using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
-using AlatrafClinic.Domain.People;
 
 namespace AlatrafClinic.Domain.People.Doctors;
 
