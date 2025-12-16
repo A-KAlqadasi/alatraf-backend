@@ -1,5 +1,6 @@
 using AlatrafClinic.Application.Features.Doctors.Dtos;
 using AlatrafClinic.Application.Features.Doctors.Queries.GetTechnicianAssignedIndustrialParts;
+using AlatrafClinic.Application.Features.Doctors.Queries.GetTherapistTodaySessions;
 
 using Asp.Versioning;
 
@@ -35,5 +36,29 @@ public sealed class DoctorSectionRoomsController(ISender sender) : ApiController
             success => Ok(success),
             Problem);
     }
+
+    [HttpGet("{doctorSectionRoomId:int}/therapist-sessions",
+    Name = "GetTherapistTodaySessions")]
+    [ProducesResponseType(typeof(TherapistTodaySessionsResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves today's therapist sessions.")]
+    [EndpointDescription(
+        "Returns today's therapy sessions for the specified doctor section room.")]
+    [EndpointName("GetTherapistTodaySessions")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetTherapistTodaySessions(
+        int doctorSectionRoomId,
+        CancellationToken ct)
+    {
+        var result = await sender.Send(
+            new GetTherapistTodaySessionsQuery(doctorSectionRoomId),
+            ct);
+
+        return result.Match(
+            response => Ok(response),
+            Problem);
+    }
+
 
 }
