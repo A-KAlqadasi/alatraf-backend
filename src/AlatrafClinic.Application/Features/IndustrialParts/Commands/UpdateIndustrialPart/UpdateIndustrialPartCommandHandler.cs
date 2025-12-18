@@ -49,7 +49,9 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
             _logger.LogError("Error occurred while updating industrial part {IndustrialPartName}", command.Name);
             return updateResult.Errors;
         }
-        
+        _context.IndustrialParts.Update(industrialPart);
+        await _context.SaveChangesAsync(ct);
+
         List<(int unitId, decimal price)> incomingUnits = new List<(int unitId, decimal price)>();
 
         foreach (var unit in command.Units)
@@ -71,7 +73,6 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
             _logger.LogError("Error occurred while assigning units to industrial part {IndustrialPartName}", command.Name);
             return result.Errors;
         }
-        _context.IndustrialParts.Update(industrialPart);
         await _context.SaveChangesAsync(ct);
         await _cache.RemoveByTagAsync("industrial-part", ct);
         

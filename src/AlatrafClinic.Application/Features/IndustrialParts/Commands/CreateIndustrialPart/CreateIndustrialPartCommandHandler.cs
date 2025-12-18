@@ -42,6 +42,9 @@ public class CreateIndustrialPartCommandHandler : IRequestHandler<CreateIndustri
         }
         IndustrialPart industrialPart = createResult.Value;
 
+        await _context.IndustrialParts.AddAsync(industrialPart, ct);
+        await _context.SaveChangesAsync(ct);
+
         List<(int unitId, decimal price)> incomingUnits = new List<(int unitId, decimal price)>();
 
         foreach (var unit in command.Units)
@@ -64,7 +67,6 @@ public class CreateIndustrialPartCommandHandler : IRequestHandler<CreateIndustri
             return UpsertResult.Errors;
         }
         
-        await _context.IndustrialParts.AddAsync(industrialPart, ct);
         await _context.SaveChangesAsync(ct);
         await _cache.RemoveByTagAsync("industrial-part");
 

@@ -6,7 +6,7 @@ public class GetIndustrialPartByIdQueryValidator : AbstractValidator<GetIndustri
 {
     public GetIndustrialPartByIdQueryValidator()
     {
-        RuleFor(x => x.IdustrialPartId)
+        RuleFor(x => x.IndustrialPartId)
             .GreaterThan(0).WithMessage("The Industrial Part Id must be greater than zero.");
     }
 }

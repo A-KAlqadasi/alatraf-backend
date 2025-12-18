@@ -25,6 +25,8 @@ public sealed class GetIndustrialPartsWithFiltersQueryHandler
         CancellationToken ct)
     {
         IQueryable<IndustrialPart> partsQuery = _context.IndustrialParts
+        .Include(i=> i.IndustrialPartUnits)
+            .ThenInclude(i=> i.Unit)
             .AsNoTracking();
 
         partsQuery = ApplySearch(partsQuery, query);

@@ -23,12 +23,14 @@ public class GetIndustrialPartByIdQueryHandler : IRequestHandler<GetIndustrialPa
     }
     public async Task<Result<IndustrialPartDto>> Handle(GetIndustrialPartByIdQuery query, CancellationToken ct)
     {
-        var industrialPart = await _context.IndustrialParts.Include(i=> i.IndustrialPartUnits).FirstOrDefaultAsync(i=> i.Id == query.IdustrialPartId, ct);
+        var industrialPart = await _context.IndustrialParts
+            .Include(i=> i.IndustrialPartUnits)
+                .ThenInclude(i=> i.Unit)
+        .FirstOrDefaultAsync(i=> i.Id == query.IndustrialPartId, ct);
 
         if (industrialPart is null)
         {
-            _logger.LogError("Industrial part with ID {IndustrialPartId} not found.", query.IdustrialPartId);
-
+            _logger.LogError("Industrial part with ID {IndustrialPartId} not found.", query.IndustrialPartId);
             return IndustrialPartErrors.IndustrialPartNotFound;
         }
         
