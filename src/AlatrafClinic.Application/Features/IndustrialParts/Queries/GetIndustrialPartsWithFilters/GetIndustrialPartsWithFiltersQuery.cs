@@ -20,5 +20,5 @@ public sealed record GetIndustrialPartsWithFiltersQuery(
 
     public string[] Tags => ["industrial-part"];
 
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+    public TimeSpan Expiration => TimeSpan.FromMinutes(20);
 }

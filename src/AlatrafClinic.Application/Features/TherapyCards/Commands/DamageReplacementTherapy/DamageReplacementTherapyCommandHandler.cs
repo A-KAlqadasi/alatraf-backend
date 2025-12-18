@@ -8,7 +8,6 @@ using AlatrafClinic.Domain.TherapyCards;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.DamageReplacementTherapy;
@@ -17,13 +16,11 @@ public class DamageReplacementTherapyCommandHandler : IRequestHandler<DamageRepl
 {
     private readonly ILogger<DamageReplacementTherapyCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public DamageReplacementTherapyCommandHandler(ILogger<DamageReplacementTherapyCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public DamageReplacementTherapyCommandHandler(ILogger<DamageReplacementTherapyCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<Success>> Handle(DamageReplacementTherapyCommand command, CancellationToken ct)
     {
@@ -80,9 +77,7 @@ public class DamageReplacementTherapyCommandHandler : IRequestHandler<DamageRepl
         diagnosis.AssignPayment(payment);
 
         _context.Diagnoses.Update(diagnosis);
-        await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("therapy-card", ct);
-        
+        await _context.SaveChangesAsync(ct);        
         
         _logger.LogInformation("Payment {PaymentId} created for damage replacement of TherapyCard {TherapyCardId}.", payment.Id, therapyCard.Id);
 

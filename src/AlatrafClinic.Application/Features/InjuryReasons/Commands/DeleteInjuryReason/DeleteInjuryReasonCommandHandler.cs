@@ -32,10 +32,10 @@ public class DeleteInjuryReasonCommandHandler : IRequestHandler<DeleteInjuryReas
 
         _context.InjuryReasons.Remove(injuryReason);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("injury-reason", ct);
 
         _logger.LogInformation("Injury reason with ID {InjuryReasonId} deleted successfully.", command.InjuryReasonId);
 
-        await _cache.RemoveByTagAsync("injury-reason", ct);
         
 
         return Result.Deleted;

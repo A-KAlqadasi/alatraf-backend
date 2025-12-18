@@ -12,61 +12,63 @@ public class PersonCreateService : IPersonCreateService
     private readonly IAppDbContext _context;
     private readonly ILogger<PersonCreateService> _logger;
 
-  public PersonCreateService(
-      IAppDbContext context,
-      ILogger<PersonCreateService> logger)
-  {
-        _context = context;
-        _logger = logger;
-
-  }
-
-  public async Task<Result<Person>> CreateAsync(
-    string Fullname,
-    DateOnly Birthdate,
-    string Phone,
-    string? NationalNo,
-    string Address,
-    bool Gender, CancellationToken ct)
-{
-    
-    if (!string.IsNullOrWhiteSpace(NationalNo))
+    public PersonCreateService(
+        IAppDbContext context,
+        ILogger<PersonCreateService> logger)
     {
-      var existing = await _context.People
-          .AnyAsync(p => p.NationalNo == NationalNo.Trim(), ct);
+            _context = context;
+            _logger = logger;
 
-      if (existing)
-      {
-        _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", NationalNo);
-        return PersonErrors.NationalNoExists;
-      }
     }
 
-    var isPhoneExists = await _context.People
-        .AnyAsync(p => p.Phone == Phone.Trim(), ct);
-
-    if (isPhoneExists)
+    public async Task<Result<Person>> CreateAsync(
+        string Fullname,
+        DateOnly Birthdate,
+        string Phone,
+        string? NationalNo,
+        string Address,
+        bool Gender, CancellationToken ct)
     {
-       _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
-       return PersonErrors.PhoneExists; 
+        
+        if (!string.IsNullOrWhiteSpace(NationalNo))
+        {
+        var existing = await _context.People
+            .AnyAsync(p => p.NationalNo == NationalNo.Trim(), ct);
+
+        if (existing)
+        {
+            _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", NationalNo);
+            return PersonErrors.NationalNoExists;
+        }
+        }
+
+        var isPhoneExists = await _context.People
+            .AnyAsync(p => p.Phone == Phone.Trim(), ct);
+
+        if (isPhoneExists)
+        {
+        _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
+        return PersonErrors.PhoneExists; 
+        }
+
+        var createResult = Person.Create(
+            Fullname.Trim(),
+            Birthdate,
+            Phone.Trim(),
+            NationalNo?.Trim(),
+            Address.Trim(),
+            Gender
+            );
+
+        if (createResult.IsError)
+        {
+            return createResult.Errors;
+        }
+
+
+        _logger.LogInformation("Person domain entity  prepered to created (not persisted yet).");
+
+
+        return createResult.Value;
     }
-
-    var createResult = Person.Create(
-        Fullname.Trim(),
-        Birthdate,
-        Phone.Trim(),
-        NationalNo?.Trim(),
-        Address.Trim(),
-        Gender
-        );
-
-    if (createResult.IsError)
-      return createResult.Errors;
-
-
-    _logger.LogInformation("Person domain entity  prepered to created (not persisted yet).");
-
-
-    return createResult.Value;
-  }
 }

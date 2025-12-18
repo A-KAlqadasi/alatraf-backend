@@ -7,7 +7,6 @@ using AlatrafClinic.Domain.RepairCards;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.AssignRepairCardToDoctor;
@@ -16,13 +15,11 @@ public class AssignRepairCardToDoctorCommandHandler : IRequestHandler<AssignRepa
 {
     private readonly ILogger<AssignRepairCardToDoctorCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public AssignRepairCardToDoctorCommandHandler(ILogger<AssignRepairCardToDoctorCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public AssignRepairCardToDoctorCommandHandler(ILogger<AssignRepairCardToDoctorCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(AssignRepairCardToDoctorCommand command, CancellationToken ct)
     {
@@ -33,7 +30,6 @@ public class AssignRepairCardToDoctorCommandHandler : IRequestHandler<AssignRepa
             return RepairCardErrors.RepairCardNotFound;
         }
 
-        // here I will check from section room Id if active
         var doctorSectionRoom = await _context.DoctorSectionRooms
                 .FirstOrDefaultAsync(dsrm => dsrm.DoctorId == command.DoctorId
                                         && dsrm.SectionId == command.SectionId
@@ -63,7 +59,6 @@ public class AssignRepairCardToDoctorCommandHandler : IRequestHandler<AssignRepa
 
         _context.RepairCards.Update(repairCard);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("repair-card");
 
         _logger.LogInformation("Repair card {repairCardId} assigned to doctorSectionId {doctorSectionId}", command.RepairCardId, doctorSectionRoom.Id);
 

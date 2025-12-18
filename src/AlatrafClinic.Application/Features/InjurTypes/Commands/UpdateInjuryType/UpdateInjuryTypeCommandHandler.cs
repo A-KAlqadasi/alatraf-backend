@@ -1,6 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 
 using MediatR;
 

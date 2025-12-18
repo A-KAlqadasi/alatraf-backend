@@ -73,6 +73,7 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
         }
         _context.IndustrialParts.Update(industrialPart);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("industrial-part", ct);
         
         _logger.LogInformation("Industrial part {IndustrialPartName} updated successfully", command.Name);
 

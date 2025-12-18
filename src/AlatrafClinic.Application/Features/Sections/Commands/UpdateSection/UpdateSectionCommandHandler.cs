@@ -46,10 +46,10 @@ public sealed class UpdateSectionCommandHandler(
 
     _context.Sections.Update(section);
     await _context.SaveChangesAsync(ct);
+    await _cache.RemoveByTagAsync("section", ct);
 
     _logger.LogInformation(" Section {SectionId} renamed successfully to '{NewName}'.",
         section.Id, section.Name);
-    await _cache.RemoveByTagAsync("section", ct);
 
     return Result.Updated;
   }

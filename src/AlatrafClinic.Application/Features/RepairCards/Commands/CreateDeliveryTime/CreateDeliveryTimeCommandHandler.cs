@@ -6,7 +6,6 @@ using AlatrafClinic.Domain.RepairCards;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateDeliveryTime;
@@ -15,13 +14,11 @@ public class CreateDeliveryTimeCommandHandler : IRequestHandler<CreateDeliveryTi
 {
     private readonly ILogger<CreateDeliveryTimeCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public CreateDeliveryTimeCommandHandler(ILogger<CreateDeliveryTimeCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public CreateDeliveryTimeCommandHandler(ILogger<CreateDeliveryTimeCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<Created>> Handle(CreateDeliveryTimeCommand command, CancellationToken ct)
     {
@@ -42,7 +39,6 @@ public class CreateDeliveryTimeCommandHandler : IRequestHandler<CreateDeliveryTi
         
         _context.RepairCards.Update(repairCard);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("repair-card");
 
         _logger.LogInformation("Delivery time created for repair card {repairCardId}", command.RepairCardId);
 

@@ -54,10 +54,10 @@ public sealed class CreateRoomCommandHandler(
 
         await _context.Rooms.AddAsync(room, ct);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("room", ct);
 
         _logger.LogInformation(" Room created successfully for Section {SectionId}.",
              command.SectionId);
-        await _cache.RemoveByTagAsync("room", ct);
 
         return room.ToDto();
     }

@@ -9,7 +9,6 @@ using AlatrafClinic.Domain.TherapyCards;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapySession;
@@ -17,13 +16,11 @@ namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapy
 public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapySessionCommand, Result<SessionDto>>
 {
     private readonly ILogger<CreateTherapySessionCommandHandler> _logger;
-    private readonly HybridCache _cache;
     private readonly IAppDbContext _context;
 
-    public CreateTherapySessionCommandHandler(ILogger<CreateTherapySessionCommandHandler> logger, HybridCache cache, IAppDbContext context)
+    public CreateTherapySessionCommandHandler(ILogger<CreateTherapySessionCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
-        _cache = cache;
         _context = context;
     }
     public async Task<Result<SessionDto>> Handle(CreateTherapySessionCommand command, CancellationToken ct)
@@ -86,8 +83,6 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
 
         _context.TherapyCards.Update(therapyCard);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("session", ct);
-
 
         _logger.LogInformation("TherapyCard {TherapyCardId} updated with new session {Number}.", therapyCard.Id, session.Value.Number);
         var s = session.Value;

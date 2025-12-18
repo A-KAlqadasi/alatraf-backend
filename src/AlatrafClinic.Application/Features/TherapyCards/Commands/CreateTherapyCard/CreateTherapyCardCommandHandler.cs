@@ -15,7 +15,6 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Hybrid;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 
@@ -23,18 +22,15 @@ public sealed class CreateTherapyCardCommandHandler
     : IRequestHandler<CreateTherapyCardCommand, Result<TherapyCardDiagnosisDto>>
 {
     private readonly ILogger<CreateTherapyCardCommandHandler> _logger;
-    private readonly HybridCache _cache;
     private readonly IAppDbContext _context;
     private readonly IDiagnosisCreationService _diagnosisService;
 
     public CreateTherapyCardCommandHandler(
         ILogger<CreateTherapyCardCommandHandler> logger,
-        HybridCache cache,
         IAppDbContext context,
         IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
-        _cache = cache;
         _context = context;
         _diagnosisService = diagnosisService;
     }
@@ -128,8 +124,6 @@ public sealed class CreateTherapyCardCommandHandler
 
         await _context.Diagnoses.AddAsync(diagnosis);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("therapy-card", ct);
-
         
         _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);
         

@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Hybrid;
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
@@ -11,6 +9,7 @@ using AlatrafClinic.Domain.Sales.Enums;
 using AlatrafClinic.Domain.Payments;
 
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 
 namespace AlatrafClinic.Application.Features.Sales.Commands.UpdateSale;
@@ -19,14 +18,12 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
 {
     private readonly ILogger<UpdateSaleCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly HybridCache _cache;
     private readonly IDiagnosisUpdateService _diagnosisUpdate;
 
-    public UpdateSaleCommandHandler(ILogger<UpdateSaleCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache, IDiagnosisUpdateService diagnosisUpdate)
+    public UpdateSaleCommandHandler(ILogger<UpdateSaleCommandHandler> logger, IUnitOfWork unitOfWork, IDiagnosisUpdateService diagnosisUpdate)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _cache = cache;
         _diagnosisUpdate = diagnosisUpdate;
     }
     public async Task<Result<Updated>> Handle(UpdateSaleCommand command, CancellationToken ct)
@@ -128,8 +125,6 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
         diagnosis.AssignPayment(currentPayment);
 
         await _unitOfWork.Diagnoses.UpdateAsync(diagnosis, ct);
-        await _unitOfWork.Sales.UpdateAsync(currentSale, ct);
-        await _unitOfWork.Payments.UpdateAsync(currentPayment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
         _logger.LogInformation("Sale {saleId} updated successfully", currentSale.Id);

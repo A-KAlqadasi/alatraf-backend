@@ -45,10 +45,10 @@ public class CreateInjuryReasonCommandHandler : IRequestHandler<CreateInjuryReas
 
         await _context.InjuryReasons.AddAsync(injuryReason, ct);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("injury-reason", ct);
 
         _logger.LogInformation("Injury reason with name {InjuryReasonName} created successfully.", command.Name);
 
-        await _cache.RemoveByTagAsync("injury-reason", ct);
 
         return injuryReason.ToDto();
     }

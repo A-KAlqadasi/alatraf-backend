@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
@@ -10,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Payments.Commands;
 
-// WoundedPaymentHandler.cs
 public class WoundedPaymentHandler : IPaymentTypeHandler
 {
     public AccountKind Kind => AccountKind.Wounded;

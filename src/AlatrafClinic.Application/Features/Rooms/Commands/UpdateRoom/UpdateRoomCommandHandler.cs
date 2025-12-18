@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
 
@@ -49,6 +48,7 @@ public sealed class UpdateRoomCommandHandler(
 
     await _context.SaveChangesAsync(ct);
     await _cache.RemoveByTagAsync("room", ct);
+    
     _logger.LogInformation(" Room {RoomId} number updated successfully to {NewNumber}.",
         room.Id, room.Name);
 

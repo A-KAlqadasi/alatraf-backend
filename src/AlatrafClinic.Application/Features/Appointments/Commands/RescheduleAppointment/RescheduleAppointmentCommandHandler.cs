@@ -6,7 +6,6 @@ using AlatrafClinic.Domain.Services.Appointments;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Commands.RescheduleAppointment;
@@ -15,13 +14,11 @@ public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleApp
 {
     private readonly ILogger<RescheduleAppointmentCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public RescheduleAppointmentCommandHandler(ILogger<RescheduleAppointmentCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public RescheduleAppointmentCommandHandler(ILogger<RescheduleAppointmentCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(RescheduleAppointmentCommand command, CancellationToken ct)
     {
@@ -67,7 +64,6 @@ public class RescheduleAppointmentCommandHandler : IRequestHandler<RescheduleApp
         
         _context.Appointments.Update(appointment);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("appointment", ct);
 
         _logger.LogInformation("Appointment with Id {appointmentId}, rescheduled to {newDate}", appointment.Id, appointment.AttendDate);
 

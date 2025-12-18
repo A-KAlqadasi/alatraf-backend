@@ -8,7 +8,6 @@ using AlatrafClinic.Domain.RepairCards;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.AssignIndustrialPartToDoctor;
@@ -17,13 +16,11 @@ public class AssignIndustrialPartToDoctorCommandHandler : IRequestHandler<Assign
 {
     private readonly ILogger<AssignIndustrialPartToDoctorCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public AssignIndustrialPartToDoctorCommandHandler(ILogger<AssignIndustrialPartToDoctorCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public AssignIndustrialPartToDoctorCommandHandler(ILogger<AssignIndustrialPartToDoctorCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
 
     public async Task<Result<Updated>> Handle(AssignIndustrialPartToDoctorCommand command, CancellationToken ct)
@@ -79,7 +76,6 @@ public class AssignIndustrialPartToDoctorCommandHandler : IRequestHandler<Assign
         
         _context.RepairCards.Update(repairCard);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("repair-card");
         
         _logger.LogInformation("Assigned industrial parts to doctors for repair card with id {RepairCardId}", command.RepairCardId);
         

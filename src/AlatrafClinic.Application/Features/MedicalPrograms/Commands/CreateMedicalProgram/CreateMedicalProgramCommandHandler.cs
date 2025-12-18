@@ -1,6 +1,5 @@
 
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.MedicalPrograms.Dtos;
 using AlatrafClinic.Application.Features.MedicalPrograms.Mappers;
 using AlatrafClinic.Domain.Common.Results;

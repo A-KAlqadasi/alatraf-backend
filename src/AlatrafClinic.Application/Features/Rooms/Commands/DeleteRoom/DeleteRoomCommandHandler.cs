@@ -28,10 +28,9 @@ public sealed class DeleteRoomCommandHandler(
 
         _context.Rooms.Remove(room);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("room", ct);
 
         _logger.LogInformation("Room {RoomId} deleted successfully.", room.Id);
-
-        await _cache.RemoveByTagAsync("room", ct);
 
         return Result.Deleted;
     }

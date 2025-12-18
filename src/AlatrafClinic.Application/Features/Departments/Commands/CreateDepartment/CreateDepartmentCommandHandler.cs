@@ -44,7 +44,6 @@ public sealed class CreateDepartmentCommandHandler(
 
         await _context.Departments.AddAsync(department, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("department", ct);
 
         _logger.LogInformation(" Department '{DepartmentName}' created successfully with ID {DepartmentId}.", name, department.Id);
 

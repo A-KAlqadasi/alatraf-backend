@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Features.InjuryReasons.Commands.DeleteInjuryReason;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
@@ -33,9 +32,9 @@ public class DeleteInjurySideCommandHandler : IRequestHandler<DeleteInjurySideCo
 
         _context.InjurySides.Remove(injurySide);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("injury-side", ct);
 
         _logger.LogInformation("Injury side with ID {InjurySideId} deleted successfully.", command.InjurySideId);
-        await _cache.RemoveByTagAsync("injury-side", ct);
 
         return Result.Deleted;
     }

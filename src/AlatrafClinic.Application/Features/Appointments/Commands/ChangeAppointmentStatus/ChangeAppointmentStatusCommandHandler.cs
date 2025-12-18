@@ -7,7 +7,6 @@ using AlatrafClinic.Domain.Services.Enums;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Commands.ChangeAppointmentStatus;
@@ -16,13 +15,11 @@ public class ChangeAppointmentStatusCommandHandler : IRequestHandler<ChangeAppoi
 {
     private readonly ILogger<ChangeAppointmentStatusCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public ChangeAppointmentStatusCommandHandler(ILogger<ChangeAppointmentStatusCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public ChangeAppointmentStatusCommandHandler(ILogger<ChangeAppointmentStatusCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(ChangeAppointmentStatusCommand command, CancellationToken ct)
     {
@@ -65,7 +62,6 @@ public class ChangeAppointmentStatusCommandHandler : IRequestHandler<ChangeAppoi
 
         _context.Appointments.Update(appointment);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("appointment", ct);
 
         _logger.LogInformation("Successfully changed status of appointment ID {AppointmentId} to {NewStatus}.", command.AppointmentId, command.NewStatus);
 

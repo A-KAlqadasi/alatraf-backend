@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Services.Dtos;
 using AlatrafClinic.Application.Features.Services.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -6,6 +6,7 @@ using AlatrafClinic.Domain.Services;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -13,21 +14,21 @@ namespace AlatrafClinic.Application.Features.Services.Commands.CreateService;
 
 public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand, Result<ServiceDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly HybridCache _cache;
     private readonly ILogger<CreateServiceCommandHandler> _logger;
+    private readonly IAppDbContext _context;
 
-    public CreateServiceCommandHandler(ILogger<CreateServiceCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public CreateServiceCommandHandler(ILogger<CreateServiceCommandHandler> logger, IAppDbContext context, HybridCache cache)
     {
-        _unitOfWork = unitOfWork;
         _cache = cache;
         _logger = logger;
+        _context = context;
     }
 
     public async Task<Result<ServiceDto>> Handle(CreateServiceCommand command, CancellationToken ct)
     {
 
-        var department = await _unitOfWork.Departments.GetByIdAsync(command.DepartmentId, ct);
+        var department = await _context.Departments.FirstOrDefaultAsync(d=> d.Id == command.DepartmentId, ct);
 
         if (department is null)
         {
@@ -47,8 +48,9 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
         var service = serviceResult.Value;
         service.Department = department;
 
-        await _unitOfWork.Services.AddAsync(service, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.Services.AddAsync(service, ct);
+        await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("service", ct);
         
         _logger.LogInformation("Service with ID {ServiceId} created successfully.", service.Id);
 
