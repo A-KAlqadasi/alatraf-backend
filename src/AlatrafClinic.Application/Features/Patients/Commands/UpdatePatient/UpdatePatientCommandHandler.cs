@@ -6,7 +6,6 @@ using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Patients.Commands.UpdatePatient;
@@ -14,16 +13,12 @@ namespace AlatrafClinic.Application.Features.Patients.Commands.UpdatePatient;
 public class UpdatePatientCommandHandler(
     IPersonUpdateService personUpdateService,
     IAppDbContext context,
-    ILogger<UpdatePatientCommandHandler> logger,
-
-    HybridCache cache
-
+    ILogger<UpdatePatientCommandHandler> logger
 ) : IRequestHandler<UpdatePatientCommand, Result<Updated>>
 {
     private readonly IPersonUpdateService _personUpdateService = personUpdateService;
     private readonly IAppDbContext _context = context;
     private readonly ILogger<UpdatePatientCommandHandler> _logger = logger;
-    private readonly HybridCache _cache = cache;
 
     public async Task<Result<Updated>> Handle(UpdatePatientCommand command, CancellationToken ct)
     {
@@ -63,7 +58,6 @@ public class UpdatePatientCommandHandler(
 
         _context.People.Update(person);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("patient", ct);
 
         _logger.LogInformation("Patient {PatientId} and Person {PersonId} updated successfully.", patient.Id, person.Id);
 

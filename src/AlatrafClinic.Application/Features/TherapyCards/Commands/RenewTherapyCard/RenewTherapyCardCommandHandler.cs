@@ -16,7 +16,6 @@ using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
@@ -25,14 +24,12 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 {
     private readonly ILogger<RenewTherapyCardCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
     private readonly IDiagnosisCreationService _diagnosisService;
 
-    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IAppDbContext context, HybridCache cache, IDiagnosisCreationService diagnosisService)
+    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IAppDbContext context, IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
         _diagnosisService = diagnosisService;
     }
 
@@ -176,7 +173,6 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         
         await _context.Diagnoses.AddAsync(diagnosis, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("therapy-card", ct);
 
         _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);
         

@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.People.Dtos;
 using AlatrafClinic.Application.Features.People.Mappers;
@@ -7,53 +7,50 @@ using AlatrafClinic.Domain.People;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.People.Commands.CreatePerson;
 
 public  class CreatePersonCommandHandler(
-    ILogger<CreatePersonCommandHandler> logger,
-    IUnitOfWork unitWork
+    ILogger<CreatePersonCommandHandler> _logger,
+    IAppDbContext _context
     ) : IRequestHandler<CreatePersonCommand, Result<PersonDto>>
 {
-  private readonly ILogger<CreatePersonCommandHandler> _logger = logger;
-  private readonly IUnitOfWork _unitWork = unitWork;
 
-  public async Task<Result<PersonDto>> Handle(CreatePersonCommand command, CancellationToken cancellationToken)
-  {
-
-    if (!string.IsNullOrWhiteSpace(command.NationalNo))
+    public async Task<Result<PersonDto>> Handle(CreatePersonCommand command, CancellationToken ct)
     {
-      var existing = await _unitWork.People
-          .GetByNationalNoAsync(command.NationalNo, cancellationToken);
 
-      if (existing is  null)
-      {
-        _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", command.NationalNo);
-        return PersonErrors.NationalNoExists;
-      }
+        if (!string.IsNullOrWhiteSpace(command.NationalNo))
+        {
+        var existing = await _context.People
+            .AnyAsync(p => p.NationalNo == command.NationalNo, ct);
+
+        if (existing)
+        {
+            _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", command.NationalNo);
+            return PersonErrors.NationalNoExists;
+        }
+        }
+        var createResult = Person.Create(
+            command.Fullname.Trim(),
+            command.Birthdate,
+            command.Phone.Trim(),
+            command.NationalNo?.Trim(),
+            command.Address.Trim(),
+            command.Gender);
+
+        if (createResult.IsError)
+        {
+        return createResult.Errors;
+        }
+        var person = createResult.Value;
+
+        await _context.People.AddAsync(person, ct);
+        await _context.SaveChangesAsync(ct);
+
+        _logger.LogInformation("Person created successfully with ID: {PersonId}", person.Id);
+
+        return person.ToDto();
     }
-    var createResult = Person.Create(
-        command.Fullname.Trim(),
-        command.Birthdate,
-        command.Phone.Trim(),
-        command.NationalNo?.Trim(),
-        command.Address.Trim(),
-        command.Gender);
-
-    if (createResult.IsError)
-    {
-      return createResult.Errors;
-    }
-    var person = createResult.Value;
-
-    await _unitWork.People.AddAsync(person, cancellationToken);
-    await _unitWork.SaveChangesAsync(cancellationToken);
-
-    _logger.LogInformation("Person created successfully with ID: {PersonId}", person.Id);
-
-    return person.ToDto();
-  }
 }
-
-

@@ -30,7 +30,9 @@ public class DeleteWoundedCardCommandHandler : IRequestHandler<DeleteWoundedCard
             return WoundedCardErrors.WoundedCardNotFound;
         }
 
-         _context.WoundedCards.Remove(woundedCard);
+        _context.WoundedCards.Remove(woundedCard);
+        await _context.SaveChangesAsync(ct);
+        _logger.LogInformation("Wounded card with ID {WoundedCardId} deleted successfully.", command.WoundedCardId);
 
         return Result.Deleted;
     }

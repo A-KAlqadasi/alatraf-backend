@@ -4,7 +4,6 @@ using AlatrafClinic.Domain.Sales;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Sales.Commands.DeleteSale;
@@ -13,13 +12,11 @@ public class DeleteSaleCommandHandler : IRequestHandler<DeleteSaleCommand, Resul
 {
     private readonly ILogger<DeleteSaleCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly HybridCache _cache;
 
-    public DeleteSaleCommandHandler(ILogger<DeleteSaleCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public DeleteSaleCommandHandler(ILogger<DeleteSaleCommandHandler> logger, IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(DeleteSaleCommand command, CancellationToken ct)
     {
@@ -37,6 +34,7 @@ public class DeleteSaleCommandHandler : IRequestHandler<DeleteSaleCommand, Resul
         }
         await _unitOfWork.Sales.DeleteAsync(sale, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("Sale with ID {SaleId} deleted successfully.", command.SaleId);
         return Result.Updated;
     }
 }

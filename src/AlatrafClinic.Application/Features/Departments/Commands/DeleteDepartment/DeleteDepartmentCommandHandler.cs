@@ -34,7 +34,6 @@ public class DeleteDepartmentCommandHandler : IRequestHandler<DeleteDepartmentCo
 
         _context.Departments.Remove(department);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("department", ct);
         
         _logger.LogInformation("Department {departmentId} deleted successfully", command.DepartmentId);
         

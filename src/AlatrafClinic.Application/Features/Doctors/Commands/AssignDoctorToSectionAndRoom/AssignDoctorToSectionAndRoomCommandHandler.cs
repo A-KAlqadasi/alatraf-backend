@@ -6,15 +6,13 @@ using MechanicShop.Application.Common.Errors;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.AssignDoctorToSectionAndRoom;
 
 public class AssignDoctorToSectionAndRoomCommandHandler(
     IAppDbContext _context,
-    ILogger<AssignDoctorToSectionAndRoomCommandHandler> _logger,
-    HybridCache _cache
+    ILogger<AssignDoctorToSectionAndRoomCommandHandler> _logger
 ) : IRequestHandler<AssignDoctorToSectionAndRoomCommand, Result<Updated>>
 {
     
@@ -54,7 +52,6 @@ public class AssignDoctorToSectionAndRoomCommandHandler(
 
         _context.Doctors.Update(doctor);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("doctor", ct);
 
         _logger.LogInformation("Doctor {DoctorId} assigned to Section {SectionId} / Room {RoomId}.",
             doctor.Id, section.Id, room.Id);

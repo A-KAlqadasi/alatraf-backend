@@ -1,8 +1,9 @@
-using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises.Enums;
+
+using MediatR;
 
 namespace AlatrafClinic.Application.Features.Diagnosises.Queries.GetDiagnoses;
 
@@ -22,23 +23,4 @@ public sealed record GetDiagnosesQuery(
     DateOnly? InjuryDateTo = null,
     DateOnly? CreatedDateFrom = null,
     DateOnly? CreatedDateTo = null
-) : ICachedQuery<Result<PaginatedList<DiagnosisDto>>>
-{
-    public string CacheKey =>
-        $"diagnoses:p={Page}:ps={PageSize}" +
-        $":q={(SearchTerm ?? "-")}" +
-        $":sort={SortColumn}:{SortDirection}" +
-        $":type={(Type?.ToString() ?? "-")}" +
-        $":patient={(PatientId?.ToString() ?? "-")}" +
-        $":ticket={(TicketId?.ToString() ?? "-")}" +
-        $":repair={(HasRepairCard?.ToString() ?? "-")}" +
-        $":therapy={(HasTherapyCards?.ToString() ?? "-")}" +
-        $":sale={(HasSale?.ToString() ?? "-")}" +
-        $":injFrom={(InjuryDateFrom?.ToString("yyyyMMdd") ?? "-")}" +
-        $":injTo={(InjuryDateTo?.ToString("yyyyMMdd") ?? "-")}" +
-        $":crFrom={(CreatedDateFrom?.ToString("yyyyMMdd") ?? "-")}" +
-        $":crTo={(CreatedDateTo?.ToString("yyyyMMdd") ?? "-")}";
-
-    public string[] Tags => ["diagnosis"];
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
-}
+) : IRequest<Result<PaginatedList<DiagnosisDto>>>;

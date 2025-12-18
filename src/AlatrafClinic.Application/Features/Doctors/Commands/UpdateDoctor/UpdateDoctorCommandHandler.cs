@@ -7,7 +7,6 @@ using MechanicShop.Application.Common.Errors;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.UpdateDoctor;
@@ -15,8 +14,7 @@ namespace AlatrafClinic.Application.Features.Doctors.Commands.UpdateDoctor;
 public class UpdateDoctorCommandHandler(
     IPersonUpdateService _personUpdateService,
     IAppDbContext _context,
-    ILogger<UpdateDoctorCommandHandler> _logger,
-    HybridCache _cache
+    ILogger<UpdateDoctorCommandHandler> _logger
 ) : IRequestHandler<UpdateDoctorCommand, Result<Updated>>
 {
    
@@ -59,7 +57,6 @@ public class UpdateDoctorCommandHandler(
 
         _context.People.Update(person);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("doctor", ct);
 
         _logger.LogInformation("Doctor {DoctorId} and Person {PersonId} updated successfully.", doctor.Id, person.Id);
         return Result.Updated;

@@ -9,7 +9,6 @@ using AlatrafClinic.Domain.Patients;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.DisabledCards.Commands.AddDisabledCard;
@@ -18,13 +17,11 @@ public class AddDisabledCardCommandHandler : IRequestHandler<AddDisabledCardComm
 {
     private readonly ILogger<AddDisabledCardCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public AddDisabledCardCommandHandler(ILogger<AddDisabledCardCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public AddDisabledCardCommandHandler(ILogger<AddDisabledCardCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<DisabledCardDto>> Handle(AddDisabledCardCommand command, CancellationToken ct)
     {
@@ -54,7 +51,6 @@ public class AddDisabledCardCommandHandler : IRequestHandler<AddDisabledCardComm
 
         await _context.DisabledCards.AddAsync(disabledCard, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("disabled-card", ct);
 
         _logger.LogInformation("New disabled card with number {cardNumber} is created successfully", command.CardNumber);
 

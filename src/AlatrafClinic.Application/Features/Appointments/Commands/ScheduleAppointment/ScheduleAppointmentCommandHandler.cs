@@ -11,7 +11,6 @@ using AlatrafClinic.Domain.Services.Tickets;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Commands.ScheduleAppointment;
@@ -20,14 +19,12 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 {
     private readonly ILogger<ScheduleAppointmentCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
 
-    public ScheduleAppointmentCommandHandler(ILogger<ScheduleAppointmentCommandHandler> logger, IAppDbContext context,HybridCache cache)
+    public ScheduleAppointmentCommandHandler(ILogger<ScheduleAppointmentCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
 
     public async Task<Result<AppointmentDto>> Handle(ScheduleAppointmentCommand command, CancellationToken ct)
@@ -100,7 +97,6 @@ public class ScheduleAppointmentCommandHandler : IRequestHandler<ScheduleAppoint
 
         await _context.Appointments.AddAsync(appointment, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("appointment", ct);
 
         _logger.LogInformation("Appointment {appointmentId} scheduled for Ticket {ticketId} on {attendDate}", appointment.Id, ticket.Id, appointment.AttendDate);
 

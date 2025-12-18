@@ -46,7 +46,6 @@ public sealed class UpdateDepartmentCommandHandler(
 
         _context.Departments.Update(department);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("department", ct);
 
         _logger.LogInformation("Department {DepartmentId} renamed successfully to '{DepartmentName}'.",
             department.Id, department.Name);

@@ -8,7 +8,6 @@ using AlatrafClinic.Domain.Patients;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Patients.Commands.CreatePatient;
@@ -16,15 +15,12 @@ namespace AlatrafClinic.Application.Features.Patients.Commands.CreatePatient;
 public class CreatePatientCommandHandler(
 IAppDbContext context,
 ILogger<CreatePatientCommandHandler> logger,
-IPersonCreateService personCreateService,
-    HybridCache cache
-
+IPersonCreateService personCreateService
 ) : IRequestHandler<CreatePatientCommand, Result<PatientDto>>
 {
     private readonly IAppDbContext _context = context;
     private readonly ILogger<CreatePatientCommandHandler> _logger = logger;
     private readonly IPersonCreateService _personCreateService = personCreateService;
-    private readonly HybridCache _cache = cache;
 
     public async Task<Result<PatientDto>> Handle(CreatePatientCommand command, CancellationToken ct)
     {
@@ -59,7 +55,6 @@ IPersonCreateService personCreateService,
 
         await _context.People.AddAsync(person, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("patient", ct);
 
         _logger.LogInformation("Patient created successfully with ID: {patient}", patient.Id);
 

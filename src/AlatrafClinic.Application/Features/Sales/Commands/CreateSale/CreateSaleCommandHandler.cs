@@ -11,7 +11,6 @@ using AlatrafClinic.Domain.Sales;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
@@ -21,14 +20,12 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
     private readonly ILogger<CreateSaleCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDiagnosisCreationService _diagnosisService;
-    private readonly HybridCache _cache;
 
-    public CreateSaleCommandHandler(ILogger<CreateSaleCommandHandler> logger, IUnitOfWork unitOfWork, IDiagnosisCreationService diagnosisService, HybridCache cache)
+    public CreateSaleCommandHandler(ILogger<CreateSaleCommandHandler> logger, IUnitOfWork unitOfWork, IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _diagnosisService = diagnosisService;
-        _cache = cache;
     }
 
     public async Task<Result<SaleDto>> Handle(CreateSaleCommand command, CancellationToken ct)
@@ -108,10 +105,9 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
         var payment = paymentResult.Value;
 
         diagnosis.AssignPayment(payment);
+        diagnosis.AssignToSale(sale);
 
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.Sales.AddAsync(sale, ct);
-        await _unitOfWork.Payments.AddAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
         
         _logger.LogInformation("Created Sale {saleId} for Diagnosis {diagnosisId} and ticket {ticketId}.", sale.Id, diagnosis.Id, command.TicketId);
