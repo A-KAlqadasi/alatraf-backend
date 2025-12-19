@@ -2,12 +2,18 @@ namespace AlatrafClinic.Application.Common.Interfaces;
 
 public static class UtilityService
 {
-    public static int CalculateAge(DateOnly birthdate, DateOnly today)
+    public static int CalculateAge(DateOnly dateOfBirth, DateOnly now)
     {
-        var age = today.Year - birthdate.Year;
-        if (birthdate > today.AddYears(-age)) age--;
+        var age = now.Year - dateOfBirth.Year;
+
+        if (dateOfBirth > now.AddYears(-age))
+        {
+            age -= 1;
+        }
+
         return age;
     }
+    
     public static string AgeToArabicString(bool age)
     {
         return age ? "ذكر" : "أنثى";

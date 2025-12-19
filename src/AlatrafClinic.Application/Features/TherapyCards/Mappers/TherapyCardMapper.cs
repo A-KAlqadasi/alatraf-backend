@@ -145,7 +145,4 @@ public static class TherapyCardMapper
             throw new Exception("Therapy card status is unknown");
         }
     }
-
-
-   
 }
