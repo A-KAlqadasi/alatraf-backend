@@ -1,11 +1,10 @@
 using System.Security.Claims;
 
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 

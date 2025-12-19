@@ -1,9 +1,8 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.People.Doctors.Commands.AssignDoctorToRoom;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.Sections;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 

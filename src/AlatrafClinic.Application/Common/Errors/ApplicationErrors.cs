@@ -1,7 +1,6 @@
-﻿
-using AlatrafClinic.Domain.Common.Results;
+﻿using AlatrafClinic.Domain.Common.Results;
 
-namespace MechanicShop.Application.Common.Errors;
+namespace AlatrafClinic.Application.Common.Errors;
 
 public static class ApplicationErrors
 {

@@ -147,7 +147,7 @@ public sealed class SectionsController(ISender sender) : ApiController
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Update(int sectionId, [FromBody] UpdateSectionRequest request, CancellationToken ct)
     {
-        var result = await sender.Send(new UpdateSectionCommand(sectionId, request.DepartmentId, request.Name), ct);
+        var result = await sender.Send(new UpdateSectionCommand(sectionId, request.Name), ct);
         return result.Match(
             _ => NoContent(),
             Problem

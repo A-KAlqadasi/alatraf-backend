@@ -1,10 +1,9 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.Patients.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 

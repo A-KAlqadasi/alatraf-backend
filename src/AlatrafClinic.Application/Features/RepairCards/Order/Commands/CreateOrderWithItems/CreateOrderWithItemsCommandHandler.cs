@@ -8,6 +8,7 @@ using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.RepairCards.Orders;
 
 using MediatR;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateOrderWithItems;
 
@@ -29,7 +30,7 @@ public sealed class CreateOrderWithItemsCommandHandler : IRequestHandler<CreateO
         if (section is null)
         {
             _logger.LogError("Section with Id {SectionId} not found.", command.SectionId);
-            return MechanicShop.Application.Common.Errors.ApplicationErrors.SectionNotFound;
+            return ApplicationErrors.SectionNotFound;
         }
 
         // Validate items and load ItemUnits

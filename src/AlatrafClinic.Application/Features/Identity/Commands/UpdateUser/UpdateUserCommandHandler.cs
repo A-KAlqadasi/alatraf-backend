@@ -4,8 +4,8 @@ using AlatrafClinic.Domain.People;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Interfaces;
-using MechanicShop.Application.Common.Errors;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.Identity.Commands.UpdateUser;
 
