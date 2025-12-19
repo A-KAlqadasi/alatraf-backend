@@ -43,7 +43,7 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
                 return TicketErrors.PatientIsRequired;
             }
 
-            patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == command.PatientId.Value, ct);
+            patient = await _context.Patients.Include(p=> p.Person).FirstOrDefaultAsync(p => p.Id == command.PatientId.Value, ct);
 
             if (patient is null)
             {
