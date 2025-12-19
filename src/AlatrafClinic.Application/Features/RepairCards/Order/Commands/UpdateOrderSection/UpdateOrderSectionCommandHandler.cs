@@ -5,6 +5,7 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpdateOrderSection;
 
@@ -33,7 +34,7 @@ public sealed class UpdateOrderSectionCommandHandler : IRequestHandler<UpdateOrd
         if (section is null)
         {
             _logger.LogError("Section with Id {SectionId} not found.", command.SectionId);
-            return MechanicShop.Application.Common.Errors.ApplicationErrors.SectionNotFound;
+            return ApplicationErrors.SectionNotFound;
         }
 
         var result = repairCard.UpdateOrderSection(command.OrderId, command.SectionId);

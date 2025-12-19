@@ -1,6 +1,6 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 

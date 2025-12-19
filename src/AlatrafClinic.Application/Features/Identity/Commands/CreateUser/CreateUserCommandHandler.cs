@@ -3,12 +3,12 @@ using AlatrafClinic.Application.Features.People.Mappers;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People;
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
 

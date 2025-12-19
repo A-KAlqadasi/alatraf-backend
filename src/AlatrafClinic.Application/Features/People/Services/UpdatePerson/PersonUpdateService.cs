@@ -2,9 +2,9 @@ using Microsoft.Extensions.Logging;
 
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People;
-using MechanicShop.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.People.Services.UpdatePerson;
 

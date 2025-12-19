@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Doctors.Dtos;
@@ -5,8 +6,6 @@ using AlatrafClinic.Application.Features.Doctors.Mappers;
 using AlatrafClinic.Application.Features.People.Services.CreatePerson;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People.Doctors;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
