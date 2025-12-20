@@ -103,7 +103,7 @@ public sealed class CreateTherapyCardCommandHandler
                 _logger.LogError("Program start date and end date are required for therapy card type {TherapyCardType}.", command.TherapyCardType);
                 return TherapyCardErrors.ProgramDatesAreRequired;
             }
-            var sessions =  programEndDate.Value.DayNumber - programStartDate.DayNumber + 1;
+            var sessions =  programEndDate.Value.DayNumber - programStartDate.DayNumber;
             if (sessions != command.NumberOfSessions)
             {
                 _logger.LogError("Program dates do not match the number of sessions for therapy card type {TherapyCardType}.", command.TherapyCardType);
