@@ -9,7 +9,8 @@ public class DisabledCardDto
     public int PatientId { get; set; }
     public string FullName { get; set; } = string.Empty;
     public int Age { get; set; }
-    public string Gender { get; set; } = string.Empty;    
+    public string Gender { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;    
     public string? CardImagePath { get; set; }
     public bool IsExpired { get; set; }
 }
