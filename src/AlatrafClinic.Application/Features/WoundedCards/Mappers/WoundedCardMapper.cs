@@ -22,6 +22,7 @@ public static class WoundedCardMapper
             FullName = entity.Patient?.Person?.FullName ?? string.Empty,
             Age = UtilityService.CalculateAge(birthDate ?? default, AlatrafClinicConstants.TodayDate),
             Gender = UtilityService.GenderToArabicString(entity.Patient?.Person?.Gender ?? true),
+            PhoneNumber = entity.Patient?.Person?.Phone ?? string.Empty,
             PatientId = entity.PatientId
         };
     }
