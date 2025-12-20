@@ -9,6 +9,7 @@ namespace AlatrafClinic.Domain.DisabledCards;
 public class DisabledCard : AuditableEntity<int>
 {
     public string CardNumber { get; private set; } = default!;
+    public DateOnly IssueDate { get; private set; }
     public DateOnly ExpirationDate { get; private set; }
     public string? CardImagePath { get; private set; }
     public int PatientId { get; private set; } 
@@ -17,45 +18,66 @@ public class DisabledCard : AuditableEntity<int>
     public ICollection<DisabledPayment> DisabledPayments { get; set; } = new List<DisabledPayment>();
 
     private DisabledCard() { }
-    private DisabledCard(string cardNumber, DateOnly expiration, int patientId, string? cardImagePath = null)
+    private DisabledCard(string cardNumber, DateOnly issueDate, DateOnly expiration, int patientId, string? cardImagePath = null)
     {
         CardNumber = cardNumber;
+        IssueDate = issueDate;
         ExpirationDate = expiration;
         CardImagePath = cardImagePath;
         PatientId = patientId;
     }
 
-    public static Result<DisabledCard> Create(string cardNumber, DateOnly expiration, int patientId, string? cardImagePath)
+    public static Result<DisabledCard> Create(string cardNumber, DateOnly issueDate, DateOnly expiration, int patientId, string? cardImagePath)
     {
         if (string.IsNullOrWhiteSpace(cardNumber))
         {
             return DisabledCardErrors.CardNumberIsRequired;
         }
 
-        if (expiration < AlatrafClinicConstants.TodayDate)
+        if (issueDate > AlatrafClinicConstants.TodayDate)
         {
-            return DisabledCardErrors.CardIsExpired;
-        }
-        
-        if (patientId <= 0)
-        {
-            return DisabledCardErrors.PatientIdIsRequired;
-        }
-
-        return new DisabledCard(cardNumber, expiration, patientId, cardImagePath);
-    }
-
-    public Result<Updated> Update(string cardNumber, DateOnly expiration, int patientId, string? cardImagePath)
-    {
-        if (string.IsNullOrWhiteSpace(cardNumber))
-        {
-            return DisabledCardErrors.CardNumberIsRequired;
+            return DisabledCardErrors.IssueDateInvalid;
         }
 
         if (expiration <= AlatrafClinicConstants.TodayDate)
         {
             return DisabledCardErrors.CardIsExpired;
         }
+
+        if (issueDate >= expiration)
+        {
+            return DisabledCardErrors.IssueAfterExpiration;
+        }
+
+        if (patientId <= 0)
+        {
+            return DisabledCardErrors.PatientIdIsRequired;
+        }
+
+        return new DisabledCard(cardNumber, issueDate, expiration, patientId, cardImagePath);
+    }
+
+    public Result<Updated> Update(string cardNumber, DateOnly issueDate, DateOnly expiration, int patientId, string? cardImagePath)
+    {
+        if (string.IsNullOrWhiteSpace(cardNumber))
+        {
+            return DisabledCardErrors.CardNumberIsRequired;
+        }
+
+        if (issueDate > AlatrafClinicConstants.TodayDate)
+        {
+            return DisabledCardErrors.IssueDateInvalid;
+        }
+
+        if (expiration <= AlatrafClinicConstants.TodayDate)
+        {
+            return DisabledCardErrors.CardIsExpired;
+        }
+
+        if (issueDate >= expiration)
+        {
+            return DisabledCardErrors.IssueAfterExpiration;
+        }
         
         if (patientId <= 0)
         {
@@ -64,6 +86,7 @@ public class DisabledCard : AuditableEntity<int>
         
         CardNumber = cardNumber;
         ExpirationDate = expiration;
+        IssueDate = issueDate;
         CardImagePath = cardImagePath;
         PatientId = patientId;
 

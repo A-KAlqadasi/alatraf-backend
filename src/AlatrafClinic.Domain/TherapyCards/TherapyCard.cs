@@ -11,9 +11,9 @@ namespace AlatrafClinic.Domain.TherapyCards;
 public class TherapyCard : AuditableEntity<int>
 {
     public DateOnly ProgramStartDate { get; private set; }
-    public DateOnly ProgramEndDate { get; private set; }
+    public DateOnly? ProgramEndDate { get; private set; }
     public int NumberOfTakenSessions => _sessions.Where(s=> s.IsTaken == true).Count();
-    public int TotalSessions => ProgramEndDate.DayNumber - ProgramStartDate.DayNumber;
+    public int NumberOfSessions { get; private set; }
 
     public bool IsActive { get; private set; }
     public int DiagnosisId { get; private set; }
@@ -22,7 +22,7 @@ public class TherapyCard : AuditableEntity<int>
     public TherapyCardType Type { get; private set; }
     public string? Notes { get; private set; }
     public decimal SessionPricePerType { get; private set; }
-    public decimal TotalCost => SessionPricePerType * (ProgramEndDate.DayNumber - ProgramStartDate.DayNumber);
+    public decimal TotalCost => SessionPricePerType * NumberOfSessions;
     public bool IsExpired => AlatrafClinicConstants.TodayDate > ProgramEndDate;
     public bool IsEditable => IsActive && !IsExpired && _sessions.Count() == 0;
     private readonly List<Session> _sessions = new();
@@ -35,13 +35,14 @@ public class TherapyCard : AuditableEntity<int>
     public TherapyCardStatus CardStatus { get; private set; } 
     private TherapyCard()
     {
-
+        
     }
-    private TherapyCard(int diagnosisId, DateOnly programStartDate, DateOnly programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status = TherapyCardStatus.New, int? parentCardId = null, string? notes = null)
+    private TherapyCard(int diagnosisId, DateOnly programStartDate, DateOnly? programEndDate, int numberOfSessions, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status = TherapyCardStatus.New, int? parentCardId = null, string? notes = null)
     {
         DiagnosisId = diagnosisId;
         ProgramStartDate = programStartDate;
         ProgramEndDate = programEndDate;
+        NumberOfSessions = numberOfSessions;
         Type = type;
         SessionPricePerType = sessionPricePerType;
         IsActive = true;
@@ -52,16 +53,21 @@ public class TherapyCard : AuditableEntity<int>
     }
 
     public static Result<TherapyCard> Create(int diagnosisId, DateOnly programStartDate, 
-     DateOnly programEndDate, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status, int? parentCardId = null, string? notes = null)
+     DateOnly? programEndDate, int numberOfSessions, TherapyCardType type, decimal sessionPricePerType, List<DiagnosisProgram> diagnosisPrograms, TherapyCardStatus status, int? parentCardId = null, string? notes = null)
     {
-        if (programStartDate < AlatrafClinicConstants.TodayDate)
+        if (programEndDate.HasValue && programStartDate < AlatrafClinicConstants.TodayDate)
         {
             return TherapyCardErrors.ProgramStartDateNotInPast;
         }
 
-        if (programEndDate <= programStartDate)
+        if (programEndDate.HasValue && programEndDate <= programStartDate)
         {
             return TherapyCardErrors.InvalidTiming;
+        }
+
+        if(numberOfSessions <= 0)
+        {
+            return TherapyCardErrors.NumberOfSessionsIsRequired;
         }
 
         if (!Enum.IsDefined(typeof(TherapyCardType), type))
@@ -78,10 +84,10 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.SessionPricePerTypeInvalid;
         }
 
-        return new TherapyCard(diagnosisId, programStartDate, programEndDate, type, sessionPricePerType, diagnosisPrograms, status, parentCardId, notes);
+        return new TherapyCard(diagnosisId, programStartDate, programEndDate, numberOfSessions, type, sessionPricePerType, diagnosisPrograms, status, parentCardId, notes);
     }
 
-    public Result<Updated> Update(DateOnly programStartDate, DateOnly programEndDate, TherapyCardType type, decimal sessionPricePerType, string? notes = null)
+    public Result<Updated> Update(DateOnly programStartDate, DateOnly? programEndDate, int numberOfSessions, TherapyCardType type, decimal sessionPricePerType, string? notes = null)
     {
         if (!IsEditable)
         {
@@ -93,9 +99,14 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.ProgramStartDateNotInPast;
         }
 
-        if (programEndDate <= programStartDate)
+        if (programEndDate.HasValue && programEndDate <= programStartDate)
         {
             return TherapyCardErrors.InvalidTiming;
+        }
+
+        if(numberOfSessions <= 0)
+        {
+            return TherapyCardErrors.NumberOfSessionsIsRequired;    
         }
 
         if (!Enum.IsDefined(typeof(TherapyCardType), type))
@@ -110,6 +121,7 @@ public class TherapyCard : AuditableEntity<int>
 
         ProgramStartDate = programStartDate;
         ProgramEndDate = programEndDate;
+        NumberOfSessions = numberOfSessions;
         Type = type;
         SessionPricePerType = sessionPricePerType;
         Notes = notes;
@@ -146,12 +158,12 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.Readonly;
         }
 
-        if (AlatrafClinicConstants.TodayDate > ProgramEndDate)
+        if (Type != TherapyCardType.Special && AlatrafClinicConstants.TodayDate > ProgramEndDate)
         {
             return TherapyCardErrors.ProgramEnded;
         }
 
-        if (_sessions.Count >= TotalSessions)
+        if (_sessions.Count >= NumberOfSessions)
         {
             return TherapyCardErrors.AllSessionsAlreadyGenerated;
         }

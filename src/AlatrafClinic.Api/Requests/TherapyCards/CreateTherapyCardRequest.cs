@@ -27,15 +27,13 @@ public sealed class CreateTherapyCardRequest
 
     [Required(ErrorMessage = "InjuryTypes is required.")]
     public List<int> InjuryTypes { get; set; } = new();
-
     [Required(ErrorMessage = "ProgramStartDate is required.")]
     [DataType(DataType.Date)]
     public DateOnly ProgramStartDate { get; set; }
-
-    [Required(ErrorMessage = "ProgramEndDate is required.")]
-    [DataType(DataType.Date)]
-    public DateOnly ProgramEndDate { get; set; }
-
+    public DateOnly? ProgramEndDate { get; set; }
+    [Required(ErrorMessage = "Number of sessions is required!")]
+    public int NumberOfSessions { get; set; }
+    
     [Required(ErrorMessage = "TherapyCardType is required.")]
     [EnumDataType(typeof(TherapyCardType), ErrorMessage = "Invalid TherapyCardType.")]
     public TherapyCardType TherapyCardType { get; set; }

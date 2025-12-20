@@ -14,7 +14,8 @@ public class AddWoundedCardCommandValidator : AbstractValidator<AddWoundedCardCo
         RuleFor(x => x.CardNumber)
             .NotEmpty().WithMessage("CardNumber is required.")
             .MaximumLength(50).WithMessage("CardNumber must not exceed 50 characters.");
-
+        RuleFor(x => x.IssueDate)
+            .LessThan(AlatrafClinicConstants.TodayDate).WithMessage("IssueDate must be a past date.");
         RuleFor(x => x.ExpirationDate)
             .GreaterThan(AlatrafClinicConstants.TodayDate).WithMessage("ExpirationDate must be a future date.");
     }

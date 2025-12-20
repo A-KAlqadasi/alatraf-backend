@@ -4,6 +4,7 @@ using AlatrafClinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    partial class AlatrafClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251220185107_EditTherapyCardExpiration")]
+    partial class EditTherapyCardExpiration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -932,9 +935,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateOnly>("IssueDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -963,7 +963,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CreatedBy = "Seed",
                             ExpirationDate = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
-                            IssueDate = new DateOnly(2025, 1, 1),
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 1
@@ -974,9 +973,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "DC-0002",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateOnly(2025, 1, 11),
+                            ExpirationDate = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
-                            IssueDate = new DateOnly(2025, 1, 1),
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 2
@@ -987,9 +985,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "DC-0003",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateOnly(2025, 1, 31),
+                            ExpirationDate = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
-                            IssueDate = new DateOnly(2025, 1, 1),
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 3
@@ -3835,14 +3832,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("ExpirationDate")
+                    b.Property<DateOnly>("Expiration")
                         .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<DateOnly>("IssueDate")
-                        .HasColumnType("date");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -3870,9 +3864,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "WC-0001",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateOnly(2025, 4, 11),
+                            Expiration = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
-                            IssueDate = new DateOnly(2025, 1, 1),
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 1
@@ -3883,9 +3876,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "WC-0002",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateOnly(2025, 1, 11),
+                            Expiration = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
-                            IssueDate = new DateOnly(2025, 1, 1),
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 2
@@ -3896,9 +3888,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                             CardNumber = "WC-0003",
                             CreatedAtUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CreatedBy = "Seed",
-                            ExpirationDate = new DateOnly(2025, 1, 31),
+                            Expiration = new DateOnly(2025, 4, 11),
                             IsDeleted = false,
-                            IssueDate = new DateOnly(2025, 1, 1),
                             LastModifiedBy = "Seed",
                             LastModifiedUtc = new DateTimeOffset(new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             PatientId = 3

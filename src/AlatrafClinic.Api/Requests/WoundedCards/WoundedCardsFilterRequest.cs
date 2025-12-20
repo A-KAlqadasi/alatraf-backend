@@ -12,6 +12,9 @@ public sealed class WoundedCardsFilterRequest
     [Range(1, int.MaxValue, ErrorMessage = "PatientId must be greater than 0.")]
     public int? PatientId { get; init; }
 
+    public DateOnly? IssueDateFrom { get; init; }
+    public DateOnly? IssueDateTo { get; init; }
+
     public DateOnly? ExpirationFrom { get; init; }
     public DateOnly? ExpirationTo { get; init; }
 

@@ -101,10 +101,12 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
             request.InjuryTypes,
             request.ProgramStartDate,
             request.ProgramEndDate,
+            request.NumberOfSessions,
             request.TherapyCardType,
             programs,
             request.Notes
-        ), ct);
+        ), 
+        ct);
 
          return result.Match(
             response => CreatedAtRoute(
@@ -139,6 +141,7 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
             request.InjuryTypes,
             request.ProgramStartDate,
             request.ProgramEndDate,
+            request.NumberOfSessions,
             request.TherapyCardType,
             programs,
             request.Notes
@@ -167,6 +170,7 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
             request.TicketId,
             request.ProgramStartDate,
             request.ProgramEndDate,
+            request.NumberOfSessions,
             request.TherapyCardType,
             programs,
             request.Notes

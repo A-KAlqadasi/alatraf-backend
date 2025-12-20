@@ -42,6 +42,8 @@ public sealed class DisabledCardsController(ISender sender) : ApiController
             filter.SearchTerm,
             filter.IsExpired,
             filter.PatientId,
+            filter.IssueDateFrom,
+            filter.IssueDateTo,
             filter.ExpirationFrom,
             filter.ExpirationTo,
             filter.SortColumn,
@@ -90,6 +92,7 @@ public sealed class DisabledCardsController(ISender sender) : ApiController
         var result = await sender.Send(new AddDisabledCardCommand(
             request.PatientId,
             request.CardNumber,
+            request.IssueDate,
             request.ExpirationDate,
             request.CardImagePath
         ), ct);
@@ -121,6 +124,7 @@ public sealed class DisabledCardsController(ISender sender) : ApiController
             disabledCardId,
             request.PatientId,
             request.CardNumber,
+            request.IssueDate,
             request.ExpirationDate,
             request.CardImagePath
         ), ct);

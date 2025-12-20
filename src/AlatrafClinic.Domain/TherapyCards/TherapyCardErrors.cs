@@ -35,4 +35,6 @@ public static class TherapyCardErrors
     public static readonly Error AllSessionsAlreadyGenerated = Error.Validation("TherapyCard.AllSessionsAlreadyGenerated", "All sessions are already generated");
 
     public static readonly Error NoTherapyCardsFoundForPatient = Error.NotFound("TherapyCard.NoTherapyCardsFoundForPatient", "No Therapy Cards was found for this patient");
+    public static readonly Error ProgramDatesAreRequired = Error.Validation("TherapyCard.ProgramDatesAreRequired", "Program start date and end date are required for this therapy card type");
+    public static readonly Error NumberOfSessionsInvalid = Error.Validation("TherapyCard.NumberOfSessionsInvalid", "Program dates do not match the number of sessions");
 }

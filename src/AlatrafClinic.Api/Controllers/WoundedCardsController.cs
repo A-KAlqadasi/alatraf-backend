@@ -41,6 +41,8 @@ public sealed class WoundedCardsController(ISender sender) : ApiController
             filter.SearchTerm,
             filter.IsExpired,
             filter.PatientId,
+            filter.IssueDateFrom,
+            filter.IssueDateTo,
             filter.ExpirationFrom,
             filter.ExpirationTo,
             filter.SortColumn,
@@ -89,6 +91,7 @@ public sealed class WoundedCardsController(ISender sender) : ApiController
         var result = await sender.Send(new AddWoundedCardCommand(
             request.PatientId,
             request.CardNumber,
+            request.IssueDate,
             request.ExpirationDate,
             request.CardImagePath
         ), ct);
@@ -120,6 +123,7 @@ public sealed class WoundedCardsController(ISender sender) : ApiController
             woundedCardId,
             request.PatientId,
             request.CardNumber,
+            request.IssueDate,
             request.ExpirationDate,
             request.CardImagePath
         ), ct);

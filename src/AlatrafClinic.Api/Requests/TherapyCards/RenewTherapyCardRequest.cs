@@ -9,14 +9,14 @@ public class RenewTherapyCardRequest
     [Required(ErrorMessage = "TicketId is required.")]
     [Range(1, int.MaxValue, ErrorMessage = "TicketId must be greater than 0.")]
     public int TicketId { get; set; }
-
+    
     [Required(ErrorMessage = "ProgramStartDate is required.")]
     [DataType(DataType.Date)]
-    public DateOnly ProgramStartDate { get; set; }
-
-    [Required(ErrorMessage = "ProgramEndDate is required.")]
-    [DataType(DataType.Date)]
-    public DateOnly ProgramEndDate { get; set; }
+    public DateOnly ProgramStartDate { get; set; }    
+    public DateOnly? ProgramEndDate { get; set; }
+    
+    [Required(ErrorMessage = "Number of sessions is required")]
+    public int NumberOfSessions { get; set; }
 
     [Required(ErrorMessage= "TherapyCardType is required.")]
     [EnumDataType(typeof(TherapyCardType), ErrorMessage = "Invalid Therapy Card Type.")]

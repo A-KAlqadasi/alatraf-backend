@@ -11,13 +11,14 @@ public class RenewTherapyCardCommandValidator : AbstractValidator<RenewTherapyCa
         RuleFor(x => x.TherapyCardId)
             .GreaterThan(0);
 
-        RuleFor(x => x.ProgramStartDate)
-            .LessThan(x => x.ProgramEndDate)
-            .WithMessage("Program start date must be earlier than program end date.");
-
+        RuleFor(x=> x.NumberOfSessions)
+            .GreaterThan(0).WithMessage("Number of sessions must be geater than zero");
+            
         RuleFor(x => x.Programs)
             .NotEmpty()
             .WithMessage("At least one medical program must be specified.");
+        RuleFor(x => x.ProgramStartDate)
+            .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Program Start Date must not be in the past.");
 
         RuleForEach(x => x.Programs)
             .SetValidator(new RenewTherapyCardMedicalProgramCommandValidator());

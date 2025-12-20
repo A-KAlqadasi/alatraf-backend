@@ -5,5 +5,5 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.DisabledCards.Commands.UpdateDisabledCard;
 
 public sealed record class UpdateDisabledCardCommand(
-    int DisabledCardId, int PatientId, string CardNumber, DateOnly ExpirationDate, string? CardImagePath = null
+    int DisabledCardId, int PatientId, string CardNumber, DateOnly IssueDate, DateOnly ExpirationDate, string? CardImagePath = null
 ) : IRequest<Result<Updated>>;

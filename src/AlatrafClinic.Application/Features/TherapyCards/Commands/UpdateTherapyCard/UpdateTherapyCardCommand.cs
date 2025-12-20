@@ -14,7 +14,8 @@ public sealed record class UpdateTherapyCardCommand(
     List<int> InjurySides,
     List<int> InjuryTypes,
     DateOnly ProgramStartDate,
-    DateOnly ProgramEndDate,
+    DateOnly? ProgramEndDate,
+    int NumberOfSessions,
     TherapyCardType TherapyCardType,
     List<UpdateTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null

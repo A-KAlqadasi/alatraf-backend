@@ -97,6 +97,18 @@ public sealed class GetDisabledCardsQueryHandler
             query = query.Where(dc => dc.ExpirationDate <= to);
         }
 
+        if (q.IssueDateFrom.HasValue)
+        {
+            var from = q.IssueDateFrom.Value;
+            query = query.Where(dc => dc.IssueDate >= from);
+        }
+
+        if (q.IssueDateTo.HasValue)
+        {
+            var to = q.IssueDateTo.Value;
+            query = query.Where(dc => dc.IssueDate <= to);
+        }
+
         return query;
     }
 

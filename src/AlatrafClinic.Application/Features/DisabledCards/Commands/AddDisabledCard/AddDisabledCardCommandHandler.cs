@@ -40,7 +40,7 @@ public class AddDisabledCardCommandHandler : IRequestHandler<AddDisabledCardComm
             return PatientErrors.PatientNotFound;
         }
 
-        var disabledCardResult = DisabledCard.Create(command.CardNumber, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        var disabledCardResult = DisabledCard.Create(command.CardNumber, command.IssueDate, command.ExpirationDate, command.PatientId, command.CardImagePath);
         if (disabledCardResult.IsError)
         {
             return disabledCardResult.Errors;

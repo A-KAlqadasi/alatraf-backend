@@ -38,7 +38,7 @@ public class AddWoundedCardCommandHandler : IRequestHandler<AddWoundedCardComman
             return PatientErrors.PatientNotFound;
         }
 
-        var woundedCardResult = WoundedCard.Create(command.CardNumber, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        var woundedCardResult = WoundedCard.Create(command.CardNumber, command.IssueDate, command.ExpirationDate, command.PatientId, command.CardImagePath);
         if (woundedCardResult.IsError)
         {
             return woundedCardResult.Errors;
