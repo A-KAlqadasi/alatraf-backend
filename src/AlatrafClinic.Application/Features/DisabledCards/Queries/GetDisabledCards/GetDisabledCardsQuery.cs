@@ -12,6 +12,8 @@ public sealed record GetDisabledCardsQuery(
     string? SearchTerm = null,
     bool? IsExpired = null,
     int? PatientId = null,
+    DateOnly? IssueDateFrom = null,
+    DateOnly? IssueDateTo = null,
     DateOnly? ExpirationFrom = null,
     DateOnly? ExpirationTo = null,
     string SortColumn = "ExpirationDate",

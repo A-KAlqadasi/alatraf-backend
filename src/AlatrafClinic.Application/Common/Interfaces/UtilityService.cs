@@ -14,8 +14,8 @@ public static class UtilityService
         return age;
     }
     
-    public static string AgeToArabicString(bool age)
+    public static string GenderToArabicString(bool gender)
     {
-        return age ? "ذكر" : "أنثى";
+        return gender ? "ذكر" : "أنثى";
     }
 }

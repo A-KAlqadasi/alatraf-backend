@@ -10,8 +10,12 @@ public sealed class AddDisabledCardRequest
     [Required]
     [StringLength(100, MinimumLength = 3)]
     public string CardNumber { get; init; } = string.Empty;
-
+    
     [Required]
+    [DataType(DataType.Date)]
+    public DateOnly IssueDate { get; init; }
+    [Required]
+    [DataType(DataType.Date)]
     public DateOnly ExpirationDate { get; init; }
 
     [StringLength(500)]

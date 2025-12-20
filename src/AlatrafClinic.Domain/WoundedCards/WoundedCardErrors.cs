@@ -26,4 +26,13 @@ public static class WoundedCardErrors
         "WoundedCard.WoundedCardNotFound",
         "Wounded card not found."
     );
+    public static readonly Error IssueDateInvalid = Error.Validation(
+        "WoundedCard.IssueDateInvalid",
+        "Issue date cannot be in the future."
+    );
+    public static readonly Error IssueAfterExpiration = Error.Validation(
+        "WoundedCard.IssueAfterExpiration",
+        "Issue date cannot be after or equal to expiration date."
+    );
+    
 }

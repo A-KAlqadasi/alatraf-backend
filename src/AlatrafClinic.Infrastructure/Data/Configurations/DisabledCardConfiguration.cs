@@ -28,6 +28,10 @@ public sealed class DisabledCardConfiguration : IEntityTypeConfiguration<Disable
         builder.Property(d => d.ExpirationDate)
             .IsRequired()
             .HasColumnType("date");
+            
+        builder.Property(d=> d.IssueDate)
+            .IsRequired()
+            .HasColumnType("date");
 
         builder.HasOne(d => d.Patient)
             .WithOne(p=> p.DisabledCard)

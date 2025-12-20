@@ -15,6 +15,8 @@ public sealed class DisabledCardsFilterRequest
     public DateOnly? ExpirationFrom { get; init; }
     public DateOnly? ExpirationTo { get; init; }
 
+    public DateOnly? IssueDateFrom { get; init; }
+    public DateOnly? IssueDateTo { get; init; }
     [StringLength(50)]
     public string SortColumn { get; init; } = "ExpirationDate";
 

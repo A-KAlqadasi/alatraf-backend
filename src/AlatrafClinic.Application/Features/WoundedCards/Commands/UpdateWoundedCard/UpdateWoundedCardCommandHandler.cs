@@ -47,7 +47,8 @@ public class UpdateWoundedCardCommandHandler : IRequestHandler<UpdateWoundedCard
             return PatientErrors.PatientNotFound;
         }
 
-        var woundedCardResult = currentWoundedCard.Update(command.CardNumber, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        var woundedCardResult = currentWoundedCard.Update(command.CardNumber, command.IssueDate, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        
         if (woundedCardResult.IsError)
         {
             return woundedCardResult.Errors;

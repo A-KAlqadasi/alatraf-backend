@@ -659,7 +659,8 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 1,
                 CardNumber = "WC-0001",
-                Expiration = SeedDate.AddDays(100),
+                IssueDate = SeedDate,
+                ExpirationDate = SeedDate.AddDays(100),
                 CardImagePath = (string?)null,
                 PatientId = 1,
                 CreatedAtUtc = SeedTimestamp,
@@ -672,7 +673,8 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 2,
                 CardNumber = "WC-0002",
-                Expiration = SeedDate.AddDays(100),
+                IssueDate = SeedDate,
+                ExpirationDate = SeedDate.AddDays(10),
                 CardImagePath = (string?)null,
                 PatientId = 2,
                 CreatedAtUtc = SeedTimestamp,
@@ -685,7 +687,8 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 3,
                 CardNumber = "WC-0003",
-                Expiration = SeedDate.AddDays(100),
+                IssueDate = SeedDate,
+                ExpirationDate = SeedDate.AddDays(30),
                 CardImagePath = (string?)null,
                 PatientId = 3,
                 CreatedAtUtc = SeedTimestamp,
@@ -701,6 +704,7 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 1,
                 CardNumber = "DC-0001",
+                IssueDate = SeedDate,
                 ExpirationDate = SeedDate.AddDays(100),
                 CardImagePath = (string?)null,
                 PatientId = 1,
@@ -714,7 +718,8 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 2,
                 CardNumber = "DC-0002",
-                ExpirationDate = SeedDate.AddDays(100),
+                IssueDate = SeedDate,
+                ExpirationDate = SeedDate.AddDays(10),
                 CardImagePath = (string?)null,
                 PatientId = 2,
                 CreatedAtUtc = SeedTimestamp,
@@ -727,7 +732,8 @@ public static class AlatrafClinicDbContextInitializer
             {
                 Id = 3,
                 CardNumber = "DC-0003",
-                ExpirationDate = SeedDate.AddDays(100),
+                IssueDate = SeedDate,
+                ExpirationDate = SeedDate.AddDays(30),
                 CardImagePath = (string?)null,
                 PatientId = 3,
                 CreatedAtUtc = SeedTimestamp,

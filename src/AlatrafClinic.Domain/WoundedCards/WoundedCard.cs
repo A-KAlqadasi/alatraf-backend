@@ -9,32 +9,43 @@ namespace AlatrafClinic.Domain.WoundedCards;
 public class WoundedCard : AuditableEntity<int>
 {
     public string CardNumber { get; private set; } = default!;
-    public DateOnly Expiration { get; private set; }
+    public DateOnly IssueDate { get; private set; }
+    public DateOnly ExpirationDate { get; private set; }
     public string? CardImagePath { get; private set; }
     public int PatientId { get; private set; }
     public Patient Patient { get; set; } = default!;
-    public bool IsExpired => Expiration < AlatrafClinicConstants.TodayDate;
+    public bool IsExpired => ExpirationDate < AlatrafClinicConstants.TodayDate;
     public ICollection<WoundedPayment> WoundedPayments { get; set; } = new List<WoundedPayment>();
 
     private WoundedCard() { }
     private WoundedCard(string cardNumber, DateOnly expiration, int patientId, string? cardImagePath)
     {
         CardNumber = cardNumber;
-        Expiration = expiration;
+        ExpirationDate = expiration;
         PatientId = patientId;
         CardImagePath = cardImagePath;
     }
 
-    public static Result<WoundedCard> Create(string cardNumber, DateOnly expiration,  int patientId,string? cardImagePath)
+    public static Result<WoundedCard> Create(string cardNumber, DateOnly issueDate, DateOnly expiration,  int patientId,string? cardImagePath)
     {
         if (string.IsNullOrWhiteSpace(cardNumber))
         {
             return WoundedCardErrors.CardNumberIsRequired;
         }
         
-        if (expiration < AlatrafClinicConstants.TodayDate)
+        if (issueDate > AlatrafClinicConstants.TodayDate)
+        {
+            return WoundedCardErrors.IssueDateInvalid;
+        }
+
+        if (expiration <= AlatrafClinicConstants.TodayDate)
         {
             return WoundedCardErrors.CardIsExpired;
+        }
+
+        if (issueDate >= expiration)
+        {
+            return WoundedCardErrors.IssueAfterExpiration;
         }
         if (patientId <= 0)
         {
@@ -44,24 +55,36 @@ public class WoundedCard : AuditableEntity<int>
         return new WoundedCard(cardNumber, expiration, patientId, cardImagePath);
     }
 
-    public Result<Updated> Update(string cardNumber, DateOnly expiration, int patientId, string? cardImagePath)
+    public Result<Updated> Update(string cardNumber, DateOnly issueDate, DateOnly expiration, int patientId, string? cardImagePath)
     {
         if (string.IsNullOrWhiteSpace(cardNumber))
         {
             return WoundedCardErrors.CardNumberIsRequired;
         }
         
-        if (expiration < AlatrafClinicConstants.TodayDate)
+        if (issueDate > AlatrafClinicConstants.TodayDate)
+        {
+            return WoundedCardErrors.IssueDateInvalid;
+        }
+
+        if (expiration <= AlatrafClinicConstants.TodayDate)
         {
             return WoundedCardErrors.CardIsExpired;
         }
+
+        if (issueDate >= expiration)
+        {
+            return WoundedCardErrors.IssueAfterExpiration;
+        }
+
         if (patientId <= 0)
         {
             return WoundedCardErrors.PatientIdInvalid;
         }
         
         CardNumber = cardNumber;
-        Expiration = expiration;
+        ExpirationDate = expiration;
+        IssueDate = issueDate;
         CardImagePath = cardImagePath;
         PatientId = patientId;
 
