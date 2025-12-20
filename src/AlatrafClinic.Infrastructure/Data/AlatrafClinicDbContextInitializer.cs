@@ -1430,6 +1430,7 @@ public static class AlatrafClinicDbContextInitializer
                 DiagnosisId = 2,
                 ProgramStartDate = new DateOnly(2025, 1, 1),
                 ProgramEndDate = new DateOnly(2025, 1, 20),
+                NumberOfSessions = 20,
                 IsActive = true,
                 Type = TherapyCardType.General,
                 SessionPricePerType = 200m,

@@ -14,7 +14,8 @@ public sealed record CreateTherapyCardCommand(
     List<int> InjurySides,
     List<int> InjuryTypes,
     DateOnly ProgramStartDate,
-    DateOnly ProgramEndDate,
+    DateOnly? ProgramEndDate,
+    int NumberOfSessions, 
     TherapyCardType TherapyCardType,
     List<CreateTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null

@@ -10,7 +10,8 @@ public sealed record class RenewTherapyCardCommand(
     int TherapyCardId,
     int TicketId,
     DateOnly ProgramStartDate,
-    DateOnly ProgramEndDate,
+    DateOnly? ProgramEndDate,
+    int NumberOfSessions,
     TherapyCardType TherapyCardType,
     List<RenewTherapyCardMedicalProgramCommand> Programs,
     string? Notes = null

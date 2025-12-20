@@ -31,10 +31,12 @@ public sealed class UpdateTherapyCardRequest
     [Required(ErrorMessage = "ProgramStartDate is required.")]
     [DataType(DataType.Date)]
     public DateOnly ProgramStartDate { get; set; }
+    
+    public DateOnly? ProgramEndDate { get; set; }
 
-    [Required(ErrorMessage = "ProgramEndDate is required.")]
-    [DataType(DataType.Date)]
-    public DateOnly ProgramEndDate { get; set; }
+    [Required(ErrorMessage = "Number of sessions is required")]
+    [Range(1, int.MaxValue, ErrorMessage = "Number of sessions must be greater than 0.")]
+    public int NumberOfSessions { get; set; }
 
     [Required(ErrorMessage = "TherapyCardType is required.")]
     [EnumDataType(typeof(TherapyCardType), ErrorMessage = "Invalid TherapyCardType.")]

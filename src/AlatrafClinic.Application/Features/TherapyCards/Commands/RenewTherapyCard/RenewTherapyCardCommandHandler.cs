@@ -132,14 +132,37 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         var typePrice = await _context.TherapyCardTypePrices.FirstOrDefaultAsync(t=> t.Type == command.TherapyCardType, ct);
         var price = typePrice?.SessionPrice;
         
-        if(price is null)
+        if (price is null)
         {
             _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
 
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
-        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.Renew, currentTherapy.Id, command.Notes);
+        DateOnly programStartDate = command.ProgramStartDate;
+        DateOnly? programEndDate = command.ProgramEndDate;
+        
+        if(command.TherapyCardType == TherapyCardType.Special)
+        {
+            programStartDate= command.ProgramStartDate;
+            programEndDate = null;
+        }
+        else
+        {
+            if (programEndDate == null)
+            {
+                _logger.LogError("Program start date and end date are required for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.ProgramDatesAreRequired;
+            }
+            var sessions =  programEndDate.Value.DayNumber - programStartDate.DayNumber + 1;
+            if (sessions != command.NumberOfSessions)
+            {
+                _logger.LogError("Program dates do not match the number of sessions for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.NumberOfSessionsInvalid;
+            }
+        }
+
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, programStartDate, programEndDate, command.NumberOfSessions, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.Renew, currentTherapy.Id, command.Notes);
 
         if (createTherapyCardResult.IsError)
         {
