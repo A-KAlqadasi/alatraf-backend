@@ -33,4 +33,8 @@ public static class DisabledCardErrors
         "DisabledCard.IssueAfterExpiration",
         "Issue date cannot be after or equal to expiration date."
     );
+    public static readonly Error DisabilityTypeIsRequired = Error.Validation(
+        "DisabledCard.DisabilityTypeIsRequired",
+        "Disability type is required."
+    );
 }

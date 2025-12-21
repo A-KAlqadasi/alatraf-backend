@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Payments.Queries.GetPayment;
 
-public sealed record GetPaymentQuery(int PaymentId) : IRequest<Result<PaymentDto>>;
+public sealed record GetPaymentQuery(int PaymentId) : IRequest<Result<PaymentCoreDto>>;

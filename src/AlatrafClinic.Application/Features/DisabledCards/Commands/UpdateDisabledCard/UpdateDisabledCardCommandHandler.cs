@@ -49,7 +49,7 @@ public class UpdateDisabledCardCommandHandler : IRequestHandler<UpdateDisabledCa
             return PatientErrors.PatientNotFound;
         }
 
-        var disabledCardResult = currentDisabledCard.Update(command.CardNumber, command.IssueDate, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        var disabledCardResult = currentDisabledCard.Update(command.CardNumber, command.DisabilityType, command.IssueDate, command.PatientId, command.CardImagePath);
         
         if (disabledCardResult.IsError)
         {

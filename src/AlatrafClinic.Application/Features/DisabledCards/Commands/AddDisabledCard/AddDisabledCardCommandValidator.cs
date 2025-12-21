@@ -15,7 +15,7 @@ public class AddDisabledCardCommandValidator : AbstractValidator<AddDisabledCard
         RuleFor(x => x.IssueDate)
             .LessThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Issue date cannot be in the future");
             
-        RuleFor(x => x.ExpirationDate)
-            .GreaterThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Card is Expired!");
+        RuleFor(x => x.DisabilityType)
+            .NotEmpty().WithMessage("Disability type is required");
     }
 }

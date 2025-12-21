@@ -25,3 +25,4 @@ public class TechnicianIndustrialPartDto
     public string? PatientName { get; set; }
     public string? PatientPhoneNumber { get; set; }
 }
+
