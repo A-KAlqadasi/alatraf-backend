@@ -58,7 +58,6 @@ public sealed class GetPaymentsQueryHandler
 
                 VoucherNumber = p.PatientPayment != null ? p.PatientPayment.VoucherNumber : null,
                 DisabledCardId = p.DisabledPayment != null ? p.DisabledPayment.DisabledCardId : null,
-                WoundedCardId = p.WoundedPayment != null ? p.WoundedPayment.WoundedCardId : null
             })
             .ToListAsync(ct);
 

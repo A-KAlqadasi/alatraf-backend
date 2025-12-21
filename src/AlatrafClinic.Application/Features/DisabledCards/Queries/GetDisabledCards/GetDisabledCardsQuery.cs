@@ -10,12 +10,9 @@ public sealed record GetDisabledCardsQuery(
     int Page,
     int PageSize,
     string? SearchTerm = null,
-    bool? IsExpired = null,
     int? PatientId = null,
     DateOnly? IssueDateFrom = null,
     DateOnly? IssueDateTo = null,
-    DateOnly? ExpirationFrom = null,
-    DateOnly? ExpirationTo = null,
-    string SortColumn = "ExpirationDate",
+    string SortColumn = "IssueDate",
     string SortDirection = "desc"
 ) : IRequest<Result<PaginatedList<DisabledCardDto>>>;

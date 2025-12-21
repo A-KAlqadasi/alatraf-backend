@@ -7,13 +7,8 @@ public sealed class DisabledCardsFilterRequest
     [StringLength(200)]
     public string? SearchTerm { get; init; }
 
-    public bool? IsExpired { get; init; }
-
     [Range(1, int.MaxValue, ErrorMessage = "PatientId must be greater than 0.")]
     public int? PatientId { get; init; }
-
-    public DateOnly? ExpirationFrom { get; init; }
-    public DateOnly? ExpirationTo { get; init; }
 
     public DateOnly? IssueDateFrom { get; init; }
     public DateOnly? IssueDateTo { get; init; }

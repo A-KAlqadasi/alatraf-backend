@@ -19,15 +19,17 @@ public sealed class DisabledCardConfiguration : IEntityTypeConfiguration<Disable
             .IsRequired()
             .HasColumnType("nvarchar")
             .HasMaxLength(20);
+            
+        builder.Property(d=> d.DisabilityType)
+            .IsRequired()
+            .HasColumnType("nvarchar")
+            .HasMaxLength(100);
 
         builder.Property(d => d.CardImagePath)
             .HasColumnType("nvarchar")
             .IsRequired(false)
             .HasMaxLength(500);
 
-        builder.Property(d => d.ExpirationDate)
-            .IsRequired()
-            .HasColumnType("date");
             
         builder.Property(d=> d.IssueDate)
             .IsRequired()

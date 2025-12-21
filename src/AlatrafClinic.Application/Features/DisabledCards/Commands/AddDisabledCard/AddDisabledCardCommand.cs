@@ -6,5 +6,5 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.DisabledCards.Commands.AddDisabledCard;
 
 public sealed record class AddDisabledCardCommand(
-    int PatientId, string CardNumber, DateOnly IssueDate, DateOnly ExpirationDate, string? CardImagePath = null
+    int PatientId, string CardNumber, string DisabilityType, DateOnly IssueDate, string? CardImagePath = null
 ) : IRequest<Result<DisabledCardDto>>;

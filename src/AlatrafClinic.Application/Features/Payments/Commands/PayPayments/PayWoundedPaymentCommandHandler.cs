@@ -1,7 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments.WoundedPayments;
-using AlatrafClinic.Domain.WoundedCards;
 
 using MediatR;
 
@@ -24,7 +24,7 @@ public sealed class PayWoundedPaymentCommandHandler
     private readonly PaymentProcessor _processor;
 
     // You said: if total > 30000 report is required
-    private const decimal MinTotalForReportNumber = 30000m;
+    private decimal? MinTotalForReportNumber = null;
 
     public PayWoundedPaymentCommandHandler(IAppDbContext context, PaymentProcessor processor)
     {
@@ -39,8 +39,13 @@ public sealed class PayWoundedPaymentCommandHandler
 
         var payment = load.Value;
 
-        var exists = await _context.WoundedCards.AnyAsync(w => w.Id == command.WoundedCardId, ct);
-        if (!exists) return WoundedCardErrors.WoundedCardNotFound;
+        var woundedReportMinTotalSetting = await _context.AppSettings.FirstOrDefaultAsync(a => a.Key == AlatrafClinicConstants.WoundedReportMinTotalKey, ct);
+        if (woundedReportMinTotalSetting != null &&
+            decimal.TryParse(woundedReportMinTotalSetting.Value, out var settingValue))
+        {
+            // Override default if setting exists and is valid
+            MinTotalForReportNumber = settingValue;
+        }
 
         // Wounded => Paid/Discount null, completed.
         var payResult = payment.Pay(null, null);
@@ -50,7 +55,6 @@ public sealed class PayWoundedPaymentCommandHandler
             paymentId: payment.Id,
             total: payment.TotalAmount,
             minPriceForReportNumber: MinTotalForReportNumber,
-            woundedCardId: command.WoundedCardId,
             reportNumber: command.ReportNumber,
             notes: command.Notes);
 

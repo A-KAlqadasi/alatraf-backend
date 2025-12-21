@@ -22,5 +22,4 @@ public sealed class PaymentListItemDto
     // Helpful for list UI: show "identifier" per type
     public string? VoucherNumber { get; set; }
     public int? DisabledCardId { get; set; }
-    public int? WoundedCardId { get; set; }
 }

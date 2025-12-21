@@ -35,7 +35,6 @@ public sealed class GetWoundedPaymentByPaymentIdQueryHandler
         return new WoundedPaymentDetailsDto
         {
             Payment = MapCore(payment),
-            WoundedCardId = payment.WoundedPayment.WoundedCardId,
             ReportNumber = payment.WoundedPayment.ReportNumber,
             Notes = payment.WoundedPayment.Notes
         };

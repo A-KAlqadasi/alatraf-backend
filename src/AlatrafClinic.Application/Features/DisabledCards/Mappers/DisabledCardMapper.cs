@@ -15,14 +15,14 @@ public static class DisabledCardMapper
         {
             DisabledCardId = entity.Id,
             CardNumber = entity.CardNumber,
-            ExpirationDate = entity.ExpirationDate,
+            DisabilityType = entity.DisabilityType,
             IssueDate = entity.IssueDate,
-            IsExpired = entity.IsExpired,
             CardImagePath = entity.CardImagePath,
             FullName = entity.Patient?.Person?.FullName ?? string.Empty,
             Age = UtilityService.CalculateAge(birthDate ?? default, AlatrafClinicConstants.TodayDate),
             Gender = UtilityService.GenderToArabicString(entity.Patient?.Person?.Gender ?? true),
             PhoneNumber = entity.Patient?.Person?.Phone ?? string.Empty,
+            Address = entity.Patient?.Person?.Address ?? string.Empty,
             PatientId = entity.PatientId
         };
     }

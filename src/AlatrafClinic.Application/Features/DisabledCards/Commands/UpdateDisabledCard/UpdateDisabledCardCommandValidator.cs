@@ -16,7 +16,7 @@ public class UpdateDisabledCardCommandValidator : AbstractValidator<UpdateDisabl
             .GreaterThan(0).WithMessage("Patient Id is invalid");
         RuleFor(x => x.IssueDate)
             .LessThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Issue date cannot be in the future");
-        RuleFor(x => x.ExpirationDate)
-            .GreaterThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Card is Expired!");
+        RuleFor(x => x.DisabilityType)
+            .NotEmpty().WithMessage("Disability type is required");
     }
 }
