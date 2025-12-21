@@ -1,6 +1,7 @@
 
 using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.Payments;
+using AlatrafClinic.Application.Features.Payments.Commands.PayPayments;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Application.Features.Payments.Queries.GetPayment;
 using AlatrafClinic.Application.Features.Payments.Queries.GetPaymentsWaitingList;
@@ -80,7 +81,7 @@ public sealed class PaymentsController(ISender sender) : ApiController
           Problem);
     }
 
-     [HttpGet("repair-payments/{paymentId:int}/payment-reference/{paymentReference}", Name = "GetRepairPaymentByIdAndReference")]
+    [HttpGet("repair-payments/{paymentId:int}/payment-reference/{paymentReference}", Name = "GetRepairPaymentByIdAndReference")]
     [ProducesResponseType(typeof(PaymentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -95,6 +96,101 @@ public sealed class PaymentsController(ISender sender) : ApiController
         return result.Match(
           response => Ok(response),
           Problem);
+    }
+
+    [HttpPost("{paymentId:int}/pay/free")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Pays a payment as Free.")]
+    [EndpointDescription("Marks the payment as completed with AccountKind=Free. PaidAmount and Discount are stored as null.")]
+    [EndpointName("PayFreePayment")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> PayFree(int paymentId, [FromBody] PayFreePaymentRequest request, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new PayFreePaymentCommand(paymentId), ct);
+
+        return result.Match(
+            _ => NoContent(),
+            Problem
+        );
+    }
+
+    [HttpPost("{paymentId:int}/pay/patient")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Pays a payment as Patient.")]
+    [EndpointDescription("Completes the payment with paid amount/discount and stores PatientPayment details (VoucherNumber, Notes).")]
+    [EndpointName("PayPatientPayment")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> PayPatient(int paymentId, [FromBody] PayPatientPaymentRequest request, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new PayPatientPaymentCommand(
+            paymentId,
+            request.PaidAmount,
+            request.Discount,
+            request.VoucherNumber,
+            request.Notes
+        ), ct);
+
+        return result.Match(
+            _ => NoContent(),
+            Problem
+        );
+    }
+
+    [HttpPost("{paymentId:int}/pay/disabled")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Pays a payment as Disabled.")]
+    [EndpointDescription("Completes the payment as Disabled (PaidAmount/Discount null) and stores DisabledPayment details (DisabledCardId, Notes).")]
+    [EndpointName("PayDisabledPayment")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> PayDisabled(int paymentId, [FromBody] PayDisabledPaymentRequest request, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new PayDisabledPaymentCommand(
+            paymentId,
+            request.DisabledCardId,
+            request.Notes
+        ), ct);
+
+        return result.Match(
+            _ => NoContent(),
+            Problem
+        );
+    }
+
+    [HttpPost("{paymentId:int}/pay/wounded")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Pays a payment as Wounded.")]
+    [EndpointDescription("Completes the payment as Wounded (PaidAmount/Discount null) and stores WoundedPayment details (WoundedCardId, ReportNumber, Notes). ReportNumber may be required depending on payment total.")]
+    [EndpointName("PayWoundedPayment")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> PayWounded(int paymentId, [FromBody] PayWoundedPaymentRequest request, CancellationToken ct = default)
+    {
+        var result = await sender.Send(new PayWoundedPaymentCommand(
+            paymentId,
+            request.WoundedCardId,
+            request.ReportNumber,
+            request.Notes
+        ), ct);
+
+        return result.Match(
+            _ => NoContent(),
+            Problem
+        );
     }
 
 }

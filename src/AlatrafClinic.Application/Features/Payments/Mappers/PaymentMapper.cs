@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-using System.Reflection.Metadata.Ecma335;
 
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
@@ -27,28 +25,7 @@ public static class PaymentMapper
             TotalAmount = p.TotalAmount,
             PaidAmount = p.PaidAmount,
             Discount = p.Discount,
-            PatientPayment = p.PatientPayment != null
-                    ? new PatientPaymentDto
-                    {
-                        VoucherNumber = p.PatientPayment.VoucherNumber,
-                        Notes = p.PatientPayment.Notes
-                    }
-                    : null,
-            DisabledPayment = p.DisabledPayment != null
-                    ? new DisabledPaymentDto
-                    {
-                        DisabledCardId = p.DisabledPayment.DisabledCardId,
-                        Notes = p.DisabledPayment.Notes
-                    }
-                    : null,
-            WoundedPayment = p.WoundedPayment != null
-                    ? new WoundedPaymentDto
-                    {
-                        WoundedCardId = p.WoundedPayment.WoundedCardId,
-                        ReportNumber = p.WoundedPayment.ReportNumber,
-                        Notes = p.WoundedPayment.Notes
-                    }
-                    : null
+           
         };
     }
     public static List<PaymentDto> ToDtos(this IEnumerable<Payment> payments)

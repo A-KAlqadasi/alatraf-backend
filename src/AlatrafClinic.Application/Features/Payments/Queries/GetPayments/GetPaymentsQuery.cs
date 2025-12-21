@@ -11,12 +11,13 @@ public sealed record GetPaymentsQuery(
     int Page,
     int PageSize,
     string? SearchTerm = null,
+    int? TicketId = null,
+    int? DiagnosisId = null,
     PaymentReference? PaymentReference = null,
     AccountKind? AccountKind = null,
     bool? IsCompleted = null,
-    int? DiagnosisId = null,
-    int? TicketId = null,
-    int? PatientId = null,
-    string SortColumn = "CreatedAtUtc",
+    DateTime? PaymentDateFrom = null,
+    DateTime? PaymentDateTo = null,
+    string SortColumn = "PaymentDate",
     string SortDirection = "desc"
-) : IRequest<Result<PaginatedList<PaymentDto>>>;
+) : IRequest<Result<PaginatedList<PaymentListItemDto>>>;

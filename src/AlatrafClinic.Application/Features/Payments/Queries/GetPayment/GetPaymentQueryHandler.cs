@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Application.Features.Payments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
