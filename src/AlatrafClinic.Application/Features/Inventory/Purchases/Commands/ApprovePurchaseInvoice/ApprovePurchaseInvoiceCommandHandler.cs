@@ -23,7 +23,7 @@ public class ApprovePurchaseInvoiceCommandHandler : IRequestHandler<ApprovePurch
 
     public async Task<Result<PurchaseInvoiceDto>> Handle(ApprovePurchaseInvoiceCommand request, CancellationToken ct)
     {
-        var invoice = await _unitOfWork.PurchaseInvoices.GetByIdAsync(request.PurchaseInvoiceId, ct);
+        var invoice = await _unitOfWork.PurchaseInvoices.GetByIdWithItemsAsync(request.PurchaseInvoiceId, ct);
         if (invoice is null)
         {
             _logger.LogWarning("PurchaseInvoice {Id} not found.", request.PurchaseInvoiceId);

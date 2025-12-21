@@ -36,6 +36,10 @@ public static class StoreItemUnitErrors
 Error.Validation("StoreItem.ItemUnitIsRequired", "ItemUnit reference is required.");
     public static readonly Error StoreItemUnitNotFound =
 Error.NotFound("StoreItem.StoreItemUnitNotFound", "Store item unit not found.");
-public static readonly Error ItemUnitNotFound =
-Error.NotFound("StoreItem.ItemUnitNotFound", "Item unit not found.");
+    public static readonly Error ItemUnitNotFound =
+    Error.NotFound("StoreItem.ItemUnitNotFound", "Item unit not found.");
+
+    public static readonly Error InconsistentPrice =
+    Error.Validation("StoreItem.InconsistentPrice", "The provided price does not match the item unit price.");
 }
+

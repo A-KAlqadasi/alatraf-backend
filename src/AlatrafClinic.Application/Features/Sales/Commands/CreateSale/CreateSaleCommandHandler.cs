@@ -109,9 +109,8 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
 
         diagnosis.AssignPayment(payment);
 
+
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.Sales.AddAsync(sale, ct);
-        await _unitOfWork.Payments.AddAsync(payment, ct);
         await _unitOfWork.SaveChangesAsync(ct);
         
         _logger.LogInformation("Created Sale {saleId} for Diagnosis {diagnosisId} and ticket {ticketId}.", sale.Id, diagnosis.Id, command.TicketId);

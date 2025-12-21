@@ -13,5 +13,7 @@ public interface IPurchaseInvoiceRepository : IGenericRepository<PurchaseInvoice
     /// Returns read-only projection of items for a given purchase invoice id.
     /// Implement with EF Core projection in Infrastructure to avoid loading aggregates.
     /// </summary>
+    Task<PurchaseInvoice?> GetByIdWithItemsAsync(int id, CancellationToken ct);
+
     Task<IEnumerable<AlatrafClinic.Application.Features.Inventory.Purchases.Dtos.PurchaseItemDto>> GetItemsProjectedAsync(int purchaseInvoiceId, CancellationToken cancellationToken = default);
 }
