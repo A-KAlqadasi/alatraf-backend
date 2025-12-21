@@ -4,6 +4,7 @@ using AlatrafClinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    partial class AlatrafClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251221195517_RemoveWoundedCardFromWoundedPayment")]
+    partial class RemoveWoundedCardFromWoundedPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2159,7 +2162,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<string>("ReportNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("WoundedCardId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("WoundedCardId");
 
                     b.ToTable("WoundedPayments", (string)null);
 
@@ -5530,6 +5538,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AlatrafClinic.Domain.WoundedCards.WoundedCard", null)
+                        .WithMany("WoundedPayments")
+                        .HasForeignKey("WoundedCardId");
+
                     b.Navigation("Payment");
                 });
 
@@ -6106,6 +6118,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("DiagnosisPrograms");
 
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.WoundedCards.WoundedCard", b =>
+                {
+                    b.Navigation("WoundedPayments");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.ApplicationPermission", b =>

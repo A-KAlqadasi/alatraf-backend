@@ -1,5 +1,6 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Payments.Dtos;
+using AlatrafClinic.Application.Features.Payments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 
@@ -34,25 +35,9 @@ public sealed class GetWoundedPaymentByPaymentIdQueryHandler
 
         return new WoundedPaymentDetailsDto
         {
-            Payment = MapCore(payment),
+            Payment = payment.ToBasePaymentDto(),
             ReportNumber = payment.WoundedPayment.ReportNumber,
             Notes = payment.WoundedPayment.Notes
         };
     }
-
-    private static PaymentCoreDto MapCore(Payment p) => new()
-    {
-        PaymentId = p.Id,
-        TicketId = p.TicketId,
-        DiagnosisId = p.DiagnosisId,
-        PaymentReference = p.PaymentReference,
-        AccountKind = p.AccountKind,
-        IsCompleted = p.IsCompleted,
-        PaymentDate = p.PaymentDate,
-        TotalAmount = p.TotalAmount,
-        PaidAmount = p.PaidAmount,
-        Discount = p.Discount,
-        Residual = Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.Discount ?? 0m))),
-        Notes = p.Notes
-    };
 }

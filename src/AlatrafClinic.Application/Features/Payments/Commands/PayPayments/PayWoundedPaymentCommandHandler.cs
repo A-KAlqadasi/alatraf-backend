@@ -11,7 +11,6 @@ namespace AlatrafClinic.Application.Features.Payments.Commands.PayPayments;
 
 public sealed record PayWoundedPaymentCommand(
     int PaymentId,
-    int WoundedCardId,
     string? ReportNumber,
     string? Notes
 ) : IRequest<Result<Updated>>;

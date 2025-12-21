@@ -49,8 +49,6 @@ public sealed class PayDisabledPaymentRequest
 
 public sealed class PayWoundedPaymentRequest
 {
-    [Range(1, int.MaxValue, ErrorMessage = "WoundedCardId must be greater than 0.")]
-    public int WoundedCardId { get; init; }
 
     [StringLength(50)]
     public string? ReportNumber { get; init; }

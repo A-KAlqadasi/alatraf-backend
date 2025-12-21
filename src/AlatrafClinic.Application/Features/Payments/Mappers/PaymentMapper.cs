@@ -1,6 +1,5 @@
 
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Common.Constants;
@@ -10,29 +9,23 @@ namespace AlatrafClinic.Application.Features.Payments.Mappers;
 
 public static class PaymentMapper
 {
-    
-    public static PaymentDto ToDto(this Payment p)
+    public static PaymentCoreDto ToBasePaymentDto(this Payment p) => new()
     {
-        ArgumentNullException.ThrowIfNull(p);
-        return new PaymentDto
-        {
-            PaymentId = p.Id,
-            TicketId = p.TicketId,
-            PaymentReference = p.PaymentReference,
-            Diagnosis = p.Diagnosis != null ? p.Diagnosis.ToDto() : new DiagnosisDto(),
-            AccountKind = p.AccountKind,
-            IsCompleted = p.IsCompleted,
-            TotalAmount = p.TotalAmount,
-            PaidAmount = p.PaidAmount,
-            Discount = p.Discount,
-           
-        };
-    }
-    public static List<PaymentDto> ToDtos(this IEnumerable<Payment> payments)
-    {
-        return payments.Select(p => p.ToDto()).ToList();
-    }
+        PaymentId = p.Id,
+        TicketId = p.TicketId,
+        DiagnosisId = p.DiagnosisId,
+        PaymentReference = p.PaymentReference,
+        AccountKind = p.AccountKind,
+        IsCompleted = p.IsCompleted,
+        PaymentDate = p.PaymentDate,
+        TotalAmount = p.TotalAmount,
+        PaidAmount = p.PaidAmount,
+        Discount = p.Discount,
+        Residual =p.AccountKind == AccountKind.Patient ?  Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.Discount ?? 0m))) : 0m,
+        Notes = p.Notes
+    };
 
+    
     public static PaymentWaitingListDto ToPaymentWaitingListDto(this Payment entity)
     {
         ArgumentNullException.ThrowIfNull(entity);

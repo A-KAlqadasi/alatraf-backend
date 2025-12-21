@@ -15,7 +15,6 @@ public class WoundedCard : AuditableEntity<int>
     public int PatientId { get; private set; }
     public Patient Patient { get; set; } = default!;
     public bool IsExpired => ExpirationDate < AlatrafClinicConstants.TodayDate;
-    public ICollection<WoundedPayment> WoundedPayments { get; set; } = new List<WoundedPayment>();
 
     private WoundedCard() { }
     private WoundedCard(string cardNumber, DateOnly expiration, int patientId, string? cardImagePath)
