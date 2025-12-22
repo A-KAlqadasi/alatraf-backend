@@ -30,7 +30,6 @@ ILogger<CreateAppSettingCommandHandler> _logger
         var result = AppSetting.Create(
             command.Key,
             command.Value,
-            command.Type,
             command.Description
         );
 

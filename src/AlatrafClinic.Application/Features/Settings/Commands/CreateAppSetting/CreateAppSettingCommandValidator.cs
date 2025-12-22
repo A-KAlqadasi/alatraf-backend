@@ -12,8 +12,5 @@ public sealed class CreateAppSettingCommandValidator : AbstractValidator<CreateA
 
     RuleFor(x => x.Value)
         .NotNull();
-
-    RuleFor(x => x.Type)
-        .IsInEnum();
   }
 }
