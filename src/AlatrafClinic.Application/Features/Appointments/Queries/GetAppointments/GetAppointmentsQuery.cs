@@ -12,6 +12,7 @@ public sealed record GetAppointmentsQuery(
     int Page,
     int PageSize,
     string? SearchTerm = null,
+    bool? IsAppointmentTomorrow = null,
     AppointmentStatus? Status = null,
     PatientType? PatientType = null,
     DateOnly? FromDate = null,

@@ -23,7 +23,9 @@ public class ChangeAppointmentStatusCommandHandler : IRequestHandler<ChangeAppoi
     }
     public async Task<Result<Updated>> Handle(ChangeAppointmentStatusCommand command, CancellationToken ct)
     {
-        Appointment? appointment = await _context.Appointments.FirstOrDefaultAsync(a=> a.Id ==command.AppointmentId, ct);
+        Appointment? appointment = await _context.Appointments
+        .Include(a=> a.Ticket)
+        .FirstOrDefaultAsync(a=> a.Id ==command.AppointmentId, ct);
 
         if (appointment is null)
         {

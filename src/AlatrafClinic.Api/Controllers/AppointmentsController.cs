@@ -38,6 +38,7 @@ public sealed class AppointmentsController(ISender sender) : ApiController
             pageRequest.Page,
             pageRequest.PageSize,
             filters.SearchTerm,
+            filters.IsAppointmentTomorrow,
             filters.Status is not null ? (AppointmentStatus)(int)filters.Status : null,
             filters.PatientType,
             filters.FromDate,

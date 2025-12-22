@@ -9,5 +9,5 @@ public class TicketDto
     public int TicketId { get; set; }
     public ServiceDto? Service { get; set; }
     public PatientDto? Patient { get; set; }
-    public TicketStatus TicketStatus { get; set; } = TicketStatus.New;
+    public string TicketStatus { get; set; }  = string.Empty;
 }
