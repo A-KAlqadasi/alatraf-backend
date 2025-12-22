@@ -7,7 +7,7 @@ namespace AlatrafClinic.Domain.Settings;
 
 public sealed class AppSetting : AuditableEntity<int>
 {
-   public string Key { get; private set; } = string.Empty;
+    public string Key { get; private set; } = string.Empty;
     public string Value { get; private set; } = string.Empty;
     public AppSettingType Type { get; private set; }
     public string? Description { get; private set; }

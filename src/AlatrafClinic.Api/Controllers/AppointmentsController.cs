@@ -3,10 +3,10 @@ using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Appointments.Commands.ChangeAppointmentStatus;
 using AlatrafClinic.Application.Features.Appointments.Commands.RescheduleAppointment;
-using AlatrafClinic.Application.Features.Appointments.Commands.ScheduleAppointment;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Appointments.Queries.GetAppointmentById;
 using AlatrafClinic.Application.Features.Appointments.Queries.GetAppointments;
+using AlatrafClinic.Application.Features.Appointments.Queries.GetLastScheduledAppointmentDaySummary;
 using AlatrafClinic.Application.Features.Appointments.Queries.GetNextValidAppointmentDate;
 using AlatrafClinic.Domain.Services.Enums;
 
@@ -33,16 +33,7 @@ public sealed class AppointmentsController(ISender sender) : ApiController
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Get([FromQuery] AppointmentsFilterRequest filters, [FromQuery] PageRequest pageRequest, CancellationToken ct)
     {
-        if (pageRequest.Page <= 0)
-        {
-            return BadRequest("Page must be greater than 0");
-        }
-
-        if (pageRequest.PageSize <= 0 || pageRequest.PageSize > 100)
-        {
-            return BadRequest("PageSize must be between 1 and 100");
-        }
-
+        
         var query = new GetAppointmentsQuery(
             pageRequest.Page,
             pageRequest.PageSize,
@@ -77,47 +68,48 @@ public sealed class AppointmentsController(ISender sender) : ApiController
           response => Ok(response),
           Problem);
     }
-
-    [HttpPost]
-    [ProducesResponseType(typeof(AppointmentDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    
+    [HttpGet("scheduling/last-day", Name = "GetLastScheduledAppointmentDay")]
+    [ProducesResponseType(typeof(AppointmentDaySummaryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Creates a new appointment.")]
-    [EndpointDescription("Creates a new appointment, specifying ticket, requested date, and notes if any")]
-    [EndpointName("CreateAppointment")]
+    [EndpointSummary("Retrieves the last scheduled appointment day.")]
+    [EndpointDescription("Returns the most recent appointment date that currently has scheduled appointments, along with the total number of appointments on that date.")]
+    [EndpointName("GetLastScheduledAppointmentDay")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> Create([FromBody] ScheduleAppointmentRequest request, CancellationToken ct)
+    public async Task<IActionResult> GetLastScheduledDay(CancellationToken ct)
     {
-        var result = await sender.Send(new ScheduleAppointmentCommand(request.TicketId, request.RequestedDate, request.Notes), ct);
-
-        return result.Match(
-            response => CreatedAtRoute(
-                routeName: "GetAppointmentById",
-                routeValues: new { version = "1.0", appointmentId = response.Id },
-                value: response),
-                Problem
-        );
-    }
-
-    [HttpGet("last-valid-appointment-date")]
-    [ProducesResponseType(typeof(DateOnly), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Get Last Valid Appointment Date")]
-    [EndpointDescription("Get last valid appointment date based on requested date if provided")]
-    [EndpointName("GetLastValidAppointmentDate")]
-    [MapToApiVersion("1.0")]
-    public async Task<IActionResult> GetLastValidAppointmentDate([FromQuery] DateOnly? requestedDate, CancellationToken ct)
-    {
-        var result = await sender.Send(new GetNextValidAppointmentDateQuery(requestedDate), ct);
+        var result = await sender.Send(
+            new GetLastScheduledAppointmentDaySummaryQuery(),
+            ct);
 
         return result.Match(
             response => Ok(response),
-            Problem
-        );
+            Problem);
     }
 
-    [HttpPatch("{appointmentId:int}/status")]
+    [HttpGet("scheduling/next-day", Name = "GetNextValidAppointmentDay")]
+    [ProducesResponseType(typeof(NextAppointmentDayDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves the next valid appointment day.")]
+    [EndpointDescription("Returns the next available appointment date based on allowed days, holidays, and daily capacity rules. If a date is provided, the search starts after that date.")]
+    [EndpointName("GetNextValidAppointmentDay")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetNextValidDay(
+        [FromQuery] DateOnly? afterDate,
+        CancellationToken ct)
+    {
+        var result = await sender.Send(
+            new GetNextValidAppointmentDayQuery(afterDate),
+            ct);
+
+        return result.Match(
+            response => Ok(response),
+            Problem);
+    }
+
+    [HttpPut("{appointmentId:int}/status")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -137,7 +129,7 @@ public sealed class AppointmentsController(ISender sender) : ApiController
         );
     }
 
-    [HttpPatch("{appointmentId:int}/reschedule")]
+    [HttpPut("{appointmentId:int}/reschedule")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
