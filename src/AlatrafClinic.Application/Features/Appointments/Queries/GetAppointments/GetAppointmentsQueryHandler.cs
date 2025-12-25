@@ -26,19 +26,16 @@ public sealed class GetAppointmentsQueryHandler
         GetAppointmentsQuery query,
         CancellationToken ct)
     {
-        // Base query + includes
         IQueryable<Appointment> appointmentsQuery = _context.Appointments
             .Include(a => a.Ticket)
                 .ThenInclude(t => t.Patient!)
                     .ThenInclude(p => p.Person)
             .AsNoTracking();
 
-        // Apply filters/search/sorting
         appointmentsQuery = ApplyFilters(appointmentsQuery, query);
         appointmentsQuery = ApplySearch(appointmentsQuery, query);
         appointmentsQuery = ApplySorting(appointmentsQuery, query);
 
-        // Total count AFTER filters/search, BEFORE paging
         var totalCount = await appointmentsQuery.CountAsync(ct);
 
         var page = query.Page <= 0 ? 1 : query.Page;
@@ -52,7 +49,6 @@ public sealed class GetAppointmentsQueryHandler
             .Take(pageSize)
             .ToListAsync(ct);
 
-        // Mapping – same as your existing mapping
         var items = entities.ToDtos();
 
         return new PaginatedList<AppointmentDto>
@@ -65,7 +61,6 @@ public sealed class GetAppointmentsQueryHandler
         };
     }
 
-    // ------------- FILTERS -------------
     private static IQueryable<Appointment> ApplyFilters(
         IQueryable<Appointment> query,
         GetAppointmentsQuery q)
@@ -84,16 +79,19 @@ public sealed class GetAppointmentsQueryHandler
 
         if (q.ToDate.HasValue)
         {
-            // keep same semantics as your filter:
-            // ToDate inclusive (end of day)
             var to = q.ToDate.Value;
             query = query.Where(a => a.AttendDate <= to);
+        }
+        
+        if (q.IsAppointmentTomorrow.HasValue && q.IsAppointmentTomorrow.Value)
+        {
+            var tomorrow = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+            query = query.Where(a => a.AttendDate == tomorrow);
         }
 
         return query;
     }
 
-    // ------------- SEARCH -------------
     private static IQueryable<Appointment> ApplySearch(
         IQueryable<Appointment> query,
         GetAppointmentsQuery q)
