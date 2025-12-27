@@ -30,7 +30,8 @@ public class Service : AuditableEntity<int>
         {
             return ServiceErrors.NameIsRequired;
         }
-        if (departmentId is null || departmentId <= 0)
+        
+        if (departmentId.HasValue && departmentId <= 0)
         {
             return ServiceErrors.DepartmentIdIsRequired;
         }

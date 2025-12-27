@@ -11,5 +11,5 @@ public sealed record GetPaidTherapyCardsQuery(
     int PageSize,
     string? SearchTerm = null,
     string SortColumn = "PaymentDate",
-    string SortDirection = "asc"
+    string SortDirection = "desc"
 ) : IRequest<Result<PaginatedList<TherapyCardDiagnosisDto>>>;

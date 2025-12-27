@@ -129,8 +129,6 @@ public class AlatrafClinicDbContext
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AlatrafClinicDbContext).Assembly);
-        AlatrafClinicDbContextInitializer.Seed(builder);
-
     }
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

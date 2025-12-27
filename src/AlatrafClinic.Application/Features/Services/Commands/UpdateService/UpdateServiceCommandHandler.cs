@@ -1,6 +1,7 @@
 
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Services;
 
 using MediatR;
@@ -32,6 +33,19 @@ public class UpdateServiceCommandHandler : IRequestHandler<UpdateServiceCommand,
             return ServiceErrors.ServiceNotFound;
         }
 
+        Department? department = null;
+        if (command.DepartmentId.HasValue)
+        {
+            department = await _context.Departments.FirstOrDefaultAsync(d=> d.Id == command.DepartmentId, ct);
+
+            if (department is null)
+            {
+                _logger.LogError("Department with ID {DepartmentId} was not found.", command.DepartmentId);
+
+                return Error.NotFound(code: "Department.NotFound", description: $"Department with ID {command.DepartmentId} was not found.");
+            }
+        }
+        
         var result = service.Update(command.Name, command.DepartmentId, command.Price);
         
         if (result.IsError)

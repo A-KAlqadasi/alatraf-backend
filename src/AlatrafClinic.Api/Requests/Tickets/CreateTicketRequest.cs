@@ -7,6 +7,6 @@ public class CreateTicketRequest
 {
     public int? PatientId { get; set; }
     [Required]
-    [Range(1, 9, ErrorMessage = "ServiceId must be between 1 - 9.")]
+    [Range(1, int.MaxValue, ErrorMessage = "ServiceId must be between 1 - 9.")]
     public int ServiceId { get; set; }
 }

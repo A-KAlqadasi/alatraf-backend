@@ -34,7 +34,9 @@ public class GetPatientTherapyCardsQueryHandler : IRequestHandler<GetPatientTher
                 .ThenInclude(injs=> injs.InjurySides)
             .Include(tc => tc.Diagnosis)
                 .ThenInclude(it=> it.InjuryTypes)
-            .Include(tc => tc.DiagnosisPrograms).ThenInclude(d=> d.MedicalProgram)
+            .Include(tx=> tx.Diagnosis)
+                .ThenInclude(tc => tc.DiagnosisPrograms)
+                    .ThenInclude(sp => sp.MedicalProgram)  
             .Where(tc=> tc.Diagnosis.PatientId == query.PatientId).ToListAsync(ct);
             
 
