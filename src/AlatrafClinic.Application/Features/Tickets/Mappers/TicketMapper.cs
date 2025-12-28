@@ -15,7 +15,7 @@ public static class TicketMapper
             TicketId = ticket.Id,
             Service = ticket.Service?.ToDto(),
             Patient = ticket.Patient?.ToDto(),
-            TicketStatus = ticket.Status.ToArabicTicketStatus()
+            TicketStatus = ticket.Status
         };
     }
     public static List<TicketDto> ToDtos(this IEnumerable<Ticket> tickets)
