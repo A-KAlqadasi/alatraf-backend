@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Domain.Common.Results;
@@ -31,12 +33,13 @@ public sealed class GetLastScheduledAppointmentDaySummaryQueryHandler
         if (lastDate is null)
         {
             // No appointments at all
-            return new AppointmentDaySummaryDto(Date: default, AppointmentsCount: 0);
+            return new AppointmentDaySummaryDto(Date: default, AppointmentsCount: 0, DayOfWeek: string.Empty);
         }
 
         var count = await baseQuery
             .CountAsync(a => a.AttendDate == lastDate.Value, ct);
 
-        return new AppointmentDaySummaryDto(lastDate.Value, count);
+        return new AppointmentDaySummaryDto(Date: lastDate.Value, AppointmentsCount: count, DayOfWeek: UtilityService.GetDayNameArabic(lastDate.Value));
     }
+
 }

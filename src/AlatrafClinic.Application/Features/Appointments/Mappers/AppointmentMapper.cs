@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Patients.Mappers;
 using AlatrafClinic.Domain.Services.Appointments;
@@ -18,6 +19,7 @@ public static class AppointmentMapper
             PatientName = appointment.Ticket?.Patient?.Person.FullName ?? string.Empty,
             PatientType = appointment.PatientType.ToArabicPatientType(),
             AttendDate = appointment.AttendDate,
+            DayOfWeek = UtilityService.GetDayNameArabic(appointment.AttendDate),
             Status = appointment.Status.ToArabicAppointmentStatus(),
             Notes = appointment.Notes,
             CreatedAt = DateOnly.FromDateTime(appointment.CreatedAtUtc.DateTime),

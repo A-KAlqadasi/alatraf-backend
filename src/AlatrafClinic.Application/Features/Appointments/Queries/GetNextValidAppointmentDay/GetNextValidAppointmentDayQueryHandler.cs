@@ -58,6 +58,6 @@ public sealed class GetNextValidAppointmentDayQueryHandler
             .Where(a => a.Status != AppointmentStatus.Cancelled && a.Status != AppointmentStatus.Absent && a.AttendDate == nextValid)
             .CountAsync(ct);
 
-        return new NextAppointmentDayDto(nextValid, count);
+        return new NextAppointmentDayDto(nextValid, UtilityService.GetDayNameArabic(nextValid), count);
     }
 }
