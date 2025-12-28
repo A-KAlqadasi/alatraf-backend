@@ -13,6 +13,7 @@ public class AppointmentDto
     public string PatientType { get; set; } = string.Empty;
     public DateOnly AttendDate { get; set; }
     public DateOnly CreatedAt { get; set; }
+    public string DayOfWeek { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public bool IsAppointmentTomorrow { get; set; }

@@ -55,9 +55,9 @@ public sealed class GetNextValidAppointmentDayQueryHandler
 
         // 4) Count appointments on that day (same status policy as you choose)
         var count = await _context.Appointments.AsNoTracking()
-            .Where(a => a.Status != AppointmentStatus.Cancelled && a.AttendDate == nextValid)
+            .Where(a => a.Status != AppointmentStatus.Cancelled && a.Status != AppointmentStatus.Absent && a.AttendDate == nextValid)
             .CountAsync(ct);
 
-        return new NextAppointmentDayDto(nextValid, count);
+        return new NextAppointmentDayDto(nextValid, UtilityService.GetDayNameArabic(nextValid), count);
     }
 }

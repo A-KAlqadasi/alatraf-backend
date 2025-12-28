@@ -36,7 +36,7 @@ public sealed class ScheduleAppointmentCommandHandler
         var ticket = await LoadTicketOrFail(command.TicketId, ct);
         if (ticket.IsError) return ticket.Errors;
 
-        // Business rules (as you had)
+        // Business rules
         if (!ticket.Value.IsEditable)
         {
             _logger.LogError("Ticket {TicketId} is not editable!", command.TicketId);
@@ -52,7 +52,6 @@ public sealed class ScheduleAppointmentCommandHandler
         // Determine the base start date
         var lastDateResult = await GetLastSchedulingPressureDate(ct);
         var lastDate = lastDateResult ?? DateOnly.MinValue;
-
         var today = AlatrafClinicConstants.TodayDate;
 
         // baseStart = max(today, lastDate, requestedDate(if any))
@@ -61,11 +60,30 @@ public sealed class ScheduleAppointmentCommandHandler
         if (command.RequestedDate.HasValue)
             baseStart = MaxDate(baseStart, command.RequestedDate.Value);
 
-        // Apply allowed days + holidays constraints
-        var (allowedDays, holidays) = await LoadSchedulingRules(ct);
-        var finalDate = AppointmentSchedulingCalculator.GetNextValidDateInclusive(baseStart, allowedDays, holidays);
+        // --- CHANGE START: Load Capacity Rules and Find Date ---
+        
+        var (allowedDays, holidays, dailyCapacity) = await LoadSchedulingRulesWithCapacityAsync(ct);
 
-        // Domain validation (still enforces ">= today" etc.)
+        // We use the new async calculator that checks DB counts
+        var finalDate = await AppointmentSchedulingCalculator.FindNextValidDateWithCapacityAsync(
+            startInclusive: baseStart,
+            allowedDays: allowedDays,
+            holidays: holidays,
+            dailyCapacity: dailyCapacity,
+            getCountForDateAsync: async (date, token) =>
+            {
+                // Count how many valid appointments exist on this date
+                return await _context.Appointments
+                    .AsNoTracking()
+                    .CountAsync(a => a.AttendDate == date 
+                                     && a.Status != AppointmentStatus.Cancelled 
+                                     && a.Status != AppointmentStatus.Absent, token);
+            },
+            ct: ct);
+
+        // --- CHANGE END ---
+
+        // Domain validation
         var appointmentResult = Appointment.Schedule(
             ticketId: ticket.Value.Id,
             patientType: ticket.Value.Patient!.PatientType,
@@ -79,7 +97,6 @@ public sealed class ScheduleAppointmentCommandHandler
                 "Failed to schedule appointment for Ticket {TicketId}. Error: {Error}",
                 command.TicketId,
                 appointmentResult.TopError);
-
             return appointmentResult.Errors;
         }
 
@@ -116,25 +133,16 @@ public sealed class ScheduleAppointmentCommandHandler
 
         return ticket;
     }
-
-    /// <summary>
-    /// Defines which appointments contribute to “scheduling pressure” (i.e., what should affect next day).
-    /// Keep it consistent across schedule + reschedule.
-    /// </summary>
+    
     private async Task<DateOnly?> GetLastSchedulingPressureDate(CancellationToken ct)
     {
-        // Option A (recommended): consider only active “scheduled pipeline”
-        // return await _context.Appointments.AsNoTracking()
-        //     .Where(a => a.Status == AppointmentStatus.Scheduled || a.Status == AppointmentStatus.Today)
-        //     .MaxAsync(a => (DateOnly?)a.AttendDate, ct);
-
-        // Option B (close to your current intent): exclude cancelled only
         return await _context.Appointments.AsNoTracking()
-            .Where(a => a.Status != AppointmentStatus.Cancelled)
+            .Where(a => a.Status != AppointmentStatus.Cancelled && a.Status != AppointmentStatus.Absent)
             .MaxAsync(a => (DateOnly?)a.AttendDate, ct);
     }
 
-    private async Task<(IReadOnlyCollection<DayOfWeek> AllowedDays, IReadOnlyCollection<Holiday> Holidays)> LoadSchedulingRules(CancellationToken ct)
+    private async Task<(IReadOnlyCollection<DayOfWeek> AllowedDays, IReadOnlyCollection<Holiday> Holidays, int DailyCapacity)>
+        LoadSchedulingRulesWithCapacityAsync(CancellationToken ct)
     {
         var allowedDaysString = await _context.AppSettings.AsNoTracking()
             .Where(a => a.Key == AlatrafClinicConstants.AllowedDaysKey)
@@ -142,22 +150,7 @@ public sealed class ScheduleAppointmentCommandHandler
             .FirstOrDefaultAsync(ct);
 
         var allowedDays = AppointmentSchedulingCalculator.ParseAllowedDaysOrDefault(allowedDaysString);
-
-        var holidays = await _context.Holidays.AsNoTracking().ToListAsync(ct);
-
-        return (allowedDays, holidays);
-    }
-
-     private async Task<(IReadOnlyCollection<DayOfWeek> AllowedDays, IReadOnlyCollection<Holiday> Holidays, int DailyCapacity)>
-        LoadSchedulingRulesWithCapacity(CancellationToken ct)
-    {
-        var allowedDaysString = await _context.AppSettings.AsNoTracking()
-            .Where(a => a.Key == AlatrafClinicConstants.AllowedDaysKey)
-            .Select(a => a.Value)
-            .FirstOrDefaultAsync(ct);
-
-        var allowedDays = AppointmentSchedulingCalculator.ParseAllowedDaysOrDefault(allowedDaysString);
-
+        
         var holidays = await _context.Holidays.AsNoTracking().ToListAsync(ct);
 
         var capacityString = await _context.AppSettings.AsNoTracking()
@@ -166,6 +159,7 @@ public sealed class ScheduleAppointmentCommandHandler
             .FirstOrDefaultAsync(ct);
 
         var dailyCapacity = AlatrafClinicConstants.DefaultAppointmentDailyCapacity;
+
         if (!string.IsNullOrWhiteSpace(capacityString) && int.TryParse(capacityString, out var parsed) && parsed > 0)
             dailyCapacity = parsed;
 
