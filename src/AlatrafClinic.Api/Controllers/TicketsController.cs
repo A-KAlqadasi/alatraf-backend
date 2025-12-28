@@ -8,6 +8,7 @@ using AlatrafClinic.Application.Features.Tickets.Commands.DeleteTicket;
 using AlatrafClinic.Application.Features.Tickets.Commands.UpdateTicket;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTicketById;
+using AlatrafClinic.Application.Features.Tickets.Queries.GetTicketForScheduleAppointment;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTickets;
 using AlatrafClinic.Domain.Services.Enums;
 
@@ -65,6 +66,22 @@ public sealed class TicketsController(ISender sender) : ApiController
     public async Task<IActionResult> GetById(int ticketId, CancellationToken ct)
     {
         var result = await sender.Send(new GetTicketByIdQuery(ticketId), ct);
+        return result.Match(
+          response => Ok(response),
+          Problem);
+    }
+
+    [HttpGet("for-schedule/{ticketId:int}", Name = "GetTicketForScheduleById")]
+    [ProducesResponseType(typeof(TicketForServiceDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves a ticket by its ID.")]
+    [EndpointDescription("Returns detailed information about the specified ticket if it exists.")]
+    [EndpointName("GetTicketForScheduleById")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetTicketForScheduleById(int ticketId, CancellationToken ct)
+    {
+        var result = await sender.Send(new GetTicketForScheduleAppointmentQuery(ticketId), ct);
         return result.Match(
           response => Ok(response),
           Problem);
