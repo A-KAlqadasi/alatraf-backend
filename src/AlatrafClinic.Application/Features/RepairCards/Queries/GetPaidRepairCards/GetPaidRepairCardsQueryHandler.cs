@@ -123,7 +123,7 @@ public sealed class GetPaidRepairCardsQueryHandler
             "paymentdate" => isDesc
                 ? query.OrderByDescending(d => d.Payments
                     .Where(p => p.IsCompleted && p.PaymentDate != null)
-                    .Min(p => p.PaymentDate))
+                    .Max(p => p.PaymentDate))
                 : query.OrderBy(d => d.Payments
                     .Where(p => p.IsCompleted && p.PaymentDate != null)
                     .Min(p => p.PaymentDate)),

@@ -16,6 +16,6 @@ public sealed record GetPatientsQuery(
     DateOnly? BirthdateFrom = null,
     DateOnly? BirthdateTo = null,
     bool? HasNationalNo = null,
-    string SortColumn = "fullname",
-    string SortDirection = "asc"
+    string SortColumn = "patientid",
+    string SortDirection = "desc"
 ) : IRequest<Result<PaginatedList<PatientDto>>>;

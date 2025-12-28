@@ -30,8 +30,9 @@ public class DeleteDisabledCardCommandHandler : IRequestHandler<DeleteDisabledCa
             return DisabledCardErrors.DisabledCardNotFound;
         }
 
-         _context.DisabledCards.Remove(disabledCard);
-
+        _context.DisabledCards.Remove(disabledCard);
+        await _context.SaveChangesAsync(ct);
+        
         return Result.Deleted;
     }
 }

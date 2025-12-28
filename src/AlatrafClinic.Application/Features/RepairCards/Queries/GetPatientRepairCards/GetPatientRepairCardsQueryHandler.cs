@@ -2,7 +2,6 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
@@ -35,8 +34,12 @@ public class GetPatientRepairCardsQueryHandler : IRequestHandler<GetPatientRepai
                 .ThenInclude(injs=> injs.InjurySides)
             .Include(tc => tc.Diagnosis)
                 .ThenInclude(it=> it.InjuryTypes)
-            .Include(tc => tc.DiagnosisIndustrialParts).ThenInclude(d=> d.IndustrialPartUnit)
-            .Include(tc => tc.DiagnosisIndustrialParts).ThenInclude(d=> d.IndustrialPartUnit).ThenInclude(d=> d.Unit)
+            .Include(tc => tc.DiagnosisIndustrialParts)
+                .ThenInclude(d=> d.IndustrialPartUnit)
+                    .ThenInclude(d=> d.IndustrialPart)
+            .Include(tc => tc.DiagnosisIndustrialParts)
+                .ThenInclude(d=> d.IndustrialPartUnit)
+                    .ThenInclude(d=> d.Unit)
             .Where(tc=> tc.Diagnosis.PatientId == query.PatientId).ToListAsync(ct);
             
 

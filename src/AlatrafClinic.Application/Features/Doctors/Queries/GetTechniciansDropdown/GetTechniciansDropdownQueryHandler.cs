@@ -5,6 +5,7 @@ using AlatrafClinic.Domain.Common.Results;
 
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using AlatrafClinic.Domain.Common.Constants;
 
 namespace AlatrafClinic.Application.Features.Doctors.Queries.GetTechniciansDropdown;
 
@@ -23,7 +24,7 @@ public sealed class GetTechniciansDropdownQueryHandler
         CancellationToken ct)
     {
         // Use DateOnly because DiagnosisIndustrialPart.DoctorAssignDate is DateOnly?
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = AlatrafClinicConstants.TodayDate;
 
         // Base query: technicians = doctors in department 2
         // and we project their ACTIVE assignment into TechnicianDto.

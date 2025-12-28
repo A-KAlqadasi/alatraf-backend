@@ -193,7 +193,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IApplicationBuilder UseCoreMiddlewares(this IApplicationBuilder app, IConfiguration configuration)
+    public static IApplicationBuilder UseCoreMiddlewares(this IApplicationBuilder app, IConfiguration configuration,  IWebHostEnvironment environment)
     {
         // 1. Exception handling should be FIRST to catch all errors
         app.UseExceptionHandler();
@@ -202,7 +202,11 @@ public static class DependencyInjection
         app.UseStatusCodePages();
 
         // 3. HTTPS redirection (before any other middleware that might generate URLs)
-        app.UseHttpsRedirection();
+        if (!environment.IsDevelopment())
+        {
+            app.UseHttpsRedirection();
+        }
+
 
         // 4. Serilog request logging (early to log all requests)
         app.UseSerilogRequestLogging();

@@ -1,6 +1,7 @@
 using AlatrafClinic.Api;
 using AlatrafClinic.Application;
 using AlatrafClinic.Infrastructure;
+using AlatrafClinic.Infrastructure.Data;
 
 using Scalar.AspNetCore;
 
@@ -33,6 +34,7 @@ if (app.Environment.IsDevelopment())
         options.DisplayRequestDuration();
         options.EnableFilter();
     });
+    await app.InitialiseDatabaseAsync();
 
     app.MapScalarApiReference();
 }
@@ -41,7 +43,7 @@ else
     app.UseHsts();
 }
 
-app.UseCoreMiddlewares(builder.Configuration);
+app.UseCoreMiddlewares(builder.Configuration, app.Environment);
 
 app.MapControllers();
 

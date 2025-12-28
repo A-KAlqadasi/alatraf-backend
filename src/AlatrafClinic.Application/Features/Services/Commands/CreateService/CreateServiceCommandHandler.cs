@@ -2,6 +2,7 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Services.Dtos;
 using AlatrafClinic.Application.Features.Services.Mappers;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Services;
 
 using MediatR;
@@ -27,14 +28,17 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
 
     public async Task<Result<ServiceDto>> Handle(CreateServiceCommand command, CancellationToken ct)
     {
-
-        var department = await _context.Departments.FirstOrDefaultAsync(d=> d.Id == command.DepartmentId, ct);
-
-        if (department is null)
+        Department? department = null;
+        if (command.DepartmentId.HasValue)
         {
-            _logger.LogError("Department with ID {DepartmentId} was not found.", command.DepartmentId);
+            department = await _context.Departments.FirstOrDefaultAsync(d=> d.Id == command.DepartmentId, ct);
 
-            return Error.NotFound(code: "Department.NotFound", description: $"Department with ID {command.DepartmentId} was not found.");
+            if (department is null)
+            {
+                _logger.LogError("Department with ID {DepartmentId} was not found.", command.DepartmentId);
+
+                return Error.NotFound(code: "Department.NotFound", description: $"Department with ID {command.DepartmentId} was not found.");
+            }
         }
         
         var serviceResult = Service.Create(command.Name, command.DepartmentId, command.Price);

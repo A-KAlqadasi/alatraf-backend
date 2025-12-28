@@ -1,6 +1,8 @@
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
@@ -91,7 +93,9 @@ public static class TherapyCardMapper
             PatientName = entity.Diagnosis.Patient.Person.FullName,
 
             Gender  = entity.Diagnosis.Patient.Person.Gender ? "ذكر" : "أنثى",
-            Age = DateTime.Now.Year - entity.Diagnosis.Patient.Person.Birthdate.Year,
+            Age = UtilityService.CalculateAge(
+                entity.Diagnosis.Patient.Person.Birthdate,
+                AlatrafClinicConstants.TodayDate),
             DiagnosisId = entity.DiagnosisId,
 
             DiagnosisText = entity.Diagnosis.DiagnosisText,

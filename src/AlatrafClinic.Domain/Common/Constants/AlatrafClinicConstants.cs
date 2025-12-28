@@ -9,5 +9,5 @@ public static class AlatrafClinicConstants
     public const string WoundedReportMinTotalKey = "WoundedReportMinTotal";
     public const int DefaultAppointmentDailyCapacity = 10;
 
-    public static readonly DateOnly TodayDate = DateOnly.FromDateTime(DateTime.UtcNow);
+    public static readonly DateOnly TodayDate = DateOnly.FromDateTime(DateTime.Now);
 }
