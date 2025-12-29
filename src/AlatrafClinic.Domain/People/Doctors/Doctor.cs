@@ -33,9 +33,7 @@ public class Doctor : AuditableEntity<int>
 
     public static Result<Doctor> Create(int personId, int departmentId, string? specialization)
     {
-        if (personId <= 0)
-            return DoctorErrors.PersonIdRequired;
-
+        
         if (departmentId <= 0)
             return DoctorErrors.DepartmentIdRequired;
 
