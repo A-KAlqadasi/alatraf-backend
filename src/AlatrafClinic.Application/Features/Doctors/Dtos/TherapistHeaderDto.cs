@@ -1,6 +1,6 @@
 namespace AlatrafClinic.Application.Features.Doctors.Dtos;
 
-public sealed class TechnicianAssignedIndustrialPartsHeaderDto
+public sealed class TherapistHeaderDto
 {
     public int DoctorSectionRoomId { get; set; }
 
@@ -10,5 +10,7 @@ public sealed class TechnicianAssignedIndustrialPartsHeaderDto
     public int SectionId { get; set; }
     public string SectionName { get; set; } = string.Empty;
 
-    public DateOnly Date { get; set; }
+    public int? RoomId { get; set; }
+    public string? RoomName { get; set; }
+
 }

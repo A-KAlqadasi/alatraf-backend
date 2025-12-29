@@ -6,6 +6,6 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Doctors.Queries.GetTechnicianAssignedHeader;
 
-public sealed record GetTechnicianAssignedIndustrialPartsHeaderQuery(
+public sealed record GetTechnicianAssignedHeaderQuery(
     int DoctorSectionRoomId
-) : IRequest<Result<TechnicianAssignedIndustrialPartsHeaderDto>>;
+) : IRequest<Result<TechnicianHeaderDto>>;
