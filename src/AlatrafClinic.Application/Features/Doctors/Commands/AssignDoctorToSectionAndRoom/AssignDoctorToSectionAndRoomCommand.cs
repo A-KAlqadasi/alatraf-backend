@@ -7,6 +7,7 @@ namespace AlatrafClinic.Application.Features.Doctors.Commands.AssignDoctorToSect
 public sealed record AssignDoctorToSectionAndRoomCommand(
     int DoctorId,
     int SectionId,
-    int RoomId,
+    bool IsActive,
+    int? RoomId,
     string? Notes
 ) : IRequest<Result<Updated>>;
