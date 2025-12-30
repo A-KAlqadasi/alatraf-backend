@@ -181,7 +181,7 @@ public sealed class DoctorsController(ISender sender) : ApiController
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Assign Doctor to section and room.")]
-    [EndpointDescription("Assign doctor to section and room.")]
+    [EndpointDescription("Assign doctor to section and room or only to section.")]
     [EndpointName("AssignDoctorToSectionRoom")]
     [ApiVersion("1.0")]
     public async Task<IActionResult> AssignDoctorToSectionRoom(int doctorId, [FromBody] AssignDoctorToSectionRoomRequest request, CancellationToken ct = default)
@@ -190,6 +190,7 @@ public sealed class DoctorsController(ISender sender) : ApiController
         var result = await sender.Send(new AssignDoctorToSectionAndRoomCommand(
             doctorId,
             request.SectionId,
+            request.IsActive,
             request.RoomId,
             request.Notes
         ), ct);
