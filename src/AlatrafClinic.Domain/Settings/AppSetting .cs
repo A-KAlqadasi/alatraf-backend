@@ -17,7 +17,7 @@ public sealed class AppSetting : AuditableEntity<int>
         Value = value;
         Description = description;
     }
-    public static Result<AppSetting> Create(string key, string value, string? description)
+    public static Result<AppSetting> Create(string key, string value, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(key))
             return AppSettingErrors.InvalidKey;

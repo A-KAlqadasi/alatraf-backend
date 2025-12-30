@@ -19,7 +19,7 @@ public class IndustrialPart : AuditableEntity<int>
         Description = description;
     }
 
-    public static Result<IndustrialPart> Create(string name, string? description)
+    public static Result<IndustrialPart> Create(string name, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {

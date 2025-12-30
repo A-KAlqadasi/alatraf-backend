@@ -81,7 +81,7 @@ public sealed class CreateTherapyCardCommandHandler
         
         var typePrice = await  _context.TherapyCardTypePrices.FirstOrDefaultAsync(x=> x.Type == command.TherapyCardType, ct);
 
-        if(typePrice is null)
+        if (typePrice is null)
         {
             _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
             return TherapyCardTypePriceErrors.InvalidPrice;

@@ -10,6 +10,7 @@ namespace AlatrafClinic.Domain.TherapyCards;
 
 public class TherapyCard : AuditableEntity<int>
 {
+    
     public DateOnly ProgramStartDate { get; private set; }
     public DateOnly? ProgramEndDate { get; private set; }
     public int NumberOfTakenSessions => _sessions.Where(s=> s.IsTaken == true).Count();
