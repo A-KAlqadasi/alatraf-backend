@@ -7,7 +7,6 @@ public class AssignDoctorToSectionRoomRequest
     [Required]
     public int SectionId { get; set; }
     public int? RoomId { get; set; }
-    [MaxLength(100)]
     [Required]
     public bool IsActive { get; set; }
     [MaxLength(500)]
