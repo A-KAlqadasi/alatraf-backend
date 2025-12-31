@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Identity;
 using AlatrafClinic.Application.Features.Identity.Dtos;
@@ -20,7 +21,7 @@ public class TokenProvider(IConfiguration configuration, AlatrafClinicDbContext 
     private readonly IConfiguration _configuration = configuration;
     private readonly AlatrafClinicDbContext _context = context;
 
-    public async Task<Result<TokenResponse>> GenerateJwtTokenAsync(AppUserDto user, CancellationToken ct = default)
+    public async Task<Result<TokenResponse>> GenerateJwtTokenAsync(UserDetailsDto user, CancellationToken ct = default)
     {
         var tokenResult = await CreateAsync(user, ct);
 
@@ -64,7 +65,7 @@ public class TokenProvider(IConfiguration configuration, AlatrafClinicDbContext 
         return principal;
     }
 
-    private async Task<Result<TokenResponse>> CreateAsync(AppUserDto user, CancellationToken ct = default)
+    private async Task<Result<TokenResponse>> CreateAsync(UserDetailsDto user, CancellationToken ct = default)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
 
@@ -79,11 +80,11 @@ public class TokenProvider(IConfiguration configuration, AlatrafClinicDbContext 
         {
             // subject / user identifier
             new(JwtRegisteredClaimNames.Sub, user.UserId),
-            new(JwtRegisteredClaimNames.UniqueName, user.UserName),
+            new(JwtRegisteredClaimNames.UniqueName, user.Username),
 
             // required for RefreshTokenQueryHandler (NameIdentifier)
             new(ClaimTypes.NameIdentifier, user.UserId),
-            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Name, user.Username),
         };
 
         // Role claims
@@ -93,7 +94,7 @@ public class TokenProvider(IConfiguration configuration, AlatrafClinicDbContext 
         }
 
         // Permission claims
-        foreach (var permission in user.Permissions)
+        foreach (var permission in user.PermissionOverrides)
         {
             claims.Add(new Claim("permission", permission));
         }

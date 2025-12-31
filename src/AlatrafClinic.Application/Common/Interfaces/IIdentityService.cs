@@ -6,71 +6,48 @@ namespace AlatrafClinic.Application.Common.Interfaces;
 
 public interface IIdentityService
 {
-    Task<bool> IsInRoleAsync(string userId, string role);
-
-    Task<bool> AuthorizeAsync(string userId, string? policyName);
-
-    Task<Result<AppUserDto>> AuthenticateAsync(string userName, string password);
-
-    public Task<Result<UserDto>> GetUserByIdAsync(string userId);
+    // =========================
+    // Authentication
+    // =========================
+    Task<bool> AuthorizeAsync(string userId, string policyName);
+    Task<Result<UserDetailsDto>> AuthenticateAsync(string userName, string password);
+    Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId);
 
     Task<string?> GetUserNameAsync(string userId);
-    Task<bool> IsUserNameExistsAsync(string userName);
-    Task<Result<RefreshToken>> GetRefreshTokenAsync(string refreshToken, string userId);
-    Task<Result<AppUserDto>> CreateUserAsync(int pesonId, string userName, string password, bool isActive, IList<string> roles, IList<string> permissions);
 
-    Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string newPassword);
-    Task<Result<bool>> ChangeUserNameAndPasswordAsync(string userId, string newUsername, string oldPassword, string newPassword);
+    Task<Result<string>> CreateUserAsync(CreateUserRequest request, CancellationToken ct = default);
+    Task<Result<Updated>> ActivateUserAsync(string userId, bool isActive, CancellationToken ct = default);
+    Task<Result<Updated>> ResetUserPasswordAsync(ResetPasswordRequest request, CancellationToken ct = default);
 
-    IQueryable<UserQueryRow> QueryUsers();
+    Task<Result<UserDetailsDto>> GetUserByIdAsync(string userId, CancellationToken ct = default);
+    Task<Result<IReadOnlyList<UserListItemDto>>> GetUsersAsync(CancellationToken ct = default);
 
-    Task<List<UserDto>> EnrichUsersAsync(
-        IReadOnlyList<UserQueryRow> rows,
-        CancellationToken ct);
+    Task<Result<Updated>> AssignRoleToUserAsync(AssignRoleRequest request, CancellationToken ct = default);
+    Task<Result<Deleted>> RemoveRoleFromUserAsync(AssignRoleRequest request, CancellationToken ct = default);
+    
 
-    public Task<Result<bool>> ChangeUserActivationAsync(string userId, bool isActive);
+    // =========================
+    // Role Management
+    // =========================
+    Task<Result<string>> CreateRoleAsync(CreateRoleRequest request, CancellationToken ct = default);
+    Task<Result<Deleted>> DeleteRoleAsync(string roleId, CancellationToken ct = default);
 
-    // ---------------- USER PERMISSIONS ----------------
+    Task<Result<Updated>> AssignPermissionToRoleAsync(RolePermissionRequest request, CancellationToken ct = default);
+    Task<Result<Deleted>> RemovePermissionFromRoleAsync(RolePermissionRequest request, CancellationToken ct = default);
 
-    /// <summary>
-    /// Adds one or more permissions to a user.
-    /// Missing permissions will be created automatically.
-    /// Operation is idempotent.
-    /// </summary>
-    Task<Result<Success>> AddPermissionsToUserAsync(
-        string userId,
-        IList<string> permissionNames,
-        CancellationToken ct = default);
+    Task<Result<IReadOnlyList<RoleDetailsDto>>> GetRolesAsync(CancellationToken ct = default);
 
-    /// <summary>
-    /// Removes one or more permissions from a user.
-    /// Operation is idempotent.
-    /// </summary>
-    Task<Result<Success>> RemovePermissionsFromUserAsync(
-        string userId,
-        IList<string> permissionNames,
-        CancellationToken ct = default);
+    // =========================
+    // User Permission Overrides
+    // =========================
+    Task<Result<Updated>> GrantPermissionToUserAsync(UserPermissionOverrideRequest request, CancellationToken ct = default);
+    Task<Result<Updated>> DenyPermissionToUserAsync(UserPermissionOverrideRequest request, CancellationToken ct = default);
+    Task<Result<Deleted>> RemoveUserPermissionOverrideAsync(UserPermissionOverrideRequest request, CancellationToken ct = default);
 
-
-    // ---------------- ROLE PERMISSIONS ----------------
-
-    /// <summary>
-    /// Adds one or more permissions to a role.
-    /// Missing permissions will be created automatically.
-    /// Operation is idempotent.
-    /// </summary>
-    Task<Result<Success>> AddPermissionsToRoleAsync(
-        string roleName,
-        IList<string> permissionNames,
-        CancellationToken ct = default);
-
-    /// <summary>
-    /// Removes one or more permissions from a role.
-    /// Operation is idempotent.
-    /// </summary>
-    Task<Result<Success>> RemovePermissionsFromRoleAsync(
-        string roleName,
-        IList<string> permissionNames,
-        CancellationToken ct = default);
-
+    // =========================
+    // Permission Queries (VERY IMPORTANT)
+    // =========================
+    Task<Result<bool>> UserHasPermissionAsync(string userId, string permissionName, CancellationToken ct = default);
+    Task<Result<IReadOnlyList<string>>> GetEffectivePermissionsAsync(string userId, CancellationToken ct = default);
 }
+

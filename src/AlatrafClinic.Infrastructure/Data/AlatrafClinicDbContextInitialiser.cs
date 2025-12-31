@@ -37,7 +37,7 @@ public sealed class AlatrafClinicDbContextInitialiser
     {
         try
         {
-            await _context.Database.EnsureCreatedAsync(ct);
+            await _context.Database.MigrateAsync(ct);
         }
         catch (Exception ex)
         {

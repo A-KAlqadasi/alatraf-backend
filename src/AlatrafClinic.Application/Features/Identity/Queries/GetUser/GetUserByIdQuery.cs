@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Identity.Queries.GetUser;
 
-public sealed record GetUserByIdQuery(string? UserId) : IRequest<Result<UserDto>>;
+public sealed record GetUserByIdQuery(string? UserId) : IRequest<Result<UserDetailsDto>>;
