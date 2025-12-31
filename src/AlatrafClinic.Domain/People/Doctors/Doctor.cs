@@ -70,6 +70,11 @@ public class Doctor : AuditableEntity<int>
             return DoctorErrors.DoctorHasSessionsToday;
         }
         
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId == section.Id && ActiveAssignment.RoomId == room.Id)
+        {
+            return ActiveAssignment;
+        }
+        
         ActiveAssignment?.EndAssignment();
 
         var newAssignment = DoctorSectionRoom.AssignToRoom(Id, section.Id, room.Id, notes);
@@ -90,6 +95,11 @@ public class Doctor : AuditableEntity<int>
         if (ActiveAssignment is not null && ActiveAssignment.SectionId != section.Id)
         {
             return DoctorErrors.DoctorHasIndustrialPartsToday;
+        }
+
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId == section.Id)
+        {
+            return ActiveAssignment;
         }
         
         ActiveAssignment?.EndAssignment();

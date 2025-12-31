@@ -1,17 +1,14 @@
 services:
   alatrafclinic-api:
     container_name: alatrafclinic-api
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: final
+    image: akalqadasi/alatrafclinic-api:latest
     ports:
       - "2003:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - TZ=Asia/Aden
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=alatrafclinicDb;User=sa;Password=YourStrong@Password1;TrustServerCertificate=True;MultipleActiveResultSets=True
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://seq:5341/ingest/otlp/v1/traces
       - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
     depends_on:
@@ -26,7 +23,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong@Password1
+      - SA_PASSWORD=${SA_PASSWORD}
     ports:
       - "14330:1433"
     volumes:
@@ -67,7 +64,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=YourStrongPwd
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     ports:
       - "3000:3000"
     volumes:
