@@ -1,10 +1,7 @@
 services:
   alatrafclinic-api:
     container_name: alatrafclinic-api
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: final
+    image: akalqadasi/alatrafclinic-api:latest
     ports:
       - "2003:80"
     environment:
