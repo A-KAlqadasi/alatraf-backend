@@ -21,15 +21,8 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDiagnosisCreationService _diagnosisService;
 
-<<<<<<< HEAD
-    public CreateSaleCommandHandler(
-        ILogger<CreateSaleCommandHandler> logger,
-        IUnitOfWork unitOfWork,
-        IDiagnosisCreationService diagnosisService,
-        HybridCache cache)
-=======
+ 
     public CreateSaleCommandHandler(ILogger<CreateSaleCommandHandler> logger, IUnitOfWork unitOfWork, IDiagnosisCreationService diagnosisService)
->>>>>>> upstream/main
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -93,10 +86,7 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
         if (assignDiagnosisResult.IsError)
             return assignDiagnosisResult.Errors;
 
-<<<<<<< HEAD
-        // ✅ Persist sale and diagnosis first so Sale.Id is generated
-        await _unitOfWork.Sales.AddAsync(sale, ct);
-=======
+
         var paymentResult = Payment.Create(diagnosis.TicketId, diagnosis.Id, sale.Total, PaymentReference.Sales);
 
         if (paymentResult.IsError)
@@ -110,7 +100,6 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
         diagnosis.AssignPayment(payment);
         diagnosis.AssignToSale(sale);
 
->>>>>>> upstream/main
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
