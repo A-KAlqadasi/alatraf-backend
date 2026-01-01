@@ -94,7 +94,7 @@ public class TokenProvider(IConfiguration configuration, AlatrafClinicDbContext 
         }
 
         // Permission claims
-        foreach (var permission in user.PermissionOverrides)
+        foreach (var permission in user.Permissions)
         {
             claims.Add(new Claim("permission", permission));
         }

@@ -61,7 +61,7 @@ public class RefreshTokenQueryHandler(ILogger<RefreshTokenQueryHandler> logger, 
             Username = getUserResult.Value.Username!,
             IsActive = getUserResult.Value.IsActive,
             Roles = getUserResult.Value.Roles!,
-            PermissionOverrides = getUserResult.Value.PermissionOverrides!
+            Permissions = getUserResult.Value.Permissions!
         };
         
 

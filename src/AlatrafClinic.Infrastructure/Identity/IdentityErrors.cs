@@ -12,4 +12,10 @@ public static class MyIdentityErrors
     public static readonly Error RoleNotFound = Error.NotFound(description: "Role not found");
     public static readonly Error FailToCreateRole = Error.Failure(description: "Role creation is failed");
     public static readonly Error RoleAssignedToUsers = Error.Conflict(description: "Role has assigned users");
+    public static readonly Error FaliedToAssignRoleToUser = Error.Failure(description: "Failed to assign role to user");
+    public static readonly Error RoleNameIsRequired = Error.Validation(code: "RoleNameIsRequired", description: "Role name is required");
+    public static readonly Error InvalidCredentials = Error.Unauthorized(description: "Invalid username/password provided");
+    public static readonly Error FailToChangePassword = Error.Failure(description: "Failed to change password");
+    public static readonly Error FailToChangeUsername = Error.Failure(description: "Failed to change username");
+    public static readonly Error UsernameAlreadyTaken = Error.Conflict(description: "The username is already taken.");
 }
