@@ -6,7 +6,6 @@ using AlatrafClinic.Domain.RepairCards.Enums;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.ChangeRepairCardStatus;
@@ -15,13 +14,11 @@ public class ChangeRepairCardStatusCommandHandler : IRequestHandler<ChangeRepair
 {
     private readonly ILogger<ChangeRepairCardStatusCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public ChangeRepairCardStatusCommandHandler(ILogger<ChangeRepairCardStatusCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public ChangeRepairCardStatusCommandHandler(ILogger<ChangeRepairCardStatusCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(ChangeRepairCardStatusCommand command, CancellationToken ct)
     {
@@ -66,7 +63,6 @@ public class ChangeRepairCardStatusCommandHandler : IRequestHandler<ChangeRepair
         
         _context.RepairCards.Update(repairCard);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("repair-card");
         
         _logger.LogInformation("Successfully changed status of Repair card ID {RepairCardId} to {NewStatus}.", command.RepairCardId, command.NewStatus);
 

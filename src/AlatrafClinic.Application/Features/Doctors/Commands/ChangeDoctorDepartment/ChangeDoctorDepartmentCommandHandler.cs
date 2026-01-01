@@ -1,21 +1,17 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.ChangeDoctorDepartment;
 
 public class ChangeDoctorDepartmentCommandHandler(
     IAppDbContext _context,
-    ILogger<ChangeDoctorDepartmentCommandHandler> _logger,
-    HybridCache _cache
-) : IRequestHandler<ChangeDoctorDepartmentCommand, Result<Updated>>
+    ILogger<ChangeDoctorDepartmentCommandHandler> _logger) : IRequestHandler<ChangeDoctorDepartmentCommand, Result<Updated>>
 {
     public async Task<Result<Updated>> Handle(ChangeDoctorDepartmentCommand command, CancellationToken ct)
     {
@@ -42,7 +38,6 @@ public class ChangeDoctorDepartmentCommandHandler(
 
         _context.Doctors.Update(doctor);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("doctor", ct);
         
         _logger.LogInformation("Doctor {DoctorId} transferred to Department {DepartmentId}.", doctor.Id, department.Id);
 

@@ -12,7 +12,6 @@ public static class AppSettingMapper
             Key = setting.Key,
             Value = setting.Value,
             Description = setting.Description,
-            Type = setting.Type
         };
     }
 

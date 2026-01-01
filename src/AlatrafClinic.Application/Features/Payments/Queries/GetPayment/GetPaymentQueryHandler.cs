@@ -1,5 +1,4 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Application.Features.Payments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -12,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Payments.Queries.GetPayment;
 
-public class GetPaymentQueryHandler : IRequestHandler<GetPaymentQuery, Result<PaymentDto>>
+public class GetPaymentQueryHandler : IRequestHandler<GetPaymentQuery, Result<PaymentCoreDto>>
 {
     private readonly ILogger<GetPaymentQueryHandler> _logger;
     private readonly IAppDbContext _context;
@@ -22,14 +21,10 @@ public class GetPaymentQueryHandler : IRequestHandler<GetPaymentQuery, Result<Pa
         _logger = logger;
         _context = context;
     }
-    public async Task<Result<PaymentDto>> Handle(GetPaymentQuery query, CancellationToken ct)
+    public async Task<Result<PaymentCoreDto>> Handle(GetPaymentQuery query, CancellationToken ct)
     {
         var payment = await _context.Payments
-        .Include(p=> p.Diagnosis)
-        .Include(p=> p.Ticket)
-        .Include(p=> p.PatientPayment)
-        .Include(p=> p.DisabledPayment)
-        .Include(p=> p.WoundedPayment)
+        .AsNoTracking()
         .FirstOrDefaultAsync(p=> p.Id == query.PaymentId, ct);
         if (payment is null)
         {
@@ -37,6 +32,6 @@ public class GetPaymentQueryHandler : IRequestHandler<GetPaymentQuery, Result<Pa
             return PaymentErrors.PaymentNotFound;
         }
 
-        return payment.ToDto();
+        return payment.ToBasePaymentDto();
     }
 }

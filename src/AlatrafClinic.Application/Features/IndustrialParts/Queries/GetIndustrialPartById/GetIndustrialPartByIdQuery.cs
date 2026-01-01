@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.IndustrialParts.Queries.GetIndustrialPartById;
 
-public sealed record GetIndustrialPartByIdQuery(int IdustrialPartId) : IRequest<Result<IndustrialPartDto>>;
+public sealed record GetIndustrialPartByIdQuery(int IndustrialPartId) : IRequest<Result<IndustrialPartDto>>;

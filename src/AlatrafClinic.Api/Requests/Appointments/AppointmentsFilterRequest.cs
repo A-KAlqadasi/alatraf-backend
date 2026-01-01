@@ -10,6 +10,7 @@ public sealed class AppointmentsFilterRequest
 {
     [MaxLength(200)]
     public string? SearchTerm { get; init; }
+    public bool? IsAppointmentTomorrow { get; init; }
 
     [EnumDataType(typeof(AppointmentStatus))]
     public AppointmentStatus? Status { get; init; }

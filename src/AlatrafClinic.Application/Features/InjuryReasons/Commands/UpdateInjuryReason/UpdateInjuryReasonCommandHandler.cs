@@ -48,9 +48,9 @@ public class UpdateInjuryReasonCommandHandler : IRequestHandler<UpdateInjuryReas
 
         _context.InjuryReasons.Update(injuryReason);
         await _context.SaveChangesAsync(ct);
-        _logger.LogInformation("Injury reason with ID {InjuryReasonId} updated successfully.", command.InjuryReasonId);
-
         await _cache.RemoveByTagAsync("injury-reason", ct);
+
+        _logger.LogInformation("Injury reason with ID {InjuryReasonId} updated successfully.", command.InjuryReasonId);
 
         return Result.Updated;
     }

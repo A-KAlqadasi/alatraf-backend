@@ -15,7 +15,6 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Hybrid;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 
@@ -23,18 +22,15 @@ public sealed class CreateTherapyCardCommandHandler
     : IRequestHandler<CreateTherapyCardCommand, Result<TherapyCardDiagnosisDto>>
 {
     private readonly ILogger<CreateTherapyCardCommandHandler> _logger;
-    private readonly HybridCache _cache;
     private readonly IAppDbContext _context;
     private readonly IDiagnosisCreationService _diagnosisService;
 
     public CreateTherapyCardCommandHandler(
         ILogger<CreateTherapyCardCommandHandler> logger,
-        HybridCache cache,
         IAppDbContext context,
         IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
-        _cache = cache;
         _context = context;
         _diagnosisService = diagnosisService;
     }
@@ -85,14 +81,37 @@ public sealed class CreateTherapyCardCommandHandler
         
         var typePrice = await  _context.TherapyCardTypePrices.FirstOrDefaultAsync(x=> x.Type == command.TherapyCardType, ct);
 
-        if(typePrice is null)
+        if (typePrice is null)
         {
             _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
+        
         var price = typePrice.SessionPrice;
+        DateOnly programStartDate = command.ProgramStartDate;
+        DateOnly? programEndDate = command.ProgramEndDate;
+        
+        if(command.TherapyCardType == TherapyCardType.Special)
+        {
+            programStartDate= command.ProgramStartDate;
+            programEndDate = null;
+        }
+        else
+        {
+            if (programEndDate == null)
+            {
+                _logger.LogError("Program start date and end date are required for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.ProgramDatesAreRequired;
+            }
+            var sessions =  programEndDate.Value.DayNumber - programStartDate.DayNumber;
+            if (sessions != command.NumberOfSessions)
+            {
+                _logger.LogError("Program dates do not match the number of sessions for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.NumberOfSessionsInvalid;
+            }
+        }
 
-        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.New, null, command.Notes);
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, programStartDate, programEndDate, command.NumberOfSessions, command.TherapyCardType, price, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.New, null, command.Notes);
 
         if (createTherapyCardResult.IsError)
         {
@@ -128,8 +147,6 @@ public sealed class CreateTherapyCardCommandHandler
 
         await _context.Diagnoses.AddAsync(diagnosis);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("therapy-card", ct);
-
         
         _logger.LogInformation("TherapyCard {TherapyCardId} created for Diagnosis {DiagnosisId}.", therapyCard.Id, diagnosis.Id);
         

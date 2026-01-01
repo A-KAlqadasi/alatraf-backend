@@ -24,14 +24,14 @@ public class DoctorSectionRoomRepository : GenericRepository<DoctorSectionRoom, 
         return await dbContext.DoctorSectionRooms.Include(dsrm=> dsrm.DiagnosisIndustrialParts)
             .Include(dsrm=> dsrm.Doctor).ThenInclude(d=> d.Person)
             .Include(dsrm=> dsrm.Section)
-            .Where(dsrm => dsrm.IsActive && dsrm.GetTodayIndustrialPartsCount() > 0)
+            .Where(dsrm => dsrm.IsActive)
             .ToListAsync(ct);
     }
 
     public async Task<List<DoctorSectionRoom>> GetTherapistsActiveAssignmentsAsync(CancellationToken ct)
     {
         return await dbContext.DoctorSectionRooms
-            .Where(dsrm => dsrm.IsActive && dsrm.GetTodaySessionsCount() > 0)
+            .Where(dsrm => dsrm.IsActive)
             .ToListAsync(ct);
     }
 }

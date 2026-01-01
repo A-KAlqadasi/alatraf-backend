@@ -148,25 +148,8 @@ public class AlatrafClinicDbContext
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AlatrafClinicDbContext).Assembly);
-        AlatrafClinicDbContextInitializer.Seed(builder);
-
-        var isSqlite = Database.ProviderName?.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) == true;
-
-        if (isSqlite)
-        {
-            foreach (var property in builder.Model
-                         .GetEntityTypes()
-                         .SelectMany(t => t.GetProperties()))
-            {
-                var columnType = property.GetColumnType();
-                if (string.Equals(columnType, "nvarchar(max)", StringComparison.OrdinalIgnoreCase))
-                {
-                    property.SetColumnType("TEXT");
-                }
-            }
-        }
-
     }
+    
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // Collect domain events from tracked entities into the in-memory buffer

@@ -11,7 +11,6 @@ using AlatrafClinic.Domain.Sales;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
@@ -21,18 +20,20 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
     private readonly ILogger<CreateSaleCommandHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDiagnosisCreationService _diagnosisService;
-    private readonly HybridCache _cache;
 
+<<<<<<< HEAD
     public CreateSaleCommandHandler(
         ILogger<CreateSaleCommandHandler> logger,
         IUnitOfWork unitOfWork,
         IDiagnosisCreationService diagnosisService,
         HybridCache cache)
+=======
+    public CreateSaleCommandHandler(ILogger<CreateSaleCommandHandler> logger, IUnitOfWork unitOfWork, IDiagnosisCreationService diagnosisService)
+>>>>>>> upstream/main
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _diagnosisService = diagnosisService;
-        _cache = cache;
     }
 
     public async Task<Result<SaleDto>> Handle(CreateSaleCommand command, CancellationToken ct)
@@ -92,8 +93,24 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
         if (assignDiagnosisResult.IsError)
             return assignDiagnosisResult.Errors;
 
+<<<<<<< HEAD
         // ✅ Persist sale and diagnosis first so Sale.Id is generated
         await _unitOfWork.Sales.AddAsync(sale, ct);
+=======
+        var paymentResult = Payment.Create(diagnosis.TicketId, diagnosis.Id, sale.Total, PaymentReference.Sales);
+
+        if (paymentResult.IsError)
+        {
+            _logger.LogError("Failed to create Payment for Sales : {Errors}", string.Join(", ", paymentResult.Errors));
+            return paymentResult.Errors;
+        }
+
+        var payment = paymentResult.Value;
+
+        diagnosis.AssignPayment(payment);
+        diagnosis.AssignToSale(sale);
+
+>>>>>>> upstream/main
         await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 

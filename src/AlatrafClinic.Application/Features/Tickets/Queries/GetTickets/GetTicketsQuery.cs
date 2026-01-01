@@ -1,4 +1,3 @@
-using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Domain.Common.Results;
@@ -20,20 +19,4 @@ public sealed record GetTicketsQuery(
     DateTime? CreatedTo = null,
     string SortColumn = "createdAt",
     string SortDirection = "desc"
-) : ICachedQuery<Result<PaginatedList<TicketDto>>>
-{
-    public string CacheKey =>
-        $"tickets:p={Page}:ps={PageSize}" +
-        $":q={(SearchTerm ?? "-")}" +
-        $":status={(Status?.ToString() ?? "-")}" +
-        $":pat={(PatientId?.ToString() ?? "-")}" +
-        $":srv={(ServiceId?.ToString() ?? "-")}" +
-        $":dep={(DepartmentId?.ToString() ?? "-")}" +
-        $":cfrom={(CreatedFrom?.ToString("yyyyMMdd") ?? "-")}" +
-        $":cto={(CreatedTo?.ToString("yyyyMMdd") ?? "-")}" +
-        $":sort={SortColumn}:{SortDirection}";
-
-    public string[] Tags => ["ticket"];
-
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
-}
+) : IRequest<Result<PaginatedList<TicketDto>>>;

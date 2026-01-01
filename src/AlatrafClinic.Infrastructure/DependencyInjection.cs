@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -42,10 +43,11 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString);
         });
 
-        services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AlatrafClinicDbContext>());
 
 
         // services.AddScoped<ApplicationDbContextInitialiser>();
+        services.AddScoped<IAppDbContext>(provider => provider. GetRequiredService<AlatrafClinicDbContext>());
+        services.AddScoped<AlatrafClinicDbContextInitialiser>();
 
         services.AddAuthentication(options =>
         {

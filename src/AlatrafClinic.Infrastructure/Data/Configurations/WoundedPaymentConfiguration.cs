@@ -21,11 +21,6 @@ public sealed class WoundedPaymentConfiguration : IEntityTypeConfiguration<Wound
             .HasForeignKey<WoundedPayment>(w => w.Id)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(w => w.WoundedCard)
-            .WithMany(wc => wc.WoundedPayments)
-            .HasForeignKey(w => w.WoundedCardId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasQueryFilter(w => !w.IsDeleted);
     }
 }

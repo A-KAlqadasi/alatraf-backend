@@ -37,6 +37,7 @@ public class AuditableEntityInterceptor(IUser user, TimeProvider dateTime) : Sav
         var utcNow = _dateTime.GetUtcNow();
 
         // 1) Audit create/update
+        // Hi GPT, here where exception raise when the execution reach to this point
         foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
         {
             if (entry.State == EntityState.Added)

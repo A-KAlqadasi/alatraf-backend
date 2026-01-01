@@ -25,7 +25,11 @@ public sealed class WoundedCardConfiguration : IEntityTypeConfiguration<WoundedC
             .IsRequired(false)
             .HasMaxLength(500);
 
-        builder.Property(w => w.Expiration)
+        builder.Property(w => w.ExpirationDate)
+            .IsRequired()
+            .HasColumnType("date");
+            
+        builder.Property(w => w.IssueDate)
             .IsRequired()
             .HasColumnType("date");
 

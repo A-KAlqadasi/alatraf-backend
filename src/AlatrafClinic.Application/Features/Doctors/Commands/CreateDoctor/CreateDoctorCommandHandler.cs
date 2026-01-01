@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Doctors.Dtos;
@@ -6,22 +7,18 @@ using AlatrafClinic.Application.Features.People.Services.CreatePerson;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People.Doctors;
 
-using MechanicShop.Application.Common.Errors;
-
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.CreateDoctor;
 
 public class CreateDoctorCommandHandler(
-      IPersonCreateService _personCreateService,
-      IAppDbContext _context,
-      ILogger<CreateDoctorCommandHandler> _logger,
-      HybridCache _cache
-  ) : IRequestHandler<CreateDoctorCommand, Result<DoctorDto>>
+    IPersonCreateService _personCreateService,
+    IAppDbContext _context,
+    ILogger<CreateDoctorCommandHandler> _logger
+    ) : IRequestHandler<CreateDoctorCommand, Result<DoctorDto>>
 {
 
     public async Task<Result<DoctorDto>> Handle(CreateDoctorCommand command, CancellationToken ct)
@@ -64,7 +61,6 @@ public class CreateDoctorCommandHandler(
 
         await _context.People.AddAsync(person, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("doctor", ct);
 
         _logger.LogInformation("Doctor created successfully with ID: {DoctorId}", doctor.Id);
 

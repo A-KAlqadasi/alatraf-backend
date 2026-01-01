@@ -8,4 +8,7 @@ public class DoctorDto
     public PersonDto? PersonDto { get; set; }
     public string? Specialization { get; set; }
     public int DepartmentId { get; set; }
+    public int? SectionId { get; set; }
+    public int? RoomId { get; set; }
+    public bool IsActive { get; set; }
 }

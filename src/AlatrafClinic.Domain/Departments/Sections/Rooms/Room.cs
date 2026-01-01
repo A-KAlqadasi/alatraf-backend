@@ -38,10 +38,7 @@ public class Room : AuditableEntity<int>
     {
         if (string.IsNullOrWhiteSpace(newName))
             return RoomErrors.InvalidName;
-
-        if (Section.Rooms.Any(r => r.Id != Id && r.Name == newName))
-            return RoomErrors.DuplicateRoomName;
-
+            
         Name = newName;
         return Result.Updated;
     }

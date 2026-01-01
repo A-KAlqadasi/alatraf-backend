@@ -8,7 +8,6 @@ using AlatrafClinic.Domain.RepairCards.Enums;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 using MediatR;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 using AlatrafClinic.Application.Common.Interfaces;
@@ -20,14 +19,12 @@ namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpdateRepairCa
 public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCommand, Result<Updated>>
 {
      private readonly ILogger<UpdateRepairCardCommandHandler> _logger;
-    private readonly HybridCache _cache;
     private readonly IAppDbContext _context;
     private readonly IDiagnosisUpdateService _diagnosisUpdateService;
 
-    public UpdateRepairCardCommandHandler(ILogger<UpdateRepairCardCommandHandler> logger, HybridCache cache, IAppDbContext context, IDiagnosisUpdateService diagnosisUpdateService)
+    public UpdateRepairCardCommandHandler(ILogger<UpdateRepairCardCommandHandler> logger, IAppDbContext context, IDiagnosisUpdateService diagnosisUpdateService)
     {
         _logger = logger;
-        _cache = cache;
         _context = context;
         _diagnosisUpdateService = diagnosisUpdateService;
     }
@@ -142,7 +139,6 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
 
         _context.Diagnoses.Update(updatedDiagnosis);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("repair-card");
         
         _logger.LogInformation("Repair Card with id {RepairCardId} updated successfully", command.RepairCardId);
         

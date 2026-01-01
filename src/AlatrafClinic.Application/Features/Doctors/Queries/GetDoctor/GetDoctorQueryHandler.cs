@@ -23,7 +23,10 @@ public class GetDoctorQueryHandler : IRequestHandler<GetDoctorQuery, Result<Doct
     }
     public async Task<Result<DoctorDto>> Handle(GetDoctorQuery query, CancellationToken ct)
     {
-        var doctor = await _context.Doctors.Include(d=> d.Person).FirstOrDefaultAsync(d=> d.Id == query.DoctorId);
+        var doctor = await _context.Doctors
+        .Include(d=> d.Person)
+        .Include(d=> d.Assignments)
+        .FirstOrDefaultAsync(d=> d.Id == query.DoctorId);
 
         if(doctor is null)
         {

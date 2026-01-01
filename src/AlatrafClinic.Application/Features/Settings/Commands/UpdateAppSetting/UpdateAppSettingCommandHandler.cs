@@ -1,31 +1,38 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Errors;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Settings;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 namespace AlatrafClinic.Application.Features.Settings.Commands.UpdateAppSetting;
 
-public sealed class UpdateAppSettingCommandHandler(IUnitOfWork unitOfWor)
+public sealed class UpdateAppSettingCommandHandler(IAppDbContext _context, ILogger<UpdateAppSettingCommandHandler> _logger)
     : IRequestHandler<UpdateAppSettingCommand, Result<Updated>>
 {
-  private readonly IUnitOfWork _unitOfWor = unitOfWor;
 
-  public async Task<Result<Updated>> Handle(UpdateAppSettingCommand request, CancellationToken cancellationToken)
-  {
-    var setting = await _unitOfWor.AppSettings.GetByKeyAsync(request.Key, cancellationToken);
-    if (setting is null)
-      return ApplicationErrors.AppSettingKeyNotFound;
+    public async Task<Result<Updated>> Handle(UpdateAppSettingCommand command, CancellationToken ct)
+    {
+        var setting = await _context.AppSettings.FirstOrDefaultAsync(a=> a.Key == command.Key, ct);
+        if (setting is null)
+        {
+            _logger.LogError("App setting with key {Key} not found", command.Key);
+            return ApplicationErrors.AppSettingKeyNotFound;
+        }
 
-    var result = setting.Update(request.Value, request.Description);
-    if (result.IsError)
-      return result.Errors;
+        var result = setting.Update(command.Value, command.Description);
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
 
 
-    await _unitOfWor.AppSettings.UpdateAsync(setting, cancellationToken);
+        _context.AppSettings.Update(setting);
+        await _context.SaveChangesAsync(ct);
+        _logger.LogInformation("App setting with key {Key} updated successfully", command.Key);
 
-    return Result.Updated;
-  }
+        return Result.Updated;
+    }
 }

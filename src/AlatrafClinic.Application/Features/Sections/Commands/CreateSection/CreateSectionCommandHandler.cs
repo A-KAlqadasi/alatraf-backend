@@ -1,12 +1,10 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Sections.Dtos;
 using AlatrafClinic.Application.Features.Sections.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.Sections;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
@@ -51,11 +49,10 @@ public sealed class CreateSectionCommandHandler(
 
         await _context.Sections.AddAsync(section, ct);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("section", ct);
 
         _logger.LogInformation("Section {SectionName} created successfully for Department {DepartmentId}.",
             section.Name, command.DepartmentId);
-
-        await _cache.RemoveByTagAsync("section", ct);
 
         return section.ToDto();
     }

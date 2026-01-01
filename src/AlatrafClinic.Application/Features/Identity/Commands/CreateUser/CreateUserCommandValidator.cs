@@ -40,8 +40,8 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     RuleFor(x=> x.Password)
         .NotEmpty()
         .MinimumLength(6)
-        .MaximumLength(20)
-        .Matches(@"^[a-zA-Z0-9]+$")
-        .WithMessage("Password must be alphanumeric and between 6 to 20 characters long.");
+        .MaximumLength(12)
+        .Matches(@"^(?=.*[A-Za-z]).{6,12}$")
+        .WithMessage("Password must be 6–12 characters long and contain at least one letter.");
     }
 }

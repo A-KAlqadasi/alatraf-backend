@@ -9,7 +9,6 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-
 public sealed class GetUsersQueryHandler
     : IRequestHandler<GetUsersQuery, Result<PaginatedList<UserDto>>>
 {
@@ -24,26 +23,29 @@ public sealed class GetUsersQueryHandler
         GetUsersQuery query,
         CancellationToken ct)
     {
-        IQueryable<UserDto> usersQuery = await _identityService.GetUsersAsync();
+        // 1) Build DB query (translatable)
+        IQueryable<UserQueryRow> usersQuery = _identityService.QueryUsers();
 
         usersQuery = ApplyFilters(usersQuery, query);
 
         if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-        {
             usersQuery = ApplySearchTerm(usersQuery, query.SearchTerm);
-        }
 
         usersQuery = ApplySorting(usersQuery, query.SortColumn, query.SortDirection);
 
         var page = query.Page <= 0 ? 1 : query.Page;
         var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
 
+        // 2) Count + Page in SQL
         var count = await usersQuery.CountAsync(ct);
 
-        var items = await usersQuery
+        var rows = await usersQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
+
+        // 3) Enrich only the page items (roles + permissions)
+        var items = await _identityService.EnrichUsersAsync(rows, ct);
 
         var result = new PaginatedList<UserDto>
         {
@@ -57,8 +59,8 @@ public sealed class GetUsersQueryHandler
         return result;
     }
 
-    private static IQueryable<UserDto> ApplyFilters(
-        IQueryable<UserDto> query,
+    private static IQueryable<UserQueryRow> ApplyFilters(
+        IQueryable<UserQueryRow> query,
         GetUsersQuery searchQuery)
     {
         if (!string.IsNullOrWhiteSpace(searchQuery.UserName))
@@ -78,22 +80,19 @@ public sealed class GetUsersQueryHandler
         }
 
         if (searchQuery.IsActive.HasValue)
-        {
             query = query.Where(u => u.IsActive == searchQuery.IsActive.Value);
-        }
 
         return query;
     }
 
-    private static IQueryable<UserDto> ApplySearchTerm(
-        IQueryable<UserDto> query,
+    private static IQueryable<UserQueryRow> ApplySearchTerm(
+        IQueryable<UserQueryRow> query,
         string searchTerm)
     {
         var normalized = searchTerm.Trim().ToLower();
 
         return query.Where(u =>
-            (u.UserName != null &&
-             u.UserName.ToLower().Contains(normalized)) ||
+            (u.UserName != null && u.UserName.ToLower().Contains(normalized)) ||
             (u.Person != null && (
                 u.Person.Fullname.ToLower().Contains(normalized) ||
                 (u.Person.Phone ?? "").ToLower().Contains(normalized) ||
@@ -101,8 +100,8 @@ public sealed class GetUsersQueryHandler
             )));
     }
 
-    private static IQueryable<UserDto> ApplySorting(
-        IQueryable<UserDto> query,
+    private static IQueryable<UserQueryRow> ApplySorting(
+        IQueryable<UserQueryRow> query,
         string sortColumn,
         string sortDirection)
     {
@@ -112,8 +111,8 @@ public sealed class GetUsersQueryHandler
         return col switch
         {
             "fullname" => isDescending
-                ? query.OrderByDescending(u => u.Person!.Fullname)
-                : query.OrderBy(u => u.Person!.Fullname),
+                ? query.OrderByDescending(u => u.Person.Fullname)
+                : query.OrderBy(u => u.Person.Fullname),
 
             "isactive" => isDescending
                 ? query.OrderByDescending(u => u.IsActive)

@@ -2,7 +2,6 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Enums;
 using AlatrafClinic.Domain.Services.Enums;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.Common.Constants;
 
@@ -16,7 +15,6 @@ public class Appointment : AuditableEntity<int>
     public string? Notes { get; private set; }
     public int TicketId { get; private set; }
     public Ticket Ticket { get; set; } = default!;
-    public static IReadOnlyCollection<DayOfWeek>? AllowedDays { get; private set; }
 
 
     private Appointment() { }

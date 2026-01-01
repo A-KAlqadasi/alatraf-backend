@@ -1,11 +1,10 @@
 
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Departments.Dtos;
 using AlatrafClinic.Application.Features.Departments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
@@ -44,7 +43,6 @@ public sealed class CreateDepartmentCommandHandler(
 
         await _context.Departments.AddAsync(department, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("department", ct);
 
         _logger.LogInformation(" Department '{DepartmentName}' created successfully with ID {DepartmentId}.", name, department.Id);
 

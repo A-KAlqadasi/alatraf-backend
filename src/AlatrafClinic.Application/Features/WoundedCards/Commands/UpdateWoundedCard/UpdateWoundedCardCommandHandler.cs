@@ -1,12 +1,11 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.WoundedCards;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.WoundedCards.Commands.UpdateWoundedCard;
@@ -14,19 +13,17 @@ namespace AlatrafClinic.Application.Features.WoundedCards.Commands.UpdateWounded
 public class UpdateWoundedCardCommandHandler : IRequestHandler<UpdateWoundedCardCommand, Result<Updated>>
 {
     private readonly ILogger<UpdateWoundedCardCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly HybridCache _cache;
+    private readonly IAppDbContext _context;
 
-    public UpdateWoundedCardCommandHandler(ILogger<UpdateWoundedCardCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public UpdateWoundedCardCommandHandler(ILogger<UpdateWoundedCardCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
-        _cache = cache;
+        _context = context;
     }
 
     public async Task<Result<Updated>> Handle(UpdateWoundedCardCommand command, CancellationToken ct)
     {
-        var currentWoundedCard = await _unitOfWork.WoundedCards.GetByIdAsync(command.WoundedCardId, ct);
+        var currentWoundedCard = await _context.WoundedCards.FindAsync(new object[] { command.WoundedCardId }, ct);
         if (currentWoundedCard is null)
         {
             _logger.LogError("Wounded card with Id {id} not found", command.WoundedCardId);
@@ -35,7 +32,7 @@ public class UpdateWoundedCardCommandHandler : IRequestHandler<UpdateWoundedCard
         
         if(currentWoundedCard.CardNumber.Trim() != command.CardNumber.Trim())
         {
-            var isNumberExists = await _unitOfWork.WoundedCards.IsExistAsync(command.CardNumber);
+            var isNumberExists = await _context.WoundedCards.AnyAsync(wc => wc.CardNumber == command.CardNumber);
             if (isNumberExists)
             {
                 _logger.LogWarning("Card number {cardNumber} is already exists!", command.CardNumber);
@@ -43,14 +40,15 @@ public class UpdateWoundedCardCommandHandler : IRequestHandler<UpdateWoundedCard
             }
         }
         
-        Patient? patient = await _unitOfWork.Patients.GetByIdAsync(command.PatientId, ct);
+        Patient? patient = await _context.Patients.FindAsync(new object[] { command.PatientId }, ct);
         if (patient is null)
         {
             _logger.LogError("Patient {id} is not found!", command.PatientId);
             return PatientErrors.PatientNotFound;
         }
 
-        var woundedCardResult = currentWoundedCard.Update(command.CardNumber, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        var woundedCardResult = currentWoundedCard.Update(command.CardNumber, command.IssueDate, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        
         if (woundedCardResult.IsError)
         {
             return woundedCardResult.Errors;
@@ -58,8 +56,8 @@ public class UpdateWoundedCardCommandHandler : IRequestHandler<UpdateWoundedCard
 
         currentWoundedCard.Patient = patient;
 
-        await _unitOfWork.WoundedCards.UpdateAsync(currentWoundedCard, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _context.WoundedCards.Update(currentWoundedCard);
+        await _context.SaveChangesAsync(ct);
         _logger.LogInformation("Wounded card {cardId} is updated successfully", command.WoundedCardId);
         
         return Result.Updated;

@@ -43,10 +43,6 @@ public class Section :AuditableEntity<int>
         if (string.IsNullOrWhiteSpace(newName))
             return SectionErrors.NameRequired;
 
-        if (Department.Sections.Any(s => s.Id != Id && 
-                                        s.Name.Equals(newName, StringComparison.OrdinalIgnoreCase)))
-            return SectionErrors.DuplicateSectionName;
-
         Name = newName;
         return Result.Updated;
     }

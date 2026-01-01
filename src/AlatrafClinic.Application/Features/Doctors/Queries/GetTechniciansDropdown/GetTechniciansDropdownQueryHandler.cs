@@ -1,17 +1,15 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Doctors.Dtos;
-using AlatrafClinic.Application.Features.Doctors.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
-
-using MediatR;
 
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using AlatrafClinic.Domain.Common.Constants;
 
 namespace AlatrafClinic.Application.Features.Doctors.Queries.GetTechniciansDropdown;
 
-public class GetTechniciansDropdownQueryHandler
+public sealed class GetTechniciansDropdownQueryHandler
     : IRequestHandler<GetTechniciansDropdownQuery, Result<PaginatedList<TechnicianDto>>>
 {
     private readonly IAppDbContext _context;
@@ -20,46 +18,66 @@ public class GetTechniciansDropdownQueryHandler
     {
         _context = context;
     }
-    
+
     public async Task<Result<PaginatedList<TechnicianDto>>> Handle(
         GetTechniciansDropdownQuery query,
         CancellationToken ct)
     {
-        IQueryable<DoctorSectionRoom> techniciansQuery = _context.DoctorSectionRooms
-            .Include(dsrm => dsrm.DiagnosisIndustrialParts)
-            .Include(dsrm => dsrm.Doctor)
-                .ThenInclude(d => d.Person)
-            .Include(dsrm => dsrm.Section)
-            .AsNoTracking()
-            .Where(dsrm => dsrm.IsActive && dsrm.GetTodayIndustrialPartsCount() > 0);
+        // Use DateOnly because DiagnosisIndustrialPart.DoctorAssignDate is DateOnly?
+        var today = AlatrafClinicConstants.TodayDate;
 
-        if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-        {
-            techniciansQuery = ApplySearch(techniciansQuery, query);
-        }
+        // Base query: technicians = doctors in department 2
+        // and we project their ACTIVE assignment into TechnicianDto.
+        IQueryable<TechnicianDto> techniciansQuery = _context.Doctors
+            .AsNoTracking()
+            .Where(d => d.DepartmentId == 2)
+            .Where(d => d.Assignments.Any(a => a.IsActive))
+            .Select(d => new TechnicianDto
+            {
+                DoctorId = d.Id,
+                DoctorName = d.Person!.FullName,
+
+                DoctorSectionRoomId = d.Assignments
+                    .Where(a => a.IsActive)
+                    .Select(a => a.Id)
+                    .FirstOrDefault(),
+
+                SectionId = d.Assignments
+                    .Where(a => a.IsActive)
+                    .Select(a => (int?)a.SectionId)
+                    .FirstOrDefault(),
+
+                SectionName = d.Assignments
+                    .Where(a => a.IsActive)
+                    .Select(a => a.Section!.Name)
+                    .FirstOrDefault(),
+
+                TodayIndustrialParts = d.Assignments
+                    .Where(a => a.IsActive)
+                    .SelectMany(a => a.DiagnosisIndustrialParts)
+                    .Count(ip => ip.DoctorAssignDate.HasValue && ip.DoctorAssignDate.Value == today)
+            });
+
+        techniciansQuery = ApplySectionFilter(techniciansQuery, query);
+        techniciansQuery = ApplySearch(techniciansQuery, query);
 
         var totalCount = await techniciansQuery.CountAsync(ct);
 
         var page = query.Page < 1 ? 1 : query.Page;
         var pageSize = query.PageSize < 1 ? 10 : query.PageSize;
-        
         var skip = (page - 1) * pageSize;
 
-        var technicianAssignments = await techniciansQuery
-            .OrderBy(dsrm => dsrm.Doctor!.Person!.FullName)
+        var items = await techniciansQuery
+            .OrderBy(t => t.DoctorName)
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(ct);
 
-        var items = technicianAssignments
-            .ToTechnicianDtos()
-            .ToList();
-
         var paged = new PaginatedList<TechnicianDto>
         {
-            Items      = items,
+            Items = items,
             PageNumber = page,
-            PageSize   = pageSize,
+            PageSize = pageSize,
             TotalCount = totalCount,
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
@@ -67,22 +85,31 @@ public class GetTechniciansDropdownQueryHandler
         return paged;
     }
 
-    private static IQueryable<DoctorSectionRoom> ApplySearch(
-        IQueryable<DoctorSectionRoom> query,
+    private static IQueryable<TechnicianDto> ApplySectionFilter(
+        IQueryable<TechnicianDto> query,
+        GetTechniciansDropdownQuery q)
+    {
+        if (q.SectionId.HasValue)
+        {
+            var sectionId = q.SectionId.Value;
+            query = query.Where(x => x.SectionId == sectionId);
+        }
+
+        return query;
+    }
+
+    private static IQueryable<TechnicianDto> ApplySearch(
+        IQueryable<TechnicianDto> query,
         GetTechniciansDropdownQuery q)
     {
         if (string.IsNullOrWhiteSpace(q.SearchTerm))
             return query;
 
-        var pattern = $"%{q.SearchTerm!.Trim().ToLower()}%";
+        var pattern = $"%{q.SearchTerm.Trim().ToLower()}%";
 
-        return query.Where(dsrm =>
-            (dsrm.Doctor != null &&
-             dsrm.Doctor.Person != null &&
-             EF.Functions.Like(dsrm.Doctor.Person.FullName.ToLower(), pattern))
-            ||
-            (dsrm.Section != null &&
-             EF.Functions.Like(dsrm.Section.Name.ToLower(), pattern))
+        return query.Where(x =>
+            (x.DoctorName != null && EF.Functions.Like(x.DoctorName.ToLower(), pattern)) ||
+            (x.SectionName != null && EF.Functions.Like(x.SectionName.ToLower(), pattern))
         );
     }
 }

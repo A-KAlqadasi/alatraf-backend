@@ -2,10 +2,10 @@ using Microsoft.Extensions.Logging;
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.Identity.Commands.ChangeUserNameAndPassword;
 

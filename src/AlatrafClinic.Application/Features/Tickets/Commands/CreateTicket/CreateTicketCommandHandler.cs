@@ -1,14 +1,14 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Mappers;
-using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients;
+using AlatrafClinic.Domain.Services;
 using AlatrafClinic.Domain.Services.Tickets;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Tickets.Commands.CreateTicket;
@@ -16,24 +16,22 @@ namespace AlatrafClinic.Application.Features.Tickets.Commands.CreateTicket;
 public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, Result<TicketDto>>
 {
     private readonly ILogger<CreateTicketCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly HybridCache _cache;
+    private readonly IAppDbContext _context;
 
-    public CreateTicketCommandHandler(ILogger<CreateTicketCommandHandler> logger, IUnitOfWork unitOfWork, HybridCache cache)
+    public CreateTicketCommandHandler(ILogger<CreateTicketCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
-        _cache = cache;
+        _context = context;
     }
     public async Task<Result<TicketDto>> Handle(CreateTicketCommand command, CancellationToken ct)
     {
-        var service = await _unitOfWork.Services.GetByIdAsync(command.ServiceId, ct);
+        var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == command.ServiceId, ct);
 
         if (service is null)
         {
             _logger.LogError("Service with Id {ServiceId} not found.", command.ServiceId);
 
-            return Domain.Services.ServiceErrors.ServiceNotFound;
+            return ServiceErrors.ServiceNotFound;
         }
         Patient? patient = null;
 
@@ -45,7 +43,7 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
                 return TicketErrors.PatientIsRequired;
             }
 
-            patient = await _unitOfWork.Patients.GetByIdAsync(command.PatientId.Value, ct);
+            patient = await _context.Patients.Include(p=> p.Person).FirstOrDefaultAsync(p => p.Id == command.PatientId.Value, ct);
 
             if (patient is null)
             {
@@ -66,10 +64,9 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, R
         }
         var ticket = ticketResult.Value;
         
-        await _unitOfWork.Tickets.AddAsync(ticket, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _context.Tickets.AddAsync(ticket, ct);
+        await _context.SaveChangesAsync(ct);
         
-        await _cache.RemoveByTagAsync("ticket", ct);
         _logger.LogInformation("Ticket with Id {TicketId} created successfully.", ticket.Id);
         
         return ticket.ToDto();

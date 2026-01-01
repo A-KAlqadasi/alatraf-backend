@@ -9,8 +9,8 @@ public class SessionListDto
 
     public int TherapyCardId { get; set; }
     public string? TherapyCardType { get; set; }
-    public DateOnly ProgramStartDate { get; set; }
-    public DateOnly ProgramEndDate { get; set; }
+    public DateOnly? ProgramStartDate { get; set; }
+    public DateOnly? ProgramEndDate { get; set; }
 
     public int PatientId { get; set; }
     public string PatientName { get; set; } = string.Empty;

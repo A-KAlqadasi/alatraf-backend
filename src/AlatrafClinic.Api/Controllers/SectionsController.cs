@@ -44,7 +44,7 @@ public sealed class SectionsController(ISender sender) : ApiController
     [ProducesResponseType(typeof(List<GetDoctorDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Retrieves doctors by section and room.")]
+    [EndpointSummary("Retrieves doctors in section-room by section id and room id.")]
     [EndpointDescription("Returns a list of doctors associated with the specified section and room.")]
     [EndpointName("GetDoctorsBySectionRoom")]
     [MapToApiVersion("1.0")]
@@ -59,8 +59,8 @@ public sealed class SectionsController(ISender sender) : ApiController
     [ProducesResponseType(typeof(List<GetDoctorDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Retrieves doctors by section and room.")]
-    [EndpointDescription("Returns a list of doctors associated with the specified section and room.")]
+    [EndpointSummary("Retrieves doctors in section by sectionId.")]
+    [EndpointDescription("Returns a list of doctors associated with the specified section.")]
     [EndpointName("GetDoctorsBySection")]
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> GetDoctorsBySection(int sectionId, CancellationToken ct)
@@ -147,7 +147,7 @@ public sealed class SectionsController(ISender sender) : ApiController
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Update(int sectionId, [FromBody] UpdateSectionRequest request, CancellationToken ct)
     {
-        var result = await sender.Send(new UpdateSectionCommand(sectionId, request.DepartmentId, request.Name), ct);
+        var result = await sender.Send(new UpdateSectionCommand(sectionId, request.Name), ct);
         return result.Match(
             _ => NoContent(),
             Problem

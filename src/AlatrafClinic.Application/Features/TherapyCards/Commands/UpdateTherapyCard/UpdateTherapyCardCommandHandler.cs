@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Hybrid;
 
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
 using AlatrafClinic.Domain.Common.Results;
@@ -14,20 +12,19 @@ using AlatrafClinic.Domain.TherapyCards.Enums;
 using MediatR;
 using AlatrafClinic.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
 
 public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCardCommand, Result<Updated>>
 {
     private readonly ILogger<UpdateTherapyCardCommandHandler> _logger;
-    private readonly HybridCache _cache;
     private readonly IAppDbContext _context;
     private readonly IDiagnosisUpdateService _diagnosisUpdateService;
 
-    public UpdateTherapyCardCommandHandler(ILogger<UpdateTherapyCardCommandHandler> logger, HybridCache cache, IAppDbContext context, IDiagnosisUpdateService diagnosisUpdateService)
+    public UpdateTherapyCardCommandHandler(ILogger<UpdateTherapyCardCommandHandler> logger, IAppDbContext context, IDiagnosisUpdateService diagnosisUpdateService)
     {
         _logger = logger;
-        _cache = cache;
         _context = context;
         _diagnosisUpdateService = diagnosisUpdateService;
     }
@@ -113,8 +110,31 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
+        
+        DateOnly programStartDate = command.ProgramStartDate;
+        DateOnly? programEndDate = command.ProgramEndDate;
+        
+        if(command.TherapyCardType == TherapyCardType.Special)
+        {
+            programStartDate= command.ProgramStartDate;
+            programEndDate = null;
+        }
+        else
+        {
+            if (programEndDate == null)
+            {
+                _logger.LogError("Program start date and end date are required for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.ProgramDatesAreRequired;
+            }
+            var sessions =  programEndDate.Value.DayNumber - programStartDate.DayNumber + 1;
+            if (sessions != command.NumberOfSessions)
+            {
+                _logger.LogError("Program dates do not match the number of sessions for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.NumberOfSessionsInvalid;
+            }
+        }
 
-        var updateTherapyResult = currentTherapy.Update(command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, command.Notes);
+        var updateTherapyResult = currentTherapy.Update(programStartDate, programEndDate,command.NumberOfSessions, command.TherapyCardType, price.Value, command.Notes);
 
         if (updateTherapyResult.IsError)
         {
@@ -159,7 +179,6 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
         _context.Diagnoses.Update(updatedDiagnosis);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("therapy-card", ct);
 
         _logger.LogInformation("TherapyCard with id {TherapyCardId} updated successfully", command.TherapyCardId);
 

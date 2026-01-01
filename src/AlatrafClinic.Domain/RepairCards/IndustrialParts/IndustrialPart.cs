@@ -19,7 +19,7 @@ public class IndustrialPart : AuditableEntity<int>
         Description = description;
     }
 
-    public static Result<IndustrialPart> Create(string name, string? description)
+    public static Result<IndustrialPart> Create(string name, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -64,8 +64,7 @@ public class IndustrialPart : AuditableEntity<int>
     }
     public Result<Updated> UpsertUnits(List<(int unitId, decimal price)> incomingUnits)
     {
-        _industrialPartUnits.RemoveAll(existing => incomingUnits.All(u => u.unitId != existing.UnitId));
-
+        
         foreach (var (unitId, price) in incomingUnits)
         {
             var existing = _industrialPartUnits.FirstOrDefault(u => u.UnitId == unitId);

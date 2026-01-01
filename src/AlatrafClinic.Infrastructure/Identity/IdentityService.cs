@@ -1,7 +1,6 @@
 using System.Security.Claims;
 
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Features.Identity;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Application.Features.People.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -81,7 +80,7 @@ public class IdentityService(
             user.UserName!,
             user.IsActive,
             roles,
-            permissions);
+            permissions.ToList());
 
         return dto;
     }
@@ -439,12 +438,12 @@ public class IdentityService(
     }
 
 
-    private async Task<IList<string>> GetPermissionsForUserAsync(AppUser user, IList<string> roleNames)
+    private async Task<IReadOnlyList<string>> GetPermissionsForUserAsync(AppUser user, IList<string> roleNames, CancellationToken ct = default)
     {
         var roleIds = await _roleManager.Roles
             .Where(r => roleNames.Contains(r.Name!))
             .Select(r => r.Id)
-            .ToListAsync();
+            .ToListAsync(ct);
 
         var rolePermissions = await _dbContext.RolePermissions
             .Where(rp => roleIds.Contains(rp.RoleId))
@@ -574,25 +573,62 @@ public class IdentityService(
         }
         return true;
     }
-
-    public async Task<IQueryable<UserDto>> GetUsersAsync()
+    public IQueryable<UserQueryRow> QueryUsers()
     {
-        var usersQuery = _userManager.Users
-            .SelectMany(u => _dbContext.People
-                .Where(p => p.Id == u.PersonId)
-                .Select(p => new { User = u, Person = p }))
-            .Select(up => new UserDto
-            {
-                UserId = up.User.Id,
-                PersonId = up.Person.Id,
-                Person = up.Person.ToDto(),
-                IsActive = up.User.IsActive,
-                UserName = up.User.UserName,
-                Roles = _userManager.GetRolesAsync(up.User).Result.ToList(),
-                Permissions = GetPermissionsForUserAsync(up.User, _userManager.GetRolesAsync(up.User).Result).Result.ToList()
-            });
+        // DB-only: do NOT call UserManager async methods here.
+        return
+            from u in _userManager.Users.AsNoTracking()
+            join p in _dbContext.People.AsNoTracking()
+                on u.PersonId equals p.Id
+            select new UserQueryRow(
+                u.Id,
+                p.Id,
+                p.ToDto(),
+                u.IsActive,
+                u.UserName
+            );
+    }
 
-        return usersQuery;
+    public async Task<List<UserDto>> EnrichUsersAsync(
+        IReadOnlyList<UserQueryRow> rows,
+        CancellationToken ct)
+    {
+        if (rows.Count == 0)
+            return [];
+
+        // Load ApplicationUser for each row (needed for UserManager role APIs)
+        // NOTE: UserManager doesn't accept CancellationToken in FindByIdAsync.
+        var userTasks = rows.Select(r => _userManager.FindByIdAsync(r.UserId));
+        var users = await Task.WhenAll(userTasks);
+
+        // Safety: if user missing (deleted), treat as empty.
+        var rolesTasks = users.Select(u =>
+            u is null ? Task.FromResult<IList<string>>(new List<string>()) : _userManager.GetRolesAsync(u));
+        var roles = await Task.WhenAll(rolesTasks);
+
+        // Permissions (your existing method; ideally accept ct, but use if you have it)
+        var permissionsTasks = users.Select((u, i) =>
+            u is null ? Task.FromResult<IReadOnlyList<string>>(new List<string>()) : GetPermissionsForUserAsync(u, roles[i], ct));
+        var permissions = await Task.WhenAll(permissionsTasks);
+
+        var result = new List<UserDto>(rows.Count);
+        for (int i = 0; i < rows.Count; i++)
+        {
+            var r = rows[i];
+
+            result.Add(new UserDto
+            {
+                UserId = r.UserId,
+                PersonId = r.PersonId,
+                Person = r.Person,
+                IsActive = r.IsActive,
+                UserName = r.UserName,
+                Roles = roles[i].ToList(),
+                Permissions = permissions[i].ToList()
+            });
+        }
+
+        return result;
     }
 
     public async Task<Result<UserDto>> GetUserByIdAsync(string userId)

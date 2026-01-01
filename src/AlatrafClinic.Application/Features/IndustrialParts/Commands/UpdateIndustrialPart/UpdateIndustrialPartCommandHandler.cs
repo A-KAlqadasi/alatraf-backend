@@ -25,7 +25,9 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
     }
     public async Task<Result<Updated>> Handle(UpdateIndustrialPartCommand command, CancellationToken ct)
     {
-        var industrialPart = await _context.IndustrialParts.FirstOrDefaultAsync(i=> i.Id == command.IndustrialPartId, ct);
+        var industrialPart = await _context.IndustrialParts
+        .Include(i=> i.IndustrialPartUnits)
+        .FirstOrDefaultAsync(i=> i.Id == command.IndustrialPartId, ct);
 
         if (industrialPart is null)
         {
@@ -50,6 +52,7 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
             return updateResult.Errors;
         }
         
+
         List<(int unitId, decimal price)> incomingUnits = new List<(int unitId, decimal price)>();
 
         foreach (var unit in command.Units)
@@ -64,15 +67,27 @@ public class UpdateIndustrialPartCommandHandler : IRequestHandler<UpdateIndustri
 
             incomingUnits.Add((unit.UnitId, unit.Price));
         }
-        
+
+        var incomingUnitIds = incomingUnits.Select(x => x.unitId).ToHashSet();
+
+        var toRemove = industrialPart.IndustrialPartUnits
+            .Where(x => !incomingUnitIds.Contains(x.UnitId))
+            .ToList();
+
+        // Mark as Deleted so your interceptor soft deletes them
+        if (toRemove.Count > 0)
+            _context.IndustrialPartUnits.RemoveRange(toRemove);
+                
         var result = industrialPart.UpsertUnits(incomingUnits);
         if (result.IsError)
         {
             _logger.LogError("Error occurred while assigning units to industrial part {IndustrialPartName}", command.Name);
             return result.Errors;
         }
+        
         _context.IndustrialParts.Update(industrialPart);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("industrial-part", ct);
         
         _logger.LogInformation("Industrial part {IndustrialPartName} updated successfully", command.Name);
 

@@ -69,11 +69,11 @@ public class GetWoundedCardsQueryHandler
         {
             if (q.IsExpired.Value)
             {
-                query = query.Where(wc => wc.Expiration < today);
+                query = query.Where(wc => wc.ExpirationDate < today);
             }
             else
             {
-                query = query.Where(wc => wc.Expiration >= today);
+                query = query.Where(wc => wc.ExpirationDate >= today);
             }
         }
 
@@ -86,13 +86,25 @@ public class GetWoundedCardsQueryHandler
         if (q.ExpirationFrom.HasValue)
         {
             var from = q.ExpirationFrom.Value;
-            query = query.Where(wc => wc.Expiration >= from);
+            query = query.Where(wc => wc.ExpirationDate >= from);
         }
 
         if (q.ExpirationTo.HasValue)
         {
             var to = q.ExpirationTo.Value;
-            query = query.Where(wc => wc.Expiration <= to);
+            query = query.Where(wc => wc.ExpirationDate <= to);
+        }
+
+         if (q.IssueDateFrom.HasValue)
+        {
+            var from = q.IssueDateFrom.Value;
+            query = query.Where(wc => wc.IssueDate >= from);
+        }
+
+        if (q.IssueDateTo.HasValue)
+        {
+            var to = q.IssueDateTo.Value;
+            query = query.Where(wc => wc.IssueDate <= to);
         }
 
         return query;
@@ -132,12 +144,12 @@ public class GetWoundedCardsQueryHandler
                 : query.OrderBy(wc => wc.Patient!.Person!.FullName),
 
             "expiration" => isDesc
-                ? query.OrderByDescending(wc => wc.Expiration)
-                : query.OrderBy(wc => wc.Expiration),
+                ? query.OrderByDescending(wc => wc.ExpirationDate)
+                : query.OrderBy(wc => wc.ExpirationDate),
 
             _ => isDesc
-                ? query.OrderByDescending(wc => wc.Expiration)
-                : query.OrderBy(wc => wc.Expiration),
+                ? query.OrderByDescending(wc => wc.ExpirationDate)
+                : query.OrderBy(wc => wc.ExpirationDate),
         };
     }
 }

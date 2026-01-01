@@ -1,12 +1,11 @@
 using Microsoft.Extensions.Logging;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Interfaces;
-using MechanicShop.Application.Common.Errors;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.Identity.Commands.UpdateUser;
 

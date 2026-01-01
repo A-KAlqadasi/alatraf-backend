@@ -1,11 +1,14 @@
 using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.Tickets;
 using AlatrafClinic.Application.Common.Models;
+using AlatrafClinic.Application.Features.Appointments.Commands.ScheduleAppointment;
+using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Commands.CreateTicket;
 using AlatrafClinic.Application.Features.Tickets.Commands.DeleteTicket;
 using AlatrafClinic.Application.Features.Tickets.Commands.UpdateTicket;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTicketById;
+using AlatrafClinic.Application.Features.Tickets.Queries.GetTicketForScheduleAppointment;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTickets;
 using AlatrafClinic.Domain.Services.Enums;
 
@@ -31,16 +34,6 @@ public sealed class TicketsController(ISender sender) : ApiController
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Get([FromQuery] TicketFilterRequest filters, [FromQuery] PageRequest pageRequest, CancellationToken ct)
     {
-        if (pageRequest.Page <= 0)
-        {
-            return BadRequest("Page must be greater than 0");
-        }
-
-        if (pageRequest.PageSize <= 0 || pageRequest.PageSize > 100)
-        {
-            return BadRequest("PageSize must be between 1 and 100");
-        }
-
         var query = new GetTicketsQuery(
             pageRequest.Page,
             pageRequest.PageSize,
@@ -73,6 +66,22 @@ public sealed class TicketsController(ISender sender) : ApiController
     public async Task<IActionResult> GetById(int ticketId, CancellationToken ct)
     {
         var result = await sender.Send(new GetTicketByIdQuery(ticketId), ct);
+        return result.Match(
+          response => Ok(response),
+          Problem);
+    }
+
+    [HttpGet("for-schedule/{ticketId:int}", Name = "GetTicketForScheduleById")]
+    [ProducesResponseType(typeof(TicketForServiceDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves a ticket by its ID.")]
+    [EndpointDescription("Returns detailed information about the specified ticket if it exists.")]
+    [EndpointName("GetTicketForScheduleById")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> GetTicketForScheduleById(int ticketId, CancellationToken ct)
+    {
+        var result = await sender.Send(new GetTicketForScheduleAppointmentQuery(ticketId), ct);
         return result.Match(
           response => Ok(response),
           Problem);
@@ -134,6 +143,28 @@ public sealed class TicketsController(ISender sender) : ApiController
         return result.Match(
             _ => NoContent(),
             Problem);
+    }
+
+    [HttpPost("{TicketId:int}/appointment")]
+    [ProducesResponseType(typeof(AppointmentDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Creates a new appointment.")]
+    [EndpointDescription("Creates a new appointment for ticket, requested date, and notes if any")]
+    [EndpointName("CreateAppointment")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> Create(int TicketId, [FromBody] ScheduleAppointmentRequest request, CancellationToken ct)
+    {
+        var result = await sender.Send(new ScheduleAppointmentCommand(TicketId, request.RequestedDate, request.Notes), ct);
+
+        return result.Match(
+            response => CreatedAtRoute(
+                routeName: "GetAppointmentById",
+                routeValues: new { version = "1.0", appointmentId = response.Id },
+                value: response),
+                Problem
+        );
     }
 
 }

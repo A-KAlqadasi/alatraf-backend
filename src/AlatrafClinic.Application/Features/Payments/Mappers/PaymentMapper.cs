@@ -1,8 +1,5 @@
-using System.Collections.Immutable;
-using System.Reflection.Metadata.Ecma335;
 
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Common.Constants;
@@ -12,50 +9,23 @@ namespace AlatrafClinic.Application.Features.Payments.Mappers;
 
 public static class PaymentMapper
 {
-    
-    public static PaymentDto ToDto(this Payment p)
+    public static PaymentCoreDto ToBasePaymentDto(this Payment p) => new()
     {
-        ArgumentNullException.ThrowIfNull(p);
-        return new PaymentDto
-        {
-            PaymentId = p.Id,
-            TicketId = p.TicketId,
-            PaymentReference = p.PaymentReference,
-            Diagnosis = p.Diagnosis != null ? p.Diagnosis.ToDto() : new DiagnosisDto(),
-            AccountKind = p.AccountKind,
-            IsCompleted = p.IsCompleted,
-            TotalAmount = p.TotalAmount,
-            PaidAmount = p.PaidAmount,
-            Discount = p.Discount,
-            PatientPayment = p.PatientPayment != null
-                    ? new PatientPaymentDto
-                    {
-                        VoucherNumber = p.PatientPayment.VoucherNumber,
-                        Notes = p.PatientPayment.Notes
-                    }
-                    : null,
-            DisabledPayment = p.DisabledPayment != null
-                    ? new DisabledPaymentDto
-                    {
-                        DisabledCardId = p.DisabledPayment.DisabledCardId,
-                        Notes = p.DisabledPayment.Notes
-                    }
-                    : null,
-            WoundedPayment = p.WoundedPayment != null
-                    ? new WoundedPaymentDto
-                    {
-                        WoundedCardId = p.WoundedPayment.WoundedCardId,
-                        ReportNumber = p.WoundedPayment.ReportNumber,
-                        Notes = p.WoundedPayment.Notes
-                    }
-                    : null
-        };
-    }
-    public static List<PaymentDto> ToDtos(this IEnumerable<Payment> payments)
-    {
-        return payments.Select(p => p.ToDto()).ToList();
-    }
+        PaymentId = p.Id,
+        TicketId = p.TicketId,
+        DiagnosisId = p.DiagnosisId,
+        PaymentReference = p.PaymentReference,
+        AccountKind = p.AccountKind,
+        IsCompleted = p.IsCompleted,
+        PaymentDate = p.PaymentDate,
+        TotalAmount = p.TotalAmount,
+        PaidAmount = p.PaidAmount,
+        Discount = p.Discount,
+        Residual =p.AccountKind == AccountKind.Patient ?  Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.Discount ?? 0m))) : 0m,
+        Notes = p.Notes
+    };
 
+    
     public static PaymentWaitingListDto ToPaymentWaitingListDto(this Payment entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
@@ -68,7 +38,7 @@ public static class PaymentMapper
             CardId = cardId ?? 0,
             PatientName = entity.Diagnosis?.Patient.Person.FullName ?? string.Empty,
             Age = UtilityService.CalculateAge(birthdate, AlatrafClinicConstants.TodayDate),
-            Gender = UtilityService.AgeToArabicString(entity.Diagnosis?.Patient.Person.Gender ?? true),
+            Gender = UtilityService.GenderToArabicString(entity.Diagnosis?.Patient.Person.Gender ?? true),
             Phone = entity.Diagnosis?.Patient.Person.Phone,
             PaymentReference = entity.PaymentReference
             
@@ -120,7 +90,7 @@ public static class PaymentMapper
 
             Age = UtilityService.CalculateAge(birthdate, AlatrafClinicConstants.TodayDate),
 
-            Gender = UtilityService.AgeToArabicString(gender),
+            Gender = UtilityService.GenderToArabicString(gender),
             PatientId = payment.Diagnosis.Patient.Id,
             DiagnosisPrograms = payment.Diagnosis?.DiagnosisPrograms?.ToDtos() ?? new(),
             IsCompleted = payment.IsCompleted,
@@ -145,7 +115,7 @@ public static class PaymentMapper
 
             Age = UtilityService.CalculateAge(birthdate, AlatrafClinicConstants.TodayDate),
 
-            Gender = UtilityService.AgeToArabicString(gender),
+            Gender = UtilityService.GenderToArabicString(gender),
             PatientId = payment.Diagnosis.Patient.Id,
             DiagnosisIndustrialParts = payment.Diagnosis?.DiagnosisIndustrialParts?.ToDtos() ?? new(),
             IsCompleted = payment.IsCompleted,

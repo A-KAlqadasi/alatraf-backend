@@ -4,7 +4,6 @@ using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
-using AlatrafClinic.Domain.People;
 
 namespace AlatrafClinic.Domain.People.Doctors;
 
@@ -20,10 +19,7 @@ public class Doctor : AuditableEntity<int>
     public IReadOnlyCollection<DoctorSectionRoom> Assignments => _assignments.AsReadOnly();
     private DoctorSectionRoom? ActiveAssignment => _assignments.SingleOrDefault(a => a.IsActive);
     public DoctorSectionRoom? GetCurrentAssignment() => ActiveAssignment;
-    public int TodayIndustrialPartsCount => ActiveAssignment?.GetTodayIndustrialPartsCount() ?? 0;
-
-    public int TodaySessionsCount => ActiveAssignment?.GetTodaySessionsCount() ?? 0;
-
+   
     public IReadOnlyCollection<DoctorSectionRoom> GetAssignmentHistory() => _assignments.ToList();
 
     private Doctor() { }
@@ -37,9 +33,7 @@ public class Doctor : AuditableEntity<int>
 
     public static Result<Doctor> Create(int personId, int departmentId, string? specialization)
     {
-        if (personId <= 0)
-            return DoctorErrors.PersonIdRequired;
-
+        
         if (departmentId <= 0)
             return DoctorErrors.DepartmentIdRequired;
 
@@ -56,9 +50,6 @@ public class Doctor : AuditableEntity<int>
         if (newDepartmentId <= 0)
             return DoctorErrors.DepartmentIdRequired;
 
-        if (newDepartmentId == DepartmentId)
-            return DoctorErrors.SameDepartment;
-
         if (_assignments.Any(a => a.IsActive && a.Section.DepartmentId == DepartmentId))
             return DoctorErrors.CannotChangeDepartmentWithActiveAssignments;
 
@@ -74,9 +65,14 @@ public class Doctor : AuditableEntity<int>
         if (room.SectionId != section.Id)
             return DoctorErrors.RoomOutsideSection;
 
-        if (ActiveAssignment is not null && TodaySessionsCount != 0 && ActiveAssignment.SectionId != section.Id && ActiveAssignment.RoomId != room.Id)
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId != section.Id && ActiveAssignment.RoomId != room.Id)
         {
             return DoctorErrors.DoctorHasSessionsToday;
+        }
+        
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId == section.Id && ActiveAssignment.RoomId == room.Id)
+        {
+            return ActiveAssignment;
         }
         
         ActiveAssignment?.EndAssignment();
@@ -96,9 +92,14 @@ public class Doctor : AuditableEntity<int>
         if (section.DepartmentId != DepartmentId)
             return DoctorErrors.SectionOutsideDepartment;
 
-        if (ActiveAssignment is not null && TodayIndustrialPartsCount != 0 && ActiveAssignment.SectionId != section.Id)
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId != section.Id)
         {
             return DoctorErrors.DoctorHasIndustrialPartsToday;
+        }
+
+        if (ActiveAssignment is not null && ActiveAssignment.SectionId == section.Id)
+        {
+            return ActiveAssignment;
         }
         
         ActiveAssignment?.EndAssignment();

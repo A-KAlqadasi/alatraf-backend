@@ -18,7 +18,10 @@ public static class DoctorMapper
             DoctorId = entity.Id,
             PersonDto = entity.Person!.ToDto(),
             DepartmentId = entity.DepartmentId,
-            Specialization = entity.Specialization
+            Specialization = entity.Specialization,
+            SectionId = entity.Assignments.FirstOrDefault(a => a.IsActive)?.SectionId,
+            RoomId = entity.Assignments.FirstOrDefault(a => a.IsActive)?.RoomId,
+            IsActive = entity.IsActive,
         };
     }
 
@@ -38,7 +41,6 @@ public static class DoctorMapper
             DoctorName = entity.Doctor.Person?.FullName ?? string.Empty,
             SectionId = entity.SectionId,
             SectionName = entity.Section.Name,
-            TodayIndustrialParts = entity.Doctor.TodayIndustrialPartsCount
         };
     }
     public static List<TechnicianDto> ToTechnicianDtos(this IEnumerable<DoctorSectionRoom> entities)
@@ -56,7 +58,6 @@ public static class DoctorMapper
             DoctorName = entity.Doctor.Person?.FullName ?? string.Empty,
             SectionId = entity.SectionId,
             SectionName = entity.Section.Name,
-            TodaySessions = entity.Doctor.TodaySessionsCount,
             RoomId = entity?.RoomId ?? 0,
             RoomName = entity?.Room?.Name ?? string.Empty,
         };

@@ -1,22 +1,18 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.People.Doctors;
 
-using MechanicShop.Application.Common.Errors;
-
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.EndDoctorAssignment;
 
 public class EndDoctorAssignmentCommandHandler(
     IAppDbContext _context,
-    ILogger<EndDoctorAssignmentCommandHandler> _logger,
-    HybridCache _cache
-) : IRequestHandler<EndDoctorAssignmentCommand, Result<Updated>>
+    ILogger<EndDoctorAssignmentCommandHandler> _logger) : IRequestHandler<EndDoctorAssignmentCommand, Result<Updated>>
 {
     public async Task<Result<Updated>> Handle(EndDoctorAssignmentCommand command, CancellationToken ct)
     {
@@ -44,7 +40,6 @@ public class EndDoctorAssignmentCommandHandler(
         }
 
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("doctor", ct);
 
         _logger.LogInformation("Doctor {DoctorId}'s current assignment ended successfully.", doctor.Id);
 

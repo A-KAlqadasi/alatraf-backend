@@ -1,10 +1,9 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Rooms.Dtos;
 using AlatrafClinic.Application.Features.Rooms.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
@@ -22,7 +21,7 @@ public sealed class CreateRoomCommandHandler(
 {
     public async Task<Result<RoomDto>> Handle(CreateRoomCommand command, CancellationToken ct)
     {
-        var section = await _context.Sections.FirstOrDefaultAsync(s => s.Id == command.SectionId, ct);
+        var section = await _context.Sections.Include(s=> s.Department).FirstOrDefaultAsync(s => s.Id == command.SectionId, ct);
         
         if (section is null)
         {
@@ -54,10 +53,10 @@ public sealed class CreateRoomCommandHandler(
 
         await _context.Rooms.AddAsync(room, ct);
         await _context.SaveChangesAsync(ct);
+        await _cache.RemoveByTagAsync("room", ct);
 
         _logger.LogInformation(" Room created successfully for Section {SectionId}.",
              command.SectionId);
-        await _cache.RemoveByTagAsync("room", ct);
 
         return room.ToDto();
     }

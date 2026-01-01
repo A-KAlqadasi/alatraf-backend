@@ -1,8 +1,6 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
-using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Application.Features.Payments.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 
@@ -14,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AlatrafClinic.Application.Features.Payments.Queries.GetPayments;
 
 public sealed class GetPaymentsQueryHandler
-    : IRequestHandler<GetPaymentsQuery, Result<PaginatedList<PaymentDto>>>
+    : IRequestHandler<GetPaymentsQuery, Result<PaginatedList<PaymentListItemDto>>>
 {
     private readonly IAppDbContext _context;
 
@@ -23,119 +21,117 @@ public sealed class GetPaymentsQueryHandler
         _context = context;
     }
 
-    public async Task<Result<PaginatedList<PaymentDto>>> Handle(
-        GetPaymentsQuery query,
-        CancellationToken ct)
+    public async Task<Result<PaginatedList<PaymentListItemDto>>> Handle(GetPaymentsQuery query, CancellationToken ct)
     {
-        IQueryable<Payment> paymentsQuery = _context.Payments
-            .Include(p => p.Diagnosis)
-                .ThenInclude(d => d.Patient)
-                    .ThenInclude(pat => pat.Person)
+        IQueryable<Payment> payments = _context.Payments
+            .Include(p => p.PatientPayment)
+            .Include(p => p.DisabledPayment)
+            .Include(p => p.WoundedPayment)
             .AsNoTracking();
 
-        paymentsQuery = ApplyFilters(paymentsQuery, query);
-        paymentsQuery = ApplySearch(paymentsQuery, query);
-        paymentsQuery = ApplySorting(paymentsQuery, query);
+        payments = ApplyFilters(payments, query);
+        payments = ApplySearch(payments, query);
+        payments = ApplySorting(payments, query);
 
-        var totalCount = await paymentsQuery.CountAsync(ct);
+        var totalCount = await payments.CountAsync(ct);
 
-        var page = query.Page;
-        var pageSize = query.PageSize;
+        var page = query.Page <= 0 ? 1 : query.Page;
+        var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
         var skip = (page - 1) * pageSize;
 
-        var payments = await paymentsQuery
+        var items = await payments
             .Skip(skip)
             .Take(pageSize)
+            .Select(p => new PaymentListItemDto
+            {
+                PaymentId = p.Id,
+                TicketId = p.TicketId,
+                DiagnosisId = p.DiagnosisId,
+                PaymentReference = p.PaymentReference,
+                AccountKind = p.AccountKind,
+                IsCompleted = p.IsCompleted,
+                PaymentDate = p.PaymentDate,
+                TotalAmount = p.TotalAmount,
+                PaidAmount = p.PaidAmount,
+                Discount = p.Discount,
+                Residual = Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.Discount ?? 0m))),
+
+                VoucherNumber = p.PatientPayment != null ? p.PatientPayment.VoucherNumber : null,
+                DisabledCardId = p.DisabledPayment != null ? p.DisabledPayment.DisabledCardId : null,
+            })
             .ToListAsync(ct);
 
-        var items = payments
-            .Select(p => p.ToDto())
-            .ToList();
-
-        return new PaginatedList<PaymentDto>
+        return new PaginatedList<PaymentListItemDto>
         {
-            Items      = items,
+            Items = items,
             PageNumber = page,
-            PageSize   = pageSize,
+            PageSize = pageSize,
             TotalCount = totalCount,
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         };
     }
 
-    private static IQueryable<Payment> ApplyFilters(
-        IQueryable<Payment> query,
-        GetPaymentsQuery q)
+    private static IQueryable<Payment> ApplyFilters(IQueryable<Payment> q, GetPaymentsQuery f)
     {
-        if (q.AccountKind.HasValue)
-            query = query.Where(p => p.AccountKind == q.AccountKind.Value);
+        if (f.TicketId.HasValue && f.TicketId.Value > 0)
+            q = q.Where(p => p.TicketId == f.TicketId.Value);
 
-        if (q.IsCompleted.HasValue)
-            query = query.Where(p => p.IsCompleted == q.IsCompleted.Value);
+        if (f.DiagnosisId.HasValue && f.DiagnosisId.Value > 0)
+            q = q.Where(p => p.DiagnosisId == f.DiagnosisId.Value);
 
-        if (q.DiagnosisId.HasValue && q.DiagnosisId.Value > 0)
-            query = query.Where(p => p.DiagnosisId == q.DiagnosisId.Value);
+        if (f.PaymentReference.HasValue)
+            q = q.Where(p => p.PaymentReference == f.PaymentReference.Value);
 
-        if (q.PatientId.HasValue && q.PatientId.Value > 0)
-            query = query.Where(p =>
-                p.Diagnosis != null &&
-                p.Diagnosis.PatientId == q.PatientId.Value);
+        if (f.AccountKind.HasValue)
+            q = q.Where(p => p.AccountKind == f.AccountKind.Value);
 
-        if (q.TicketId.HasValue && q.TicketId.Value > 0)
-            query = query.Where(p => p.TicketId == q.TicketId.Value);
+        if (f.IsCompleted.HasValue)
+            q = q.Where(p => p.IsCompleted == f.IsCompleted.Value);
 
-        if (q.PaymentReference.HasValue)
-            query = query.Where(p => p.PaymentReference == q.PaymentReference.Value);
+        if (f.PaymentDateFrom.HasValue)
+            q = q.Where(p => p.PaymentDate != null && p.PaymentDate.Value >= f.PaymentDateFrom.Value);
 
-        return query;
+        if (f.PaymentDateTo.HasValue)
+            q = q.Where(p => p.PaymentDate != null && p.PaymentDate.Value <= f.PaymentDateTo.Value);
+
+        return q;
     }
 
-    private static IQueryable<Payment> ApplySearch(
-        IQueryable<Payment> query,
-        GetPaymentsQuery q)
+    private static IQueryable<Payment> ApplySearch(IQueryable<Payment> q, GetPaymentsQuery f)
     {
-        if (string.IsNullOrWhiteSpace(q.SearchTerm))
-            return query;
+        if (string.IsNullOrWhiteSpace(f.SearchTerm))
+            return q;
 
-        var pattern = $"%{q.SearchTerm!.Trim().ToLower()}%";
+        var term = f.SearchTerm.Trim();
 
-        return query.Where(p =>
-            p.Diagnosis != null &&
-            (
-                EF.Functions.Like(p.Diagnosis.DiagnosisText.ToLower(), pattern) ||
-                (p.Diagnosis.Patient != null &&
-                 p.Diagnosis.Patient.Person != null &&
-                 EF.Functions.Like(p.Diagnosis.Patient.Person.FullName.ToLower(), pattern))
-            ));
+        // Numeric -> try match PaymentId or TicketId
+        if (int.TryParse(term, out var n))
+        {
+            return q.Where(p => p.Id == n || p.TicketId == n || p.DiagnosisId == n);
+        }
+
+        // Text -> search voucher/report (most common)
+        var pattern = $"%{term.ToLowerInvariant()}%";
+
+        return q.Where(p =>
+            (p.PatientPayment != null && EF.Functions.Like(p.PatientPayment.VoucherNumber.ToLower(), pattern)) ||
+            (p.WoundedPayment != null && p.WoundedPayment.ReportNumber != null &&
+             EF.Functions.Like(p.WoundedPayment.ReportNumber.ToLower(), pattern)));
     }
 
-    private static IQueryable<Payment> ApplySorting(
-        IQueryable<Payment> query,
-        GetPaymentsQuery q)
+    private static IQueryable<Payment> ApplySorting(IQueryable<Payment> q, GetPaymentsQuery f)
     {
-        var col = q.SortColumn?.Trim().ToLowerInvariant() ?? "createdatutc";
-        var isDesc = string.Equals(q.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
+        var col = f.SortColumn?.Trim().ToLowerInvariant() ?? "paymentdate";
+        var isDesc = string.Equals(f.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
 
         return col switch
         {
-            "totalamount" => isDesc
-                ? query.OrderByDescending(p => p.TotalAmount)
-                : query.OrderBy(p => p.TotalAmount),
-
-            "paidamount" => isDesc
-                ? query.OrderByDescending(p => p.PaidAmount)
-                : query.OrderBy(p => p.PaidAmount),
-
-            "patient" => isDesc
-                ? query.OrderByDescending(p => p.Diagnosis!.Patient!.Person!.FullName)
-                : query.OrderBy(p => p.Diagnosis!.Patient!.Person!.FullName),
-
-            "completed" => isDesc
-                ? query.OrderByDescending(p => p.IsCompleted)
-                : query.OrderBy(p => p.IsCompleted),
-
-            _ => isDesc
-                ? query.OrderByDescending(p => p.CreatedAtUtc)
-                : query.OrderBy(p => p.CreatedAtUtc),
+            "paymentid" or "id" => isDesc ? q.OrderByDescending(p => p.Id) : q.OrderBy(p => p.Id),
+            "ticketid" => isDesc ? q.OrderByDescending(p => p.TicketId) : q.OrderBy(p => p.TicketId),
+            "totalamount" => isDesc ? q.OrderByDescending(p => p.TotalAmount) : q.OrderBy(p => p.TotalAmount),
+            "iscompleted" => isDesc ? q.OrderByDescending(p => p.IsCompleted) : q.OrderBy(p => p.IsCompleted),
+            "paymentdate" => isDesc ? q.OrderByDescending(p => p.PaymentDate) : q.OrderBy(p => p.PaymentDate),
+            _ => isDesc ? q.OrderByDescending(p => p.PaymentDate) : q.OrderBy(p => p.PaymentDate)
         };
     }
 }

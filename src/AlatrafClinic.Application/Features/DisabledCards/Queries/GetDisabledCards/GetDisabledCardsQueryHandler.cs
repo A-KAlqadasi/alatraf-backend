@@ -3,7 +3,6 @@ using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.DisabledCards.Dtos;
 using AlatrafClinic.Application.Features.DisabledCards.Mappers;
-using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.DisabledCards;
 
@@ -66,18 +65,7 @@ public sealed class GetDisabledCardsQueryHandler
         IQueryable<DisabledCard> query,
         GetDisabledCardsQuery q)
     {
-        if (q.IsExpired.HasValue)
-        {
-            
-            if (q.IsExpired.Value)
-            {
-                query = query.Where(dc => dc.ExpirationDate < AlatrafClinicConstants.TodayDate);
-            }
-            else
-            {
-                query = query.Where(dc => dc.ExpirationDate >= AlatrafClinicConstants.TodayDate);
-            }
-        }
+       
 
         if (q.PatientId.HasValue && q.PatientId.Value > 0)
         {
@@ -85,16 +73,17 @@ public sealed class GetDisabledCardsQueryHandler
             query = query.Where(dc => dc.PatientId == patientId);
         }
 
-        if (q.ExpirationFrom.HasValue)
+        
+        if (q.IssueDateFrom.HasValue)
         {
-            var from = q.ExpirationFrom.Value;
-            query = query.Where(dc => dc.ExpirationDate >= from);
+            var from = q.IssueDateFrom.Value;
+            query = query.Where(dc => dc.IssueDate >= from);
         }
 
-        if (q.ExpirationTo.HasValue)
+        if (q.IssueDateTo.HasValue)
         {
-            var to = q.ExpirationTo.Value;
-            query = query.Where(dc => dc.ExpirationDate <= to);
+            var to = q.IssueDateTo.Value;
+            query = query.Where(dc => dc.IssueDate <= to);
         }
 
         return query;
@@ -133,13 +122,13 @@ public sealed class GetDisabledCardsQueryHandler
                 ? query.OrderByDescending(dc => dc.Patient!.Person!.FullName)
                 : query.OrderBy(dc => dc.Patient!.Person!.FullName),
 
-            "expirationdate" => isDesc
-                ? query.OrderByDescending(dc => dc.ExpirationDate)
-                : query.OrderBy(dc => dc.ExpirationDate),
+            "issuedate" => isDesc
+                ? query.OrderByDescending(dc => dc.IssueDate)
+                : query.OrderBy(dc => dc.IssueDate),
 
             _ => isDesc
-                ? query.OrderByDescending(dc => dc.ExpirationDate)
-                : query.OrderBy(dc => dc.ExpirationDate),
+                ? query.OrderByDescending(dc => dc.IssueDate)
+                : query.OrderBy(dc => dc.IssueDate),
         };
     }
 }

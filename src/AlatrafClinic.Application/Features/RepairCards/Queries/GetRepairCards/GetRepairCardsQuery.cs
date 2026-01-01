@@ -1,8 +1,9 @@
-using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.RepairCards.Enums;
+
+using MediatR;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetRepairCards;
 
@@ -17,18 +18,4 @@ public sealed record GetRepairCardsQuery(
     int? PatientId = null,
     string SortColumn = "repaircardid",
     string SortDirection = "desc"
-) : ICachedQuery<Result<PaginatedList<RepairCardDiagnosisDto>>>
-{
-    public string CacheKey =>
-        $"repaircards:p={Page}:ps={PageSize}" +
-        $":q={(SearchTerm ?? "-")}" +
-        $":active={(IsActive?.ToString() ?? "-")}" +
-        $":late={(IsLate?.ToString() ?? "-")}" +
-        $":status={(Status?.ToString() ?? "-")}" +
-        $":diag={(DiagnosisId?.ToString() ?? "-")}" +
-        $":pat={(PatientId?.ToString() ?? "-")}" +
-        $":sort={SortColumn}:{SortDirection}";
-
-    public string[] Tags => ["repair-card"];
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
-}
+) : IRequest<Result<PaginatedList<RepairCardDiagnosisDto>>>;

@@ -1,8 +1,9 @@
-using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
+
+using MediatR;
 
 namespace AlatrafClinic.Application.Features.Payments.Queries.GetPayments;
 
@@ -10,27 +11,13 @@ public sealed record GetPaymentsQuery(
     int Page,
     int PageSize,
     string? SearchTerm = null,
+    int? TicketId = null,
+    int? DiagnosisId = null,
     PaymentReference? PaymentReference = null,
     AccountKind? AccountKind = null,
     bool? IsCompleted = null,
-    int? DiagnosisId = null,
-    int? TicketId = null,
-    int? PatientId = null,
-    string SortColumn = "CreatedAtUtc",
+    DateTime? PaymentDateFrom = null,
+    DateTime? PaymentDateTo = null,
+    string SortColumn = "PaymentDate",
     string SortDirection = "desc"
-) : ICachedQuery<Result<PaginatedList<PaymentDto>>>
-{
-    public string CacheKey =>
-        $"payments:p={Page}:ps={PageSize}" +
-        $":q={(SearchTerm ?? "-")}" +
-        $":kind={(AccountKind?.ToString() ?? "-")}" +
-        $":ref={(PaymentReference?.ToString() ?? "-")}" +
-        $":completed={(IsCompleted?.ToString() ?? "-")}" +
-        $":diag={(DiagnosisId?.ToString() ?? "-")}" +
-        $":ticket={(TicketId?.ToString() ?? "-")}" +
-        $":pat={(PatientId?.ToString() ?? "-")}" +
-        $":sort={SortColumn}:{SortDirection}";
-
-    public string[] Tags => ["payment"];
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
-}
+) : IRequest<Result<PaginatedList<PaymentListItemDto>>>;

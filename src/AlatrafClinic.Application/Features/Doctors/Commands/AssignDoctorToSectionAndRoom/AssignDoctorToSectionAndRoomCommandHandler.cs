@@ -1,20 +1,19 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
-
-using MechanicShop.Application.Common.Errors;
+using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
+using AlatrafClinic.Domain.Departments.Sections.Rooms;
 
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Doctors.Commands.AssignDoctorToSectionAndRoom;
 
 public class AssignDoctorToSectionAndRoomCommandHandler(
     IAppDbContext _context,
-    ILogger<AssignDoctorToSectionAndRoomCommandHandler> _logger,
-    HybridCache _cache
+    ILogger<AssignDoctorToSectionAndRoomCommandHandler> _logger
 ) : IRequestHandler<AssignDoctorToSectionAndRoomCommand, Result<Updated>>
 {
     
@@ -36,28 +35,50 @@ public class AssignDoctorToSectionAndRoomCommandHandler(
             _logger.LogWarning("Section {SectionId} not found.", command.SectionId);
             return ApplicationErrors.SectionNotFound;
         }
+        
+        Room? room = null;
 
-        var room = await _context.Rooms.FirstOrDefaultAsync(r=> r.Id == command.RoomId, ct);
-        if (room is null)
+        if (command.RoomId.HasValue)
         {
-            _logger.LogWarning("Room {RoomId} not found.", command.RoomId);
-            return ApplicationErrors.RoomNotFound;
+            room = await _context.Rooms.FirstOrDefaultAsync(r=> r.Id == command.RoomId, ct);
+            if (room is null)
+            {
+                _logger.LogWarning("Room {RoomId} not found.", command.RoomId);
+                return ApplicationErrors.RoomNotFound;
+            }
+        }
+        Result<DoctorSectionRoom> assignResult;
+        
+        if(room != null)
+        {
+            assignResult = doctor.AssignToSectionAndRoom(section, room, command.Notes);
+        }
+        else
+        {
+            assignResult = doctor.AssignToSection(section, command.Notes);
         }
 
-        var assignResult = doctor.AssignToSectionAndRoom(section, room, command.Notes);
         if (assignResult.IsError)
         {
             _logger.LogWarning("Failed to assign Doctor {DoctorId} to Section {SectionId} / Room {RoomId}: {Error}",
-                doctor.Id, section.Id, room.Id, assignResult.Errors);
+                doctor.Id, section.Id, room?.Id, assignResult.Errors);
             return assignResult.Errors;
+        }
+
+        if (command.IsActive)
+        {
+            doctor.Activate();
+        }
+        else
+        {
+            doctor.DeActivate();
         }
 
         _context.Doctors.Update(doctor);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("doctor", ct);
 
         _logger.LogInformation("Doctor {DoctorId} assigned to Section {SectionId} / Room {RoomId}.",
-            doctor.Id, section.Id, room.Id);
+            doctor.Id, section.Id, room?.Id);
 
         return Result.Updated;
     }

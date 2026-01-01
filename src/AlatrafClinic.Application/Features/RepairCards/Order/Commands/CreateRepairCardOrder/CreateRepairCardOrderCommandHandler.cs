@@ -8,6 +8,7 @@ using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.Orders;
 
 using MediatR;
+using AlatrafClinic.Application.Common.Errors;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCardOrder;
 
@@ -37,7 +38,7 @@ public sealed class CreateRepairCardOrderCommandHandler : IRequestHandler<Create
         if (section is null)
         {
             _logger.LogError("Section with Id {SectionId} not found.", command.SectionId);
-            return MechanicShop.Application.Common.Errors.ApplicationErrors.SectionNotFound;
+            return ApplicationErrors.SectionNotFound;
         }
 
         // Use domain factory to create the order instance

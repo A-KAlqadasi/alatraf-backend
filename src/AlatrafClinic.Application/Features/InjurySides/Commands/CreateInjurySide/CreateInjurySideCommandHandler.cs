@@ -2,9 +2,7 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features;
 using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
-using AlatrafClinic.Application.Features.InjuryReasons.Commands.CreateInjuryReason;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 
 using MediatR;
@@ -47,8 +45,9 @@ public class CreateInjurySideCommandHandler : IRequestHandler<CreateInjurySideCo
 
         await _context.InjurySides.AddAsync(injurySide, ct);
         await _context.SaveChangesAsync(ct);
-        _logger.LogInformation("Injury side with name {InjurySideName} created successfully.", command.Name);
         await _cache.RemoveByTagAsync("injury-side", ct);
+
+        _logger.LogInformation("Injury side with name {InjurySideName} created successfully.", command.Name);
 
         return injurySide.ToDto();
     }

@@ -1,11 +1,10 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Holidays.Dtos;
 using AlatrafClinic.Application.Features.Holidays.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Domain.Services.Enums;
-
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 

@@ -10,12 +10,13 @@ public class UpdateDisabledCardCommandValidator : AbstractValidator<UpdateDisabl
     {
         RuleFor(x => x.DisabledCardId)
             .GreaterThan(0).WithMessage("Disabled card Id is invalid");
-            
         RuleFor(x => x.CardNumber)
             .NotEmpty().WithMessage("Card number is required");
         RuleFor(x => x.PatientId)
             .GreaterThan(0).WithMessage("Patient Id is invalid");
-        RuleFor(x => x.ExpirationDate)
-            .GreaterThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Card is Expired!");
+        RuleFor(x => x.IssueDate)
+            .LessThanOrEqualTo(AlatrafClinicConstants.TodayDate).WithMessage("Issue date cannot be in the future");
+        RuleFor(x => x.DisabilityType)
+            .NotEmpty().WithMessage("Disability type is required");
     }
 }

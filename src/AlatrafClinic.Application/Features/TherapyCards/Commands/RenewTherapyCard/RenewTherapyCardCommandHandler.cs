@@ -16,7 +16,6 @@ using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
@@ -25,14 +24,12 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
 {
     private readonly ILogger<RenewTherapyCardCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
     private readonly IDiagnosisCreationService _diagnosisService;
 
-    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IAppDbContext context, HybridCache cache, IDiagnosisCreationService diagnosisService)
+    public RenewTherapyCardCommandHandler(ILogger<RenewTherapyCardCommandHandler> logger, IAppDbContext context, IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
         _diagnosisService = diagnosisService;
     }
 
@@ -135,14 +132,37 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         var typePrice = await _context.TherapyCardTypePrices.FirstOrDefaultAsync(t=> t.Type == command.TherapyCardType, ct);
         var price = typePrice?.SessionPrice;
         
-        if(price is null)
+        if (price is null)
         {
             _logger.LogError("Therapy card type session price not found for type {TherapyCardType}.", command.TherapyCardType);
 
             return TherapyCardTypePriceErrors.InvalidPrice;
         }
 
-        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, command.ProgramStartDate, command.ProgramEndDate, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.Renew, currentTherapy.Id, command.Notes);
+        DateOnly programStartDate = command.ProgramStartDate;
+        DateOnly? programEndDate = command.ProgramEndDate;
+        
+        if(command.TherapyCardType == TherapyCardType.Special)
+        {
+            programStartDate= command.ProgramStartDate;
+            programEndDate = null;
+        }
+        else
+        {
+            if (programEndDate == null)
+            {
+                _logger.LogError("Program start date and end date are required for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.ProgramDatesAreRequired;
+            }
+            var sessions =  programEndDate.Value.DayNumber - programStartDate.DayNumber + 1;
+            if (sessions != command.NumberOfSessions)
+            {
+                _logger.LogError("Program dates do not match the number of sessions for therapy card type {TherapyCardType}.", command.TherapyCardType);
+                return TherapyCardErrors.NumberOfSessionsInvalid;
+            }
+        }
+
+        var createTherapyCardResult = TherapyCard.Create(diagnosis.Id, programStartDate, programEndDate, command.NumberOfSessions, command.TherapyCardType, price.Value, diagnosis.DiagnosisPrograms.ToList(), TherapyCardStatus.Renew, currentTherapy.Id, command.Notes);
 
         if (createTherapyCardResult.IsError)
         {
@@ -176,7 +196,6 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
         
         await _context.Diagnoses.AddAsync(diagnosis, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("therapy-card", ct);
 
         _logger.LogInformation("TherapyCard {CurrentTherapyCard} Renewed with {NewTherapyCard} for Diagnosis {DiagnosisId}.", command.TherapyCardId, therapyCard.Id, diagnosis.Id);
         

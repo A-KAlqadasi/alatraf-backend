@@ -11,7 +11,6 @@ using AlatrafClinic.Domain.Payments;
 
 using MediatR;
 
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using AlatrafClinic.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -23,18 +22,15 @@ public sealed class CreateRepairCardCommandHandler
     : IRequestHandler<CreateRepairCardCommand, Result<RepairCardDiagnosisDto>>
 {
     private readonly ILogger<CreateRepairCardCommandHandler> _logger;
-    private readonly HybridCache _cache;
     private readonly IAppDbContext _context;
     private readonly IDiagnosisCreationService _diagnosisService;
 
     public CreateRepairCardCommandHandler(
         ILogger<CreateRepairCardCommandHandler> logger,
-        HybridCache cache,
         IAppDbContext context,
         IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
-        _cache = cache;
         _context = context;
         _diagnosisService = diagnosisService;
     }
@@ -108,7 +104,6 @@ public sealed class CreateRepairCardCommandHandler
         
         await _context.Diagnoses.AddAsync(diagnosis, ct);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("repair-card");
         
         _logger.LogInformation("Successfully created RepairCard {RepairCardId} for Diagnosis {DiagnosisId}.", repairCard.Id, diagnosis.Id);
 

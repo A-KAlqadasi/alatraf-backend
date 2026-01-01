@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;

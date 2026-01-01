@@ -22,10 +22,11 @@ public class CreateTherapyCardCommandValidator : AbstractValidator<CreateTherapy
             .GreaterThan(0).WithMessage("InjuryTypes must contain valid type IDs.");
         RuleFor(x => x.TherapyCardType)
             .IsInEnum().WithMessage("Type must be a valid Therapy Card Type.");
-        RuleFor(x => x.ProgramEndDate)
-            .GreaterThan(x => x.ProgramStartDate).WithMessage("ProgramEndDate must be later than ProgramStartDate.");
         RuleFor(x => x.ProgramStartDate)
-            .LessThan(x => x.ProgramEndDate).WithMessage("ProgramStartDate must be earlier than ProgramEndDate.");
+            .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Program Start Date must not be in the past.");
+
+        RuleFor(x=> x.NumberOfSessions)
+            .GreaterThan(0).WithMessage("Number of sessions must be greater than zero");
         RuleForEach(x => x.Programs)
             .SetValidator(new CreateTherapyCardMedicalProgramCommandValidator());
     }

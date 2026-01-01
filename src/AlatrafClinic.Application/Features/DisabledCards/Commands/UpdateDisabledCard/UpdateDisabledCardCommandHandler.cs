@@ -6,7 +6,6 @@ using AlatrafClinic.Domain.Patients;
 using MediatR;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.DisabledCards.Commands.UpdateDisabledCard;
@@ -15,13 +14,11 @@ public class UpdateDisabledCardCommandHandler : IRequestHandler<UpdateDisabledCa
 {
     private readonly ILogger<UpdateDisabledCardCommandHandler> _logger;
     private readonly IAppDbContext _context;
-    private readonly HybridCache _cache;
 
-    public UpdateDisabledCardCommandHandler(ILogger<UpdateDisabledCardCommandHandler> logger, IAppDbContext context, HybridCache cache)
+    public UpdateDisabledCardCommandHandler(ILogger<UpdateDisabledCardCommandHandler> logger, IAppDbContext context)
     {
         _logger = logger;
         _context = context;
-        _cache = cache;
     }
     public async Task<Result<Updated>> Handle(UpdateDisabledCardCommand command, CancellationToken ct)
     {
@@ -52,7 +49,8 @@ public class UpdateDisabledCardCommandHandler : IRequestHandler<UpdateDisabledCa
             return PatientErrors.PatientNotFound;
         }
 
-        var disabledCardResult = currentDisabledCard.Update(command.CardNumber, command.ExpirationDate, command.PatientId, command.CardImagePath);
+        var disabledCardResult = currentDisabledCard.Update(command.CardNumber, command.DisabilityType, command.IssueDate, command.PatientId, command.CardImagePath);
+        
         if (disabledCardResult.IsError)
         {
             return disabledCardResult.Errors;
@@ -62,7 +60,6 @@ public class UpdateDisabledCardCommandHandler : IRequestHandler<UpdateDisabledCa
 
         _context.DisabledCards.Update(currentDisabledCard);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("disabled-card", ct);
 
         _logger.LogInformation("Disabled card {cardId} is updated successfully", command.DisabledCardId);
         

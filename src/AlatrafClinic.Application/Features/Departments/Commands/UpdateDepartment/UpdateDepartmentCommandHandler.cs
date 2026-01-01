@@ -1,6 +1,6 @@
+using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
-using MechanicShop.Application.Common.Errors;
 
 using MediatR;
 
@@ -46,7 +46,6 @@ public sealed class UpdateDepartmentCommandHandler(
 
         _context.Departments.Update(department);
         await _context.SaveChangesAsync(ct);
-        await _cache.RemoveByTagAsync("department", ct);
 
         _logger.LogInformation("Department {DepartmentId} renamed successfully to '{DepartmentName}'.",
             department.Id, department.Name);
