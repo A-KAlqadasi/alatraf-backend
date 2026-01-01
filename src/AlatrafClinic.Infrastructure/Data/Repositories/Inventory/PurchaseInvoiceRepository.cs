@@ -57,4 +57,12 @@ public class PurchaseInvoiceRepository : GenericRepository<PurchaseInvoice, int>
             })
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<PurchaseInvoice?> GetByIdWithItemsAsync(int id, CancellationToken ct)
+    {
+        return await dbContext.PurchaseInvoices
+            .Include(p => p.Items)
+                .ThenInclude(i => i.StoreItemUnit)
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
+    }
 }
