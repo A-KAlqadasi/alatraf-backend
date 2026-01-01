@@ -106,5 +106,7 @@ public interface IAppDbContext
     public DbSet<PurchaseItem> PurchaseItems { get; }
     public DbSet<Supplier> Suppliers { get; }
 
+    //public DbSet<OutboxMessage> OutboxMessages { get; }
+    public DbSet<InventoryReservation> InventoryReservations { get; }
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

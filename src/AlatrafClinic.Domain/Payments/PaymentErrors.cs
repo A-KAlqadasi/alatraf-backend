@@ -1,6 +1,7 @@
 using AlatrafClinic.Domain.Common.Results;
 
 namespace AlatrafClinic.Domain.Payments;
+
 public static class PaymentErrors
 {
     public static readonly Error InvalidTotal =
@@ -28,4 +29,5 @@ public static class PaymentErrors
     public static readonly Error TotalMissmatch = Error.Conflict("Payment.TotalMismatch", "Payment total does not match");
     public static readonly Error InvalidAccountKind = Error.Validation("Payment.InvalidAccountKind", "Invalid account kind");
     public static readonly Error InvalidTicketId = Error.Validation("Payment.InvalidTicketId", "Ticket Id is invalid");
+    public static readonly Error PaymentTypeNotAssigned = Error.Conflict("Payment.PaymentTypeNotAssigned", "Payment type is not assigned");
 }

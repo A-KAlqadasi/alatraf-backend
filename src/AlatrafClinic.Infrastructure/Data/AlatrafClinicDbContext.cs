@@ -1,4 +1,11 @@
+using System;
+using System.Linq;
+using System.Text.Json;
+using AlatrafClinic.Domain.Common;
+
+
 using AlatrafClinic.Application.Common.Interfaces;
+using MediatR;
 using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
@@ -45,12 +52,23 @@ using AlatrafClinic.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Infrastructure.Data.Idempotency;
+using AlatrafClinic.Infrastructure.Data.Outbox;
+
 
 namespace AlatrafClinic.Infrastructure.Data;
 
 public class AlatrafClinicDbContext
     : IdentityDbContext<AppUser, IdentityRole, string>, IAppDbContext
 {
+    // Collected domain events are stored here during SaveChanges
+    private readonly List<INotification> _collectedDomainEvents = new();
+
+    public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
+        : base(options)
+    {
+    }
+
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
@@ -119,11 +137,12 @@ public class AlatrafClinicDbContext
     public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
 
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<InventoryReservation> InventoryReservations => Set<InventoryReservation>();
+    public DbSet<IdempotencyKey> IdempotencyKeys => Set<IdempotencyKey>();
+    public DbSet<ProcessedMessage> ProcessedMessages => Set<ProcessedMessage>();
 
-    public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)
-        : base(options)
-    {
-    }
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -131,11 +150,54 @@ public class AlatrafClinicDbContext
         builder.ApplyConfigurationsFromAssembly(typeof(AlatrafClinicDbContext).Assembly);
         AlatrafClinicDbContextInitializer.Seed(builder);
 
-    }
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
+        var isSqlite = Database.ProviderName?.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) == true;
 
-        return base.SaveChangesAsync(cancellationToken);
+        if (isSqlite)
+        {
+            foreach (var property in builder.Model
+                         .GetEntityTypes()
+                         .SelectMany(t => t.GetProperties()))
+            {
+                var columnType = property.GetColumnType();
+                if (string.Equals(columnType, "nvarchar(max)", StringComparison.OrdinalIgnoreCase))
+                {
+                    property.SetColumnType("TEXT");
+                }
+            }
+        }
+
+    }
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Collect domain events from tracked entities into the in-memory buffer
+        var domainEvents = ChangeTracker
+            .Entries<Entity<int>>()
+            .Select(e => e.Entity)
+            .Where(e => e.DomainEvents.Any())
+            .SelectMany(e => e.DomainEvents)
+            .Cast<INotification>()
+            .ToList();
+
+        if (domainEvents.Any())
+        {
+            _collectedDomainEvents.AddRange(domainEvents);
+        }
+
+        // Clear domain events from entities so they are not published twice
+        foreach (var entity in ChangeTracker.Entries<Entity<int>>())
+        {
+            entity.Entity.ClearDomainEvents();
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    // Called by the pipeline behavior after a successful handler execution / commit
+    public IReadOnlyCollection<INotification> GetDomainEvents()
+    {
+        var events = _collectedDomainEvents.ToList();
+        _collectedDomainEvents.Clear();
+        return events;
     }
 
 }

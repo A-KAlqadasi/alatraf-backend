@@ -1,8 +1,13 @@
 using System.Text;
 
 using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Application.Common.Events;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces.Messaging;
+using AlatrafClinic.Infrastructure.Eventing;
+using AlatrafClinic.Infrastructure.Messaging;
 using AlatrafClinic.Infrastructure.Data;
+using AlatrafClinic.Infrastructure.Data.Inbox;
 using AlatrafClinic.Infrastructure.Data.Interceptors;
 using AlatrafClinic.Infrastructure.Data.Repositories;
 using AlatrafClinic.Infrastructure.Identity;
@@ -37,7 +42,7 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString);
         });
 
-        services.AddScoped<IAppDbContext>(provider => provider. GetRequiredService<AlatrafClinicDbContext>());
+        services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AlatrafClinicDbContext>());
 
 
         // services.AddScoped<ApplicationDbContextInitialiser>();
@@ -86,7 +91,7 @@ public static class DependencyInjection
         //         policy.Requirements.Add(new LaborAssignedRequirement()));
 
         services.AddTransient<IIdentityService, IdentityService>();
-        
+
 
         services.AddHybridCache(options => options.DefaultEntryOptions = new HybridCacheEntryOptions
         {
@@ -96,6 +101,16 @@ public static class DependencyInjection
 
         services.AddScoped<ITokenProvider, TokenProvider>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        // EventContext implementation lives in Infrastructure (concrete moved)
+        services.AddScoped<IEventContext, EventContext>();
+        // Register Domain Events dispatcher behavior
+        services.AddTransient(typeof(MediatR.IPipelineBehavior<,>), typeof(DomainEventsDispatcherBehavior<,>));
+        // Messaging transport (No-op by default)
+        services.AddScoped<IMessagePublisher, NoopMessagePublisher>();
+        services.AddHostedService<OutboxProcessor>();
+        services.AddScoped<IInbox, Inbox>();
+        services.AddScoped<IIdempotencyContext, IdempotencyContext>();
+
 
         return services;
     }

@@ -8,6 +8,7 @@ using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
 using AlatrafClinic.Domain.Services.Appointments;
 using AlatrafClinic.Domain.Services.Appointments.Holidays;
+using AlatrafClinic.Application.Sagas;
 
 namespace AlatrafClinic.Application;
 
@@ -24,13 +25,16 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
             cfg.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
-        
+
         });
         services.AddScoped<IPersonCreateService, PersonCreateService>();
         services.AddScoped<IPersonUpdateService, PersonUpdateService>();
         services.AddScoped<IDiagnosisCreationService, DiagnosisCreationService>();
         services.AddScoped<IDiagnosisUpdateService, DiagnosisUpdateService>();
-                
+
+        // Saga orchestrator lives in Application layer and is explicitly registered
+        services.AddScoped<SaleSagaOrchestrator>();
+
         return services;
     }
 }

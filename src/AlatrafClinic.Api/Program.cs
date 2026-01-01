@@ -22,7 +22,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-     app.UseDeveloperExceptionPage();
+    app.UseDeveloperExceptionPage();
     app.MapOpenApi();
 
     app.UseSwaggerUI(options =>
@@ -42,6 +42,7 @@ else
 }
 
 app.UseCoreMiddlewares(builder.Configuration);
+app.UseMiddleware<IdempotencyMiddleware>();
 
 app.MapControllers();
 

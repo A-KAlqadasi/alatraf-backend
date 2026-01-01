@@ -1,3 +1,5 @@
+using System;
+
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
@@ -11,14 +13,17 @@ using AlatrafClinic.Domain.Sales.SalesItems;
 
 namespace AlatrafClinic.Domain.Sales;
 
-public class Sale : AuditableEntity<int>
+public class Sale : AuditableEntity<int>, IAggregateRoot
 {
     public SaleStatus Status { get; private set; } = SaleStatus.Draft;
+    public Guid? SagaId { get; private set; }
+    public bool InventoryReservationCompleted { get; private set; }
+    public bool PaymentRecorded { get; private set; }
 
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; private set; } = default!;
 
-    public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsCompleted);
+    // public bool IsPaid => Diagnosis.Payments.Any(p => p.DiagnosisId == DiagnosisId && p.IsCompleted);
     public Payment? Payment => Diagnosis.Payments.FirstOrDefault(p => p.DiagnosisId == DiagnosisId);
 
     public ExitCard? ExitCard { get; private set; }
@@ -39,10 +44,25 @@ public class Sale : AuditableEntity<int>
 
     public static Result<Sale> Create(int diagnosisId, string? notes = null)
     {
-        if (diagnosisId <= 0)
-            return SaleErrors.InvalidDiagnosisId;
+        // if (diagnosisId <= 0)
+        //     return SaleErrors.InvalidDiagnosisId;
 
         return new Sale(diagnosisId, notes);
+    }
+
+    public Result<Updated> AttachSaga(Guid sagaId)
+    {
+        if (sagaId == Guid.Empty) return SaleErrors.InvalidSagaId;
+
+        if (SagaId is null)
+        {
+            SagaId = sagaId;
+            return Result.Updated;
+        }
+
+        if (SagaId == sagaId) return Result.Updated;
+
+        return SaleErrors.SagaMismatch;
     }
 
     public Result<Updated> UpsertItems(List<(ItemUnit itemUnit, decimal quantity)> newItems)
@@ -72,33 +92,103 @@ public class Sale : AuditableEntity<int>
         return Result.Updated;
     }
 
+    public Result<Updated> MarkInventoryReserved(Guid sagaId)
+    {
+        // For legacy flows without saga, allow empty and keep SagaId null
+        if (sagaId == Guid.Empty && SagaId is null)
+        {
+            SagaId = null;
+        }
+        if (Status != SaleStatus.Draft) return SaleErrors.NotDraft;
+
+        if (SagaId is null)
+        {
+            SagaId = sagaId;
+        }
+        else if (SagaId != sagaId)
+        {
+            return SaleErrors.SagaMismatch;
+        }
+
+        InventoryReservationCompleted = true;
+        return Result.Updated;
+    }
+
+    public Result<Updated> Confirm(Guid sagaId)
+    {
+        if (sagaId == Guid.Empty && SagaId is null)
+        {
+            SagaId = null;
+        }
+        if (Status == SaleStatus.Canceled) return SaleErrors.AlreadyCancelled;
+        if (Status == SaleStatus.Confirmed) return Result.Updated;
+        if (!InventoryReservationCompleted) return SaleErrors.InventoryNotReserved;
+
+        if (SagaId is null)
+        {
+            SagaId = sagaId;
+        }
+        else if (SagaId != sagaId)
+        {
+            return SaleErrors.SagaMismatch;
+        }
+
+        Status = SaleStatus.Confirmed;
+        return Result.Updated;
+    }
+
+    public Result<Updated> MarkPaymentCreated(Guid sagaId)
+    {
+        if (sagaId == Guid.Empty && SagaId is null)
+        {
+            SagaId = null;
+        }
+        if (PaymentRecorded && SagaId == sagaId)
+        {
+            return Result.Updated;
+        }
+        if (PaymentRecorded && SagaId != sagaId)
+        {
+            return SaleErrors.SagaMismatch;
+        }
+        if (!InventoryReservationCompleted)
+        {
+            return SaleErrors.InventoryNotReserved;
+        }
+        if (Status != SaleStatus.Confirmed)
+        {
+            return SaleErrors.NotConfirmed;
+        }
+        if (SagaId is null)
+        {
+            SagaId = sagaId;
+        }
+        else if (SagaId != sagaId)
+        {
+            return SaleErrors.SagaMismatch;
+        }
+
+        PaymentRecorded = true;
+        return Result.Updated;
+    }
+
     public Result<Updated> Post()
     {
-        if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
-        if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
-
-        if (!IsPaid) return SaleErrors.PaymentRequired;
-        if (_saleItems.Count == 0) return SaleErrors.NoItems;
-
-        Status = SaleStatus.Posted;
-        return Result.Updated;
+        // Legacy API now delegates to Confirm to preserve invariants
+        return Confirm(SagaId ?? Guid.Empty);
     }
 
     public Result<Updated> MarkPosted()
     {
-        if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
-        if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
-
-        Status = SaleStatus.Posted;
-        return Result.Updated;
+        return Confirm(SagaId ?? Guid.Empty);
     }
 
     public Result<Updated> Cancel()
     {
-        if (Status == SaleStatus.Cancelled) return SaleErrors.AlreadyCancelled;
-        if (Status == SaleStatus.Posted) return SaleErrors.AlreadyPosted;
+        if (Status == SaleStatus.Canceled) return SaleErrors.AlreadyCancelled;
+        if (Status == SaleStatus.Confirmed) return SaleErrors.CannotCancelConfirmed;
 
-        Status = SaleStatus.Cancelled;
+        Status = SaleStatus.Canceled;
         return Result.Updated;
     }
 
@@ -115,4 +205,12 @@ public class Sale : AuditableEntity<int>
 
         return Result.Updated;
     }
+    public void MarkCreated()
+    {
+        AddDomainEvent(new SaleCreatedDomainEvent(
+            Id,
+            DiagnosisId
+        ));
+    }
+
 }

@@ -18,6 +18,15 @@ public sealed class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.Property(s => s.Id)
             .HasColumnName("SaleId");
 
+        builder.Property(s => s.SagaId)
+            .IsRequired(false);
+
+        builder.Property(s => s.InventoryReservationCompleted)
+            .IsRequired();
+
+        builder.Property(s => s.PaymentRecorded)
+            .IsRequired();
+
         builder.Property(s => s.Status)
             .HasConversion<string>()
             .HasMaxLength(50);
@@ -32,7 +41,7 @@ public sealed class SaleConfiguration : IEntityTypeConfiguration<Sale>
             .WithOne(d => d.Sale)
             .HasForeignKey<Sale>(s => s.DiagnosisId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         // builder.HasOne(s => s.ExchangeOrder)
         //     .WithOne(e => e.Sale)
         //     .HasForeignKey<ExchangeOrder>(e => e.SaleId)
@@ -45,6 +54,8 @@ public sealed class SaleConfiguration : IEntityTypeConfiguration<Sale>
 
         builder.HasIndex(s => s.DiagnosisId)
             .IsUnique();
+
+        builder.HasIndex(s => new { s.SagaId, s.DiagnosisId });
 
         builder.HasQueryFilter(s => !s.IsDeleted);
     }

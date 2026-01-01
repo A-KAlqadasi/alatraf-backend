@@ -3,7 +3,7 @@ using AlatrafClinic.Domain.Services.Enums;
 
 namespace AlatrafClinic.Domain.Services.Events;
 
-public sealed class AppointmentIsTomorrow : DomainEvent
+public sealed record AppointmentIsTomorrow : DomainEvent
 {
     public int AppointmentId { get; set; }
 }

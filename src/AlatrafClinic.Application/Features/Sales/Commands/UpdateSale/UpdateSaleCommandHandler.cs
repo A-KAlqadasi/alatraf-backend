@@ -45,11 +45,11 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Resul
             return SaleErrors.Readonly;
         }
 
-        if (currentSale.IsPaid)
-        {
-            _logger.LogError("Sale {saleId} cannot be modified, it is paid", currentSale.Id);
-            return SaleErrors.Readonly;
-        }
+        // if (currentSale.IsPaid)
+        // {
+        //     _logger.LogError("Sale {saleId} cannot be modified, it is paid", currentSale.Id);
+        //     return SaleErrors.Readonly;
+        // }
 
         var updateDiagnosisResult = await _diagnosisUpdate.UpdateAsync(
             diagnosisId: currentSale.DiagnosisId,

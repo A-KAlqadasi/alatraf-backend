@@ -19,19 +19,19 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(p => p.TotalAmount)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
-        
+
         builder.Property(p => p.PaidAmount)
             .HasColumnType("decimal(18,2)")
             .IsRequired(false);
 
-        builder.Property(p=> p.Discount)
+        builder.Property(p => p.Discount)
             .HasColumnType("decimal(18,2)")
             .IsRequired(false);
 
         builder.Property(p => p.PaymentDate)
             .HasColumnType("date")
             .IsRequired(false);
-        
+
         builder.Property(p => p.IsCompleted)
             .IsRequired(true);
 
@@ -48,17 +48,21 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasMaxLength(50)
             .HasConversion<string>();
 
-        builder.HasOne(p=> p.Diagnosis)
-            .WithMany(d=> d.Payments)
-            .HasForeignKey(p=> p.DiagnosisId)
+        builder.Property(p => p.SagaId)
+            .IsRequired(false);
+
+        builder.HasOne(p => p.Diagnosis)
+            .WithMany(d => d.Payments)
+            .HasForeignKey(p => p.DiagnosisId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasOne(p => p.Ticket)
             .WithOne(t => t.Payment)
-            .HasForeignKey<Payment>(p=> p.TicketId)
+            .HasForeignKey<Payment>(p => p.TicketId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasIndex(p => p.PaymentDate);
+        builder.HasIndex(p => new { p.SagaId, p.PaymentReference, p.DiagnosisId }).IsUnique(false);
 
         builder.HasQueryFilter(p => !p.IsDeleted);
     }

@@ -1,7 +1,10 @@
+using System;
+
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
+using AlatrafClinic.Domain.Payments.Events;
 using AlatrafClinic.Domain.Payments.PatientPayments;
 using AlatrafClinic.Domain.Payments.WoundedPayments;
 using AlatrafClinic.Domain.Services.Tickets;
@@ -10,31 +13,33 @@ namespace AlatrafClinic.Domain.Payments;
 
 public sealed class Payment : AuditableEntity<int>
 {
+    public Guid? SagaId { get; private set; }
     public decimal TotalAmount { get; private set; }
     public decimal? PaidAmount { get; private set; }
     public decimal? Discount { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
-    public int TicketId {get; private set;}
+    public int TicketId { get; private set; }
     public Ticket Ticket { get; set; } = default!;
     public PaymentReference PaymentReference { get; private set; }
     public AccountKind? AccountKind { get; private set; }
     public bool IsCompleted { get; private set; } = false;
     public string? Notes { get; private set; }
-    public DateTime? PaymentDate {get; private set;}
+    public DateTime? PaymentDate { get; private set; }
 
     public PatientPayment? PatientPayment { get; private set; }
     public DisabledPayment? DisabledPayment { get; private set; }
     public WoundedPayment? WoundedPayment { get; private set; }
-    
+
 
     public decimal Residual =>
         Math.Max(0, TotalAmount - ((PaidAmount ?? 0m) + (Discount ?? 0m)));
 
     private Payment() { }
 
-    private Payment(int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
+    private Payment(Guid? sagaId, int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
     {
+        SagaId = sagaId;
         TicketId = ticketId;
         DiagnosisId = diagnosisId;
         TotalAmount = total;
@@ -43,12 +48,15 @@ public sealed class Payment : AuditableEntity<int>
     }
 
     public static Result<Payment> Create(int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
+        => Create(null, ticketId, diagnosisId, total, reference, notes);
+
+    public static Result<Payment> Create(Guid? sagaId, int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
     {
         if (ticketId <= 0) return PaymentErrors.InvalidTicketId;
         if (total <= 0) return PaymentErrors.InvalidTotal;
         if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
 
-        return new Payment(ticketId, diagnosisId, total, reference, notes);
+        return new Payment(sagaId, ticketId, diagnosisId, total, reference, notes);
     }
 
     public Result<Updated> UpdateCore(int ticketId, int diagnosisId, decimal total, PaymentReference reference, string? notes = null)
@@ -57,7 +65,7 @@ public sealed class Payment : AuditableEntity<int>
         if (diagnosisId <= 0) return PaymentErrors.InvalidDiagnosisId;
         if (total <= 0) return PaymentErrors.InvalidTotal;
         if (!Enum.IsDefined(typeof(PaymentReference), reference)) return PaymentErrors.InvalidPaymentReference;
-        
+
         TicketId = ticketId;
         DiagnosisId = diagnosisId;
         TotalAmount = total;
@@ -83,6 +91,12 @@ public sealed class Payment : AuditableEntity<int>
         IsCompleted = true;
         PaymentDate = DateTime.Now;
 
+        AddDomainEvent(
+       new PaymentCompletedDomainEvent(
+           Id,
+           DiagnosisId // 👈 الربط الصحيح
+            )
+        );
         return Result.Updated;
     }
 
@@ -105,7 +119,7 @@ public sealed class Payment : AuditableEntity<int>
         ClearPaymentType();
         PatientPayment = patientPayment;
         AccountKind = Payments.AccountKind.Patient;
-        
+
         return Result.Updated;
     }
 
@@ -128,4 +142,7 @@ public sealed class Payment : AuditableEntity<int>
     }
 
     public bool IsFullyPaid => Residual == 0m;
+
+
+
 }

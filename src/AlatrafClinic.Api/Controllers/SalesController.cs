@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,8 @@ using AlatrafClinic.Application.Features.Sales.Dtos;
 using AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
 using AlatrafClinic.Application.Features.Sales.Commands.UpdateSale;
 using AlatrafClinic.Application.Features.Sales.Commands.DeleteSale;
+using AlatrafClinic.Application.Commands;
+using AlatrafClinic.Application.Sagas;
 
 using AlatrafClinic.Application.Features.Sales.Queries.GetSales;
 using AlatrafClinic.Application.Features.Sales.Queries.GetSaleById;
@@ -112,5 +116,77 @@ public sealed class SalesController(ISender sender) : ApiController
             _ => NoContent(),
             Problem
         );
+    }
+
+    // Saga endpoints (additive, non-breaking)
+    [HttpPost("saga/start")]
+    [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [EndpointSummary("Starts sale saga: validate stock + create draft")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> StartSaga([FromBody] StartSaleSagaCommand command, CancellationToken ct)
+    {
+        var result = await sender.Send(command, ct);
+        return SagaResponse(result);
+    }
+
+    [HttpPost("{saleId:int}/saga/reserve")]
+    [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [EndpointSummary("Reserves inventory atomically for sale saga")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> ReserveSaga(int saleId, [FromBody] ReserveInventoryCommand body, CancellationToken ct)
+    {
+        var cmd = body with { SaleId = saleId };
+        var result = await sender.Send(cmd, ct);
+        return SagaResponse(result);
+    }
+
+    [HttpPost("{saleId:int}/saga/confirm")]
+    [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [EndpointSummary("Confirms sale after successful reservation")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> ConfirmSaga(int saleId, [FromBody] ConfirmSaleCommand body, CancellationToken ct)
+    {
+        var cmd = body with { SaleId = saleId };
+        var result = await sender.Send(cmd, ct);
+        return SagaResponse(result);
+    }
+
+    [HttpPost("{saleId:int}/saga/payment")]
+    [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [EndpointSummary("Creates payment as saga step")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> PaymentSaga(int saleId, [FromBody] CreatePaymentCommand body, CancellationToken ct)
+    {
+        var cmd = body with { SaleId = saleId };
+        var result = await sender.Send(cmd, ct);
+        return SagaResponse(result);
+    }
+
+    private IActionResult SagaResponse(SaleSagaResult result)
+    {
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+
+        // Map saga failures to HTTP semantics: validation → 400, state conflicts → 409
+        var errors = result.Errors ?? new List<string>();
+        var detail = errors.Count > 0 ? string.Join("; ", errors) : "Saga step failed.";
+
+        var isConflict = errors.Any(e =>
+            e.Contains("mismatch", StringComparison.OrdinalIgnoreCase) ||
+            e.Contains("already", StringComparison.OrdinalIgnoreCase) ||
+            e.Contains("reserved", StringComparison.OrdinalIgnoreCase) ||
+            e.Contains("confirm", StringComparison.OrdinalIgnoreCase) ||
+            e.Contains("state", StringComparison.OrdinalIgnoreCase));
+
+        var status = isConflict ? StatusCodes.Status409Conflict : StatusCodes.Status400BadRequest;
+        var title = isConflict ? "Conflict" : "Bad Request";
+
+        return Problem(statusCode: status, title: title, detail: detail);
     }
 }
