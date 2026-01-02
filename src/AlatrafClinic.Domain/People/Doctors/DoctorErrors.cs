@@ -39,11 +39,11 @@ public static class DoctorErrors
         code: "Doctor.NoActiveAssignment",
         description: "The doctor has no active assignment to update or modify.");
 
-    public static readonly Error DoctorHasIndustrialPartsToday = Error.Validation(
+    public static readonly Error DoctorHasIndustrialPartsToday = Error.Conflict(
         code: "Doctor.DoctorHasIndustrialPartsToday",
         description: "The doctor has industrial parts recorded for today and cannot be unassigned from the section.");
     
-    public static readonly Error DoctorHasSessionsToday = Error.Validation(
+    public static readonly Error DoctorHasSessionsToday = Error.Conflict(
         code: "Doctor.DoctorHasSessionsToday",
         description: "The doctor has sessions scheduled for today and cannot be unassigned from the section/room.");
     public static readonly Error NotFound = Error.NotFound("Doctor.NotFound", "Doctor is not found");

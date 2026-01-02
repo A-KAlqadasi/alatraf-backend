@@ -2722,7 +2722,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("RolePermissions", (string)null);
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermission", b =>
+            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermissionOverride", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -2730,11 +2730,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("PermissionId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Effect")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.HasKey("UserId", "PermissionId");
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("UserPermissions", (string)null);
+                    b.ToTable("UserPermissionOverrides", (string)null);
                 });
 
             modelBuilder.Entity("DiagnosisInjuryReason", b =>
@@ -3556,10 +3561,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermission", b =>
+            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermissionOverride", b =>
                 {
                     b.HasOne("AlatrafClinic.Infrastructure.Identity.ApplicationPermission", "Permission")
-                        .WithMany("UserPermissions")
+                        .WithMany("UserPermissionOverrides")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3855,7 +3860,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 {
                     b.Navigation("RolePermissions");
 
-                    b.Navigation("UserPermissions");
+                    b.Navigation("UserPermissionOverrides");
                 });
 #pragma warning restore 612, 618
         }

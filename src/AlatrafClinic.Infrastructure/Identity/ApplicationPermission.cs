@@ -10,5 +10,5 @@ public class ApplicationPermission
     public string? Description { get; set; }
 
     public ICollection<RolePermission> RolePermissions { get; } = new List<RolePermission>();
-    public ICollection<UserPermission> UserPermissions { get; } = new List<UserPermission>();
+    public ICollection<UserPermissionOverride> UserPermissionOverrides { get; } = new List<UserPermissionOverride>();
 }

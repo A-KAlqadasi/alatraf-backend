@@ -14,7 +14,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -75,7 +74,8 @@ public static class DependencyInjection
             options.SignIn.RequireConfirmedAccount = false;
         })
         .AddRoles<IdentityRole>()
-        .AddEntityFrameworkStores<AlatrafClinicDbContext>();
+        .AddEntityFrameworkStores<AlatrafClinicDbContext>()
+        .AddDefaultTokenProviders();
 
         // services.AddScoped<IAuthorizationHandler, LaborAssignedHandler>();
 

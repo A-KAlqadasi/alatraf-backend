@@ -19,8 +19,8 @@ public static class DoctorMapper
             PersonDto = entity.Person!.ToDto(),
             DepartmentId = entity.DepartmentId,
             Specialization = entity.Specialization,
-            SectionId = entity.Assignments.FirstOrDefault(a => a.IsActive)?.SectionId,
-            RoomId = entity.Assignments.FirstOrDefault(a => a.IsActive)?.RoomId,
+            SectionId = entity.Assignments.OrderByDescending(a => a.Id).FirstOrDefault()?.SectionId,
+            RoomId = entity.Assignments.OrderByDescending(a => a.Id).FirstOrDefault()?.RoomId,
             IsActive = entity.IsActive,
         };
     }

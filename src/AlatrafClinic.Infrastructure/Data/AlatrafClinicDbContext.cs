@@ -55,7 +55,7 @@ public class AlatrafClinicDbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
-    public DbSet<UserPermission> UserPermissions => Set<UserPermission>();
+    public DbSet<UserPermissionOverride> UserPermissionOverrides => Set<UserPermissionOverride>();
 
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Holiday> Holidays => Set<Holiday>();

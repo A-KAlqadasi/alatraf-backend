@@ -10,6 +10,7 @@ using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards.Enums;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
+using AlatrafClinic.Infrastructure.Identity;
 
 using MediatR;
 
@@ -37,7 +38,7 @@ public sealed class AlatrafClinicDbContextInitialiser
     {
         try
         {
-            await _context.Database.EnsureCreatedAsync(ct);
+            await _context.Database.MigrateAsync(ct);
         }
         catch (Exception ex)
         {
@@ -157,7 +158,147 @@ public sealed class AlatrafClinicDbContextInitialiser
                 AppSetting.Create(AlatrafClinicConstants.WoundedReportMinTotalKey, "30000").Value
             );
         }
-        
+
+        if (!await _context.Permissions.AnyAsync())
+        {
+            _context.Permissions.AddRange(
+                // Person
+                new ApplicationPermission { Name = Permission.Person.Create },
+                new ApplicationPermission { Name = Permission.Person.Read },
+                new ApplicationPermission { Name = Permission.Person.Update },
+                new ApplicationPermission { Name = Permission.Person.Delete },
+
+                // Service
+                new ApplicationPermission { Name = Permission.Service.Create },
+                new ApplicationPermission { Name = Permission.Service.Read },
+                new ApplicationPermission { Name = Permission.Service.Update },
+                new ApplicationPermission { Name = Permission.Service.Delete },
+
+                // Ticket
+                new ApplicationPermission { Name = Permission.Ticket.Create },
+                new ApplicationPermission { Name = Permission.Ticket.Read },
+                new ApplicationPermission { Name = Permission.Ticket.Update },
+                new ApplicationPermission { Name = Permission.Ticket.Delete },
+                new ApplicationPermission { Name = Permission.Ticket.Print },
+
+                // Appointment
+                new ApplicationPermission { Name = Permission.Appointment.Create },
+                new ApplicationPermission { Name = Permission.Appointment.ReSchedule },
+                new ApplicationPermission { Name = Permission.Appointment.Read },
+                new ApplicationPermission { Name = Permission.Appointment.Update },
+                new ApplicationPermission { Name = Permission.Appointment.Delete },
+                new ApplicationPermission { Name = Permission.Appointment.ChangeStatus },
+
+                // Holiday
+                new ApplicationPermission { Name = Permission.Holiday.Create },
+                new ApplicationPermission { Name = Permission.Holiday.Read },
+                new ApplicationPermission { Name = Permission.Holiday.Update },
+                new ApplicationPermission { Name = Permission.Holiday.Delete },
+
+                // TherapyCard
+                new ApplicationPermission { Name = Permission.TherapyCard.Create },
+                new ApplicationPermission { Name = Permission.TherapyCard.Read },
+                new ApplicationPermission { Name = Permission.TherapyCard.Update },
+                new ApplicationPermission { Name = Permission.TherapyCard.Delete },
+                new ApplicationPermission { Name = Permission.TherapyCard.Renew },
+                new ApplicationPermission { Name = Permission.TherapyCard.CreateSession },
+
+                // RepairCard
+                new ApplicationPermission { Name = Permission.RepairCard.Create },
+                new ApplicationPermission { Name = Permission.RepairCard.Read },
+                new ApplicationPermission { Name = Permission.RepairCard.Update },
+                new ApplicationPermission { Name = Permission.RepairCard.Delete },
+                new ApplicationPermission { Name = Permission.RepairCard.ChangeStatus },
+                new ApplicationPermission { Name = Permission.RepairCard.AssignToTechnician },
+                new ApplicationPermission { Name = Permission.RepairCard.CreateDeliveryTime },
+
+                // IndustrialPart
+                new ApplicationPermission { Name = Permission.IndustrialPart.Create },
+                new ApplicationPermission { Name = Permission.IndustrialPart.Read },
+                new ApplicationPermission { Name = Permission.IndustrialPart.Update },
+                new ApplicationPermission { Name = Permission.IndustrialPart.Delete },
+
+                // MedicalProgram
+                new ApplicationPermission { Name = Permission.MedicalProgram.Create },
+                new ApplicationPermission { Name = Permission.MedicalProgram.Read },
+                new ApplicationPermission { Name = Permission.MedicalProgram.Update },
+                new ApplicationPermission { Name = Permission.MedicalProgram.Delete },
+
+                // Department
+                new ApplicationPermission { Name = Permission.Department.Create },
+                new ApplicationPermission { Name = Permission.Department.Read },
+                new ApplicationPermission { Name = Permission.Department.Update },
+                new ApplicationPermission { Name = Permission.Department.Delete },
+
+                // Section
+                new ApplicationPermission { Name = Permission.Section.Create },
+                new ApplicationPermission { Name = Permission.Section.Read },
+                new ApplicationPermission { Name = Permission.Section.Update },
+                new ApplicationPermission { Name = Permission.Section.Delete },
+
+                // Room
+                new ApplicationPermission { Name = Permission.Room.Create },
+                new ApplicationPermission { Name = Permission.Room.Read },
+                new ApplicationPermission { Name = Permission.Room.Update },
+                new ApplicationPermission { Name = Permission.Room.Delete },
+
+                // Payment
+                new ApplicationPermission { Name = Permission.Payment.Create },
+                new ApplicationPermission { Name = Permission.Payment.Read },
+                new ApplicationPermission { Name = Permission.Payment.Update },
+                new ApplicationPermission { Name = Permission.Payment.Delete },
+
+                // Doctor
+                new ApplicationPermission { Name = Permission.Doctor.Create },
+                new ApplicationPermission { Name = Permission.Doctor.Read },
+                new ApplicationPermission { Name = Permission.Doctor.Update },
+                new ApplicationPermission { Name = Permission.Doctor.Delete },
+                new ApplicationPermission { Name = Permission.Doctor.AssignDoctorToSection },
+                new ApplicationPermission { Name = Permission.Doctor.AssignDoctorToSectionAndRoom },
+                new ApplicationPermission { Name = Permission.Doctor.ChangeDoctorDepartment },
+                new ApplicationPermission { Name = Permission.Doctor.EndDoctorAssignment },
+
+                // Patient
+                new ApplicationPermission { Name = Permission.Patient.Create },
+                new ApplicationPermission { Name = Permission.Patient.Read },
+                new ApplicationPermission { Name = Permission.Patient.Update },
+                new ApplicationPermission { Name = Permission.Patient.Delete },
+
+                // DisabledCard
+                new ApplicationPermission { Name = Permission.DisabledCard.Create },
+                new ApplicationPermission { Name = Permission.DisabledCard.Read },
+                new ApplicationPermission { Name = Permission.DisabledCard.Update },
+                new ApplicationPermission { Name = Permission.DisabledCard.Delete },
+
+                // Sale
+                new ApplicationPermission { Name = Permission.Sale.Create },
+                new ApplicationPermission { Name = Permission.Sale.Read },
+                new ApplicationPermission { Name = Permission.Sale.Update },
+                new ApplicationPermission { Name = Permission.Sale.Delete },
+                new ApplicationPermission { Name = Permission.Sale.Cancel },
+
+                // User
+                new ApplicationPermission { Name = Permission.User.Create },
+                new ApplicationPermission { Name = Permission.User.Read },
+                new ApplicationPermission { Name = Permission.User.Update },
+                new ApplicationPermission { Name = Permission.User.Delete },
+                new ApplicationPermission { Name = Permission.User.GrantPermissions },
+                new ApplicationPermission { Name = Permission.User.DenyPermissions },
+                new ApplicationPermission { Name = Permission.User.RemovePermissionOverrides },
+                new ApplicationPermission { Name = Permission.User.AssignRoles },
+                new ApplicationPermission { Name = Permission.User.RemoveRoles },
+
+                // Role
+                new ApplicationPermission { Name = Permission.Role.Create },
+                new ApplicationPermission { Name = Permission.Role.Read },
+                new ApplicationPermission { Name = Permission.Role.Update },
+                new ApplicationPermission { Name = Permission.Role.Delete },
+                new ApplicationPermission { Name = Permission.Role.AssignPermissions },
+                new ApplicationPermission { Name = Permission.Role.RemovePermissions }
+            );
+        }
+
+                
         await _context.SaveChangesAsync();
     }
 }

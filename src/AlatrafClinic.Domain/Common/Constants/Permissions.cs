@@ -52,7 +52,6 @@ public static class Permission
         public const string Update = "therapyCard:update";
         public const string Delete = "therapyCard:delete";
         public const string Renew = "therapyCard:renew";
-        public const string GenerateSessions = "therapyCard:generate_sessions";
         public const string CreateSession = "therapyCard:create_session";
     }
 
@@ -65,7 +64,6 @@ public static class Permission
         public const string ChangeStatus = "repairCard:change_status";
         public const string AssignToTechnician = "repairCard:assign_to_technician";
         public const string CreateDeliveryTime = "repairCard:create_delivery_time";
-
     }
 
     public static class IndustrialPart
@@ -129,12 +127,13 @@ public static class Permission
         public const string Read = "patient:read";
         public const string Update = "patient:update";
         public const string Delete = "patient:delete";
-        public const string ReadDisabledCard = "patient:read_disabled_card";
-        public const string AddDisabledCard = "patient:add_disabled_card";
-        public const string UpdateDisabledCard = "patient:update_disabled_card";
-        public const string AddWoundedCard = "patient:add_wounded_card";
-        public const string UpdateWoundedCard = "patient:update_wounded_card";
-        public const string ReadWoundedCard = "patient:read_wounded_card";
+    }
+    public static class DisabledCard
+    {
+        public const string Read = "disabledCard:read";
+        public const string Create = "disabledCard:create";
+        public const string Update = "disabledCard:update";
+        public const string Delete = "disabledCard:delete";
     }
 
     public static class Sale
@@ -144,5 +143,27 @@ public static class Permission
         public const string Update = "sale:update";
         public const string Delete = "sale:delete";
         public const string Cancel = "sale:change_status";
+    }
+    public static class User
+    {
+        public const string Create = "user:create";
+        public const string Read = "user:read";
+        public const string Update = "user:update";
+        public const string Delete = "user:delete";
+        public const string GrantPermissions = "user:grant_permissions";
+        public const string DenyPermissions = "user:deny_permissions";
+        public const string RemovePermissionOverrides = "user:remove_permission_overrides";
+        public const string AssignRoles = "user:assign_roles";
+        public const string RemoveRoles = "user:remove_roles";
+    }
+    
+    public static class Role
+    {
+        public const string Create = "role:create";
+        public const string Read = "role:read";
+        public const string Update = "role:update";
+        public const string Delete = "role:delete";
+        public const string AssignPermissions = "role:assign_permissions";
+        public const string RemovePermissions = "role:remove_permissions";
     }
 }
