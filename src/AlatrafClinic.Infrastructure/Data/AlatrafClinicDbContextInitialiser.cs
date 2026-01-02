@@ -60,13 +60,21 @@ public sealed class AlatrafClinicDbContextInitialiser
     }
     private async Task TrySeedAsync()
     {
+        int? id1 = null;
+        int? id2  = null;
         if(!await _context.Departments.AnyAsync())
         {
-            _context.Departments.AddRange(
-                Department.Create("العلاج الطبيعي").Value,
-                Department.Create("الادارة الفنية").Value
-            );
-            
+            var dep1 = Department.Create("العلاج الطبيعي").Value;
+            var dep2 = Department.Create("الادارة الفنية").Value;
+
+            _context.Departments.Add(dep1);
+            _context.Departments.Add(dep2);
+
+
+            await _context.SaveChangesAsync();
+            id1 = dep1.Id;
+            id2 = dep2.Id;
+
         }
 
         // Seed, if necessary
@@ -74,14 +82,14 @@ public sealed class AlatrafClinicDbContextInitialiser
         {
             _context.Services.AddRange(
                 Service.Create("استشارة", null).Value,
-                Service.Create("علاج طبيعي", null).Value,
-                Service.Create("اطراف صناعية", null).Value,
-                Service.Create("مبيعات", null).Value,
-                Service.Create("إصلاحات", null).Value,
-                Service.Create("عظام", null).Value,
-                Service.Create("أعصاب", null).Value,
-                Service.Create("تجديد كروت علاج", null).Value,
-                Service.Create("إصدار بدل فاقد لكرت علاج", null, price: 500).Value
+                Service.Create("علاج طبيعي", id1).Value,
+                Service.Create("اطراف صناعية", id2).Value,
+                Service.Create("مبيعات", id2).Value,
+                Service.Create("إصلاحات", id2).Value,
+                Service.Create("عظام", id1).Value,
+                Service.Create("أعصاب", id1).Value,
+                Service.Create("تجديد كروت علاج", id1).Value,
+                Service.Create("إصدار بدل فاقد لكرت علاج", id1, price: 500).Value
             );
 
         }
