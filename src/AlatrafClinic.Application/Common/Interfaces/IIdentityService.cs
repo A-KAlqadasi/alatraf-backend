@@ -26,10 +26,10 @@ public interface IIdentityService
         CancellationToken ct = default);
 
     Task<Result<UserDetailsDto>> GetUserByIdAsync(string userId, CancellationToken ct = default);
-    Task<Result<IReadOnlyList<UserListItemDto>>> GetUsersAsync(CancellationToken ct = default);
+    Task<Result<IReadOnlyList<UserListItemDto>>> GetUsersAsync(string? searchBy, bool? isActive, CancellationToken ct = default);
 
-    Task<Result<Updated>> AssignRoleToUserAsync(string userId, string roleId, CancellationToken ct);
-    Task<Result<Deleted>> RemoveRoleFromUserAsync(string userId, string roleId, CancellationToken ct = default);
+    Task<Result<Updated>> AssignRolesToUserAsync(string userId, IReadOnlyCollection<string> roleIds, CancellationToken ct);
+    Task<Result<Deleted>> RemoveRolesFromUserAsync(string userId, IReadOnlyCollection<string> roleIds, CancellationToken ct = default);
     
 
     // =========================
@@ -55,6 +55,6 @@ public interface IIdentityService
     // =========================
     Task<Result<bool>> UserHasPermissionAsync(string userId, string permissionName, CancellationToken ct = default);
     Task<Result<IReadOnlyList<string>>> GetEffectiveUserPermissionsAsync(string userId, CancellationToken ct = default);
-    Task<Result<IReadOnlyList<PermissionDto>>> GetAllPermissionsAsync(CancellationToken ct = default);
+    Task<Result<IReadOnlyList<PermissionDto>>> GetAllPermissionsAsync(string? search, CancellationToken ct = default);
     
 }

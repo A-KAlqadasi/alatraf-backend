@@ -17,5 +17,5 @@ public sealed class GetUsersQueryHandler
     public Task<Result<IReadOnlyList<UserListItemDto>>> Handle(
         GetUsersQuery request,
         CancellationToken ct)
-        => _identityService.GetUsersAsync(ct);
+        => _identityService.GetUsersAsync(request.searchBy, request.isActive, ct);
 }

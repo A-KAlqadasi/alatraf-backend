@@ -221,10 +221,30 @@ public sealed class IdentityService : IIdentityService
         };
     }
 
-    public async Task<Result<IReadOnlyList<UserListItemDto>>> GetUsersAsync(CancellationToken ct)
+    public async Task<Result<IReadOnlyList<UserListItemDto>>> GetUsersAsync(string? searchBy,bool? isActive, CancellationToken ct)
     {
+        IQueryable<AppUser> query = _db.Set<AppUser>();
+
+        if (!string.IsNullOrWhiteSpace(searchBy))
+        {
+            var pattern = $"%{searchBy.Trim().ToLower()}%";
+
+            query = query.Where(p =>
+                EF.Functions.Like(p.UserName!.ToLower(), pattern)
+                ||
+                EF.Functions.Like(p.Person.FullName.ToLower(), pattern)
+                || 
+                EF.Functions.Like(p.Person.Phone, pattern)
+                );
+        }
         
-        return await _db.Users
+        if (isActive.HasValue)
+        {
+            query = query.Where(p=> p.IsActive == isActive);
+        }
+
+
+        return await query
             .Select(u => new UserListItemDto
             {
                 UserId = u.Id,
@@ -236,46 +256,98 @@ public sealed class IdentityService : IIdentityService
             .ToListAsync(ct);
     }
 
-    public async Task<Result<Updated>> AssignRoleToUserAsync(string userId, string roleId, CancellationToken ct)
+   public async Task<Result<Updated>> AssignRolesToUserAsync(
+    string userId,
+    IReadOnlyCollection<string> roleIds,
+    CancellationToken ct)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        if (string.IsNullOrWhiteSpace(userId))
+            return MyIdentityErrors.UserNotFound;
 
+        if (roleIds is null || roleIds.Count == 0)
+            return MyIdentityErrors.RoleNotFound;
+
+        var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
             return MyIdentityErrors.UserNotFound;
 
-        var role = await _roleManager.FindByIdAsync(roleId);
+        // Resolve roles by IDs
+        var roles = new List<IdentityRole>();
 
-        if (role is null)
-            return MyIdentityErrors.RoleNotFound;
-        
-        if(await _userManager.IsInRoleAsync(user, role.Name!))
+        foreach (var roleId in roleIds)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role is null)
+                return MyIdentityErrors.RoleNotFound;
+
+            roles.Add(role);
+        }
+
+        // Identity works with role names, not IDs
+        var roleNames = roles
+            .Select(r => r.Name!)
+            .Distinct()
+            .ToList();
+
+        // Filter out roles the user already has
+        var existingRoles = await _userManager.GetRolesAsync(user);
+        var rolesToAdd = roleNames
+            .Except(existingRoles)
+            .ToList();
+
+        if (rolesToAdd.Count == 0)
             return Result.Updated;
 
-        var result = await _userManager.AddToRoleAsync(user, role.Name!);
-        
+        var result = await _userManager.AddToRolesAsync(user, rolesToAdd);
+
         if (!result.Succeeded)
             return MyIdentityErrors.FaliedToAssignRoleToUser;
-
 
         return Result.Updated;
     }
 
-    public async Task<Result<Deleted>> RemoveRoleFromUserAsync(string userId, string roleId, CancellationToken ct)
-    {
-       var user = await _userManager.FindByIdAsync(userId);
 
+   public async Task<Result<Deleted>> RemoveRolesFromUserAsync(
+    string userId,
+    IReadOnlyCollection<string> roleIds,
+    CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            return MyIdentityErrors.UserNotFound;
+
+        if (roleIds is null || roleIds.Count == 0)
+            return MyIdentityErrors.RoleNotFound;
+
+        var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
             return MyIdentityErrors.UserNotFound;
 
-        var role = await _roleManager.FindByIdAsync(roleId);
+        // Resolve roles by IDs
+        var roles = new List<IdentityRole>();
 
-        if (role is null)
-            return MyIdentityErrors.RoleNotFound;
+        foreach (var roleId in roleIds)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role is null)
+                return MyIdentityErrors.RoleNotFound;
 
-        await _userManager.RemoveFromRoleAsync(user, role.Name!);
+            roles.Add(role);
+        }
+
+        // Extract role names (Identity works with names, not IDs)
+        var roleNames = roles
+            .Select(r => r.Name!)
+            .Distinct()
+            .ToList();
+
+        var result = await _userManager.RemoveFromRolesAsync(user, roleNames);
+
+        if (!result.Succeeded)
+            return MyIdentityErrors.FaliedToRemoveRoleFromUser;
 
         return Result.Deleted;
     }
+
 
     // =========================
     // Role Management
@@ -541,9 +613,19 @@ public sealed class IdentityService : IIdentityService
             .ToListAsync(ct);
     }
     
-    public async Task<Result<IReadOnlyList<PermissionDto>>> GetAllPermissionsAsync(CancellationToken ct)
+    public async Task<Result<IReadOnlyList<PermissionDto>>> GetAllPermissionsAsync(string? search, CancellationToken ct)
     {
-        return await _db.Set<ApplicationPermission>()
+        IQueryable<ApplicationPermission> query = _db.Set<ApplicationPermission>();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var pattern = $"%{search.Trim().ToLower()}%";
+
+            query = query.Where(p =>
+                EF.Functions.Like(p.Name.ToLower(), pattern));
+        }
+
+        var permissions = await query
             .Select(p => new PermissionDto
             {
                 PermissionId = p.Id,
@@ -551,5 +633,7 @@ public sealed class IdentityService : IIdentityService
                 Description = p.Description
             })
             .ToListAsync(ct);
+
+        return permissions;
     }
 }

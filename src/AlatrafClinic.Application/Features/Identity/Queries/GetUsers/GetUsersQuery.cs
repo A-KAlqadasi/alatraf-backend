@@ -5,5 +5,5 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Identity.Queries.GetUsers;
 
-public sealed record GetUsersQuery
+public sealed record GetUsersQuery(string? searchBy = null, bool? isActive = null)
     : IRequest<Result<IReadOnlyList<UserListItemDto>>>;

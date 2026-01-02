@@ -18,4 +18,6 @@ public static class MyIdentityErrors
     public static readonly Error FailToChangePassword = Error.Failure(description: "Failed to change password");
     public static readonly Error FailToChangeUsername = Error.Failure(description: "Failed to change username");
     public static readonly Error UsernameAlreadyTaken = Error.Conflict(description: "The username is already taken.");
+    public static readonly Error FaliedToAssignRoleToUserPermissions = Error.Failure(description: "Failed to assign permissions to role");
+    public static readonly Error FaliedToRemoveRoleFromUser = Error.Failure(description: "Failed to remove role from user");
 }

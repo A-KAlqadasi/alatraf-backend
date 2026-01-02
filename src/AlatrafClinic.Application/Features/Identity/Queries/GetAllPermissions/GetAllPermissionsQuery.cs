@@ -6,7 +6,7 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Identity.Queries.GetAllPermissions;
 
-public sealed record GetAllPermissionsQuery
+public sealed record GetAllPermissionsQuery(string? search = null)
     : IRequest<Result<IReadOnlyList<PermissionDto>>>;
 
 public sealed class GetAllPermissionsQueryHandler
@@ -20,5 +20,5 @@ public sealed class GetAllPermissionsQueryHandler
     public Task<Result<IReadOnlyList<PermissionDto>>> Handle(
         GetAllPermissionsQuery request,
         CancellationToken ct)
-        => _identityService.GetAllPermissionsAsync(ct);
+        => _identityService.GetAllPermissionsAsync(request.search, ct);
 }

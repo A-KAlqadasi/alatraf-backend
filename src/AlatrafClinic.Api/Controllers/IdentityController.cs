@@ -5,7 +5,7 @@ using AlatrafClinic.Api.Requests.Identity;
 using AlatrafClinic.Application.Features.Identity;
 using AlatrafClinic.Application.Features.Identity.Commands.ActivateUser;
 using AlatrafClinic.Application.Features.Identity.Commands.AssignPermissionsToRole;
-using AlatrafClinic.Application.Features.Identity.Commands.AssignUserToRole;
+using AlatrafClinic.Application.Features.Identity.Commands.AssignRolesToUser;
 using AlatrafClinic.Application.Features.Identity.Commands.ChangeUserCredentials;
 using AlatrafClinic.Application.Features.Identity.Commands.CreateRole;
 using AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
@@ -13,7 +13,7 @@ using AlatrafClinic.Application.Features.Identity.Commands.DeleteRole;
 using AlatrafClinic.Application.Features.Identity.Commands.DenyPermissionsToUser;
 using AlatrafClinic.Application.Features.Identity.Commands.GrantPermissionsToUser;
 using AlatrafClinic.Application.Features.Identity.Commands.RemovePermissionsFromRole;
-using AlatrafClinic.Application.Features.Identity.Commands.RemoveRoleFromUser;
+using AlatrafClinic.Application.Features.Identity.Commands.RemoveRolesFromUser;
 using AlatrafClinic.Application.Features.Identity.Commands.RemoveUserPermissionOverrides;
 using AlatrafClinic.Application.Features.Identity.Commands.ResetUserPassword;
 using AlatrafClinic.Application.Features.Identity.Dtos;
@@ -166,37 +166,37 @@ public sealed class IdentityController(ISender sender) : ApiController
     [HttpGet("users")]
     [EndpointSummary("Retrieves all users.")]
     [EndpointName("GetUsers")]
-    public async Task<IActionResult> GetUsers(CancellationToken ct)
+    public async Task<IActionResult> GetUsers([FromQuery] GetUserFilterRequest filter, CancellationToken ct)
     {
-        var query = new GetUsersQuery();
+        var query = new GetUsersQuery(filter.searchBy, filter.IsActive);
         var result = await sender.Send(query, ct);
 
         return result.Match(Ok, Problem);
     }
 
-    [HttpPost("users/{userId}/roles/{roleId}")]
+    [HttpPost("users/{userId}/roles")]
     [EndpointSummary("Assigns a role to a user.")]
     [EndpointName("AssignRoleToUser")]
     public async Task<IActionResult> AssignRole(
         string userId,
-        string roleId,
+        AssignRolesRequest request,
         CancellationToken ct)
     {
-        var command = new AssignRoleToUserCommand(userId, roleId);
+        var command = new AssignRolesToUserCommand(userId, request.RoleIds);
         var result = await sender.Send(command, ct);
 
         return result.Match(_ => NoContent(), Problem);
     }
 
-    [HttpDelete("users/{userId}/roles/{roleId}")]
+    [HttpDelete("users/{userId}/roles")]
     [EndpointSummary("Removes a role from a user.")]
     [EndpointName("RemoveRoleFromUser")]
     public async Task<IActionResult> RemoveRole(
         string userId,
-        string roleId,
+        RemoveRolesRequest request,
         CancellationToken ct)
     {
-        var command = new RemoveRoleFromUserCommand(userId, roleId);
+        var command = new RemoveRolesFromUserCommand(userId, request.RoleIds);
         var result = await sender.Send(command, ct);
 
         return result.Match(_ => NoContent(), Problem);
@@ -337,9 +337,9 @@ public sealed class IdentityController(ISender sender) : ApiController
     [HttpGet("permissions")]
     [EndpointSummary("Retrieves all permissions.")]
     [EndpointName("GetAllPermissions")]
-    public async Task<IActionResult> GetAllPermissions(CancellationToken ct)
+    public async Task<IActionResult> GetAllPermissions([FromQuery] string? search, CancellationToken ct)
     {
-        var query = new GetAllPermissionsQuery();
+        var query = new GetAllPermissionsQuery(search);
         var result = await sender.Send(query, ct);
 
         return result.Match(Ok, Problem);

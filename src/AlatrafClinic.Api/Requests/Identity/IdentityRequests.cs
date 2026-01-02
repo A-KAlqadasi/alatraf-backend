@@ -61,3 +61,22 @@ public sealed class PermissionIdsRequest
     public IReadOnlyCollection<int> PermissionIds { get; set; } = [];
 }
 
+public sealed class AssignRolesRequest
+{
+    [Required]
+    [MinLength(1)]
+    public IReadOnlyCollection<string> RoleIds { get; set; } = [];
+}
+
+public sealed class RemoveRolesRequest
+{
+    [Required]
+    [MinLength(1)]
+    public IReadOnlyCollection<string> RoleIds { get; set; } = [];
+}
+
+public sealed class GetUserFilterRequest
+{
+    public string? searchBy { get; set; } 
+    public bool? IsActive { get; set; }
+}

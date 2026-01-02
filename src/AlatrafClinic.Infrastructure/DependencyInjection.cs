@@ -74,7 +74,8 @@ public static class DependencyInjection
             options.SignIn.RequireConfirmedAccount = false;
         })
         .AddRoles<IdentityRole>()
-        .AddEntityFrameworkStores<AlatrafClinicDbContext>();
+        .AddEntityFrameworkStores<AlatrafClinicDbContext>()
+        .AddDefaultTokenProviders();
 
         // services.AddScoped<IAuthorizationHandler, LaborAssignedHandler>();
 
