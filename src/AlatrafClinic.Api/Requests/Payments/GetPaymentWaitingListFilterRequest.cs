@@ -40,8 +40,9 @@ public sealed class PayPatientPaymentRequest
 
 public sealed class PayDisabledPaymentRequest
 {
-    [Range(1, int.MaxValue, ErrorMessage = "DisabledCardId must be greater than 0.")]
-    public int DisabledCardId { get; init; }
+    [Required]
+    [StringLength(50, MinimumLength = 1)]
+    public string CardNumber { get; init; } = default!;
 
     [StringLength(500)]
     public string? Notes { get; init; }
