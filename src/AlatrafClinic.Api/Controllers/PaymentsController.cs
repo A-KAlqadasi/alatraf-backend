@@ -163,7 +163,7 @@ public sealed class PaymentsController(ISender sender) : ApiController
     {
         var result = await sender.Send(new PayDisabledPaymentCommand(
             paymentId,
-            request.DisabledCardId,
+            request.CardNumber,
             request.Notes
         ), ct);
 

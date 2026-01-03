@@ -37,4 +37,8 @@ public static class DisabledCardErrors
         "DisabledCard.DisabilityTypeIsRequired",
         "Disability type is required."
     );
+    public static readonly Error DisabledCardDesnotBelongToPatient = Error.Validation(
+        "DisabledCard.DisabledCardDesnotBelongToPatient",
+        "Disabled card does not belong to the patient."
+    );
 }
