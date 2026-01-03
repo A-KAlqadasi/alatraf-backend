@@ -5,6 +5,8 @@ using AlatrafClinic.Domain.Payments.DisabledPayments;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
+
 
 namespace AlatrafClinic.Application.Features.Payments.Commands.PayPayments;
 
@@ -33,7 +35,7 @@ public sealed class PayDisabledPaymentCommandHandler
 
         var payment = load.Value;
 
-        var disabledCard = await _context.DisabledCards.FindAsync(new object[] { command.CardNumber.Trim() }, ct);
+        var disabledCard = await _context.DisabledCards.FirstOrDefaultAsync(dc => dc.CardNumber == command.CardNumber.Trim(), ct);
 
         if (disabledCard is null) return DisabledCardErrors.DisabledCardNotFound;
         
