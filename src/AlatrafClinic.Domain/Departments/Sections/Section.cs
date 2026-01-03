@@ -46,4 +46,30 @@ public class Section :AuditableEntity<int>
         Name = newName;
         return Result.Updated;
     }
+    public Result<Room> AddRoom(string roomName)
+    {
+        if (_rooms.Any(r => r.Name == roomName))
+            return SectionErrors.DuplicateRoomName;
+
+        var roomOrError = Room.Create(roomName, Id);
+        if (roomOrError.IsError)
+            return roomOrError.TopError;
+
+        var room = roomOrError.Value;
+
+        _rooms.Add(room);
+        return room;
+    }
+
+    public Result<Success> AddRooms(List<string> roomNames)
+    {   
+        foreach(var room in roomNames)
+        {
+            var result = AddRoom(room);
+            if (result.IsError)
+                return result.TopError;
+        }
+        
+        return Result.Success;
+    }
 }

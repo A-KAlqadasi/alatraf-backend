@@ -5,6 +5,7 @@ using AlatrafClinic.Application.Features.Doctors.Dtos;
 using AlatrafClinic.Application.Features.Doctors.Queries.GetDoctorsBySectionRoom;
 using AlatrafClinic.Application.Features.Rooms.Dtos;
 using AlatrafClinic.Application.Features.Rooms.Queries.GetRoomsBySectionId;
+using AlatrafClinic.Application.Features.Sections.Commands.AssignNewRoomsToSection;
 using AlatrafClinic.Application.Features.Sections.Commands.CreateSection;
 using AlatrafClinic.Application.Features.Sections.Commands.DeleteSection;
 using AlatrafClinic.Application.Features.Sections.Commands.UpdateSection;
@@ -166,6 +167,24 @@ public sealed class SectionsController(ISender sender) : ApiController
     public async Task<IActionResult> Delete(int sectionId, CancellationToken ct)
     {
         var result = await sender.Send(new DeleteSectionCommand(sectionId), ct);
+        return result.Match(
+            _ => NoContent(),
+            Problem
+        );
+    }
+    
+    [HttpPost("{sectionId:int}/rooms")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Assigns new rooms to a section.")]
+    [EndpointDescription("Assigns new rooms to a section by its Id.")]
+    [EndpointName("AssignNewRoomsToSection")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> AssignNewRooms(int sectionId, [FromBody] AssignNewRoomsToSectionRequest request, CancellationToken ct)
+    {
+        var result = await sender.Send(new AssignNewRoomsToSectionCommand(sectionId, request.RoomNames), ct);
         return result.Match(
             _ => NoContent(),
             Problem
