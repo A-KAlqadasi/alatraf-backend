@@ -5,4 +5,4 @@ using MediatR;
 
 namespace AlatrafClinic.Application.Features.Appointments.Commands.ScheduleAppointment;
 
-public sealed record class ScheduleAppointmentCommand(int TicketId, DateOnly? RequestedDate = null, string? Notes = null) : IRequest<Result<AppointmentDto>>;
+public sealed record class ScheduleAppointmentCommand(int TicketId, string? Notes = null) : IRequest<Result<AppointmentDto>>;
