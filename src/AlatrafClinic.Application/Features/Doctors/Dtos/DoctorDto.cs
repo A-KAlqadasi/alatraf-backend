@@ -11,4 +11,5 @@ public class DoctorDto
     public int? SectionId { get; set; }
     public int? RoomId { get; set; }
     public bool IsActive { get; set; }
+    public bool HasAssignments { get; set; }
 }

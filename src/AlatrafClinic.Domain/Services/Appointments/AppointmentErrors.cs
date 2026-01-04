@@ -6,10 +6,6 @@ namespace AlatrafClinic.Domain.Services.Appointments;
 public static class AppointmentErrors
 {
     public static readonly Error AttendDateMustBeInFuture = Error.Validation("Appointment.AttendDateMustBeInFuture", "Appointment date must be in the future.");
-    public static Error InvalidAppointmentDay(List<DayOfWeek> allowedDays) => Error.Validation("Appointment.InvalidAppointmentDay", $"Appointments can only be scheduled on {string.Join(", ", allowedDays)}.");
-    public static Error AppointmentOnHoliday(DateTime date) => Error.Validation("Appointment.AppointmentOnHoliday", $"Appointments cannot be scheduled on holidays. The date {date:yyyy-MM-dd} is a holiday.");
-    
-    public static readonly Error AllowedDaysAreRequired = Error.Validation("Appointment.AllowedDaysAreRequired", "Allowed days for scheduling appointments must be provided.");
     public static readonly Error TicketIdRequired = Error.Validation("Appointment.TicketIdRequired", "A valid Ticket Id is required to schedule an appointment.");
     public static Error PatientTypeInvalid =>
        Error.Validation("Appointment.PatientTypeInvalid", "Invalid patient type.");
@@ -25,7 +21,5 @@ public static class AppointmentErrors
     public static Error Readonly => Error.Conflict(
     code: "Appointment.Readonly",
     description: "Appointment is read-only.");
-
-    public static Error HolidaysAreRequired = Error.Validation("Appointment.HolidaysAreRequired", "Holiday calendar must be provided.");
     public static readonly Error AppointmentNotFound = Error.NotFound("Appointment.NotFound", "Appointment not found.");
 }

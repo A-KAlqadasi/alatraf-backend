@@ -18,7 +18,4 @@ public static class DiagnosisProgramErrors
     public static readonly Error NotesTooLong = Error.Validation(
         "DiagnosisProgram.NotesTooLong",
         "The notes for the diagnosis program exceed the maximum allowed length.");
-    public static readonly Error TherapyCardIsRequired = Error.Validation(
-        "DiagnosisProgram.TherapyCardIsRequired",
-        "The therapy card is required.");
 }

@@ -37,8 +37,6 @@ public sealed class CreateTherapyCardCommandHandler
 
     public async Task<Result<TherapyCardDiagnosisDto>> Handle(CreateTherapyCardCommand command, CancellationToken ct)
     {
-        if (command.Programs is null || command.Programs.Count == 0)
-            return DiagnosisErrors.MedicalProgramsAreRequired;
 
         var diagnosisResult = await _diagnosisService.CreateAsync(
             command.TicketId,

@@ -22,5 +22,7 @@ public class RenewTherapyCardCommandValidator : AbstractValidator<RenewTherapyCa
 
         RuleForEach(x => x.Programs)
             .SetValidator(new RenewTherapyCardMedicalProgramCommandValidator());
+        RuleFor(x => x.Programs)
+            .NotEmpty().WithMessage("At least one medical program must be provided.");
     }
 }

@@ -1,3 +1,5 @@
+using System.Data;
+
 using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
@@ -28,5 +30,7 @@ public class UpdateTherapyCardCommandValidator : AbstractValidator<UpdateTherapy
             .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Program Start Date must not be in the past.");
         RuleForEach(x => x.Programs)
             .SetValidator(new UpdateTherapyCardMedicalProgramCommandValidator());
+        RuleFor(x => x.Programs)
+            .NotEmpty().WithMessage("At least one medical program must be provided.");
     }
 }

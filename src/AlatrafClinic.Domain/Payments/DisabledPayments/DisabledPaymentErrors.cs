@@ -14,9 +14,4 @@ public static class DisabledPaymentsErrors
             "DisabledPayment.PaymentIdIsRequired",
             "Payment Id is required."
         );
-    public static readonly Error DisabledPaymentNotFound =
-        Error.NotFound(
-            "DisabledPayment.DisabledPaymentNotFound",
-            "Disabled payment not found."
-        );
 }

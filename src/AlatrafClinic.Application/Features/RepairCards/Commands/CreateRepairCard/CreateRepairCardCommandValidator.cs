@@ -19,5 +19,7 @@ public class CreateRepairCardCommandValidator : AbstractValidator<CreateRepairCa
             .GreaterThan(0).WithMessage("InjuryTypes must contain valid type IDs.");
         RuleForEach(x => x.IndustrialParts)
             .SetValidator(new CreateRepairCardIndustrialPartCommandValidator());
+        RuleFor(x=> x.IndustrialParts)
+            .NotEmpty().WithMessage("At least one industrial part must be provided.");
     }
 }

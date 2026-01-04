@@ -29,5 +29,7 @@ public class CreateTherapyCardCommandValidator : AbstractValidator<CreateTherapy
             .GreaterThan(0).WithMessage("Number of sessions must be greater than zero");
         RuleForEach(x => x.Programs)
             .SetValidator(new CreateTherapyCardMedicalProgramCommandValidator());
+        RuleFor(x => x.Programs)
+            .NotEmpty().WithMessage("At least one medical program must be provided.");
     }
 }

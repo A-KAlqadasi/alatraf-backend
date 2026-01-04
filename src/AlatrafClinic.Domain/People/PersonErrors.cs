@@ -18,8 +18,6 @@ public static class PersonErrors
     
     public static readonly Error InvalidPhoneNumber =
         Error.Conflict("Person.InvalidPhoneNumber", "Phone number must be 9 digits and may start with '77', '78', '73', or '71'.");
-    public static readonly Error BirthdateRequired =
-        Error.Validation("Person.BirthdateRequired", "Birthdate is required.");
     public static readonly Error InvalidBirthdate =
         Error.Validation("Person.InvalidBirthdate", "Birthdate cannot be in the future.");
     public static readonly Error AddressRequired =

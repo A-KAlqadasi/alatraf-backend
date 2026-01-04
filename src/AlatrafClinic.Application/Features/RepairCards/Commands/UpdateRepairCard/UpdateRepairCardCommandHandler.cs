@@ -77,11 +77,7 @@ public class UpdateRepairCardCommandHandler : IRequestHandler<UpdateRepairCardCo
         
         var updatedDiagnosis = updateDiagnosisResult.Value;
 
-        if (command.IndustrialParts is null || command.IndustrialParts.Count == 0)
-        {
-            return DiagnosisErrors.IndustrialPartsAreRequired;
-        }
-
+       
         var incoming = new List<(int industrialPartUnitId, int quantity, decimal price)>();
 
         foreach (var part in command.IndustrialParts)
