@@ -3,6 +3,7 @@ using AlatrafClinic.Api.Requests.Tickets;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Appointments.Commands.ScheduleAppointment;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
+using AlatrafClinic.Application.Features.TherapyCards.Commands.DamageReplacementTherapy;
 using AlatrafClinic.Application.Features.Tickets.Commands.CreateTicket;
 using AlatrafClinic.Application.Features.Tickets.Commands.DeleteTicket;
 using AlatrafClinic.Application.Features.Tickets.Commands.UpdateTicket;
@@ -156,7 +157,7 @@ public sealed class TicketsController(ISender sender) : ApiController
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> Create(int TicketId, [FromBody] ScheduleAppointmentRequest request, CancellationToken ct)
     {
-        var result = await sender.Send(new ScheduleAppointmentCommand(TicketId, request.RequestedDate, request.Notes), ct);
+        var result = await sender.Send(new ScheduleAppointmentCommand(TicketId, request.Notes), ct);
 
         return result.Match(
             response => CreatedAtRoute(
@@ -164,6 +165,28 @@ public sealed class TicketsController(ISender sender) : ApiController
                 routeValues: new { version = "1.0", appointmentId = response.Id },
                 value: response),
                 Problem
+        );
+    }
+
+    [HttpPost("{ticketId:int}/damage-replacements/{therapyCardId:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Replaces a damaged therapy card.")]
+    [EndpointDescription("Performs a damage replacement operation for an existing therapy card associated with a ticket.")]
+    [EndpointName("DamageReplacementTherapy")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> DamageReplacementTherapy(
+        int ticketId,
+        int therapyCardId,
+        CancellationToken ct = default)
+    {
+        var result = await sender.Send(new DamageReplacementTherapyCommand(ticketId, therapyCardId), ct);
+
+        return result.Match(
+            _ => Ok(),
+            Problem
         );
     }
 

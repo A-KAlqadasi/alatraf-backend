@@ -11,9 +11,5 @@ public class ScheduleAppointmentCommandValidator : AbstractValidator<ScheduleApp
     {
         RuleFor(x => x.TicketId)
             .GreaterThan(0).WithMessage("Ticket Id is invalid");
-        RuleFor(x => x.RequestedDate)
-            .Must(date => date == null || date.Value >= AlatrafClinicConstants.TodayDate)
-            .WithMessage("Requested Date cannot be in the past");
-        
     }
 }
