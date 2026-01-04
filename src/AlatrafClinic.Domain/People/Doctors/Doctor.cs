@@ -50,7 +50,7 @@ public class Doctor : AuditableEntity<int>
         if (newDepartmentId <= 0)
             return DoctorErrors.DepartmentIdRequired;
 
-        if (_assignments.Any(a => a.Section.DepartmentId != DepartmentId))
+        if (_assignments.Any() && this.DepartmentId != newDepartmentId)
             return DoctorErrors.CannotChangeDepartmentWithAssignments;
 
         DepartmentId = newDepartmentId;
