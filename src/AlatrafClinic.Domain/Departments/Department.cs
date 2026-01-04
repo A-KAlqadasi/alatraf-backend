@@ -10,7 +10,6 @@ public class Department : AuditableEntity<int>
 {
     private readonly List<Service> _services = new();
     public ICollection<Service> Services => _services.AsReadOnly();
-
     public string Name { get; private set; } = default!;
     private readonly List<Section> _sections = new();
     public IReadOnlyCollection<Section> Sections => _sections.AsReadOnly();
@@ -20,17 +19,17 @@ public class Department : AuditableEntity<int>
 
     private Department() { }
 
-    private Department(string name)
+    private Department(int id, string name):base(id)
     {
         Name = name;
     }
 
-    public static Result<Department> Create(string name)
+    public static Result<Department> Create(int id, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return DepartmentErrors.NameRequired;
 
-        return new Department(name);
+        return new Department(id, name);
     }
 
     public Result<Updated> Update(string newName)
@@ -58,7 +57,7 @@ public class Department : AuditableEntity<int>
         _sections.Add(section);
         return section;
     }
-   public Result<Service> AddService(string name)
+   public Result<Service> AddService(int id, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return DepartmentErrors.ServiceRequired;
@@ -66,7 +65,7 @@ public class Department : AuditableEntity<int>
         if (_services.Any(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             return DepartmentErrors.DuplicateServiceName;
 
-        var result = Service.Create(name, Id);
+        var result = Service.Create(id, name, Id);
         if (result.IsError)
             return result.Errors;
 

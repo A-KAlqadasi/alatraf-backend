@@ -12,7 +12,6 @@ using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Infrastructure.Identity;
 
-using MediatR;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -64,12 +63,11 @@ public sealed class AlatrafClinicDbContextInitialiser
         int? id2  = null;
         if(!await _context.Departments.AnyAsync())
         {
-            var dep1 = Department.Create("العلاج الطبيعي").Value;
-            var dep2 = Department.Create("الادارة الفنية").Value;
+            var dep1 = Department.Create(1, "العلاج الطبيعي").Value;
+            var dep2 = Department.Create(2, "الادارة الفنية").Value;
 
             _context.Departments.Add(dep1);
             _context.Departments.Add(dep2);
-
 
             await _context.SaveChangesAsync();
             id1 = dep1.Id;
@@ -81,15 +79,15 @@ public sealed class AlatrafClinicDbContextInitialiser
         if (!await _context.Services.AnyAsync())
         {
             _context.Services.AddRange(
-                Service.Create("استشارة", null).Value,
-                Service.Create("علاج طبيعي", id1).Value,
-                Service.Create("اطراف صناعية", id2).Value,
-                Service.Create("مبيعات", id2).Value,
-                Service.Create("إصلاحات", id2).Value,
-                Service.Create("عظام", id1).Value,
-                Service.Create("أعصاب", id1).Value,
-                Service.Create("تجديد كروت علاج", id1).Value,
-                Service.Create("إصدار بدل فاقد لكرت علاج", id1, price: 500).Value
+                Service.Create(1, "استشارة", null).Value,
+                Service.Create(2, "علاج طبيعي", id1).Value,
+                Service.Create(3, "اطراف صناعية", id2).Value,
+                Service.Create(4, "مبيعات", id2).Value,
+                Service.Create(5, "إصلاحات", id2).Value,
+                Service.Create(6, "عظام", id1).Value,
+                Service.Create(7, "أعصاب", id1).Value,
+                Service.Create(8, "تجديد كروت علاج", id1).Value,
+                Service.Create(9, "إصدار بدل فاقد لكرت علاج", id1, price: 500).Value
             );
 
         }

@@ -35,6 +35,7 @@ if (app.Environment.IsDevelopment())
         options.EnableFilter();
     });
     await app.InitialiseDatabaseAsync();
+    
 
     app.MapScalarApiReference();
 }
