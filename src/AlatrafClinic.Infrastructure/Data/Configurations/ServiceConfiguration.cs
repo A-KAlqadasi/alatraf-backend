@@ -14,6 +14,7 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
         builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Id)
+            .ValueGeneratedNever()
             .HasColumnName("ServiceId");
 
         builder.Property(s => s.Name)

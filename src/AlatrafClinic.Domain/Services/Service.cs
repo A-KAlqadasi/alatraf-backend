@@ -17,15 +17,19 @@ public class Service : AuditableEntity<int>
     {
     }
 
-    private Service(string name, int? departmentId, decimal? price = null)
+    private Service(int id, string name, int? departmentId, decimal? price = null) : base(id)
     {
         Name = name;
         DepartmentId = departmentId;
         Price = price;
     }
 
-    public static Result<Service> Create(string name, int? departmentId, decimal? price = null)
+    public static Result<Service> Create(int id, string name, int? departmentId, decimal? price = null)
     {
+        if (id <= 0)
+        {
+            return ServiceErrors.ServiceIdInvalid;
+        }
         if (string.IsNullOrWhiteSpace(name))
         {
             return ServiceErrors.NameIsRequired;
@@ -36,7 +40,7 @@ public class Service : AuditableEntity<int>
             return ServiceErrors.DepartmentIdIsRequired;
         }
         
-        return new Service(name, departmentId);
+        return new Service(id, name, departmentId);
     }
 
      public  Result<Updated> Update(string? name, int? departmentId, decimal? price = null)

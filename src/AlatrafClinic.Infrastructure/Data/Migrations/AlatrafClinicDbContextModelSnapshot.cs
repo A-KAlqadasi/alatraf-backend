@@ -25,11 +25,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.Department", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("DepartmentId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("datetimeoffset");
@@ -2129,11 +2126,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Service", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ServiceId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(50)
