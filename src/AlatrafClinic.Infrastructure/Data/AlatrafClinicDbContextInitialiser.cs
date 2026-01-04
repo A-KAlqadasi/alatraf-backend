@@ -36,7 +36,7 @@ public sealed class AlatrafClinicDbContextInitialiser
     public async Task InitialiseAsync(CancellationToken ct = default)
     {
         try
-        {
+        {   
             await _context.Database.MigrateAsync(ct);
         }
         catch (Exception ex)

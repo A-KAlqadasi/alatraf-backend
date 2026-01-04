@@ -22,6 +22,7 @@ public static class DoctorMapper
             SectionId = entity.Assignments.OrderByDescending(a => a.Id).FirstOrDefault()?.SectionId,
             RoomId = entity.Assignments.OrderByDescending(a => a.Id).FirstOrDefault()?.RoomId,
             IsActive = entity.IsActive,
+            HasAssignments = entity.Assignments.Any()
         };
     }
 
