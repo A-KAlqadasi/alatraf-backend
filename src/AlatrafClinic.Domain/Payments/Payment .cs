@@ -75,6 +75,11 @@ public sealed class Payment : AuditableEntity<int>
         // Overpayment check
         if (((paid ?? 0m) + (discount ?? 0m)) > TotalAmount)
             return PaymentErrors.OverPayment;
+        
+        if (((paid ?? 0m) + (discount ?? 0m)) < TotalAmount)
+            return PaymentErrors.UnderPayment;
+        
+        
 
         // Assign
         PaidAmount = paid;

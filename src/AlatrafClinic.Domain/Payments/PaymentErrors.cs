@@ -24,4 +24,6 @@ public static class PaymentErrors
     public static readonly Error PaymentNotFound = Error.NotFound("Payment.PaymentNotFound", "Payment not found");
     public static readonly Error InvalidAccountKind = Error.Conflict("Payment.InvalidAccountKind", "Invalid account kind");
     public static readonly Error InvalidTicketId = Error.Validation("Payment.InvalidTicketId", "Ticket Id is invalid");
+    public static readonly Error UnderPayment =
+        Error.Validation("Payment.UnderPayment", "Paid ammount and discount is under required total ammount");
 }
