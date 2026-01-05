@@ -20,7 +20,7 @@ public static class AppointmentMapper
             PatientType = appointment.PatientType.ToArabicPatientType(),
             AttendDate = appointment.AttendDate,
             DayOfWeek = UtilityService.GetDayNameArabic(appointment.AttendDate),
-            Status = appointment.Status.ToArabicAppointmentStatus(),
+            Status = appointment.Status,
             Notes = appointment.Notes,
             CreatedAt = DateOnly.FromDateTime(appointment.CreatedAtUtc.DateTime),
             IsAppointmentTomorrow = appointment.IsAppointmentTomorrow()
