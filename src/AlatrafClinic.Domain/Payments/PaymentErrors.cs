@@ -13,7 +13,7 @@ public static class PaymentErrors
         Error.Validation("Payment.InvalidDiscount", "Discount cannot be negative.");
 
     public static readonly Error OverPayment =
-        Error.Validation("Payment.OverPayment", "Paid ammount and discount is over required total ammount");
+        Error.Conflict("Payment.OverPayment", "Paid ammount and discount is over required total ammount");
     public static readonly Error InvalidDiagnosisId =
         Error.Validation("Payment.InvalidDiagnosisId", "Diagnosis Id is invalid.");
     public static readonly Error InvalidPaymentReference = Error.Validation("Payment.InvalidPaymentReference", "Payement Reference is invalid");
@@ -25,5 +25,5 @@ public static class PaymentErrors
     public static readonly Error InvalidAccountKind = Error.Conflict("Payment.InvalidAccountKind", "Invalid account kind");
     public static readonly Error InvalidTicketId = Error.Validation("Payment.InvalidTicketId", "Ticket Id is invalid");
     public static readonly Error UnderPayment =
-        Error.Validation("Payment.UnderPayment", "Paid ammount and discount is under required total ammount");
+        Error.Conflict("Payment.UnderPayment", "Paid ammount and discount is under required total ammount");
 }
