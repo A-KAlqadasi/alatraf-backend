@@ -1,7 +1,10 @@
+using System.Data;
 using System.Text;
 
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Reports.Interfaces;
+using AlatrafClinic.Application.Reports.Services;
 using AlatrafClinic.Infrastructure.Data;
 using AlatrafClinic.Infrastructure.Data.Interceptors;
 using AlatrafClinic.Infrastructure.Data.Repositories;
@@ -9,6 +12,7 @@ using AlatrafClinic.Infrastructure.Identity;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -95,6 +99,15 @@ public static class DependencyInjection
 
         services.AddScoped<ITokenProvider, TokenProvider>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Dapper Services
+        services.AddScoped<IDbConnection>(sp =>
+        new SqlConnection(connectionString));
+
+        services.AddScoped<IReportMetadataRepository, ReportMetadataRepository>();
+        services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<IReportSqlBuilder, ReportSqlBuilder>();
+        services.AddScoped<IReportQueryExecutor, DapperReportQueryExecutor>();
 
         return services;
     }

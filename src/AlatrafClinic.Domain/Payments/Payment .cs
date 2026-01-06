@@ -66,19 +66,36 @@ public sealed class Payment : AuditableEntity<int>
         return Result.Updated;
     }
 
-    public Result<Updated> Pay(decimal? paid, decimal? discount)
+    public Result<Updated> Pay(decimal? paid, decimal? discountPercentage)
     {
-        // paid and discount must be non-negative if provided
-        if (paid != null && paid < 0m) return PaymentErrors.InvalidPaid;
-        if (discount != null && discount < 0m) return PaymentErrors.InvalidDiscount;
+        // paid must be non-negative if provided
+        if (paid != null && paid < 0m)
+            return PaymentErrors.InvalidPaid;
 
-        // Overpayment check
-        if (((paid ?? 0m) + (discount ?? 0m)) > TotalAmount)
+        // discount must be between 0 and 100 if provided
+        if (discountPercentage != null && (discountPercentage < 0m || discountPercentage > 100m))
+            return PaymentErrors.InvalidDiscount;
+
+        decimal paidAmount = paid ?? 0m;
+        decimal discountAmount = 0m;
+
+        if (discountPercentage != null)
+        {
+            discountAmount = TotalAmount * (discountPercentage.Value / 100m);
+        }
+
+        decimal totalCovered = paidAmount + discountAmount;
+
+        if (totalCovered > TotalAmount)
             return PaymentErrors.OverPayment;
 
+        if (totalCovered < TotalAmount)
+            return PaymentErrors.UnderPayment;
+
         // Assign
-        PaidAmount = paid;
-        Discount = discount;
+        PaidAmount = paidAmount;
+        Discount = discountPercentage; // store percentage (recommended)
+        //DiscountAmount = discountAmount; // optional but highly recommended
 
         IsCompleted = true;
         PaymentDate = DateTime.Now;

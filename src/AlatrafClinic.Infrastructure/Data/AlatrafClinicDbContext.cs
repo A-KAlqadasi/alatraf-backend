@@ -27,6 +27,7 @@ using AlatrafClinic.Domain.People.Doctors;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Reports;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.SalesItems;
 using AlatrafClinic.Domain.Services;
@@ -118,6 +119,10 @@ public class AlatrafClinicDbContext
 
     public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
+
+    public DbSet<ReportDomain> ReportDomains => Set<ReportDomain>();
+    public DbSet<ReportField> ReportFields => Set<ReportField>();
+    public DbSet<ReportJoin> ReportJoins => Set<ReportJoin>();
 
 
     public AlatrafClinicDbContext(DbContextOptions<AlatrafClinicDbContext> options)

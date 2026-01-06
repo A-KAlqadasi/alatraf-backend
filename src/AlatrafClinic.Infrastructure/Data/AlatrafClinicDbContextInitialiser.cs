@@ -5,6 +5,7 @@ using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.Reports;
 using AlatrafClinic.Domain.Services;
 using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards.Enums;
@@ -304,6 +305,86 @@ public sealed class AlatrafClinicDbContextInitialiser
             );
         }
 
+        if (! await _context.ReportDomains.AnyAsync())
+        {
+            var reportDomain = new ReportDomain
+            {
+                Id = 1,
+                Name = "تقرير المرضى",
+                RootTable = "Patients"
+            };
+            _context.ReportDomains.Add(reportDomain);
+            await _context.SaveChangesAsync();
+
+            var reportFields = new List<ReportField>
+            {
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_id",
+                    DisplayName = "معرف المريض",
+                    TableName = "Patients",
+                    ColumnName = "PatientId",
+                    DataType = "int",
+                    IsFilterable = true
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_type",
+                    DisplayName = "نوع المريض",
+                    TableName = "Patients",
+                    ColumnName = "PatientType",
+                    DataType = "nvarchar(50)",
+                    IsFilterable = true
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "created_at_utc",
+                    DisplayName = "تاريخ الإنشاء",
+                    TableName = "Patients",
+                    ColumnName = "CreatedAtUtc",
+                    DataType = "datetimeoffset(7)",
+                    IsFilterable = true
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_name",
+                    DisplayName = "اسم المريض",
+                    TableName = "People",
+                    ColumnName = "FullName",
+                    DataType = "nvarchar(200)",
+                    IsFilterable = false
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_phone",
+                    DisplayName = "هاتف المريض",
+                    TableName = "People",
+                    ColumnName = "Phone",
+                    DataType = "nvarchar(15)",
+                    IsFilterable = false
+                }
+            };
+
+            _context.ReportFields.AddRange(reportFields);
+
+            var reportJoins = new List<ReportJoin>
+            {
+                new ReportJoin
+                {
+                    DomainId = reportDomain.Id,
+                    FromTable = "Patients",
+                    ToTable = "People",
+                    JoinType = "INNER",
+                    JoinCondition = "Patients.PersonId = People.Id"
+                }
+            };
+            _context.ReportJoins.AddRange(reportJoins);
+        }
                 
         await _context.SaveChangesAsync();
     }

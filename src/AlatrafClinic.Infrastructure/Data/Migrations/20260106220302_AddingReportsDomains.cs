@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class MakingServiceIdNotAutoIncrement : Migration
+    public partial class AddingReportsDomains : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -232,6 +232,19 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_RefreshTokens", x => x.Id)
                         .Annotation("SqlServer:Clustered", false);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReportDomains",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    RootTable = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReportDomains", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -507,6 +520,54 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         name: "FK_RolePermissions_Permissions_PermissionId",
                         column: x => x.PermissionId,
                         principalTable: "Permissions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReportFields",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DomainId = table.Column<int>(type: "int", nullable: false),
+                    FieldKey = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TableName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ColumnName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DataType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsFilterable = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReportFields", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ReportFields_ReportDomains_DomainId",
+                        column: x => x.DomainId,
+                        principalTable: "ReportDomains",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReportJoins",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DomainId = table.Column<int>(type: "int", nullable: false),
+                    FromTable = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ToTable = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    JoinType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    JoinCondition = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReportJoins", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ReportJoins_ReportDomains_DomainId",
+                        column: x => x.DomainId,
+                        principalTable: "ReportDomains",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -2205,6 +2266,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ReportFields_DomainId",
+                table: "ReportFields",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReportJoins_DomainId",
+                table: "ReportJoins",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RolePermissions_PermissionId",
                 table: "RolePermissions",
                 column: "PermissionId");
@@ -2395,6 +2466,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
+                name: "ReportFields");
+
+            migrationBuilder.DropTable(
+                name: "ReportJoins");
+
+            migrationBuilder.DropTable(
                 name: "RolePermissions");
 
             migrationBuilder.DropTable(
@@ -2435,6 +2512,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "PurchaseInvoices");
+
+            migrationBuilder.DropTable(
+                name: "ReportDomains");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
