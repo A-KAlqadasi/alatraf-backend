@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 namespace AlatrafClinic.Application.Features.Identity.Queries.GenerateTokens;
 
 public class GenerateTokenQueryHandler(ILogger<GenerateTokenQueryHandler> logger, IIdentityService identityService, ITokenProvider tokenProvider)
-    : IRequestHandler<GenerateTokenQuery, Result<TokenResponse>>
+    : IRequestHandler<LoginRequest, Result<TokenResponse>>
 {
     private readonly ILogger<GenerateTokenQueryHandler> _logger = logger;
     private readonly IIdentityService _identityService = identityService;
     private readonly ITokenProvider _tokenProvider = tokenProvider;
 
-    public async Task<Result<TokenResponse>> Handle(GenerateTokenQuery query, CancellationToken ct)
+    public async Task<Result<TokenResponse>> Handle(LoginRequest query, CancellationToken ct)
     {
         var userResponse = await _identityService.AuthenticateAsync(query.UserName, query.Password);
 
