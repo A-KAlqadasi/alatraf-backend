@@ -13,11 +13,12 @@ using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Infrastructure.Identity;
 
-
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 
 namespace AlatrafClinic.Infrastructure.Data;
 
@@ -25,13 +26,20 @@ public sealed class AlatrafClinicDbContextInitialiser
 {
     private readonly ILogger<AlatrafClinicDbContextInitialiser> _logger;
     private readonly AlatrafClinicDbContext _context;
-    
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<AppUser> _userManager;
+
     public AlatrafClinicDbContextInitialiser(
         ILogger<AlatrafClinicDbContextInitialiser> logger,
-        AlatrafClinicDbContext context)
+        AlatrafClinicDbContext context,
+        RoleManager<IdentityRole> roleManager,
+        UserManager<AppUser> userManager
+        )
     {
         _logger = logger;
         _context = context;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
     public async Task InitialiseAsync(CancellationToken ct = default)
@@ -60,6 +68,60 @@ public sealed class AlatrafClinicDbContextInitialiser
     }
     private async Task TrySeedAsync()
     {
+        // Default roles
+        var adminRole = new IdentityRole("Admin");
+        if (!await _roleManager.RoleExistsAsync(adminRole.Name!))
+        {
+            var result = await _roleManager.CreateAsync(adminRole);
+             // 3. ASSIGN PERMISSIONS TO ROLE - RIGHT AFTER CREATING THE ROLE
+            var allPermissions = await _context.Permissions.ToListAsync();
+            foreach (var permission in allPermissions)
+            {
+                _context.RolePermissions.Add(new RolePermission
+                {
+                    RoleId = adminRole.Id,
+                    PermissionId = permission.Id
+                });
+            }
+            await _context.SaveChangesAsync();     
+        }
+        // Default users
+        var adminEmail = "admin@alatrafclinic.com";
+        var admin = new AppUser
+        {
+            Id = "19a59129-6c20-417a-834d-11a208d32d96",
+            UserName = "Admin",
+            NormalizedUserName = "ADMIN",
+            Email = adminEmail,  // ✅ ADD THIS
+            NormalizedEmail = adminEmail.ToUpperInvariant(),  // ✅ ADD THIS
+            EmailConfirmed = true,
+            PersonId = 1,
+            IsActive = true
+        };
+
+        if (_userManager.Users.All(u => u.UserName != admin.UserName))
+        {
+            // Use a proper password
+            var password = "Admin@123";  // Must meet your password policy
+            
+            // Check if creation succeeded
+            var createResult = await _userManager.CreateAsync(admin, password);
+            
+            if (createResult.Succeeded)
+            {
+                if (!string.IsNullOrWhiteSpace(adminRole.Name))
+                {
+                    await _userManager.AddToRolesAsync(admin, [adminRole.Name]);
+                }
+            }
+            else
+            {
+                // Log the errors
+                var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
+                throw new Exception($"Failed to create admin user: {errors}");
+            }
+        }
+
         int? id1 = null;
         int? id2  = null;
         if(!await _context.Departments.AnyAsync())
@@ -304,6 +366,7 @@ public sealed class AlatrafClinicDbContextInitialiser
                 new ApplicationPermission { Name = Permission.Role.RemovePermissions }
             );
         }
+        
 
         // In your DbContext seed method
         if (!await _context.ReportDomains.AnyAsync())
@@ -438,6 +501,7 @@ public sealed class AlatrafClinicDbContextInitialiser
             _context.ReportJoins.AddRange(reportJoins);
 
         }
+        
                 
         await _context.SaveChangesAsync();
     }
