@@ -25,7 +25,6 @@ public class SaleItem : AuditableEntity<int>
     {
         SaleId = saleId;
         ItemUnitId = itemUnit.Id;
-        ItemUnit = itemUnit;
         Quantity = quantity;
         Price = itemUnit.Price;
     }
@@ -33,7 +32,7 @@ public class SaleItem : AuditableEntity<int>
     public static Result<SaleItem> Create(int saleId, ItemUnit itemUnit, decimal quantity)
     {
         if (itemUnit is null) return SaleItemErrors.InvalidItem;
-        if (quantity <= 0)   return SaleItemErrors.InvalidQuantity;
+        if (quantity <= 0) return SaleItemErrors.InvalidQuantity;
 
         return new SaleItem(saleId, itemUnit, quantity);
     }
@@ -42,8 +41,8 @@ public class SaleItem : AuditableEntity<int>
     {
         if (saleId <= 0) return SaleItemErrors.InvalidSaleId;
         if (itemUnit is null) return SaleItemErrors.InvalidItem;
-        if (quantity <= 0)   return SaleItemErrors.InvalidQuantity;
-        
+        if (quantity <= 0) return SaleItemErrors.InvalidQuantity;
+
         SaleId = saleId;
         ItemUnit = itemUnit;
         ItemUnitId = itemUnit.Id;
@@ -63,7 +62,7 @@ public class SaleItem : AuditableEntity<int>
         }
         Sale = sale;
         SaleId = sale.Id;
-        
+
         return Result.Updated;
     }
 }

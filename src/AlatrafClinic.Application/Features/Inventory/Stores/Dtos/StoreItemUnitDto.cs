@@ -9,4 +9,5 @@ public class StoreItemUnitDto
     public int UnitId { get; set; }
     public string UnitName { get; set; } = string.Empty;
     public decimal Quantity { get; set; }
+    
 }

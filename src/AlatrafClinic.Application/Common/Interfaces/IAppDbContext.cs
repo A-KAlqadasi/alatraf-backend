@@ -11,6 +11,10 @@ using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.Inventory.Items;
+using AlatrafClinic.Domain.Inventory.Purchases;
+using AlatrafClinic.Domain.Inventory.Stores;
+using AlatrafClinic.Domain.Inventory.Suppliers;
 using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
@@ -43,11 +47,11 @@ namespace AlatrafClinic.Application.Common.Interfaces;
 
 public interface IAppDbContext
 {
-    public DbSet<RefreshToken> RefreshTokens {get; }
+    public DbSet<RefreshToken> RefreshTokens { get; }
 
     public DbSet<Appointment> Appointments { get; }
-    public DbSet<Holiday> Holidays  { get; }
-    
+    public DbSet<Holiday> Holidays { get; }
+
     public DbSet<Diagnosis> Diagnoses { get; }
     public DbSet<InjuryType> InjuryTypes { get; }
     public DbSet<InjurySide> InjurySides { get; }
@@ -56,14 +60,14 @@ public interface IAppDbContext
     public DbSet<DiagnosisProgram> DiagnosisPrograms { get; }
 
     public DbSet<TherapyCard> TherapyCards { get; }
-    public DbSet<MedicalProgram> MedicalPrograms  { get; }
+    public DbSet<MedicalProgram> MedicalPrograms { get; }
     public DbSet<TherapyCardTypePrice> TherapyCardTypePrices { get; }
 
     public DbSet<RepairCard> RepairCards { get; }
     public DbSet<IndustrialPart> IndustrialParts { get; }
     public DbSet<IndustrialPartUnit> IndustrialPartUnits { get; }
-   
-    public DbSet<Sale> Sales  { get; }
+
+    public DbSet<Sale> Sales { get; }
     public DbSet<SaleItem> SaleItems { get; }
 
     public DbSet<Order> Orders { get; }
@@ -83,7 +87,7 @@ public interface IAppDbContext
     public DbSet<Person> People { get; }
     public DbSet<Patient> Patients { get; }
     public DbSet<Doctor> Doctors { get; }
-   
+
     public DbSet<Department> Departments { get; }
     public DbSet<Section> Sections { get; }
     public DbSet<Room> Rooms { get; }
@@ -94,9 +98,17 @@ public interface IAppDbContext
 
     public DbSet<AppSetting> AppSettings { get; }
 
-    public DbSet<GeneralUnit> Units {get; }
     public DbSet<ReportDomain> ReportDomains { get; }
     public DbSet<ReportField> ReportFields { get; }
+
+    public DbSet<GeneralUnit> Units { get; }
+    public DbSet<Item> Items { get; }
+    public DbSet<ItemUnit> ItemUnits { get; }
+    public DbSet<Store> Stores { get; }
+    public DbSet<StoreItemUnit> StoreItemUnits { get; }
+    public DbSet<PurchaseInvoice> PurchaseInvoices { get; }
+    public DbSet<PurchaseItem> PurchaseItems { get; }
+    public DbSet<Supplier> Suppliers { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct);
 }
