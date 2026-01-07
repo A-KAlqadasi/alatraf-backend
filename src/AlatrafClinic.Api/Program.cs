@@ -43,12 +43,8 @@ else
     app.UseHsts();
 }
 
-<<<<<<< HEAD
-app.UseCoreMiddlewares(builder.Configuration);
 app.UseMiddleware<IdempotencyMiddleware>();
-=======
-app.UseCoreMiddlewares(builder.Configuration, app.Environment);
->>>>>>> upstream/main
+//app.UseCoreMiddlewares(builder.Configuration, app.Environment);
 
 app.MapControllers();
 
