@@ -3,12 +3,17 @@ using System.Text;
 
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Reports.Dtos;
 using AlatrafClinic.Application.Reports.Interfaces;
-using AlatrafClinic.Application.Reports.Services;
+using AlatrafClinic.Application.Reports.Validators;
 using AlatrafClinic.Infrastructure.Data;
 using AlatrafClinic.Infrastructure.Data.Interceptors;
 using AlatrafClinic.Infrastructure.Data.Repositories;
 using AlatrafClinic.Infrastructure.Identity;
+using AlatrafClinic.Infrastructure.Reports;
+using AlatrafClinic.Infrastructure.Reports.Helpers;
+
+using FluentValidation;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -101,14 +106,54 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Dapper Services
-        services.AddScoped<IDbConnection>(sp =>
-        new SqlConnection(connectionString));
-
-        services.AddScoped<IReportMetadataRepository, ReportMetadataRepository>();
-        services.AddScoped<IReportService, ReportService>();
-        services.AddScoped<IReportSqlBuilder, ReportSqlBuilder>();
-        services.AddScoped<IReportQueryExecutor, DapperReportQueryExecutor>();
+        services.AddReportServices(configuration);
 
         return services;
+    }
+    
+    public static IServiceCollection AddReportServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Core services
+        services.AddScoped<IReportMetadataRepository, ReportMetadataRepository>();
+        services.AddScoped<IReportSqlBuilder, ReportSqlBuilder>();
+        services.AddScoped<IReportQueryExecutor, DapperReportQueryExecutor>();
+        services.AddScoped<IReportService, ReportService>();
+        
+        // Infrastructure
+        services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
+        services.AddSingleton<ISqlDialect>(GetSqlDialect(configuration));
+        
+        // Validation
+        services.AddScoped<IValidator<ReportRequestDto>, ReportRequestValidator>();
+        services.AddScoped<IValidator<ReportFilterDto>, ReportFilterValidator>();
+        services.AddScoped<IValidator<ReportSortDto>, ReportSortValidator>();
+        
+        // Caching
+        services.AddHybridCache(options =>
+        {
+            options.MaximumPayloadBytes = 1024 * 1024; // 1MB
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                Expiration = TimeSpan.FromMinutes(30)
+            };
+        });
+        
+        services.AddScoped<IReportExportService, ReportExportService>();
+        
+        
+        return services;
+    }
+    
+    private static ISqlDialect GetSqlDialect(IConfiguration configuration)
+    {
+        var databaseType = configuration["Database:Type"]?.ToLower() ?? "sqlserver";
+        
+        return databaseType switch
+        {
+            "postgresql" or "postgres" => new PostgreSqlDialect(),
+            "mysql" => new MySqlDialect(),
+            "sqlite" => new SqlServerDialect(), // SQLite uses similar syntax
+            _ => new SqlServerDialect()
+        };
     }
 }

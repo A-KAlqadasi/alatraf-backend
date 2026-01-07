@@ -1898,7 +1898,20 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportDomain", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1910,7 +1923,14 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
 
                     b.ToTable("ReportDomains", (string)null);
                 });
@@ -1928,15 +1948,28 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<string>("DataType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("DefaultOrder")
+                        .HasColumnType("int");
+
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("DomainId")
                         .HasColumnType("int");
@@ -1946,17 +1979,40 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<bool>("IsFilterable")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsSortable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("TableName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DomainId");
+
+                    b.HasIndex("FieldKey");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("FieldKey"), new[] { "DisplayName", "TableName", "ColumnName" });
+
+                    b.HasIndex("IsActive");
 
                     b.ToTable("ReportFields", (string)null);
                 });
@@ -1969,6 +2025,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<int>("DomainId")
                         .HasColumnType("int");
 
@@ -1977,10 +2038,25 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsRequired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("JoinCondition")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("JoinOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("JoinType")
                         .IsRequired()
@@ -1992,9 +2068,18 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DomainId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("FromTable", "ToTable");
 
                     b.ToTable("ReportJoins", (string)null);
                 });
@@ -3478,20 +3563,24 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportField", b =>
                 {
-                    b.HasOne("AlatrafClinic.Domain.Reports.ReportDomain", null)
+                    b.HasOne("AlatrafClinic.Domain.Reports.ReportDomain", "Domain")
                         .WithMany("Fields")
                         .HasForeignKey("DomainId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Domain");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportJoin", b =>
                 {
-                    b.HasOne("AlatrafClinic.Domain.Reports.ReportDomain", null)
+                    b.HasOne("AlatrafClinic.Domain.Reports.ReportDomain", "Domain")
                         .WithMany("Joins")
                         .HasForeignKey("DomainId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Domain");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>

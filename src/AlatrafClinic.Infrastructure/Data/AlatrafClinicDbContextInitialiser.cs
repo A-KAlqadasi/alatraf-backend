@@ -305,13 +305,18 @@ public sealed class AlatrafClinicDbContextInitialiser
             );
         }
 
-        if (! await _context.ReportDomains.AnyAsync())
+        // In your DbContext seed method
+        if (!await _context.ReportDomains.AnyAsync())
         {
+            var now = new DateTime(2026,01,07);
+            
             var reportDomain = new ReportDomain
             {
-                Id = 1,
                 Name = "تقرير المرضى",
-                RootTable = "Patients"
+                RootTable = "Patients",
+                IsActive = true,
+                CreatedAt = now,
+                UpdatedAt = now
             };
             _context.ReportDomains.Add(reportDomain);
             await _context.SaveChangesAsync();
@@ -326,7 +331,13 @@ public sealed class AlatrafClinicDbContextInitialiser
                     TableName = "Patients",
                     ColumnName = "PatientId",
                     DataType = "int",
-                    IsFilterable = true
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 1,
+                    DefaultOrder = 1,
+                    CreatedAt = now,
+                    UpdatedAt = now
                 },
                 new ReportField
                 {
@@ -336,7 +347,12 @@ public sealed class AlatrafClinicDbContextInitialiser
                     TableName = "Patients",
                     ColumnName = "PatientType",
                     DataType = "nvarchar(50)",
-                    IsFilterable = true
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 2,
+                    CreatedAt = now,
+                    UpdatedAt = now
                 },
                 new ReportField
                 {
@@ -346,7 +362,12 @@ public sealed class AlatrafClinicDbContextInitialiser
                     TableName = "Patients",
                     ColumnName = "CreatedAtUtc",
                     DataType = "datetimeoffset(7)",
-                    IsFilterable = true
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 3,
+                    CreatedAt = now,
+                    UpdatedAt = now
                 },
                 new ReportField
                 {
@@ -356,7 +377,12 @@ public sealed class AlatrafClinicDbContextInitialiser
                     TableName = "People",
                     ColumnName = "FullName",
                     DataType = "nvarchar(200)",
-                    IsFilterable = false
+                    IsFilterable = false,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 4,
+                    CreatedAt = now,
+                    UpdatedAt = now
                 },
                 new ReportField
                 {
@@ -366,7 +392,28 @@ public sealed class AlatrafClinicDbContextInitialiser
                     TableName = "People",
                     ColumnName = "Phone",
                     DataType = "nvarchar(15)",
-                    IsFilterable = false
+                    IsFilterable = false,
+                    IsSortable = false, // Phone numbers usually not sortable
+                    IsActive = true,
+                    DisplayOrder = 5,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                // Add more fields as needed
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_age",
+                    DisplayName = "العمر",
+                    TableName = "Patients",
+                    ColumnName = "Age",
+                    DataType = "int",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 6,
+                    CreatedAt = now,
+                    UpdatedAt = now
                 }
             };
 
@@ -380,10 +427,16 @@ public sealed class AlatrafClinicDbContextInitialiser
                     FromTable = "Patients",
                     ToTable = "People",
                     JoinType = "INNER",
-                    JoinCondition = "Patients.PersonId = People.Id"
-                }
+                    JoinCondition = "Patients.PersonId = People.PersonId",
+                    IsActive = true,
+                    IsRequired = true,
+                    JoinOrder = 1,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
             };
             _context.ReportJoins.AddRange(reportJoins);
+
         }
                 
         await _context.SaveChangesAsync();

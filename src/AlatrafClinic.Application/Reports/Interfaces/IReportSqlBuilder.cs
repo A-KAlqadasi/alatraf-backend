@@ -7,7 +7,7 @@ namespace AlatrafClinic.Application.Reports.Interfaces;
 
 public interface IReportSqlBuilder
 {
-    (string Sql, DynamicParameters Parameters) Build(
+    (string DataSql, string CountSql, DynamicParameters Parameters) Build(
         ReportDomain domain,
         List<ReportField> fields,
         List<ReportJoin> joins,
