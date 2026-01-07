@@ -71,9 +71,6 @@ public class RenewTherapyCardCommandHandler : IRequestHandler<RenewTherapyCardCo
             return TherapyCardErrors.DiagnosisNotIncluded;
         }
         
-        if (command.Programs is null || command.Programs.Count == 0)
-            return DiagnosisErrors.MedicalProgramsAreRequired;
-        
         var ticket = await _context.Tickets.Include(s=> s.Service).FirstOrDefaultAsync(t=> t.Id ==command.TicketId, ct);
 
         var ticketService = ticket?.Service;

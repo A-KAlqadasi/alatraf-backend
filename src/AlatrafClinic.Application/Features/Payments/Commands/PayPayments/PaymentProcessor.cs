@@ -2,6 +2,7 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
+using AlatrafClinic.Domain.Services.Tickets;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -22,6 +23,7 @@ public sealed class PaymentProcessor
     public async Task<Result<Payment>> LoadForPayOnceAsync(int paymentId, CancellationToken ct)
     {
         var payment = await _context.Payments
+            .Include(p=> p.Ticket)
             .Include(p => p.PatientPayment)
             .Include(p => p.DisabledPayment)
             .Include(p => p.WoundedPayment)

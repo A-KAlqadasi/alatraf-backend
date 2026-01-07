@@ -10,13 +10,13 @@ public static class SectionErrors
     public static readonly Error InvalidDepartmentId = Error.Validation(
         code: "Section.InvalidDepartmentId",
         description: "Department Id is invalid.");
-    public static readonly Error RoomRequired = Error.Validation(
-        code: "Section.RoomRequired",
-        description: "At least one room is required.");
-    public static readonly Error DuplicateSectionName = Error.Validation(
+    public static readonly Error DuplicateSectionName = Error.Conflict(
         code: "Section.DuplicateSectionName",
         description: "Another section with the same name already exists in this department.");
     public static readonly Error SectionNotFound = Error.NotFound(
         code: "Section.NotFound",
         description: "Section is not found.");
+    public static readonly Error DuplicateRoomName = Error.Conflict(
+        code: "Section.DuplicateRoomName",
+        description: "Another room with the same name already exists in this section.");
 }

@@ -73,11 +73,6 @@ public class UpdateTherapyCardCommandHandler : IRequestHandler<UpdateTherapyCard
 
         var updatedDiagnosis = updateDiagnosisResult.Value;
 
-        if (command.Programs is null || !command.Programs.Any())
-        {
-            return DiagnosisErrors.MedicalProgramsAreRequired;
-        }
-
         List<(int medicalProgramId, int duration, string? notes)> diagnosisPrograms = new();
 
         foreach (var program in command.Programs)

@@ -37,10 +37,7 @@ public sealed class CreateRepairCardCommandHandler
 
     public async Task<Result<RepairCardDiagnosisDto>> Handle(CreateRepairCardCommand command, CancellationToken ct)
     {
-        if (command.IndustrialParts is null || command.IndustrialParts.Count == 0)
-        {
-            return DiagnosisErrors.IndustrialPartsAreRequired;
-        }
+        
 
         var diagnosisResult = await _diagnosisService.CreateAsync(
             command.TicketId,

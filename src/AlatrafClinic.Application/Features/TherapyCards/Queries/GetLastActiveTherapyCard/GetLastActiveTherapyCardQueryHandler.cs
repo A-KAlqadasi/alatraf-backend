@@ -1,7 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.TherapyCards;
@@ -47,7 +47,7 @@ public class GetLastActiveTherapyCardQueryHandler
         var therapyCard = await _context.TherapyCards
             .Include(t=> t.Diagnosis)
             .OrderByDescending(tc => tc.CreatedAtUtc.DateTime)
-            .FirstOrDefaultAsync(tc => tc.Diagnosis.PatientId == query.PatientId && tc.IsActive, ct);
+            .FirstOrDefaultAsync(tc => tc.Diagnosis.PatientId == query.PatientId && tc.IsActive && tc.ProgramEndDate <= AlatrafClinicConstants.TodayDate, ct);
             
         if (therapyCard is null)
         {

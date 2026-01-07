@@ -57,9 +57,6 @@ public sealed class ScheduleAppointmentCommandHandler
         // baseStart = max(today, lastDate, requestedDate(if any))
         var baseStart = MaxDate(today, lastDate);
 
-        if (command.RequestedDate.HasValue)
-            baseStart = MaxDate(baseStart, command.RequestedDate.Value);
-
         // --- CHANGE START: Load Capacity Rules and Find Date ---
         
         var (allowedDays, holidays, dailyCapacity) = await LoadSchedulingRulesWithCapacityAsync(ct);

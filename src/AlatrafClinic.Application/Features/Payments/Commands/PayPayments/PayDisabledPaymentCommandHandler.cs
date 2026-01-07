@@ -7,11 +7,12 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
+
 namespace AlatrafClinic.Application.Features.Payments.Commands.PayPayments;
 
 public sealed record PayDisabledPaymentCommand(
     int PaymentId,
-    int DisabledCardId,
+    string CardNumber,
     string? Notes
 ) : IRequest<Result<Updated>>;
 
@@ -34,14 +35,20 @@ public sealed class PayDisabledPaymentCommandHandler
 
         var payment = load.Value;
 
-        var exists = await _context.DisabledCards.AnyAsync(d => d.Id == command.DisabledCardId, ct);
-        if (!exists) return DisabledCardErrors.DisabledCardNotFound;
+        var disabledCard = await _context.DisabledCards.FirstOrDefaultAsync(dc => dc.CardNumber == command.CardNumber.Trim(), ct);
+
+        if (disabledCard is null) return DisabledCardErrors.DisabledCardNotFound;
+        
+        if(payment.Ticket.PatientId != disabledCard.PatientId)
+        {
+            return DisabledCardErrors.DisabledCardDesnotBelongToPatient;
+        }
 
         // Disabled => Paid/Discount null, completed.
         var payResult = payment.Pay(null, null);
         if (payResult.IsError) return payResult.Errors;
 
-        var disabledPaymentResult = DisabledPayment.Create(command.DisabledCardId, payment.Id, command.Notes);
+        var disabledPaymentResult = DisabledPayment.Create(disabledCard.Id, payment.Id, command.Notes);
         if (disabledPaymentResult.IsError) return disabledPaymentResult.Errors;
 
         var assignResult = payment.AssignDisabledPayment(disabledPaymentResult.Value);

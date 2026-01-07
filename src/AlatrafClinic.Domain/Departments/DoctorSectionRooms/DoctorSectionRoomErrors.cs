@@ -14,7 +14,7 @@ public static class DoctorSectionRoomErrors
         Error.Validation("DoctorSectionRoom.RoomIdRequired", "Room Id is required.");
 
     public static readonly Error AssignmentAlreadyEnded =
-        Error.Validation("DoctorSectionRoom.AssignmentAlreadyEnded", "The assignment has already ended.");
+        Error.Conflict("DoctorSectionRoom.AssignmentAlreadyEnded", "The assignment has already ended.");
     public static readonly Error DoctorSectionRoomNotFound =
         Error.NotFound("DoctorSectionRoom.NotFound", "Doctor section room Id not found.");
     public static readonly Error DoctorIsNotActive = Error.Conflict("DoctorSectionRoom.DoctorIsNotActive", "Doctor is not active in this section room");

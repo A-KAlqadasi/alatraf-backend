@@ -5,5 +5,7 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.Identity.Commands.RemovePermissionsFromRole;
 
 public sealed record RemovePermissionsFromRoleCommand(
-    string RoleName,
-    List<string> PermissionNames) : IRequest<Result<Success>>;
+    string RoleId,
+    IReadOnlyCollection<int> PermissionIds
+) : IRequest<Result<Deleted>>;
+

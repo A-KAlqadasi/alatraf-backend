@@ -19,8 +19,8 @@ public sealed class CreatePersonCommandValidator : AbstractValidator<CreatePerso
 
         RuleFor(x => x.Phone)
             .NotEmpty().WithMessage("Phone number is required.")
-            .Matches(@"^(77|78|73|71)\d{7}$")
-            .WithMessage("Phone number must start with 77, 78, 73, or 71 and be 9 digits long.");
+            .Matches(@"^(77|78|73|71|70)\d{7}$")
+            .WithMessage("Phone number must start with 77, 78, 73, 71, or 70 and be 9 digits long.");
         RuleFor(x => x.Gender)
             .NotNull()
             .WithMessage("Gender is required (true = Male, false = Female).");
@@ -28,12 +28,8 @@ public sealed class CreatePersonCommandValidator : AbstractValidator<CreatePerso
         RuleFor(x => x.Address)
             .NotEmpty().WithMessage("Address is required.")
             .MaximumLength(250).WithMessage("Address cannot exceed 250 characters.");
-        When(x => !string.IsNullOrWhiteSpace(x.NationalNo), () =>
-                {
-                    RuleFor(x => x.NationalNo!)
-                        .Matches(@"^\d+$")
-                        .WithMessage("National number must contain only digits.");
-                });
-
+        RuleFor(x => x.NationalNo!)
+            .Matches(@"^\d+$")
+            .WithMessage("National number must contain only digits.");
     }
 }

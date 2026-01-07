@@ -9,5 +9,5 @@ public sealed record CreatePersonCommand(
     string Fullname,
     DateOnly Birthdate,
     string Phone,
-    string? NationalNo,
+    string NationalNo,
     string Address, bool Gender) : IRequest<Result<PersonDto>>;

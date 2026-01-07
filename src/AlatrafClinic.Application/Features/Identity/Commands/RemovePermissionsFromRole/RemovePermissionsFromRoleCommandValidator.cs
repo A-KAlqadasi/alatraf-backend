@@ -7,14 +7,10 @@ public sealed class RemovePermissionsFromRoleCommandValidator
 {
     public RemovePermissionsFromRoleCommandValidator()
     {
-        RuleFor(x => x.RoleName)
-            .NotEmpty()
-            .WithMessage("Role name is required.")
-            .MaximumLength(256);
+        RuleFor(x => x.RoleId)
+            .NotEmpty();
 
-        RuleForEach(x => x.PermissionNames)
-            .NotEmpty()
-            .WithMessage("Permission name is required.")
-            .MaximumLength(200);
+        RuleFor(x => x.PermissionIds)
+            .NotNull();
     }
 }

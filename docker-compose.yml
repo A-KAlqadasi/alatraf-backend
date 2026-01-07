@@ -25,7 +25,7 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${SA_PASSWORD}
     ports:
-      - "14330:1433"
+      - "14350:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
     networks:

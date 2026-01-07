@@ -9,6 +9,7 @@ using AlatrafClinic.Application.Features.Patients.Queries.GetPatientById;
 using AlatrafClinic.Application.Features.Patients.Queries.GetPatients;
 using AlatrafClinic.Application.Features.RepairCards.Queries.GetPatientRepairCards;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
+using AlatrafClinic.Application.Features.TherapyCards.Queries.GetLastActiveTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Queries.GetPatientTherapyCards;
 
 using Asp.Versioning;
@@ -190,6 +191,29 @@ public sealed class PatientsController(ISender sender) : ApiController
             Problem);
     }
     
+    [HttpGet("{patientId:int}/therapy-cards/last-active", Name = "GetLastActiveTherapyCard")]
+    [ProducesResponseType(typeof(TherapyCardDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Retrieves the last active therapy card for a patient.")]
+    [EndpointDescription("Fetches the most recently active therapy card associated with a specific patient.")]
+    [EndpointName("GetLastActiveTherapyCard")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> GetLastActiveTherapyCard(
+        int patientId,
+        CancellationToken ct = default)
+    {
+        var result = await sender.Send(
+            new GetLastActiveTherapyCardQuery(patientId),
+            ct);
+
+        return result.Match(
+                response => Ok(response),
+                Problem
+            );
+    }
+
 
 
 }

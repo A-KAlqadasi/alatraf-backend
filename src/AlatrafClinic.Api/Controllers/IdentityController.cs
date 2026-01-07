@@ -1,23 +1,29 @@
 
 using System.Security.Claims;
 
-using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.Identity;
-using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Identity;
-using AlatrafClinic.Application.Features.Identity.Commands.AddPermissionsToRole;
-using AlatrafClinic.Application.Features.Identity.Commands.AddPermissionsToUser;
-using AlatrafClinic.Application.Features.Identity.Commands.ChangeUserNameAndPassword;
+using AlatrafClinic.Application.Features.Identity.Commands.ActivateUser;
+using AlatrafClinic.Application.Features.Identity.Commands.AssignPermissionsToRole;
+using AlatrafClinic.Application.Features.Identity.Commands.AssignRolesToUser;
+using AlatrafClinic.Application.Features.Identity.Commands.ChangeUserCredentials;
+using AlatrafClinic.Application.Features.Identity.Commands.CreateRole;
 using AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
+using AlatrafClinic.Application.Features.Identity.Commands.DeleteRole;
+using AlatrafClinic.Application.Features.Identity.Commands.DenyPermissionsToUser;
+using AlatrafClinic.Application.Features.Identity.Commands.GrantPermissionsToUser;
 using AlatrafClinic.Application.Features.Identity.Commands.RemovePermissionsFromRole;
-using AlatrafClinic.Application.Features.Identity.Commands.RemovePermissionsFromUser;
-using AlatrafClinic.Application.Features.Identity.Commands.UpdateUser;
+using AlatrafClinic.Application.Features.Identity.Commands.RemoveRolesFromUser;
+using AlatrafClinic.Application.Features.Identity.Commands.RemoveUserPermissionOverrides;
+using AlatrafClinic.Application.Features.Identity.Commands.ResetUserPassword;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Application.Features.Identity.Queries.GenerateTokens;
+using AlatrafClinic.Application.Features.Identity.Queries.GetAllPermissions;
+using AlatrafClinic.Application.Features.Identity.Queries.GetEffectiveUserPermissions;
+using AlatrafClinic.Application.Features.Identity.Queries.GetRoles;
 using AlatrafClinic.Application.Features.Identity.Queries.GetUser;
 using AlatrafClinic.Application.Features.Identity.Queries.GetUsers;
 using AlatrafClinic.Application.Features.Identity.Queries.RefreshTokens;
-using AlatrafClinic.Domain.Common.Results;
 
 using Asp.Versioning;
 
@@ -65,7 +71,7 @@ public sealed class IdentityController(ISender sender) : ApiController
 
     [HttpGet("current-user/claims")]
     [Authorize]
-    [ProducesResponseType(typeof(AppUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Gets the current authenticated user's info.")]
@@ -81,219 +87,261 @@ public sealed class IdentityController(ISender sender) : ApiController
             response => Ok(response),
             Problem);
     }
-
-    [HttpGet("users")]
-    [ProducesResponseType(typeof(PaginatedList<UserDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Retrieves a paginated list of users.")]
-    [EndpointDescription(
-        "Supports filtering by search term, username, full name, and active status. " +
-        "Results are paginated and sortable."
-    )]
-    [EndpointName("GetUsers")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> GetUsers(
-        [FromQuery] UsersFilterRequest filter,
-        [FromQuery] PageRequest pageRequest,
-        CancellationToken ct = default)
-    {
-        var query = new GetUsersQuery(
-            pageRequest.Page,
-            pageRequest.PageSize,
-            filter.SearchTerm,
-            filter.UserName,
-            filter.FullName,
-            filter.IsActive,
-            filter.SortColumn,
-            filter.SortDirection
-        );
-
-        var result = await sender.Send(query, ct);
-
-        return result.Match(
-            response => Ok(response),
-            Problem
-        );
-    }
-
     [HttpPost("users")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Creates a new user.")]
-    [EndpointDescription("Creates a new user with person information, credentials, and optional roles/permissions, returning the created user details.")]
     [EndpointName("CreateUser")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken ct = default)
+    public async Task<IActionResult> CreateUser(
+        [FromBody] CreateUserRequest request,
+        CancellationToken ct)
     {
-        var result = await sender.Send(new CreateUserCommand(
-            request.FullName,
-            request.Birthdate,
-            request.Phone,
-            request.NationalNo,
-            request.Address,
-            request.Gender,
+        var command = new CreateUserCommand(
+            request.PersonId,
             request.UserName,
             request.Password,
-            request.Permissions,
-            request.Roles
-        ), ct);
+            request.IsActive);
 
-        return result.Match(
-            response =>  Ok(response),
-            Problem
-        );
+        var result = await sender.Send(command, ct);
+        return result.Match(Ok, Problem);
     }
 
-    [HttpPut("users")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Updates an existing user.")]
-    [EndpointDescription("Updates the user personal information and activation status using the unique user identifier.")]
-    [EndpointName("UpdateUser")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request, CancellationToken ct = default)
+    [HttpPatch("users/{userId}/activation")]
+    [EndpointSummary("Activates or deactivates a user.")]
+    [EndpointName("ActivateUser")]
+    public async Task<IActionResult> ActivateUser(
+        string userId,
+        [FromBody] ActivateUserRequest request,
+        CancellationToken ct)
     {
-        var result = await sender.Send(new UpdateUserCommand(
-            request.UserId,
-            request.Fullname,
-            request.Birthdate,
-            request.Phone,
-            request.NationalNo,
-            request.Address,
-            request.Gender,
-            request.IsActive
-        ), ct);
+        var command = new ActivateUserCommand(userId, request.IsActive);
+        var result = await sender.Send(command, ct);
 
-        return result.Match(
-            _ => NoContent(),
-            Problem
-        );
+        return result.Match(_ => NoContent(), Problem);
     }
 
-    [HttpPatch("users/credentials")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Changes a user's username and password.")]
-    [EndpointDescription("Updates the username and password for a user, validating the current password before applying changes.")]
-    [EndpointName("ChangeUserNameAndPassword")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> ChangeUserNameAndPassword(
-        [FromBody] ChangeUserNameAndPasswordRequest request,
-        CancellationToken ct = default)
+    [HttpPatch("users/{userId}/password/reset")]
+    [EndpointSummary("Resets a user's password.")]
+    [EndpointName("ResetUserPassword")]
+    public async Task<IActionResult> ResetPassword(
+        string userId,
+        [FromBody] ResetPasswordRequest request,
+        CancellationToken ct)
     {
-        var result = await sender.Send(new ChangeUserNameAndPasswordCommand(
-            request.UserId,
-            request.Username,
-            request.CurrentPassword,
-            request.NewPassword
-        ), ct);
+        var command = new ResetUserPasswordCommand(userId, request.NewPassword);
+        var result = await sender.Send(command, ct);
 
-        return result.Match(
-            _ => Ok(new Success()),
-            Problem
-        );
+        return result.Match(_ => NoContent(), Problem);
     }
 
-    [HttpPut("users/permissions")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Adds permissions to a user.")]
-    [EndpointDescription("Adds one or more permissions to a user. Missing permissions may be created depending on business rules.")]
-    [EndpointName("AddPermissionsToUser")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> AddPermissionsToUser(
-        [FromBody] AddPermissionsToUserRequest request,
-        CancellationToken ct = default)
+    [HttpPatch("users/{userId}/credentials")]
+    [EndpointSummary("Changes user credentials.")]
+    [EndpointName("ChangeUserCredentials")]
+    public async Task<IActionResult> ChangeCredentials(
+        string userId,
+        [FromBody] ChangeCredentialsRequest request,
+        CancellationToken ct)
     {
-        var result = await sender.Send(new AddPermissionsToUserCommand(
-            request.UserId,
-            request.PermissionNames
-        ), ct);
+        var command = new ChangeUserCredentialsCommand(
+            userId,
+            request.OldPassword,
+            request.NewPassword,
+            request.NewUsername);
 
-        return result.Match(
-            _ => Ok(new Success()),
-            Problem
-        );
+        var result = await sender.Send(command, ct);
+        return result.Match(_ => NoContent(), Problem);
     }
 
-    [HttpDelete("users/permissions")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Removes permissions from a user.")]
-    [EndpointDescription("Removes one or more permissions from a user. The operation is idempotent.")]
-    [EndpointName("RemovePermissionsFromUser")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> RemovePermissionsFromUser(
-        [FromBody] RemovePermissionsFromUserRequest request,
-        CancellationToken ct = default)
+    [HttpGet("users/{userId}")]
+    [EndpointSummary("Retrieves a user by ID.")]
+    [EndpointName("GetUserById")]
+    public async Task<IActionResult> GetUserById(
+        string userId,
+        CancellationToken ct)
     {
-        var result = await sender.Send(new RemovePermissionsFromUserCommand(
-            request.UserId,
-            request.PermissionNames
-        ), ct);
+        var query = new GetUserByIdQuery(userId);
+        var result = await sender.Send(query, ct);
 
-        return result.Match(
-            _ => Ok(new Success()),
-            Problem
-        );
+        return result.Match(Ok, Problem);
     }
 
-    [HttpPut("roles/permissions")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Adds permissions to a role.")]
-    [EndpointDescription("Adds one or more permissions to a role. Missing permissions may be created depending on business rules.")]
-    [EndpointName("AddPermissionsToRole")]
-    [ApiVersion("1.0")]
-    public async Task<IActionResult> AddPermissionsToRole(
-        [FromBody] AddPermissionsToRoleRequest request,
-        CancellationToken ct = default)
+    [HttpGet("users")]
+    [EndpointSummary("Retrieves all users.")]
+    [EndpointName("GetUsers")]
+    public async Task<IActionResult> GetUsers([FromQuery] GetUserFilterRequest filter, CancellationToken ct)
     {
-        var result = await sender.Send(new AddPermissionsToRoleCommand(
-            request.RoleName,
-            request.PermissionNames
-        ), ct);
+        var query = new GetUsersQuery(filter.searchBy, filter.IsActive);
+        var result = await sender.Send(query, ct);
 
-        return result.Match(
-            _ => Ok(new Success()),
-            Problem
-        );
+        return result.Match(Ok, Problem);
     }
 
-    [HttpDelete("roles/permissions")]
-    [ProducesResponseType(typeof(Success), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [HttpPost("users/{userId}/roles")]
+    [EndpointSummary("Assigns a role to a user.")]
+    [EndpointName("AssignRoleToUser")]
+    public async Task<IActionResult> AssignRole(
+        string userId,
+        AssignRolesRequest request,
+        CancellationToken ct)
+    {
+        var command = new AssignRolesToUserCommand(userId, request.RoleIds);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpDelete("users/{userId}/roles")]
+    [EndpointSummary("Removes a role from a user.")]
+    [EndpointName("RemoveRoleFromUser")]
+    public async Task<IActionResult> RemoveRole(
+        string userId,
+        RemoveRolesRequest request,
+        CancellationToken ct)
+    {
+        var command = new RemoveRolesFromUserCommand(userId, request.RoleIds);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    // =========================
+    // Roles
+    // =========================
+
+    [HttpPost("roles")]
+    [EndpointSummary("Creates a role.")]
+    [EndpointName("CreateRole")]
+    public async Task<IActionResult> CreateRole(
+        [FromBody] CreateRoleRequest request,
+        CancellationToken ct)
+    {
+        var command = new CreateRoleCommand(request.Name);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(Ok, Problem);
+    }
+
+    [HttpDelete("roles/{roleId}")]
+    [EndpointSummary("Deletes a role.")]
+    [EndpointName("DeleteRole")]
+    public async Task<IActionResult> DeleteRole(
+        string roleId,
+        CancellationToken ct)
+    {
+        var command = new DeleteRoleCommand(roleId);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpPost("roles/{roleId}/permissions")]
+    [EndpointSummary("Assigns permissions to a role.")]
+    [EndpointName("AssignPermissionsToRole")]
+    public async Task<IActionResult> AssignPermissionsToRole(
+        string roleId,
+        [FromBody] PermissionIdsRequest request,
+        CancellationToken ct)
+    {
+        var command = new AssignPermissionsToRoleCommand(roleId, request.PermissionIds);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpDelete("roles/{roleId}/permissions")]
     [EndpointSummary("Removes permissions from a role.")]
-    [EndpointDescription("Removes one or more permissions from a role. The operation is idempotent.")]
     [EndpointName("RemovePermissionsFromRole")]
-    [ApiVersion("1.0")]
     public async Task<IActionResult> RemovePermissionsFromRole(
-        [FromBody] RemovePermissionsFromRoleRequest request,
-        CancellationToken ct = default)
+        string roleId,
+        [FromBody] PermissionIdsRequest request,
+        CancellationToken ct)
     {
-        var result = await sender.Send(new RemovePermissionsFromRoleCommand(
-            request.RoleName,
-            request.PermissionNames
-        ), ct);
+        var command = new RemovePermissionsFromRoleCommand(roleId, request.PermissionIds);
+        var result = await sender.Send(command, ct);
 
-        return result.Match(
-            _ => Ok(new Success()),
-            Problem
-        );
+        return result.Match(_ => NoContent(), Problem);
     }
 
+    [HttpGet("roles")]
+    [EndpointSummary("Retrieves all roles.")]
+    [EndpointName("GetRoles")]
+    public async Task<IActionResult> GetRoles(CancellationToken ct)
+    {
+        var query = new GetRolesQuery();
+        var result = await sender.Send(query, ct);
+
+        return result.Match(Ok, Problem);
+    }
+
+    // =========================
+    // User Permission Overrides
+    // =========================
+
+    [HttpPost("users/{userId}/permissions/grant")]
+    [EndpointSummary("Grants permissions to a user.")]
+    [EndpointName("GrantPermissionsToUser")]
+    public async Task<IActionResult> GrantPermissions(
+        string userId,
+        [FromBody] PermissionIdsRequest request,
+        CancellationToken ct)
+    {
+        var command = new GrantPermissionsToUserCommand(userId, request.PermissionIds);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpPost("users/{userId}/permissions/deny")]
+    [EndpointSummary("Denies permissions to a user.")]
+    [EndpointName("DenyPermissionsToUser")]
+    public async Task<IActionResult> DenyPermissions(
+        string userId,
+        [FromBody] PermissionIdsRequest request,
+        CancellationToken ct)
+    {
+        var command = new DenyPermissionsToUserCommand(userId, request.PermissionIds);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpDelete("users/{userId}/permissions")]
+    [EndpointSummary("Removes permission overrides from a user.")]
+    [EndpointName("RemoveUserPermissionOverrides")]
+    public async Task<IActionResult> RemovePermissionOverrides(
+        string userId,
+        [FromBody] PermissionIdsRequest request,
+        CancellationToken ct)
+    {
+        var command = new RemoveUserPermissionOverridesCommand(userId, request.PermissionIds);
+        var result = await sender.Send(command, ct);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    // =========================
+    // Permissions Queries
+    // =========================
+
+    [HttpGet("users/{userId}/permissions")]
+    [EndpointSummary("Retrieves effective permissions for a user.")]
+    [EndpointName("GetEffectiveUserPermissions")]
+    public async Task<IActionResult> GetEffectivePermissions(
+        string userId,
+        CancellationToken ct)
+    {
+        var query = new GetEffectiveUserPermissionsQuery(userId);
+        var result = await sender.Send(query, ct);
+
+        return result.Match(Ok, Problem);
+    }
+
+    [HttpGet("permissions")]
+    [EndpointSummary("Retrieves all permissions.")]
+    [EndpointName("GetAllPermissions")]
+    public async Task<IActionResult> GetAllPermissions([FromQuery] string? search, CancellationToken ct)
+    {
+        var query = new GetAllPermissionsQuery(search);
+        var result = await sender.Send(query, ct);
+
+        return result.Match(Ok, Problem);
+    }
 }

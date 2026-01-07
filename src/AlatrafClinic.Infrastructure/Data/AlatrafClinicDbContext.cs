@@ -34,6 +34,7 @@ using AlatrafClinic.Domain.People.Doctors;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Reports;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.SalesItems;
 using AlatrafClinic.Domain.Services;
@@ -73,7 +74,7 @@ public class AlatrafClinicDbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<ApplicationPermission> Permissions => Set<ApplicationPermission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
-    public DbSet<UserPermission> UserPermissions => Set<UserPermission>();
+    public DbSet<UserPermissionOverride> UserPermissionOverrides => Set<UserPermissionOverride>();
 
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Holiday> Holidays => Set<Holiday>();
@@ -141,6 +142,9 @@ public class AlatrafClinicDbContext
     public DbSet<InventoryReservation> InventoryReservations => Set<InventoryReservation>();
     public DbSet<IdempotencyKey> IdempotencyKeys => Set<IdempotencyKey>();
     public DbSet<ProcessedMessage> ProcessedMessages => Set<ProcessedMessage>();
+    public DbSet<ReportDomain> ReportDomains => Set<ReportDomain>();
+    public DbSet<ReportField> ReportFields => Set<ReportField>();
+    public DbSet<ReportJoin> ReportJoins => Set<ReportJoin>();
 
 
 

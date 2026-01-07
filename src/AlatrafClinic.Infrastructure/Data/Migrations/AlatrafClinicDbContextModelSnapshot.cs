@@ -25,11 +25,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.Department", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("DepartmentId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("datetimeoffset");
@@ -1909,6 +1906,110 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("RepairCards", (string)null);
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportDomain", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("RootTable")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReportDomains", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportField", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColumnName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DataType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DomainId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FieldKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsFilterable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TableName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("ReportFields", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportJoin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DomainId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FromTable")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("JoinCondition")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("JoinType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ToTable")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("ReportJoins", (string)null);
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>
                 {
                     b.Property<int>("Id")
@@ -2151,11 +2252,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Service", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ServiceId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(50)
@@ -2815,7 +2913,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("RolePermissions", (string)null);
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermission", b =>
+            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermissionOverride", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -2823,11 +2921,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("PermissionId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Effect")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.HasKey("UserId", "PermissionId");
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("UserPermissions", (string)null);
+                    b.ToTable("UserPermissionOverrides", (string)null);
                 });
 
             modelBuilder.Entity("DiagnosisInjuryReason", b =>
@@ -3545,6 +3648,24 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Diagnosis");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportField", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Reports.ReportDomain", null)
+                        .WithMany("Fields")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportJoin", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Reports.ReportDomain", null)
+                        .WithMany("Joins")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.Diagnosises.Diagnosis", "Diagnosis")
@@ -3727,10 +3848,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermission", b =>
+            modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.UserPermissionOverride", b =>
                 {
                     b.HasOne("AlatrafClinic.Infrastructure.Identity.ApplicationPermission", "Permission")
-                        .WithMany("UserPermissions")
+                        .WithMany("UserPermissionOverrides")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3993,6 +4114,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Orders");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Reports.ReportDomain", b =>
+                {
+                    b.Navigation("Fields");
+
+                    b.Navigation("Joins");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>
                 {
                     b.Navigation("ExitCard");
@@ -4035,7 +4163,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 {
                     b.Navigation("RolePermissions");
 
-                    b.Navigation("UserPermissions");
+                    b.Navigation("UserPermissionOverrides");
                 });
 #pragma warning restore 612, 618
         }

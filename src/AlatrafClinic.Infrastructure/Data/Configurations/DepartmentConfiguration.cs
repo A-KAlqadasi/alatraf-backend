@@ -14,6 +14,7 @@ public sealed class DepartmentConfiguration : IEntityTypeConfiguration<Departmen
         builder.HasKey(d => d.Id);
 
         builder.Property(d => d.Id)
+            .ValueGeneratedNever()
             .HasColumnName("DepartmentId");
 
         builder.Property(d => d.Name)
