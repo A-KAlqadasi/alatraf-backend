@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace AlatrafClinic.Application.Features.Identity.Queries.GenerateTokens;
 
-public sealed class GenerateTokenQueryValidator : AbstractValidator<GenerateTokenQuery>
+public sealed class GenerateTokenQueryValidator : AbstractValidator<LoginRequest>
 {
     public GenerateTokenQueryValidator()
     {
