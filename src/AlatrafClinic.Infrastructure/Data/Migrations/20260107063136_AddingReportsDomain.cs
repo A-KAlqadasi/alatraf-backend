@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingReportsDomains : Migration
+    public partial class AddingReportsDomain : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -238,9 +238,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "ReportDomains",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    RootTable = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    RootTable = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -536,7 +540,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     TableName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ColumnName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DataType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IsFilterable = table.Column<bool>(type: "bit", nullable: false)
+                    IsFilterable = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsSortable = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    DefaultOrder = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -559,7 +569,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     FromTable = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ToTable = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     JoinType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    JoinCondition = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
+                    JoinCondition = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsRequired = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    JoinOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -2266,14 +2281,40 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ReportDomains_IsActive",
+                table: "ReportDomains",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReportFields_DomainId",
                 table: "ReportFields",
                 column: "DomainId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ReportFields_FieldKey",
+                table: "ReportFields",
+                column: "FieldKey")
+                .Annotation("SqlServer:Include", new[] { "DisplayName", "TableName", "ColumnName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReportFields_IsActive",
+                table: "ReportFields",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReportJoins_DomainId",
                 table: "ReportJoins",
                 column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReportJoins_FromTable_ToTable",
+                table: "ReportJoins",
+                columns: new[] { "FromTable", "ToTable" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReportJoins_IsActive",
+                table: "ReportJoins",
+                column: "IsActive");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RolePermissions_PermissionId",
