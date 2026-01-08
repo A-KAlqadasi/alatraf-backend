@@ -153,6 +153,9 @@ public class AlatrafClinicDbContext
     public DbSet<CompensationNotification> CompensationNotifications => Set<CompensationNotification>();
     public DbSet<ManualInterventionRequired> ManualInterventions => Set<ManualInterventionRequired>();
 
+    public DbSet<ReportDomain> Domains => Set<ReportDomain>();
+    public DbSet<ReportField> Fields => Set<ReportField>();
+    public DbSet<ReportJoin> Joins => Set<ReportJoin>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

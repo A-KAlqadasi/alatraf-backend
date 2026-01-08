@@ -7,6 +7,7 @@ using AlatrafClinic.Application.Features.Patients.Commands.UpdatePatient;
 using AlatrafClinic.Application.Features.Patients.Dtos;
 using AlatrafClinic.Application.Features.Patients.Queries.GetPatientById;
 using AlatrafClinic.Application.Features.Patients.Queries.GetPatients;
+using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Queries.GetPatientRepairCards;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Queries.GetLastActiveTherapyCard;
@@ -97,7 +98,7 @@ public sealed class PatientsController(ISender sender) : ApiController
 
     
     [HttpGet("{patientId:int}/repair-cards", Name = "GetRepairCardsByPatientId")]
-    [ProducesResponseType(typeof(List<TherapyCardDiagnosisDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<RepairCardDiagnosisDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

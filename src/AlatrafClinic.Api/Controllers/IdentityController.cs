@@ -45,7 +45,7 @@ public sealed class IdentityController(ISender sender) : ApiController
     [EndpointSummary("Generates an access and refresh token for a valid user.")]
     [EndpointDescription("Authenticates a user using provided credentials and returns a JWT token pair.")]
     [EndpointName("GenerateToken")]
-    public async Task<IActionResult> GenerateToken([FromBody] GenerateTokenQuery request, CancellationToken ct)
+    public async Task<IActionResult> GenerateToken([FromBody] LoginRequest request, CancellationToken ct)
     {
         var result = await sender.Send(request, ct);
         return result.Match(
