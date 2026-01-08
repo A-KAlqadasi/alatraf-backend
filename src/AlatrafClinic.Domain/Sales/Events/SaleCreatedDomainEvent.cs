@@ -17,3 +17,4 @@ public sealed record SaleCreatedDomainEvent : DomainEvent
         DiagnosisId = diagnosisId;
     }
 }
+

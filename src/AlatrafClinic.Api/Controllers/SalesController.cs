@@ -16,13 +16,20 @@ using AlatrafClinic.Application.Sagas;
 
 using AlatrafClinic.Application.Features.Sales.Queries.GetSales;
 using AlatrafClinic.Application.Features.Sales.Queries.GetSaleById;
+using AlatrafClinic.Application.Sagas.Dtos;
+using AlatrafClinic.Application.Sagas.Compensation;
 
 namespace AlatrafClinic.Api.Controllers;
 
 [Route("api/v{version:apiVersion}/sales")]
 [ApiVersion("1.0")]
-public sealed class SalesController(ISender sender) : ApiController
+public sealed class SalesController(
+    ISender sender,
+    IEnumerable<ISagaCompensationHandler> compensationHandlers,
+    ISagaStateService sagaStateService
+) : ApiController
 {
+
     // Queries
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedList<SaleDto>), StatusCodes.Status200OK)]
@@ -189,4 +196,46 @@ public sealed class SalesController(ISender sender) : ApiController
 
         return Problem(statusCode: status, title: title, detail: detail);
     }
+    // في SalesController.cs (مضاف)
+    [HttpPost("saga/{sagaId:guid}/compensate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [EndpointSummary("Compensate a failed sale saga")]
+    public async Task<IActionResult> CompensateSaga(Guid sagaId, CancellationToken ct)
+    {
+        var compensationHandler = compensationHandlers
+            .FirstOrDefault(h => h.SagaType == "SaleSaga");
+
+        if (compensationHandler == null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status500InternalServerError,
+                title: "Compensation handler not found");
+        }
+
+        var result = await compensationHandler.CompensateAsync(sagaId, ct);
+
+        return result.Success
+            ? Ok(new { Message = "Saga compensated successfully", SagaId = sagaId })
+            : Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Compensation failed",
+                detail: string.Join("; ", result.Errors));
+    }
+
+    [HttpGet("saga/{sagaId:guid}/state")]
+    [ProducesResponseType(typeof(SagaStateDto), StatusCodes.Status200OK)]
+    [EndpointSummary("Get saga state")]
+    public async Task<IActionResult> GetSagaState(Guid sagaId, CancellationToken ct)
+    {
+        var state = await sagaStateService.GetSagaStateAsync(sagaId, ct);
+
+        if (state == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(state);
+    }
+
 }

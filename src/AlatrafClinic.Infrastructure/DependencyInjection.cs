@@ -24,6 +24,8 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using AlatrafClinic.Application.Sagas;
+using AlatrafClinic.Application.Sagas.Compensation;
 
 
 namespace AlatrafClinic.Infrastructure;
@@ -127,6 +129,10 @@ public static class DependencyInjection
         services.AddScoped<IReportSqlBuilder, ReportSqlBuilder>();
         services.AddScoped<IReportQueryExecutor, DapperReportQueryExecutor>();
 
+        services.AddScoped<ISagaStateService, SagaStateService>();
+services.AddScoped<ISagaCompensationHandler, SaleSagaCompensationHandler>();
+services.AddScoped<IEnumerable<ISagaCompensationHandler>>(sp =>
+    sp.GetServices<ISagaCompensationHandler>().ToList());
         return services;
     }
 }

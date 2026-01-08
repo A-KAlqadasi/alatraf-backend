@@ -1,6 +1,9 @@
 using AlatrafClinic.Api;
 using AlatrafClinic.Application;
+using AlatrafClinic.Application.Sagas;
+using AlatrafClinic.Application.Sagas.Compensation;
 using AlatrafClinic.Infrastructure;
+using AlatrafClinic.Infrastructure.BackgroundServices;
 using AlatrafClinic.Infrastructure.Data;
 
 using Scalar.AspNetCore;
@@ -14,6 +17,11 @@ builder.Services
     .AddPresentation(builder.Configuration)
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
+
+builder.Services.AddScoped<ISagaStateService, SagaStateService>();
+builder.Services.AddScoped<ISagaCompensationHandler, SaleSagaCompensationHandler>();
+builder.Services.AddScoped<ISagaCompensationCoordinator, SagaCompensationCoordinator>();
+builder.Services.AddHostedService<FailedSagaProcessor>();
 
 builder.Host.UseSerilog((context, loggerConfig) =>
     loggerConfig.ReadFrom.Configuration(context.Configuration));

@@ -55,6 +55,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using AlatrafClinic.Infrastructure.Data.Idempotency;
 using AlatrafClinic.Infrastructure.Data.Outbox;
+using AlatrafClinic.Domain.Sagas;
 
 
 namespace AlatrafClinic.Infrastructure.Data;
@@ -146,6 +147,11 @@ public class AlatrafClinicDbContext
     public DbSet<ReportField> ReportFields => Set<ReportField>();
     public DbSet<ReportJoin> ReportJoins => Set<ReportJoin>();
 
+    public DbSet<SagaState> SagaStates => Set<SagaState>();
+    public DbSet<SagaStepRecord> SagaStepRecords => Set<SagaStepRecord>();
+    public DbSet<SagaCompensationLog> SagaCompensationLogs => Set<SagaCompensationLog>();
+    public DbSet<CompensationNotification> CompensationNotifications => Set<CompensationNotification>();
+    public DbSet<ManualInterventionRequired> ManualInterventions => Set<ManualInterventionRequired>();
 
 
     protected override void OnModelCreating(ModelBuilder builder)

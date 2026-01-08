@@ -1,4 +1,6 @@
 using AlatrafClinic.Domain.Common;
+using AlatrafClinic.Domain.Inventory.Reservations;
+using AlatrafClinic.Domain.Inventory.Stores;
 
 public class InventoryReservation : AuditableEntity<Guid>, IAggregateRoot
 {
@@ -8,6 +10,9 @@ public class InventoryReservation : AuditableEntity<Guid>, IAggregateRoot
     public int StoreItemUnitId { get; private set; }
     public decimal Quantity { get; private set; }
     public ReservationStatus Status { get; private set; }
+    public bool IsCompensated { get; private set; }
+    public DateTime? CompensatedAt { get; private set; }
+    public StoreItemUnit StoreItemUnit { get; private set; } = default!;
 
     private InventoryReservation() { }
 
@@ -33,5 +38,15 @@ public class InventoryReservation : AuditableEntity<Guid>, IAggregateRoot
     public void Release()
     {
         Status = ReservationStatus.Released;
+    }
+    public void MarkAsCompensated()
+    {
+        if (!IsCompensated)
+        {
+            IsCompensated = true;
+            CompensatedAt = DateTime.UtcNow;
+
+            AddDomainEvent(new InventoryReservationCompensatedDomainEvent(Id, SagaId));
+        }
     }
 }

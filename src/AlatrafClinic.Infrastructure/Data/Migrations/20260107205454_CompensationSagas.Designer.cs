@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    [Migration("20260106220302_AddingReportsDomains")]
-    partial class AddingReportsDomains
+    [Migration("20260107205454_CompensationSagas")]
+    partial class CompensationSagas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1130,6 +1130,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasPrecision(18, 3)
                         .HasColumnType("decimal(18,3)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
 
@@ -1415,6 +1421,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid?>("SagaId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("TicketId")
                         .HasColumnType("int");
 
@@ -1429,6 +1438,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("TicketId")
                         .IsUnique();
+
+                    b.HasIndex("SagaId", "PaymentReference", "DiagnosisId");
 
                     b.ToTable("Payments", (string)null);
                 });
@@ -2002,6 +2013,169 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("ReportJoins", (string)null);
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.CompensationNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("SagaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CompensationNotifications");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.ManualInterventionRequired", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("RequiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResolutionNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("SagaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ManualInterventions");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.SagaCompensationLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CompensatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAutoCompensation")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SagaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SagaId");
+
+                    b.ToTable("SagaCompensationLogs");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.SagaState", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("AutoCompensatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CurrentStep")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("FailedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FailureReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAutoCompensated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCompensating")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastError")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastRetryAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SagaType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SagaStates");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.SagaStepRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExecutedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("SagaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("StepName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SagaId");
+
+                    b.ToTable("SagaStepRecords");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>
                 {
                     b.Property<int>("Id")
@@ -2026,6 +2200,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("DiagnosisId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("InventoryReservationCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -2038,6 +2215,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("PaymentRecorded")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("SagaId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -2047,6 +2230,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.HasIndex("DiagnosisId")
                         .IsUnique();
+
+                    b.HasIndex("SagaId", "DiagnosisId");
 
                     b.ToTable("Sales", (string)null);
                 });
@@ -2093,7 +2278,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Property<int>("SaleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StoreItemUnitId")
+                    b.Property<int?>("StoreItemUnitId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2711,6 +2896,77 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("WoundedCards", (string)null);
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Infrastructure.Data.Idempotency.IdempotencyKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("RequestHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("ResponseBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ResponseStatusCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Route")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key", "Route")
+                        .IsUnique();
+
+                    b.ToTable("IdempotencyKeys", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Infrastructure.Data.Outbox.ProcessedMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("HandlerName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ProcessedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId", "HandlerName")
+                        .IsUnique();
+
+                    b.ToTable("ProcessedMessages", (string)null);
+                });
+
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -2888,6 +3144,71 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("DiagnosisInjuryType");
                 });
 
+            modelBuilder.Entity("InventoryReservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompensatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCompensated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<Guid?>("SagaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SaleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreItemUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreItemUnitId1")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoreItemUnitId");
+
+                    b.HasIndex("StoreItemUnitId1");
+
+                    b.HasIndex("SagaId", "SaleId");
+
+                    b.HasIndex("SaleId", "StoreItemUnitId")
+                        .IsUnique();
+
+                    b.ToTable("InventoryReservations", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -3019,6 +3340,31 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OccurredOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OutboxMessages");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.DoctorSectionRooms.DoctorSectionRoom", b =>
@@ -3497,6 +3843,28 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.SagaCompensationLog", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Sagas.SagaState", "Saga")
+                        .WithMany()
+                        .HasForeignKey("SagaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Saga");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.SagaStepRecord", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Sagas.SagaState", "Saga")
+                        .WithMany("StepRecords")
+                        .HasForeignKey("SagaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Saga");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.Diagnosises.Diagnosis", "Diagnosis")
@@ -3525,8 +3893,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
                         .WithMany("SaleItems")
                         .HasForeignKey("StoreItemUnitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ItemUnit");
 
@@ -3744,6 +4111,23 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("InventoryReservation", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", null)
+                        .WithMany()
+                        .HasForeignKey("StoreItemUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
+                        .WithMany()
+                        .HasForeignKey("StoreItemUnitId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StoreItemUnit");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -3942,6 +4326,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Fields");
 
                     b.Navigation("Joins");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Sagas.SagaState", b =>
+                {
+                    b.Navigation("StepRecords");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Sales.Sale", b =>

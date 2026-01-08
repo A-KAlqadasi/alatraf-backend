@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingReportsDomains : Migration
+    public partial class CompensationSagas : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,6 +45,21 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompensationNotifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SagaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Success = table.Column<bool>(type: "bit", nullable: false),
+                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompensationNotifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,6 +104,25 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Holidays", x => x.HolidayId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdempotencyKeys",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Key = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Route = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    RequestHash = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    ResponseBody = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResponseStatusCode = table.Column<int>(type: "int", nullable: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdempotencyKeys", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -173,6 +207,38 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ManualInterventions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SagaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequiredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResolutionNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ManualInterventions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OutboxMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OccurredOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProcessedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "People",
                 columns: table => new
                 {
@@ -213,6 +279,20 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProcessedMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MessageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HandlerName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    ProcessedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProcessedMessages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
                 {
@@ -245,6 +325,30 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ReportDomains", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SagaStates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SagaType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CurrentStep = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FailedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FailureReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsCompensating = table.Column<bool>(type: "bit", nullable: false),
+                    RetryCount = table.Column<int>(type: "int", nullable: false),
+                    LastRetryAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastError = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsAutoCompensated = table.Column<bool>(type: "bit", nullable: false),
+                    AutoCompensatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SagaStates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -568,6 +672,51 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         name: "FK_ReportJoins_ReportDomains_DomainId",
                         column: x => x.DomainId,
                         principalTable: "ReportDomains",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SagaCompensationLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SagaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CompensatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsAutoCompensation = table.Column<bool>(type: "bit", nullable: false),
+                    Success = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SagaCompensationLogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SagaCompensationLogs_SagaStates_SagaId",
+                        column: x => x.SagaId,
+                        principalTable: "SagaStates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SagaStepRecords",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StepName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExecutedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Success = table.Column<bool>(type: "bit", nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SagaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SagaStepRecords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SagaStepRecords_SagaStates_SagaId",
+                        column: x => x.SagaId,
+                        principalTable: "SagaStates",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1092,6 +1241,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     StoreId = table.Column<int>(type: "int", nullable: false),
                     ItemUnitId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -1195,6 +1345,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 {
                     PaymentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SagaId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaidAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
@@ -1266,6 +1417,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     SaleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    SagaId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    InventoryReservationCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    PaymentRecorded = table.Column<bool>(type: "bit", nullable: false),
                     DiagnosisId = table.Column<int>(type: "int", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -1325,6 +1479,44 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         column: x => x.ParentCardId,
                         principalTable: "TherapyCards",
                         principalColumn: "TherapyCardId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InventoryReservations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SagaId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SaleId = table.Column<int>(type: "int", nullable: false),
+                    StoreItemUnitId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    IsCompensated = table.Column<bool>(type: "bit", nullable: false),
+                    CompensatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    StoreItemUnitId1 = table.Column<int>(type: "int", nullable: false),
+                    CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InventoryReservations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InventoryReservations_StoreItemUnits_StoreItemUnitId",
+                        column: x => x.StoreItemUnitId,
+                        principalTable: "StoreItemUnits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_InventoryReservations_StoreItemUnits_StoreItemUnitId1",
+                        column: x => x.StoreItemUnitId1,
+                        principalTable: "StoreItemUnits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1608,7 +1800,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     SaleItemId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SaleId = table.Column<int>(type: "int", nullable: false),
-                    StoreItemUnitId = table.Column<int>(type: "int", nullable: false),
+                    StoreItemUnitId = table.Column<int>(type: "int", nullable: true),
                     ItemUnitId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -2099,6 +2291,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: new[] { "StartDate", "EndDate", "IsRecurring", "Type" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_IdempotencyKeys_Key_Route",
+                table: "IdempotencyKeys",
+                columns: new[] { "Key", "Route" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IndustrialPartUnits_IndustrialPartId",
                 table: "IndustrialPartUnits",
                 column: "IndustrialPartId");
@@ -2125,6 +2323,27 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 table: "InjuryTypes",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryReservations_SagaId_SaleId",
+                table: "InventoryReservations",
+                columns: new[] { "SagaId", "SaleId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryReservations_SaleId_StoreItemUnitId",
+                table: "InventoryReservations",
+                columns: new[] { "SaleId", "StoreItemUnitId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryReservations_StoreItemUnitId",
+                table: "InventoryReservations",
+                column: "StoreItemUnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryReservations_StoreItemUnitId1",
+                table: "InventoryReservations",
+                column: "StoreItemUnitId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_BaseUnitId",
@@ -2194,6 +2413,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 column: "PaymentDate");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payments_SagaId_PaymentReference_DiagnosisId",
+                table: "Payments",
+                columns: new[] { "SagaId", "PaymentReference", "DiagnosisId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Payments_TicketId",
                 table: "Payments",
                 column: "TicketId",
@@ -2230,6 +2454,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "IX_Permissions_Name",
                 table: "Permissions",
                 column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProcessedMessages_MessageId_HandlerName",
+                table: "ProcessedMessages",
+                columns: new[] { "MessageId", "HandlerName" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -2287,6 +2517,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_SagaCompensationLogs_SagaId",
+                table: "SagaCompensationLogs",
+                column: "SagaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SagaStepRecords_SagaId",
+                table: "SagaStepRecords",
+                column: "SagaId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SaleItems_ItemUnitId",
                 table: "SaleItems",
                 column: "ItemUnitId");
@@ -2306,6 +2546,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 table: "Sales",
                 column: "DiagnosisId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sales_SagaId_DiagnosisId",
+                table: "Sales",
+                columns: new[] { "SagaId", "DiagnosisId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sections_DepartmentId",
@@ -2427,6 +2672,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CompensationNotifications");
+
+            migrationBuilder.DropTable(
                 name: "DeliveryTimes");
 
             migrationBuilder.DropTable(
@@ -2454,10 +2702,25 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "Holidays");
 
             migrationBuilder.DropTable(
+                name: "IdempotencyKeys");
+
+            migrationBuilder.DropTable(
+                name: "InventoryReservations");
+
+            migrationBuilder.DropTable(
+                name: "ManualInterventions");
+
+            migrationBuilder.DropTable(
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
+                name: "OutboxMessages");
+
+            migrationBuilder.DropTable(
                 name: "PatientPayments");
+
+            migrationBuilder.DropTable(
+                name: "ProcessedMessages");
 
             migrationBuilder.DropTable(
                 name: "PurchaseItems");
@@ -2473,6 +2736,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "RolePermissions");
+
+            migrationBuilder.DropTable(
+                name: "SagaCompensationLogs");
+
+            migrationBuilder.DropTable(
+                name: "SagaStepRecords");
 
             migrationBuilder.DropTable(
                 name: "SaleItems");
@@ -2518,6 +2787,9 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "SagaStates");
 
             migrationBuilder.DropTable(
                 name: "StoreItemUnits");

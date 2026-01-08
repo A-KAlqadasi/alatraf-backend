@@ -212,5 +212,32 @@ public class Sale : AuditableEntity<int>, IAggregateRoot
             DiagnosisId
         ));
     }
+    // Domain/Sales/Sale.cs - إضافة الطرق المفقودة
+    public Result<Updated> MarkInventoryReleased()
+    {
+        if (InventoryReservationCompleted)
+        {
+            InventoryReservationCompleted = false;
+            Status = SaleStatus.Draft;
+            AddDomainEvent(new SaleInventoryReleasedDomainEvent(Id));
+            return Result.Updated;
+        }
+        return Result.Updated;
+    }
+
+    public Result<Updated> RevertToDraft()
+    {
+        if (Status == SaleStatus.Confirmed)
+        {
+            Status = SaleStatus.Draft;
+            return Result.Updated;
+        }
+        return SaleErrors.NotConfirmed;
+    }
+
+    public void MarkAsDeleted()
+    {
+        SoftDelete("Compensation", DateTimeOffset.UtcNow);
+    }
 
 }
