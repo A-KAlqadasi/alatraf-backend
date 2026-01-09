@@ -4,6 +4,7 @@ using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.Inventory.Units;
+using AlatrafClinic.Domain.People;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Reports;
 using AlatrafClinic.Domain.Services;
@@ -68,6 +69,16 @@ public sealed class AlatrafClinicDbContextInitialiser
     }
     private async Task TrySeedAsync()
     {
+        var birthdate = new DateOnly(2004,11,03);
+        var person = Person.Create("عبدالكريم شوقي", birthdate, "782422822", null, "صنعاء", true).Value;
+
+        if(!await _context.People.AnyAsync())
+        {
+            // Seed default people
+            await _context.People.AddAsync(person);
+
+            await _context.SaveChangesAsync();
+        }
         // Default roles
         var adminRole = new IdentityRole("Admin");
         if (!await _roleManager.RoleExistsAsync(adminRole.Name!))
@@ -95,7 +106,7 @@ public sealed class AlatrafClinicDbContextInitialiser
             Email = adminEmail,  // ✅ ADD THIS
             NormalizedEmail = adminEmail.ToUpperInvariant(),  // ✅ ADD THIS
             EmailConfirmed = true,
-            PersonId = 1,
+            PersonId = person.Id,
             IsActive = true
         };
 
@@ -390,7 +401,7 @@ public sealed class AlatrafClinicDbContextInitialiser
                 {
                     DomainId = reportDomain.Id,
                     FieldKey = "patient_id",
-                    DisplayName = "معرف المريض",
+                    DisplayName = "رقم المريض",
                     TableName = "Patients",
                     ColumnName = "PatientId",
                     DataType = "int",
@@ -405,6 +416,52 @@ public sealed class AlatrafClinicDbContextInitialiser
                 new ReportField
                 {
                     DomainId = reportDomain.Id,
+                    FieldKey = "patient_name",
+                    DisplayName = "اسم المريض",
+                    TableName = "People",
+                    ColumnName = "FullName",
+                    DataType = "nvarchar(100)",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 2,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                // Add more fields as needed
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_age",
+                    DisplayName = "العمر",
+                    TableName = "People",
+                    ColumnName = "Age",
+                    DataType = "int",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 3,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_phone",
+                    DisplayName = "هاتف المريض",
+                    TableName = "People",
+                    ColumnName = "Phone",
+                    DataType = "nvarchar(15)",
+                    IsFilterable = false,
+                    IsSortable = false,
+                    IsActive = true,
+                    DisplayOrder = 4,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
                     FieldKey = "patient_type",
                     DisplayName = "نوع المريض",
                     TableName = "Patients",
@@ -413,7 +470,52 @@ public sealed class AlatrafClinicDbContextInitialiser
                     IsFilterable = true,
                     IsSortable = true,
                     IsActive = true,
-                    DisplayOrder = 2,
+                    DisplayOrder = 5,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_address",
+                    DisplayName = "العنوان",
+                    TableName = "People",
+                    ColumnName = "Address",
+                    DataType = "nvarchar(100)",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 6,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_national_number",
+                    DisplayName = "رقم الهوية الوطنية",
+                    TableName = "People",
+                    ColumnName = "NationalNo",
+                    DataType = "nvarchar(20)",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 7,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_gender",
+                    DisplayName = "الجنس",
+                    TableName = "People",
+                    ColumnName = "Gender",
+                    DataType = "bit",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 8,
                     CreatedAt = now,
                     UpdatedAt = now
                 },
@@ -428,56 +530,85 @@ public sealed class AlatrafClinicDbContextInitialiser
                     IsFilterable = true,
                     IsSortable = true,
                     IsActive = true,
-                    DisplayOrder = 3,
+                    DisplayOrder = 9,
                     CreatedAt = now,
                     UpdatedAt = now
                 },
                 new ReportField
                 {
                     DomainId = reportDomain.Id,
-                    FieldKey = "patient_name",
-                    DisplayName = "اسم المريض",
-                    TableName = "People",
-                    ColumnName = "FullName",
-                    DataType = "nvarchar(200)",
-                    IsFilterable = false,
-                    IsSortable = true,
-                    IsActive = true,
-                    DisplayOrder = 4,
-                    CreatedAt = now,
-                    UpdatedAt = now
-                },
-                new ReportField
-                {
-                    DomainId = reportDomain.Id,
-                    FieldKey = "patient_phone",
-                    DisplayName = "هاتف المريض",
-                    TableName = "People",
-                    ColumnName = "Phone",
-                    DataType = "nvarchar(15)",
-                    IsFilterable = false,
-                    IsSortable = false, // Phone numbers usually not sortable
-                    IsActive = true,
-                    DisplayOrder = 5,
-                    CreatedAt = now,
-                    UpdatedAt = now
-                },
-                // Add more fields as needed
-                new ReportField
-                {
-                    DomainId = reportDomain.Id,
-                    FieldKey = "patient_age",
-                    DisplayName = "العمر",
-                    TableName = "Patients",
-                    ColumnName = "Age",
+                    FieldKey = "patient_ticket_id",
+                    DisplayName = "رقم التذكرة",
+                    TableName = "Tickets",
+                    ColumnName = "TicketId",
                     DataType = "int",
                     IsFilterable = true,
                     IsSortable = true,
                     IsActive = true,
-                    DisplayOrder = 6,
+                    DisplayOrder = 10,
                     CreatedAt = now,
                     UpdatedAt = now
-                }
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_service_type",
+                    DisplayName = "نوع الخدمة",
+                    TableName = "Services",
+                    ColumnName = "Name",
+                    DataType = "nvarchar(200)",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 11,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_department",
+                    DisplayName = "القسم",
+                    TableName = "Departments",
+                    ColumnName = "Name",
+                    DataType = "nvarchar(100)",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 12,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_diagnosis_id",
+                    DisplayName = "رقم التشخيص",
+                    TableName = "Diagnoses",
+                    ColumnName = "DiagnosisId",
+                    DataType = "int",
+                    IsFilterable = false,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 13,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportField
+                {
+                    DomainId = reportDomain.Id,
+                    FieldKey = "patient_diagnosis_create",
+                    DisplayName = "تاريخ التشخيص",
+                    TableName = "Diagnoses",
+                    ColumnName = "CreatedAtUtc",
+                    DataType = "datetimeoffset(7)",
+                    IsFilterable = true,
+                    IsSortable = true,
+                    IsActive = true,
+                    DisplayOrder = 14,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
             };
 
             _context.ReportFields.AddRange(reportFields);
@@ -497,12 +628,60 @@ public sealed class AlatrafClinicDbContextInitialiser
                     CreatedAt = now,
                     UpdatedAt = now
                 },
+                new ReportJoin
+                {
+                    DomainId = reportDomain.Id,
+                    FromTable = "Patients",
+                    ToTable = "Tickets",
+                    JoinType = "LEFT",
+                    JoinCondition = "Patients.PatientId = Tickets.PatientId",
+                    IsActive = true,
+                    JoinOrder = 1,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportJoin
+                {
+                    DomainId = reportDomain.Id,
+                    FromTable = "Tickets",
+                    ToTable = "Services",
+                    JoinType = "LEFT",
+                    JoinCondition = "Tickets.ServiceId = Services.ServiceId",
+                    IsActive = true,
+                    IsRequired = true,
+                    JoinOrder = 2,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportJoin
+                {
+                    DomainId = reportDomain.Id,
+                    FromTable = "Services",
+                    ToTable = "Departments",
+                    JoinType = "LEFT",
+                    JoinCondition = "Services.DepartmentId = Departments.DepartmentId",
+                    IsActive = true,
+                    IsRequired = true,
+                    JoinOrder = 3,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
+                new ReportJoin
+                {
+                    DomainId = reportDomain.Id,
+                    FromTable = "Tickets",
+                    ToTable = "Diagnoses",
+                    JoinType = "LEFT",
+                    JoinCondition = "Tickets.TicketId = Diagnoses.TicketId",
+                    IsActive = true,
+                    IsRequired = true,
+                    JoinOrder = 2,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
             };
             _context.ReportJoins.AddRange(reportJoins);
-
         }
-        
-                
         await _context.SaveChangesAsync();
     }
 }

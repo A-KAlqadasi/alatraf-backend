@@ -37,7 +37,7 @@ public static class PaymentMapper
             PaymentId = entity.Id,
             CardId = cardId ?? 0,
             PatientName = entity.Diagnosis?.Patient.Person.FullName ?? string.Empty,
-            Age = UtilityService.CalculateAge(birthdate, AlatrafClinicConstants.TodayDate),
+            Age = entity.Diagnosis?.Patient?.Person.Age ?? 0,
             Gender = UtilityService.GenderToArabicString(entity.Diagnosis?.Patient.Person.Gender ?? true),
             Phone = entity.Diagnosis?.Patient.Person.Phone,
             PaymentReference = entity.PaymentReference
@@ -88,10 +88,10 @@ public static class PaymentMapper
 
             PatientName = payment.Diagnosis.Patient.Person.FullName,
 
-            Age = UtilityService.CalculateAge(birthdate, AlatrafClinicConstants.TodayDate),
+            Age = payment.Diagnosis?.Patient?.Person.Age ?? 0,
 
             Gender = UtilityService.GenderToArabicString(gender),
-            PatientId = payment.Diagnosis.Patient.Id,
+            PatientId = payment.Diagnosis!.Patient.Id,
             DiagnosisPrograms = payment.Diagnosis?.DiagnosisPrograms?.ToDtos() ?? new(),
             IsCompleted = payment.IsCompleted,
             TotalAmount = payment.TotalAmount,
@@ -113,10 +113,10 @@ public static class PaymentMapper
 
             PatientName = payment.Diagnosis.Patient.Person.FullName,
 
-            Age = UtilityService.CalculateAge(birthdate, AlatrafClinicConstants.TodayDate),
+            Age = payment.Diagnosis?.Patient?.Person.Age ?? 0,
 
             Gender = UtilityService.GenderToArabicString(gender),
-            PatientId = payment.Diagnosis.Patient.Id,
+            PatientId = payment.Diagnosis!.Patient.Id,
             DiagnosisIndustrialParts = payment.Diagnosis?.DiagnosisIndustrialParts?.ToDtos() ?? new(),
             IsCompleted = payment.IsCompleted,
             TotalAmount = payment.TotalAmount,

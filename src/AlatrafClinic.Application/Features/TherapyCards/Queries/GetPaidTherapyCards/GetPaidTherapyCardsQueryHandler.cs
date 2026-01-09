@@ -143,7 +143,7 @@ public sealed class GetPaidTherapyCardsQueryHandler
             PatientId = d.PatientId,
             PatientName = person.FullName,
             Gender = person.Gender ? "Male" : "Female",
-            Age = UtilityService.CalculateAge(person.Birthdate, AlatrafClinicConstants.TodayDate),
+            Age = person.Age,
 
             DiagnosisId = d.Id,
             DiagnosisText = d.DiagnosisText,

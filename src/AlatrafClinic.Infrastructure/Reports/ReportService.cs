@@ -101,25 +101,19 @@ public class ReportService : IReportService
                 // Build SQL with pagination
                 var (dataSql, countSql, parameters) = 
                     _sqlBuilder.Build(domain, fields, joins, request);
+                
+                var countResult = await _executor.ExecuteScalarAsync<int>(countSql, parameters);
 
-                // Execute count query first (for pagination metadata)
-                int totalCount = 0;
-                if (request.PageSize > 0)
+                // Apply MaxRows limit
+                if (countResult > request.MaxRows)
                 {
-                    var countResult = await _executor.ExecuteScalarAsync<int>(countSql, parameters);
-                    totalCount = countResult;
-                    
-                    // Apply MaxRows limit
-                    if (totalCount > request.MaxRows)
-                    {
-                        _logger.LogWarning(
-                            "Report {CorrelationId} exceeded MaxRows limit: {TotalCount} > {MaxRows}",
-                            correlationId, totalCount, request.MaxRows);
-                        throw new ReportLimitExceededException(
-                            $"Report would return {totalCount} rows, which exceeds the maximum allowed ({request.MaxRows})");
-                    }
+                    _logger.LogWarning(
+                        "Report {CorrelationId} exceeded MaxRows limit: {TotalCount} > {MaxRows}",
+                        correlationId, countResult, request.MaxRows);
+                    throw new ReportLimitExceededException(
+                        $"Report would return {countResult} rows, which exceeds the maximum allowed ({request.MaxRows})");
                 }
-
+                
                 // Execute main query
                 var rows = await _executor.ExecuteAsync(dataSql, parameters);
 
@@ -135,15 +129,14 @@ public class ReportService : IReportService
                     Rows = rows.ToList(),
                     Page = request.Page,
                     PageSize = request.PageSize,
-                    TotalCount = totalCount
+                    TotalCount = countResult
                 };
 
                 stopwatch.Stop();
                 
                 _logger.LogInformation(
                     "Report execution {CorrelationId} completed in {ElapsedMs}ms. Rows: {RowCount}, Total: {TotalCount}",
-                    correlationId, stopwatch.ElapsedMilliseconds, response.Rows.Count, totalCount);
-
+                    correlationId, stopwatch.ElapsedMilliseconds, response.Rows.Count, countResult);
 
                 return response;
             }
@@ -258,6 +251,20 @@ public class ReportService : IReportService
             _logger.LogError(ex, "Error retrieving fields for domain {DomainId}", domainId);
             throw;
         }
+    }
+
+    public async Task<int> GetRowCountAsync(ReportRequestDto request)
+    {
+        var domainWithRelations = await _metadataRepo.GetDomainWithRelationsAsync(request.DomainId);
+        
+        var (_, countSql, parameters) = _sqlBuilder.Build(
+            domainWithRelations.Domain,
+            domainWithRelations.Fields,
+            domainWithRelations.Joins,
+            request);
+        
+        // Execute count query only
+        return await _executor.ExecuteScalarAsync<int>(countSql, parameters);
     }
 
     

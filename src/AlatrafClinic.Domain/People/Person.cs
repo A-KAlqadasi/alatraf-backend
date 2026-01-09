@@ -12,6 +12,7 @@ public sealed class Person : AuditableEntity<int>
 {
     public string FullName { get; private set; } = null!;
     public DateOnly Birthdate { get; private set; }
+    public int Age { get; private set; }
     public string Phone { get; private set; } = null!;
     public string? NationalNo { get; private set; }
     public bool Gender { get; private set; } // Added: true = Male, false = Female
@@ -23,7 +24,7 @@ public sealed class Person : AuditableEntity<int>
 
     private Person() { }
 
-    private Person(string fullname, DateOnly birthdate, string phone, string? nationalNo, string address, bool gender)
+    private Person(string fullname, DateOnly birthdate, string phone, string? nationalNo, string address, bool gender, int age)
     {
         FullName = fullname;
         Birthdate = birthdate;
@@ -31,6 +32,7 @@ public sealed class Person : AuditableEntity<int>
         NationalNo = nationalNo;
         Address = address;
         Gender = gender;
+        Age = age;
     }
 
     public static Result<Person> Create(string fullname, DateOnly birthdate, string phone, string? nationalNo, string address, bool gender)
@@ -46,8 +48,22 @@ public sealed class Person : AuditableEntity<int>
 
         if (string.IsNullOrWhiteSpace(address))
             return PersonErrors.AddressRequired;
+        
+        int age = CalculateAge(birthdate, AlatrafClinicConstants.TodayDate);
 
-        return new Person(fullname, birthdate, phone, nationalNo, address, gender);
+        return new Person(fullname, birthdate, phone, nationalNo, address, gender, age);
+    }
+
+    private static int CalculateAge(DateOnly dateOfBirth, DateOnly now)
+    {
+        var age = now.Year - dateOfBirth.Year;
+
+        if (dateOfBirth > now.AddYears(-age))
+        {
+            age -= 1;
+        }
+
+        return age;
     }
 
     public Result<Updated> Update(string fullname, DateOnly birthdate, string phone, string? nationalNo, string address, bool gender)
@@ -70,6 +86,7 @@ public sealed class Person : AuditableEntity<int>
         NationalNo = nationalNo;
         Address = address;
         Gender = gender;
+        Age = CalculateAge(birthdate, AlatrafClinicConstants.TodayDate);
 
         return Result.Updated;
     }

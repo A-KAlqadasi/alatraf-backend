@@ -33,7 +33,7 @@ public class GetTicketForScheduleAppointmentQueryHandler : IRequestHandler<GetTi
                 TicketStatus = t.Status.ToArabicTicketStatus(),
                 PatientId = t.PatientId ?? 0,
                 ServiceId = t.ServiceId,
-                Age = UtilityService.CalculateAge(t.Patient!.Person.Birthdate, AlatrafClinicConstants.TodayDate),
+                Age = t.Patient!.Person.Age,
                 Gender = UtilityService.GenderToArabicString(t.Patient.Person.Gender),
                 ServiceName = t.Service!.Name,
                 PatientName = t.Patient!.Person.FullName,

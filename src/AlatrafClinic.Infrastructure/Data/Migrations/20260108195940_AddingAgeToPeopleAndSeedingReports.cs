@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingReportsDomain : Migration
+    public partial class AddingAgeToPeopleAndSeedingReports : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -178,12 +178,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 {
                     PersonId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FullName = table.Column<string>(type: "nvarchar(200)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Birthdate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Age = table.Column<int>(type: "int", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(15)", nullable: false),
                     NationalNo = table.Column<string>(type: "nvarchar(20)", nullable: true),
                     Gender = table.Column<bool>(type: "bit", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     AutoRegistrationNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, computedColumnSql: "CONVERT(char(4), YEAR([CreatedAtUtc])) + '_' + RIGHT('0' + CONVERT(varchar(2), MONTH([CreatedAtUtc])), 2) + '_' + RIGHT('0' + CONVERT(varchar(2), DAY([CreatedAtUtc])), 2) + '_' + CONVERT(varchar(20), [PersonId])", stored: true),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),

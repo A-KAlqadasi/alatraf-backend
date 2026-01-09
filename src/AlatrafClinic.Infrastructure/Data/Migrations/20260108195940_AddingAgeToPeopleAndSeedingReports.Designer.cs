@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    [Migration("20260107063136_AddingReportsDomain")]
-    partial class AddingReportsDomain
+    [Migration("20260108195940_AddingAgeToPeopleAndSeedingReports")]
+    partial class AddingAgeToPeopleAndSeedingReports
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1535,8 +1535,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
 
                     b.Property<string>("AutoRegistrationNumber")
                         .ValueGeneratedOnAddOrUpdate()
@@ -1561,7 +1564,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("Gender")
                         .HasColumnType("bit");

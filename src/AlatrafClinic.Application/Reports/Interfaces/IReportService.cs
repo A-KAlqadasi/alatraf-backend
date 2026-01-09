@@ -9,4 +9,6 @@ public interface IReportService
     // Add these methods for the controller
     Task<IEnumerable<ReportDomainDto>> GetAvailableDomainsAsync();
     Task<IEnumerable<ReportFieldDto>> GetDomainFieldsAsync(int domainId);
+    Task<int> GetRowCountAsync(ReportRequestDto request);
+    
 }

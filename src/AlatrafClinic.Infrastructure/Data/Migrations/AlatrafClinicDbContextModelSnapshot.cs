@@ -1532,8 +1532,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
 
                     b.Property<string>("AutoRegistrationNumber")
                         .ValueGeneratedOnAddOrUpdate()
@@ -1558,7 +1561,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("Gender")
                         .HasColumnType("bit");
