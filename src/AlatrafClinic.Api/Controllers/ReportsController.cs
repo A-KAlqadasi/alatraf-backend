@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 using AlatrafClinic.Application.Reports.Dtos;
 using AlatrafClinic.Application.Reports.Exceptions;
@@ -194,53 +195,52 @@ public class ReportsController : ApiController
     }
 
     /// <summary>
-    /// Export report to Excel
+    /// Export to Excel (up to 50,000 rows)
     /// </summary>
-    /// <param name="request">Report request parameters</param>
-    /// <returns>Excel file</returns>
-    [HttpPost("export/excel")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("export")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ExportToExcel([FromBody] ReportRequestDto request)
     {
+        // Set limits for Excel export
+        
+        request.PageSize = 0; // All rows
+        request.MaxRows = 50000; // Hard limit for Excel
+        
         try
         {
-            // You'll need to implement export functionality
-            var excelBytes = await _reportExportService.ExportToExcelAsync(await _reportService.RunAsync(request));
+            var result = await _reportService.RunAsync(request);
             
+            if (result.Rows.Count > 50000)
+            {
+                return BadRequest(new
+                {
+                    Error = "Excel export limit exceeded",
+                    RowCount = result.Rows.Count,
+                    MaxRows = 50000,
+                    Suggestion = "Apply filters to reduce dataset size"
+                });
+            }
+            
+            var excelBytes = await _reportExportService.ExportToExcelAsync(result);
             var fileName = $"report_{DateTime.UtcNow:yyyyMMdd_HHmmss}.xlsx";
             
             return File(excelBytes, 
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
                 fileName);
         }
-        catch (Exception ex)
+        catch (ReportLimitExceededException ex)
         {
-            _logger.LogError(ex, "Error exporting report to Excel");
             return BadRequest(new
             {
-                Error = "Export failed",
-                Details = ex.Message
+                Error = "Export limit exceeded",
+                Details = ex.Message,
+                Suggestion = "Apply filters to reduce dataset size"
             });
         }
     }
-
-    /// <summary>
-    /// Test endpoint to verify report service is working
-    /// </summary>
-    [HttpGet("health")]
-    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public IActionResult HealthCheck()
-    {
-        return Ok(new
-        {
-            Status = "Healthy",
-            Timestamp = DateTime.UtcNow,
-            Service = "ReportService",
-            Version = "1.0.0"
-        });
-    }
-
+   
+   
     #region Helper Methods
 
     private string GetCurrentUserId()

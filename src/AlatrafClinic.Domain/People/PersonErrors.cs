@@ -29,5 +29,6 @@ public static class PersonErrors
     public static readonly Error PatientIsRequired = Error.Validation("Person.PatientIsRequired", "Patient is required to be assigned to person");
 
     public static readonly Error DoctorIsRequired = Error .Validation("Person.DoctorIsRequired", "Doctor is required to be assigned to person");
+    public static readonly Error PersonNotFound = Error.NotFound("Person.PersonNotFound", "Person not found");
     
 }

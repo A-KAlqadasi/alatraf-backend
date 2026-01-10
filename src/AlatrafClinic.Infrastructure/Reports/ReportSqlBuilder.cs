@@ -43,6 +43,19 @@ public class ReportSqlBuilder : IReportSqlBuilder
         var fromClause = BuildFromClause(domain, selectedFields, joins);
         var whereClause = BuildWhereClause(request, fields, parameters);
         var orderByClause = BuildOrderByClause(request, fields);
+    
+        if (string.IsNullOrWhiteSpace(orderByClause) && request.PageSize > 0)
+        {
+            if (selectedFields.Any())
+            {
+                var firstField = selectedFields.First();
+                var safeTable = SanitizeIdentifier(firstField.TableName);
+                var safeColumn = SanitizeIdentifier(firstField.ColumnName);
+                orderByClause = $"ORDER BY {safeTable}.{safeColumn}";
+            }
+        }
+    
+        
         var paginationClause = BuildPaginationClause(request, parameters);
 
         // Build data query

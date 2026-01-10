@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingReportsTables : Migration
+    public partial class AddingIsActiveToRolePermissions : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -244,12 +244,13 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 {
                     PersonId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FullName = table.Column<string>(type: "nvarchar(200)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Birthdate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Age = table.Column<int>(type: "int", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(15)", nullable: false),
                     NationalNo = table.Column<string>(type: "nvarchar(20)", nullable: true),
                     Gender = table.Column<bool>(type: "bit", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     AutoRegistrationNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, computedColumnSql: "CONVERT(char(4), YEAR([CreatedAtUtc])) + '_' + RIGHT('0' + CONVERT(varchar(2), MONTH([CreatedAtUtc])), 2) + '_' + RIGHT('0' + CONVERT(varchar(2), DAY([CreatedAtUtc])), 2) + '_' + CONVERT(varchar(20), [PersonId])", stored: true),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -268,8 +269,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "Permissions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -613,7 +613,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PermissionId = table.Column<int>(type: "int", nullable: false)
+                    PermissionId = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -1508,7 +1509,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     IsCompensated = table.Column<bool>(type: "bit", nullable: false),
                     CompensatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StoreItemUnitId1 = table.Column<int>(type: "int", nullable: false),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -1526,12 +1526,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         principalTable: "StoreItemUnits",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_InventoryReservations_StoreItemUnits_StoreItemUnitId1",
-                        column: x => x.StoreItemUnitId1,
-                        principalTable: "StoreItemUnits",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2354,11 +2348,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                 name: "IX_InventoryReservations_StoreItemUnitId",
                 table: "InventoryReservations",
                 column: "StoreItemUnitId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InventoryReservations_StoreItemUnitId1",
-                table: "InventoryReservations",
-                column: "StoreItemUnitId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_BaseUnitId",

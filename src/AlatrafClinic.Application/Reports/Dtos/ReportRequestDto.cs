@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace AlatrafClinic.Application.Reports.Dtos;
 
 
@@ -8,7 +10,8 @@ public class ReportRequestDto
     public List<ReportFilterDto> Filters { get; set; } = new();
     
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 100;
+
+    public int PageSize { get; set; }
     public int MaxRows { get; set; } = 10000;
     public List<ReportSortDto> SortBy { get; set; } = new();
 }

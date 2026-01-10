@@ -3,18 +3,15 @@ using System.Security.Claims;
 
 using AlatrafClinic.Api.Requests.Identity;
 using AlatrafClinic.Application.Features.Identity;
+using AlatrafClinic.Application.Features.Identity.Commands.ActivatePermissionsInRole;
 using AlatrafClinic.Application.Features.Identity.Commands.ActivateUser;
-using AlatrafClinic.Application.Features.Identity.Commands.AssignPermissionsToRole;
 using AlatrafClinic.Application.Features.Identity.Commands.AssignRolesToUser;
 using AlatrafClinic.Application.Features.Identity.Commands.ChangeUserCredentials;
-using AlatrafClinic.Application.Features.Identity.Commands.CreateRole;
 using AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
-using AlatrafClinic.Application.Features.Identity.Commands.DeleteRole;
+using AlatrafClinic.Application.Features.Identity.Commands.DeActivatePermissionsInRole;
 using AlatrafClinic.Application.Features.Identity.Commands.DenyPermissionsToUser;
 using AlatrafClinic.Application.Features.Identity.Commands.GrantPermissionsToUser;
-using AlatrafClinic.Application.Features.Identity.Commands.RemovePermissionsFromRole;
 using AlatrafClinic.Application.Features.Identity.Commands.RemoveRolesFromUser;
-using AlatrafClinic.Application.Features.Identity.Commands.RemoveUserPermissionOverrides;
 using AlatrafClinic.Application.Features.Identity.Commands.ResetUserPassword;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Application.Features.Identity.Queries.GenerateTokens;
@@ -132,7 +129,7 @@ public sealed class IdentityController(ISender sender) : ApiController
         return result.Match(_ => NoContent(), Problem);
     }
 
-    [HttpPatch("users/{userId}/credentials")]
+    [HttpPatch("users/{userId}/change-credentials")]
     [EndpointSummary("Changes user credentials.")]
     [EndpointName("ChangeUserCredentials")]
     public async Task<IActionResult> ChangeCredentials(
@@ -206,55 +203,29 @@ public sealed class IdentityController(ISender sender) : ApiController
     // Roles
     // =========================
 
-    [HttpPost("roles")]
-    [EndpointSummary("Creates a role.")]
-    [EndpointName("CreateRole")]
-    public async Task<IActionResult> CreateRole(
-        [FromBody] CreateRoleRequest request,
-        CancellationToken ct)
-    {
-        var command = new CreateRoleCommand(request.Name);
-        var result = await sender.Send(command, ct);
-
-        return result.Match(Ok, Problem);
-    }
-
-    [HttpDelete("roles/{roleId}")]
-    [EndpointSummary("Deletes a role.")]
-    [EndpointName("DeleteRole")]
-    public async Task<IActionResult> DeleteRole(
+    [HttpPatch("roles/{roleId}/permissions/activate")]
+    [EndpointSummary("Activate permissions in a role.")]
+    [EndpointName("ActivatePermissionsInRole")]
+    public async Task<IActionResult> ActivatePermissionsInRole(
         string roleId,
+        [FromBody] PermissionIdsRequest request,
         CancellationToken ct)
     {
-        var command = new DeleteRoleCommand(roleId);
+        var command = new ActivatePermissionsInRoleCommand(roleId, request.PermissionIds);
         var result = await sender.Send(command, ct);
 
         return result.Match(_ => NoContent(), Problem);
     }
 
-    [HttpPost("roles/{roleId}/permissions")]
-    [EndpointSummary("Assigns permissions to a role.")]
-    [EndpointName("AssignPermissionsToRole")]
-    public async Task<IActionResult> AssignPermissionsToRole(
+    [HttpPatch("roles/{roleId}/permissions/deactivate")]
+    [EndpointSummary("Deactivate permissions in a role.")]
+    [EndpointName("DeactivatePermissionsInRole")]
+    public async Task<IActionResult> DeactivatePermissionsInRole(
         string roleId,
         [FromBody] PermissionIdsRequest request,
         CancellationToken ct)
     {
-        var command = new AssignPermissionsToRoleCommand(roleId, request.PermissionIds);
-        var result = await sender.Send(command, ct);
-
-        return result.Match(_ => NoContent(), Problem);
-    }
-
-    [HttpDelete("roles/{roleId}/permissions")]
-    [EndpointSummary("Removes permissions from a role.")]
-    [EndpointName("RemovePermissionsFromRole")]
-    public async Task<IActionResult> RemovePermissionsFromRole(
-        string roleId,
-        [FromBody] PermissionIdsRequest request,
-        CancellationToken ct)
-    {
-        var command = new RemovePermissionsFromRoleCommand(roleId, request.PermissionIds);
+        var command = new DeActivatePermissionsInRoleCommand(roleId, request.PermissionIds);
         var result = await sender.Send(command, ct);
 
         return result.Match(_ => NoContent(), Problem);
@@ -298,20 +269,6 @@ public sealed class IdentityController(ISender sender) : ApiController
         CancellationToken ct)
     {
         var command = new DenyPermissionsToUserCommand(userId, request.PermissionIds);
-        var result = await sender.Send(command, ct);
-
-        return result.Match(_ => NoContent(), Problem);
-    }
-
-    [HttpDelete("users/{userId}/permissions")]
-    [EndpointSummary("Removes permission overrides from a user.")]
-    [EndpointName("RemoveUserPermissionOverrides")]
-    public async Task<IActionResult> RemovePermissionOverrides(
-        string userId,
-        [FromBody] PermissionIdsRequest request,
-        CancellationToken ct)
-    {
-        var command = new RemoveUserPermissionOverridesCommand(userId, request.PermissionIds);
         var result = await sender.Send(command, ct);
 
         return result.Match(_ => NoContent(), Problem);
