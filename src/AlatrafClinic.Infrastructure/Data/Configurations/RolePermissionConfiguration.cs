@@ -18,7 +18,10 @@ public sealed class RolePermissionConfiguration : IEntityTypeConfiguration<RoleP
 
         builder.HasOne(rp => rp.Permission)
             .WithMany(p => p.RolePermissions)
-            .HasForeignKey(rp => rp.PermissionId);   
+            .HasForeignKey(rp => rp.PermissionId);
+            
+        builder.Property(rp => rp.IsActive)
+        .HasDefaultValue(true);   
        
     }
 }

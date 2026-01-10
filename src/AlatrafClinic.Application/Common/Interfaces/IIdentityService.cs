@@ -35,11 +35,6 @@ public interface IIdentityService
     // =========================
     // Role Management
     // =========================
-    Task<Result<string>> CreateRoleAsync(string name, CancellationToken ct = default);
-    Task<Result<Deleted>> DeleteRoleAsync(string roleId, CancellationToken ct = default);
-
-    Task<Result<Updated>> AssignPermissionsToRoleAsync(string roleId, IReadOnlyCollection<int> permissionIds, CancellationToken ct = default);
-    Task<Result<Deleted>> RemovePermissionsFromRoleAsync(string roleId, IReadOnlyCollection<int> permissionIds, CancellationToken ct = default);
 
     Task<Result<IReadOnlyList<RoleDetailsDto>>> GetRolesAsync(CancellationToken ct = default);
 
@@ -48,7 +43,6 @@ public interface IIdentityService
     // =========================
     Task<Result<Updated>> GrantPermissionsToUserAsync(string userId, IReadOnlyCollection<int> permissionIds, CancellationToken ct = default);
     Task<Result<Updated>> DenyPermissionsToUserAsync(string userId, IReadOnlyCollection<int> permissionIds, CancellationToken ct = default);
-    Task<Result<Deleted>> RemoveUserPermissionOverridesAsync(string userId, IReadOnlyCollection<int> permissionIds, CancellationToken ct = default);
 
     // =========================
     // Permission Queries (VERY IMPORTANT)
@@ -56,5 +50,15 @@ public interface IIdentityService
     Task<Result<bool>> UserHasPermissionAsync(string userId, string permissionName, CancellationToken ct = default);
     Task<Result<IReadOnlyList<string>>> GetEffectiveUserPermissionsAsync(string userId, CancellationToken ct = default);
     Task<Result<IReadOnlyList<PermissionDto>>> GetAllPermissionsAsync(string? search, CancellationToken ct = default);
+    
+    Task<Result<Updated>> ActivateRolePermissionsAsync(
+        string roleId,
+        IReadOnlyCollection<int> permissionIds,
+        CancellationToken ct = default);
+    
+    Task<Result<Updated>> DeactivateRolePermissionsAsync(
+        string roleId,
+        IReadOnlyCollection<int> permissionIds,
+        CancellationToken ct = default);
     
 }

@@ -20,4 +20,5 @@ public static class MyIdentityErrors
     public static readonly Error UsernameAlreadyTaken = Error.Conflict(description: "The username is already taken.");
     public static readonly Error FaliedToAssignRoleToUserPermissions = Error.Failure(description: "Failed to assign permissions to role");
     public static readonly Error FaliedToRemoveRoleFromUser = Error.Failure(description: "Failed to remove role from user");
+    public static readonly Error PermissionsNotInRole = Error.NotFound(description: "Some permissions are not assigned to the role");
 }

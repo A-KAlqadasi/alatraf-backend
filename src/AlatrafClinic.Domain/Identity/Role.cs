@@ -1,22 +1,19 @@
 namespace AlatrafClinic.Domain.Identity;
 
+
 public enum Role
 {
     Admin,
     Receptionist,
-    AccountsEmployee,
-    AccountsManager,
-    TechnicalManagementDoctor,
+    FinanceEmployee,
+    TherapyDoctor,
+    IndustrialDoctor,
+    AppointmentsEmployee,
     TechnicalManagementReceptionist,
-    TechnicalManagementOrdersEmployee,
-    TechnicalManagementManager,
     TherapyManagementReceptionist,
-    TherapyManagementDoctor,
-    TherapyManagementManager,
-    SalesEmployee,
-    SalesManager,
+    OrdersEmployee,
     ExchangeOrderEmployee,
-    ExchangeOrderManager,
+    SalesEmployee,
     PurchaseEmployee,
-    PurchaseManager
+    ExitsEmployee,
 }
