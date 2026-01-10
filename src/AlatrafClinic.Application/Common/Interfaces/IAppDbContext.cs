@@ -27,6 +27,8 @@ using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.RepairCards.Orders;
 using AlatrafClinic.Domain.Reports;
+
+using AlatrafClinic.Domain.Sagas;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.SalesItems;
 using AlatrafClinic.Domain.Services;
@@ -110,5 +112,17 @@ public interface IAppDbContext
     public DbSet<PurchaseItem> PurchaseItems { get; }
     public DbSet<Supplier> Suppliers { get; }
 
+    //public DbSet<OutboxMessage> OutboxMessages { get; }
+    public DbSet<InventoryReservation> InventoryReservations { get; }
+
+    DbSet<SagaState> SagaStates { get; }
+    DbSet<SagaStepRecord> SagaStepRecords { get; }
+    DbSet<SagaCompensationLog> SagaCompensationLogs { get; }
+    DbSet<CompensationNotification> CompensationNotifications { get; }
+    DbSet<ManualInterventionRequired> ManualInterventions { get; }
+
+
     Task<int> SaveChangesAsync(CancellationToken ct);
+
+
 }
