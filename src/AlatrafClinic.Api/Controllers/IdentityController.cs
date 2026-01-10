@@ -92,7 +92,12 @@ public sealed class IdentityController(ISender sender) : ApiController
         CancellationToken ct)
     {
         var command = new CreateUserCommand(
-            request.PersonId,
+            request.Fullname,
+            request.Birthdate,
+            request.Phone,
+            request.NationalNo,
+            request.Address,
+            request.Gender,
             request.UserName,
             request.Password,
             request.IsActive);

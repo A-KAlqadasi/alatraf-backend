@@ -12,14 +12,6 @@ using Scalar.AspNetCore;
 
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.Console(
-        outputTemplate:
-        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} " +
-        "SagaId={SagaId} SaleId={SaleId}{NewLine}{Exception}"
-    )
-    .CreateLogger();
 var builder = WebApplication.CreateBuilder(args);
 
 
