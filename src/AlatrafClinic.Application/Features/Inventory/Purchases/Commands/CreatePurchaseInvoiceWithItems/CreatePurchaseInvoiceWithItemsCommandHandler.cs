@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Purchases.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Purchases.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -6,31 +6,35 @@ using AlatrafClinic.Domain.Inventory.Purchases;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Purchases.Commands.CreatePurchaseInvoiceWithItems;
 
 public class CreatePurchaseInvoiceWithItemsCommandHandler : IRequestHandler<CreatePurchaseInvoiceWithItemsCommand, Result<PurchaseInvoiceDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<CreatePurchaseInvoiceWithItemsCommandHandler> _logger;
 
-    public CreatePurchaseInvoiceWithItemsCommandHandler(IUnitOfWork unitOfWork, ILogger<CreatePurchaseInvoiceWithItemsCommandHandler> logger)
+    public CreatePurchaseInvoiceWithItemsCommandHandler(IAppDbContext dbContext, ILogger<CreatePurchaseInvoiceWithItemsCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
     public async Task<Result<PurchaseInvoiceDto>> Handle(CreatePurchaseInvoiceWithItemsCommand request, CancellationToken ct)
     {
-        var supplier = await _unitOfWork.Suppliers.GetByIdAsync(request.SupplierId, ct);
+        var supplier = await _dbContext.Suppliers
+            .SingleOrDefaultAsync(s => s.Id == request.SupplierId, ct);
         if (supplier is null)
         {
             _logger.LogWarning("Supplier {SupplierId} not found when creating purchase invoice.", request.SupplierId);
             return PurchaseInvoiceErrors.InvalidSupplier;
         }
 
-        var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(request.StoreId, ct);
+        var store = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+            .SingleOrDefaultAsync(s => s.Id == request.StoreId, ct);
         if (store is null)
         {
             _logger.LogWarning("Store {StoreId} not found when creating purchase invoice.", request.StoreId);
@@ -69,8 +73,8 @@ public class CreatePurchaseInvoiceWithItemsCommandHandler : IRequestHandler<Crea
             }
         }
 
-        await _unitOfWork.PurchaseInvoices.AddAsync(invoice, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.PurchaseInvoices.AddAsync(invoice, ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Created PurchaseInvoice {Id} with {Lines} items for supplier {SupplierId}", invoice.Id, invoice.Items.Count, supplier.Id);
 

@@ -1,22 +1,23 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Suppliers.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Suppliers.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Suppliers.Queries.GetAllSuppliersQuery;
 
 public sealed class GetAllSuppliersQueryHandler : IRequestHandler<GetAllSuppliersQuery, Result<List<SupplierDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetAllSuppliersQueryHandler> _logger;
 
-    public GetAllSuppliersQueryHandler(IUnitOfWork unitOfWork, ILogger<GetAllSuppliersQueryHandler> logger)
+    public GetAllSuppliersQueryHandler(IAppDbContext dbContext, ILogger<GetAllSuppliersQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -24,7 +25,7 @@ public sealed class GetAllSuppliersQueryHandler : IRequestHandler<GetAllSupplier
     {
         _logger.LogInformation("Fetching all suppliers from database...");
 
-        var suppliers = await _unitOfWork.Suppliers.GetAllAsync(cancellationToken);
+        var suppliers = await _dbContext.Suppliers.ToListAsync(cancellationToken);
 
         if (suppliers is null || !suppliers.Any())
         {

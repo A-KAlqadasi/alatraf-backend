@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Dtos;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -8,6 +8,7 @@ using AlatrafClinic.Domain.Sales;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.CreateExchangeOrderForSale;
@@ -15,14 +16,14 @@ namespace AlatrafClinic.Application.Features.Inventory.Commands.CreateExchangeOr
 public sealed class CreateExchangeOrderForSaleCommandHandler
     : IRequestHandler<CreateExchangeOrderForSaleCommand, Result<ExchangeOrderDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<CreateExchangeOrderForSaleCommandHandler> _logger;
 
     public CreateExchangeOrderForSaleCommandHandler(
-        IUnitOfWork unitOfWork,
+        IAppDbContext dbContext,
         ILogger<CreateExchangeOrderForSaleCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
     public async Task<Result<ExchangeOrderDto>> Handle(CreateExchangeOrderForSaleCommand request, CancellationToken ct)
@@ -30,7 +31,10 @@ public sealed class CreateExchangeOrderForSaleCommandHandler
         _logger.LogInformation("Creating exchange order for sale…");
 
         // 1) Load sale
-        var sale = await _unitOfWork.Sales.GetByIdAsync(request.SaleId, ct);
+        var sale = await _dbContext.Sales
+            .Include(s => s.Payment)
+            .Include(s => s.SaleItems)
+            .SingleOrDefaultAsync(s => s.Id == request.SaleId, ct);
         if (sale is null)
             return SaleErrors.SaleNotFound;
 
@@ -41,7 +45,14 @@ public sealed class CreateExchangeOrderForSaleCommandHandler
             return SaleErrors.PaymentNotCompleted;
 
         // 3) Load store with units
-        var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(request.StoreId, ct);
+        var store = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+            .ThenInclude(siu => siu.ItemUnit)
+            .ThenInclude(iu => iu.Item)
+            .Include(s => s.StoreItemUnits)
+            .ThenInclude(siu => siu.ItemUnit)
+            .ThenInclude(iu => iu.Unit)
+            .SingleOrDefaultAsync(s => s.Id == request.StoreId, ct);
         if (store is null)
             return StoreErrors.StoreNotFound;
         if (store.StoreItemUnits == null)
@@ -77,7 +88,7 @@ public sealed class CreateExchangeOrderForSaleCommandHandler
         var exchangeOrder = createResult.Value;
 
         // 6) Persist Exchange Order
-        await _unitOfWork.ExchangeOrders.AddAsync(exchangeOrder, ct);
+        await _dbContext.ExchangeOrders.AddAsync(exchangeOrder, ct);
 
         // 7) Apply store quantity deduction
         foreach (var line in exchangeOrder.Items)
@@ -91,10 +102,10 @@ public sealed class CreateExchangeOrderForSaleCommandHandler
                 return dec.Errors;
         }
 
-        await _unitOfWork.Stores.UpdateAsync(store, ct);
+        // store tracked in context
 
         // 8) Save changes
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         // 9) Map to DTO
         var dto = exchangeOrder.ToDto();

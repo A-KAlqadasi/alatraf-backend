@@ -1,20 +1,23 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
 using AlatrafClinic.Domain.Common.Results;
+
 using MediatR;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Items.Queries.GetItemsListQuery;
 
-public sealed class GetItemsListQueryHandler 
+public sealed class GetItemsListQueryHandler
     : IRequestHandler<GetItemsListQuery, Result<List<ItemDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetItemsListQueryHandler> _logger;
 
-    public GetItemsListQueryHandler(IUnitOfWork unitOfWork, ILogger<GetItemsListQueryHandler> logger)
+    public GetItemsListQueryHandler(IAppDbContext dbContext, ILogger<GetItemsListQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -22,7 +25,7 @@ public sealed class GetItemsListQueryHandler
     {
         _logger.LogInformation("Fetching all items from database...");
 
-        var items = await _unitOfWork.Items.GetAllAsync(cancellationToken);
+        var items = await _dbContext.Items.ToListAsync(cancellationToken);
 
         if (items is null || !items.Any())
         {

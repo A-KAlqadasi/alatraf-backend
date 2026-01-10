@@ -4,6 +4,7 @@ using AlatrafClinic.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-    partial class AlatrafClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260110195939_ResolveTheRealationInStoreItemUnits")]
+    partial class ResolveTheRealationInStoreItemUnits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1543,11 +1546,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("AutoRegistrationNumber")
                         .ValueGeneratedOnAddOrUpdate()
@@ -1572,7 +1572,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("Gender")
                         .HasColumnType("bit");
@@ -3128,7 +3128,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.ApplicationPermission", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -3153,11 +3156,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     b.Property<int>("PermissionId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.HasKey("RoleId", "PermissionId");
 

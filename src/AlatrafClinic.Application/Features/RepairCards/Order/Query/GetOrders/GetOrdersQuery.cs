@@ -1,6 +1,8 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 
+using MediatR;
+
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetOrders;
 
 public sealed record GetOrdersQuery(
@@ -12,9 +14,4 @@ public sealed record GetOrdersQuery(
     string? SortDirection,
     int Page = 1,
     int PageSize = 10
-) : ICachedQuery<Result<AlatrafClinic.Application.Common.Models.PaginatedList<AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto>>>
-{
-    public string CacheKey => "orders_list";
-    public string[] Tags => new[] { "order" };
-    public TimeSpan Expiration => TimeSpan.FromMinutes(2);
-}
+) : IRequest<Result<AlatrafClinic.Application.Common.Models.PaginatedList<AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto>>>;  

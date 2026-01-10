@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Dtos;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -6,18 +6,19 @@ using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Queries.GetExchangeOrderById;
 
 public sealed class GetExchangeOrderByIdQueryHandler : IRequestHandler<GetExchangeOrderByIdQuery, Result<ExchangeOrderDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetExchangeOrderByIdQueryHandler> _logger;
 
-    public GetExchangeOrderByIdQueryHandler(IUnitOfWork unitOfWork, ILogger<GetExchangeOrderByIdQueryHandler> logger)
+    public GetExchangeOrderByIdQueryHandler(IAppDbContext dbContext, ILogger<GetExchangeOrderByIdQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -25,7 +26,19 @@ public sealed class GetExchangeOrderByIdQueryHandler : IRequestHandler<GetExchan
     {
         _logger.LogInformation("Fetching exchange order by id {ExchangeOrderId}...", request.ExchangeOrderId);
 
-        var exchangeOrder = await _unitOfWork.ExchangeOrders.GetByIdAsync(request.ExchangeOrderId, ct);
+        var exchangeOrder = await _dbContext.ExchangeOrders
+            .AsNoTracking()
+            .Include(e => e.Store)
+                .ThenInclude(s => s.StoreItemUnits)
+                .ThenInclude(siu => siu.ItemUnit)
+                .ThenInclude(iu => iu.Item)
+            .Include(e => e.Store)
+                .ThenInclude(s => s.StoreItemUnits)
+                .ThenInclude(siu => siu.ItemUnit)
+                .ThenInclude(iu => iu.Unit)
+            .Include(e => e.Items)
+                .ThenInclude(i => i.StoreItemUnit)
+            .SingleOrDefaultAsync(e => e.Id == request.ExchangeOrderId, ct);
         if (exchangeOrder is null)
         {
             _logger.LogWarning("Exchange order {ExchangeOrderId} not found.", request.ExchangeOrderId);

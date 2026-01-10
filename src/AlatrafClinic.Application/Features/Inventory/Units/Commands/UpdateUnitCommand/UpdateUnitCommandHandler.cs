@@ -1,24 +1,25 @@
 using AlatrafClinic.Application.Features.Inventory.Units.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Units.Mappers;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.Common.Results;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Inventory.Units.Commands.UpdateUnitCommand;
 
 public class UpdateUnitCommandHandler : IRequestHandler<UpdateUnitCommand, Result<UnitDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public UpdateUnitCommandHandler(IUnitOfWork unitOfWork)
+    public UpdateUnitCommandHandler(IAppDbContext dbContext)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<UnitDto>> Handle(UpdateUnitCommand request, CancellationToken cancellationToken)
     {
-        var unit = await _unitOfWork.Units.GetByIdAsync(request.Id, cancellationToken);
+        var unit = await _dbContext.Units.SingleOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
         if (unit == null)
             return UnitErrors.UnitNotFound;
 
@@ -26,8 +27,8 @@ public class UpdateUnitCommandHandler : IRequestHandler<UpdateUnitCommand, Resul
         if (result.IsError)
             return result.Errors;
 
-        await _unitOfWork.Units.UpdateAsync(unit);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _dbContext.Units.Update(unit);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return unit.ToDto();
     }

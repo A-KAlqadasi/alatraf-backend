@@ -1,6 +1,6 @@
 using AlatrafClinic.Application.Features.Inventory.Units.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Units.Mappers;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Domain.Common.Results;
 using MediatR;
@@ -9,11 +9,11 @@ namespace AlatrafClinic.Application.Features.Inventory.Units.Commands.CreateUnit
 
 public class CreateUnitCommandHandler : IRequestHandler<CreateUnitCommand, Result<UnitDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public CreateUnitCommandHandler(IUnitOfWork unitOfWork)
+    public CreateUnitCommandHandler(IAppDbContext dbContext)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<UnitDto>> Handle(CreateUnitCommand request, CancellationToken cancellationToken)
@@ -24,8 +24,8 @@ public class CreateUnitCommandHandler : IRequestHandler<CreateUnitCommand, Resul
 
         var unit = result.Value;
 
-        await _unitOfWork.Units.AddAsync(unit);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _dbContext.Units.AddAsync(unit, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return unit.ToDto();
     }

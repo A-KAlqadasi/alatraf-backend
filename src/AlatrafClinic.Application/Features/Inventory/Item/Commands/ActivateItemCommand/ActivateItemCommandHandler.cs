@@ -1,11 +1,12 @@
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -15,17 +16,17 @@ public record ActivateItemCommandHandler : IRequestHandler<ActivateItemCommand, 
 {
     private readonly ILogger _logger;
     private readonly HybridCache _cache;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public ActivateItemCommandHandler(ILogger<ActivateItemCommandHandler> logger, HybridCache cache, IUnitOfWork unitOfWork)
+    public ActivateItemCommandHandler(ILogger<ActivateItemCommandHandler> logger, HybridCache cache, IAppDbContext dbContext)
     {
         _logger = logger;
         _cache = cache;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
     public async Task<Result<ItemDto>> Handle(ActivateItemCommand request, CancellationToken cancellationToken)
     {
-        var item = await _unitOfWork.Items.GetByIdAsync(request.Id, cancellationToken);
+        var item = await _dbContext.Items.SingleOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
         if (item == null)
             return ItemErrors.NotFound;
 
@@ -34,8 +35,8 @@ public record ActivateItemCommandHandler : IRequestHandler<ActivateItemCommand, 
             return result.Errors;
 
 
-        await _unitOfWork.Items.UpdateAsync(item);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _dbContext.Items.Update(item);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new ItemDto
         {
