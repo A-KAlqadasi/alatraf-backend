@@ -86,10 +86,10 @@ public class PeopleController (ISender sender) : ApiController
 
         var result = await sender.Send(query, cancellationToken);
 
-        if (!result.IsSuccess)
-            return BadRequest(result);
-
-        return Ok(result);
+        return result.Match(
+            response => Ok(response),
+            Problem
+        );
     }
 
 }
