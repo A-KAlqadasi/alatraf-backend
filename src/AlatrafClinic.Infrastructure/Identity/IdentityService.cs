@@ -584,4 +584,9 @@ public sealed class IdentityService : IIdentityService
 
         return permissions;
     }
+    public async Task<bool> IsUserNameExistsAsync(string userName, CancellationToken ct = default)
+    {
+        var user = await _userManager.FindByNameAsync(userName.Trim());
+        return user != null;
+    }
 }

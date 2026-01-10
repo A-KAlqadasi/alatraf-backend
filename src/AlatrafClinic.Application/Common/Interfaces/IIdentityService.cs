@@ -60,5 +60,7 @@ public interface IIdentityService
         string roleId,
         IReadOnlyCollection<int> permissionIds,
         CancellationToken ct = default);
+    Task<bool> IsUserNameExistsAsync(string userName, CancellationToken ct = default);
+
     
 }
