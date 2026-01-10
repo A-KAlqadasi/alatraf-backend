@@ -184,7 +184,7 @@ public sealed class GetPaidRepairCardsQueryHandler
             PatientId = d.PatientId,
             PatientName = person.FullName,
             Gender = person.Gender ? "ذكر" : "أنثى",
-            Age = UtilityService.CalculateAge(person.Birthdate, AlatrafClinicConstants.TodayDate),
+            Age = person.Age,
             IsActive = d.RepairCard.IsActive,
 
             DiagnosisId = d.Id,

@@ -10,7 +10,7 @@ public static class WoundedCardMapper
     public static WoundedCardDto ToDto(this WoundedCard entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
-        var birthDate = entity.Patient?.Person?.Birthdate;
+        
         return new WoundedCardDto
         {
             WoundedCardId = entity.Id,
@@ -20,7 +20,7 @@ public static class WoundedCardMapper
             IsExpired = entity.IsExpired,
             CardImagePath = entity.CardImagePath,
             FullName = entity.Patient?.Person?.FullName ?? string.Empty,
-            Age = UtilityService.CalculateAge(birthDate ?? default, AlatrafClinicConstants.TodayDate),
+            Age = entity.Patient?.Person?.Age ?? 0,
             Gender = UtilityService.GenderToArabicString(entity.Patient?.Person?.Gender ?? true),
             PhoneNumber = entity.Patient?.Person?.Phone ?? string.Empty,
             PatientId = entity.PatientId

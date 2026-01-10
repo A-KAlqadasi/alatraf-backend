@@ -24,13 +24,9 @@ public class ReportRequestValidator : AbstractValidator<ReportRequestDto>
             .GreaterThan(0)
             .WithMessage("Page must be greater than 0");
 
-        RuleFor(x => x.PageSize)
-            .InclusiveBetween(1, 1000)
-            .WithMessage("Page size must be between 1 and 1000");
-
         RuleFor(x => x.MaxRows)
-            .InclusiveBetween(1, 100000)
-            .WithMessage("Max rows must be between 1 and 100,000");
+            .InclusiveBetween(1, 250000)
+            .WithMessage("Max rows must be between 1 and 250,000");
 
         RuleFor(x => x.PageSize)
             .LessThanOrEqualTo(x => x.MaxRows)

@@ -10,7 +10,6 @@ public static class DisabledCardMapper
     public static DisabledCardDto ToDto(this DisabledCard entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
-        var birthDate = entity.Patient?.Person?.Birthdate;
         return new DisabledCardDto
         {
             DisabledCardId = entity.Id,
@@ -19,7 +18,7 @@ public static class DisabledCardMapper
             IssueDate = entity.IssueDate,
             CardImagePath = entity.CardImagePath,
             FullName = entity.Patient?.Person?.FullName ?? string.Empty,
-            Age = UtilityService.CalculateAge(birthDate ?? default, AlatrafClinicConstants.TodayDate),
+            Age = entity.Patient?.Person?.Age ?? 0,
             Gender = UtilityService.GenderToArabicString(entity.Patient?.Person?.Gender ?? true),
             PhoneNumber = entity.Patient?.Person?.Phone ?? string.Empty,
             Address = entity.Patient?.Person?.Address ?? string.Empty,

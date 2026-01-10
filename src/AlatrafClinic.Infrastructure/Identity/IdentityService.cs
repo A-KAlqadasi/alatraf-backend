@@ -347,109 +347,80 @@ public sealed class IdentityService : IIdentityService
 
         return Result.Deleted;
     }
-
-
-    // =========================
-    // Role Management
-    // =========================
-    public async Task<Result<string>> CreateRoleAsync(string name, CancellationToken ct)
+    public async Task<Result<Updated>> ActivateRolePermissionsAsync(
+        string roleId,
+        IReadOnlyCollection<int> permissionIds,
+        CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return MyIdentityErrors.RoleNameIsRequired;
-
-        var normalizedName = _roleManager.NormalizeKey(name);
-
-        var existingRole = await _roleManager.Roles
-            .FirstOrDefaultAsync(r => r.NormalizedName == normalizedName, ct);
-
-        if (existingRole is not null)
-            return existingRole.Id;
-
-        var role = new IdentityRole(name);
-
-        var result = await _roleManager.CreateAsync(role);
-        if (!result.Succeeded)
-            return MyIdentityErrors.FailToCreateRole;
-
-        return role.Id;
+        return await SetRolePermissionsStatusAsync(roleId, permissionIds, true, ct);
     }
 
-    public async Task<Result<Deleted>> DeleteRoleAsync(string roleId, CancellationToken ct)
+    public async Task<Result<Updated>> DeactivateRolePermissionsAsync(
+        string roleId,
+        IReadOnlyCollection<int> permissionIds,
+        CancellationToken ct = default)
     {
-        var role = await _roleManager.FindByIdAsync(roleId);
+        return await SetRolePermissionsStatusAsync(roleId, permissionIds, false, ct);
+    }
 
-        if (role is null)
+    private async Task<Result<Updated>> SetRolePermissionsStatusAsync(
+        string roleId,
+        IReadOnlyCollection<int> permissionIds,
+        bool isActive,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(roleId))
             return MyIdentityErrors.RoleNotFound;
-        
-        var users = await _userManager.GetUsersInRoleAsync(role.Name!);
-        if (users.Any())
-            return MyIdentityErrors.RoleAssignedToUsers;
 
-        await _roleManager.DeleteAsync(role);
-        return Result.Deleted;
-    }
-
-    public async Task<Result<Updated>> AssignPermissionsToRoleAsync(
-    string roleId,
-    IReadOnlyCollection<int> permissionIds,
-    CancellationToken ct = default)
-    {
         if (permissionIds is null || permissionIds.Count == 0)
-            return Result.Updated;
+            return Result.Updated; // Idempotent - no permissions to process
 
-        var role = await _roleManager.FindByIdAsync(roleId);
-        if (role is null)
-            return MyIdentityErrors.RoleNotFound;
-
-        var existingPermissions = await _db.RolePermissions
-            .Where(rp => rp.RoleId == roleId)
-            .Select(rp => rp.PermissionId)
-            .ToListAsync(ct);
-
-        var newPermissions = permissionIds
-            .Except(existingPermissions)
-            .Distinct()
-            .Select(pid => new RolePermission
-            {
-                RoleId = roleId,
-                PermissionId = pid
-            })
-            .ToList();
-
-        if (newPermissions.Count == 0)
-            return Result.Updated;
-
-        await _db.RolePermissions.AddRangeAsync(newPermissions, ct);
-        await _db.SaveChangesAsync(ct);
-
-        return Result.Updated;
-    }
-
-
-   public async Task<Result<Deleted>> RemovePermissionsFromRoleAsync(
-    string roleId,
-    IReadOnlyCollection<int> permissionIds,
-    CancellationToken ct = default)
-    {
-        if (permissionIds is null || permissionIds.Count == 0)
-            return Result.Deleted;
-
-        var role = await _roleManager.FindByIdAsync(roleId);
-        if (role is null)
-            return MyIdentityErrors.RoleNotFound;
-
-        var rolePermissions = await _db.RolePermissions
+        // Get all existing role permissions for this role
+        var existingRolePermissions = await _db.RolePermissions
             .Where(rp => rp.RoleId == roleId && permissionIds.Contains(rp.PermissionId))
             .ToListAsync(ct);
 
-        if (rolePermissions.Count == 0)
-            return Result.Deleted;
+        // Check if all requested permissions exist in the role
+        var requestedPermissionsSet = permissionIds.ToHashSet();
+        var existingPermissionsSet = existingRolePermissions.Select(rp => rp.PermissionId).ToHashSet();
+        
+        // Find permissions that are requested but not in the role
+        var missingPermissions = requestedPermissionsSet.Except(existingPermissionsSet).ToList();
+        
+        if (missingPermissions.Count > 0)
+        {
+            // Check which missing permissions actually exist in the system
+            var existingSystemPermissions = await _db.Set<ApplicationPermission>()
+                .Where(p => missingPermissions.Contains(p.Id))
+                .Select(p => p.Id)
+                .ToListAsync(ct);
+            
+            if (existingSystemPermissions.Count > 0)
+            {
+                // Some permissions exist in system but not in role
+                return MyIdentityErrors.PermissionsNotInRole;
+            }
+        }
 
-        _db.RolePermissions.RemoveRange(rolePermissions);
-        await _db.SaveChangesAsync(ct);
+        var permissionsToUpdate = existingRolePermissions
+            .Where(rp => rp.IsActive != isActive)
+            .ToList();
 
-        return Result.Deleted;
+        if (permissionsToUpdate.Count == 0)
+            return Result.Updated; // Idempotent - nothing to change
+
+        foreach (var rolePermission in permissionsToUpdate)
+        {
+            rolePermission.IsActive = isActive;
+        }
+
+        _db.RolePermissions.UpdateRange(permissionsToUpdate);
+
+     
+            await _db.SaveChangesAsync(ct);
+            return Result.Updated;
     }
+
 
 
     public async Task<Result<IReadOnlyList<RoleDetailsDto>>> GetRolesAsync(CancellationToken ct)
@@ -483,29 +454,6 @@ public sealed class IdentityService : IIdentityService
     CancellationToken ct)
     => SetUserPermissionOverrides(userId, permissionIds, Effect.Deny, ct);
 
-
-    public async Task<Result<Deleted>> RemoveUserPermissionOverridesAsync(
-    string userId,
-    IReadOnlyCollection<int> permissionIds,
-    CancellationToken ct)
-    {
-        if (permissionIds is null || permissionIds.Count == 0)
-            return Result.Deleted;
-
-        var overrides = await _db.Set<UserPermissionOverride>()
-            .Where(x =>
-                x.UserId == userId &&
-                permissionIds.Contains(x.PermissionId))
-            .ToListAsync(ct);
-
-        if (overrides.Count == 0)
-            return Result.Deleted; // idempotent
-
-        _db.RemoveRange(overrides);
-        await _db.SaveChangesAsync(ct);
-
-        return Result.Deleted;
-    }
 
     private async Task<Result<Updated>> SetUserPermissionOverrides(
     string userId,
@@ -591,7 +539,7 @@ public sealed class IdentityService : IIdentityService
             from ur in _db.UserRoles
             join rp in _db.Set<RolePermission>() on ur.RoleId equals rp.RoleId
             join p in _db.Set<ApplicationPermission>() on rp.PermissionId equals p.Id
-            where ur.UserId == userId
+            where ur.UserId == userId && rp.IsActive
             select p.Name;
 
         var grants =
@@ -635,5 +583,10 @@ public sealed class IdentityService : IIdentityService
             .ToListAsync(ct);
 
         return permissions;
+    }
+    public async Task<bool> IsUserNameExistsAsync(string userName, CancellationToken ct = default)
+    {
+        var user = await _userManager.FindByNameAsync(userName.Trim());
+        return user != null;
     }
 }

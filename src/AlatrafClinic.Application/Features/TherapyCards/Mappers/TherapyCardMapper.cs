@@ -93,9 +93,7 @@ public static class TherapyCardMapper
             PatientName = entity.Diagnosis.Patient.Person.FullName,
 
             Gender  = entity.Diagnosis.Patient.Person.Gender ? "ذكر" : "أنثى",
-            Age = UtilityService.CalculateAge(
-                entity.Diagnosis.Patient.Person.Birthdate,
-                AlatrafClinicConstants.TodayDate),
+            Age =entity.Diagnosis.Patient.Person.Age,
             DiagnosisId = entity.DiagnosisId,
 
             DiagnosisText = entity.Diagnosis.DiagnosisText,

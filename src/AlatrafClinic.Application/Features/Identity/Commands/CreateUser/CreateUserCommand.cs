@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
@@ -5,8 +6,13 @@ using MediatR;
 namespace AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
 
 public sealed record CreateUserCommand(
-    int PersonId,
+    string Fullname,
+    DateOnly Birthdate,
+    string Phone,
+    string NationalNo,
+    string Address,
+    bool Gender,
     string UserName,
     string Password,
     bool IsActive
-) : IRequest<Result<string>>;
+) : IRequest<Result<UserCreatedDto>>;

@@ -17,7 +17,7 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
 
         builder.Property(x => x.FullName)
             .IsRequired()
-            .HasColumnType("nvarchar(200)");
+            .HasColumnType("nvarchar(100)");
 
         builder.Property(x => x.Birthdate)
             .IsRequired()
@@ -35,7 +35,7 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
 
         builder.Property(x => x.Address)
             .IsRequired()
-            .HasMaxLength(300);
+            .HasMaxLength(100);
 
         builder.Property(x => x.AutoRegistrationNumber)
         .HasMaxLength(100)
