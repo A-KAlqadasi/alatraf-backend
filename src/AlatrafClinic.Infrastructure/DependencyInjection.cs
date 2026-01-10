@@ -30,8 +30,8 @@ using Microsoft.IdentityModel.Tokens;
 using AlatrafClinic.Application.Sagas;
 using AlatrafClinic.Application.Sagas.Compensation;
 using AlatrafClinic.Infrastructure.Eventing;
-using AlatrafClinic.Infrastructure.Messaging;
 using AlatrafClinic.Application.Common.Interfaces.Messaging;
+using AlatrafClinic.Infrastructure.Messaging;
 
 
 namespace AlatrafClinic.Infrastructure;
@@ -120,7 +120,7 @@ public static class DependencyInjection
         // Register Domain Events dispatcher behavior
         services.AddTransient(typeof(MediatR.IPipelineBehavior<,>), typeof(DomainEventsDispatcherBehavior<,>));
         // Messaging transport (No-op by default)
-        services.AddScoped<IMessagePublisher, NoopMessagePublisher>();
+       services.AddScoped<IMessagePublisher, NoopMessagePublisher>();
         services.AddHostedService<OutboxProcessor>();
         services.AddScoped<IInbox, Inbox>();
         services.AddScoped<IIdempotencyContext, IdempotencyContext>();

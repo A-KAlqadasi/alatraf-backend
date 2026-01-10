@@ -17,7 +17,7 @@ namespace AlatrafClinic.Application.Sagas
         Task RecordStepAsync(Guid sagaId, string stepName, CancellationToken ct);
         Task RecordStepSuccessAsync(Guid sagaId, string stepName, CancellationToken ct);
         Task RecordStepFailureAsync(Guid sagaId, string stepName, string failureReason, CancellationToken ct);
-        Task MarkSagaCompletedAsync(Guid sagaId, CancellationToken ct);
+        Task MarkSagaCompletedAsync(Guid sagaId, string completionStatus, CancellationToken ct);
         Task<SagaState> GetSagaStateAsync(Guid sagaId, CancellationToken ct);
     }
 
@@ -103,7 +103,7 @@ namespace AlatrafClinic.Application.Sagas
             }
         }
 
-        public async Task MarkSagaCompletedAsync(Guid sagaId, CancellationToken ct)
+        public async Task MarkSagaCompletedAsync(Guid sagaId, string completionStatus, CancellationToken ct)
         {
             var saga = await _db.SagaStates
                 .FirstOrDefaultAsync(s => s.Id == sagaId, ct);
@@ -112,7 +112,7 @@ namespace AlatrafClinic.Application.Sagas
             {
                 saga.MarkCompleted();
                 await _db.SaveChangesAsync(ct);
-                _logger.LogInformation("Marked saga {SagaId} as completed", sagaId);
+                _logger.LogInformation("Marked saga {SagaId} as completed with status {Status}", sagaId, completionStatus);
             }
         }
 

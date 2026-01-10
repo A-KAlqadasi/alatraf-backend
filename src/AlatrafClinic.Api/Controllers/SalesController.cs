@@ -25,13 +25,13 @@ namespace AlatrafClinic.Api.Controllers;
 [ApiVersion("1.0")]
 public sealed class SalesController(
     ISender sender,
-    IEnumerable<ISagaCompensationHandler> compensationHandlers,
-    ISagaStateService sagaStateService
+IServiceProvider serviceProvider
 ) : ApiController
 {
 
     // Queries
     [HttpGet]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(PaginatedList<SaleDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -49,6 +49,7 @@ public sealed class SalesController(
     }
 
     [HttpGet("{saleId:int}", Name = "GetSaleById")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(SaleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -67,6 +68,7 @@ public sealed class SalesController(
 
     // Commands
     [HttpPost]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(SaleDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
@@ -74,7 +76,6 @@ public sealed class SalesController(
     [EndpointSummary("Creates a new sale.")]
     [EndpointDescription("Creates a new sale with header and items.")]
     [EndpointName("CreateSale")]
-    [MapToApiVersion("1.0")]
     public async Task<IActionResult> Create([FromBody] CreateSaleCommand command, CancellationToken ct)
     {
         var result = await sender.Send(command, ct);
@@ -88,6 +89,7 @@ public sealed class SalesController(
     }
 
     [HttpPut("{saleId:int}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -96,7 +98,6 @@ public sealed class SalesController(
     [EndpointSummary("Updates an existing sale.")]
     [EndpointDescription("Updates sale header and items.")]
     [EndpointName("UpdateSale")]
-    [MapToApiVersion("1.0")]
     public async Task<IActionResult> Update(int saleId, [FromBody] UpdateSaleCommand command, CancellationToken ct)
     {
         var cmd = new UpdateSaleCommand(saleId, command.TicketId, command.DiagnosisText, command.InjuryDate, command.InjuryReasons, command.InjurySides, command.InjuryTypes, command.SaleItems, command.Notes);
@@ -108,6 +109,7 @@ public sealed class SalesController(
     }
 
     [HttpDelete("{saleId:int}")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -115,7 +117,6 @@ public sealed class SalesController(
     [EndpointSummary("Deletes an existing sale.")]
     [EndpointDescription("Deletes the specified sale.")]
     [EndpointName("DeleteSale")]
-    [MapToApiVersion("1.0")]
     public async Task<IActionResult> Delete(int saleId, CancellationToken ct)
     {
         var result = await sender.Send(new DeleteSaleCommand(saleId), ct);
@@ -127,10 +128,10 @@ public sealed class SalesController(
 
     // Saga endpoints (additive, non-breaking)
     [HttpPost("saga/start")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [EndpointSummary("Starts sale saga: validate stock + create draft")]
-    [MapToApiVersion("1.0")]
     public async Task<IActionResult> StartSaga([FromBody] StartSaleSagaCommand command, CancellationToken ct)
     {
         var result = await sender.Send(command, ct);
@@ -138,10 +139,10 @@ public sealed class SalesController(
     }
 
     [HttpPost("{saleId:int}/saga/reserve")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [EndpointSummary("Reserves inventory atomically for sale saga")]
-    [MapToApiVersion("1.0")]
     public async Task<IActionResult> ReserveSaga(int saleId, [FromBody] ReserveInventoryCommand body, CancellationToken ct)
     {
         var cmd = body with { SaleId = saleId };
@@ -150,10 +151,10 @@ public sealed class SalesController(
     }
 
     [HttpPost("{saleId:int}/saga/confirm")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [EndpointSummary("Confirms sale after successful reservation")]
-    [MapToApiVersion("1.0")]
     public async Task<IActionResult> ConfirmSaga(int saleId, [FromBody] ConfirmSaleCommand body, CancellationToken ct)
     {
         var cmd = body with { SaleId = saleId };
@@ -162,10 +163,10 @@ public sealed class SalesController(
     }
 
     [HttpPost("{saleId:int}/saga/payment")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(SaleSagaResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [EndpointSummary("Creates payment as saga step")]
-    [MapToApiVersion("1.0")]
     public async Task<IActionResult> PaymentSaga(int saleId, [FromBody] CreatePaymentCommand body, CancellationToken ct)
     {
         var cmd = body with { SaleId = saleId };
@@ -175,7 +176,7 @@ public sealed class SalesController(
 
     private IActionResult SagaResponse(SaleSagaResult result)
     {
-        if (result.Success)
+        if (result.IsSuccess)
         {
             return Ok(result);
         }
@@ -198,14 +199,17 @@ public sealed class SalesController(
     }
     // في SalesController.cs (مضاف)
     [HttpPost("saga/{sagaId:guid}/compensate")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [EndpointSummary("Compensate a failed sale saga")]
     public async Task<IActionResult> CompensateSaga(Guid sagaId, CancellationToken ct)
     {
-        var compensationHandler = compensationHandlers
-            .FirstOrDefault(h => h.SagaType == "SaleSaga");
+        var handlers = serviceProvider
+       .GetRequiredService<IEnumerable<ISagaCompensationHandler>>();
 
+        var compensationHandler = handlers
+            .FirstOrDefault(h => h.SagaType == "SaleSaga");
         if (compensationHandler == null)
         {
             return Problem(
@@ -224,13 +228,15 @@ public sealed class SalesController(
     }
 
     [HttpGet("saga/{sagaId:guid}/state")]
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(SagaStateDto), StatusCodes.Status200OK)]
     [EndpointSummary("Get saga state")]
     public async Task<IActionResult> GetSagaState(Guid sagaId, CancellationToken ct)
     {
-        var state = await sagaStateService.GetSagaStateAsync(sagaId, ct);
+        var sagaStateService = serviceProvider
+         .GetRequiredService<ISagaStateService>();
 
-        if (state == null)
+        var state = await sagaStateService.GetSagaStateAsync(sagaId, ct); if (state == null)
         {
             return NotFound();
         }

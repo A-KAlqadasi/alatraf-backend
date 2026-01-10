@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-<<<<<<<< HEAD:src/AlatrafClinic.Infrastructure/Data/Migrations/20260107205454_CompensationSagas.Designer.cs
-    [Migration("20260107205454_CompensationSagas")]
-    partial class CompensationSagas
-========
-    [Migration("20260107063136_AddingReportsDomain")]
-    partial class AddingReportsDomain
->>>>>>>> upstream/main:src/AlatrafClinic.Infrastructure/Data/Migrations/20260107063136_AddingReportsDomain.Designer.cs
+    [Migration("20260110092348_FixInventoryReservationColumn")]
+    partial class FixInventoryReservationColumn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -3280,16 +3275,12 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("StoreItemUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StoreItemUnitId1")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("StoreItemUnitId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("StoreItemUnitId");
-
-                    b.HasIndex("StoreItemUnitId1");
 
                     b.HasIndex("SagaId", "SaleId");
 
@@ -4207,16 +4198,10 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("InventoryReservation", b =>
                 {
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", null)
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
                         .WithMany()
                         .HasForeignKey("StoreItemUnitId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Stores.StoreItemUnit", "StoreItemUnit")
-                        .WithMany()
-                        .HasForeignKey("StoreItemUnitId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("StoreItemUnit");

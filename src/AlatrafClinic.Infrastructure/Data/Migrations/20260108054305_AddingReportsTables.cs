@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:src/AlatrafClinic.Infrastructure/Data/Migrations/20260107205454_CompensationSagas.cs
-    public partial class CompensationSagas : Migration
-========
-    public partial class AddingReportsDomain : Migration
->>>>>>>> upstream/main:src/AlatrafClinic.Infrastructure/Data/Migrations/20260107063136_AddingReportsDomain.cs
+    public partial class AddingReportsTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

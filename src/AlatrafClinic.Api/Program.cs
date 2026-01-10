@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 using AlatrafClinic.Api;
 using AlatrafClinic.Application;
 using AlatrafClinic.Application.Sagas;
@@ -10,6 +12,14 @@ using Scalar.AspNetCore;
 
 using Serilog;
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(
+        outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} " +
+        "SagaId={SagaId} SaleId={SaleId}{NewLine}{Exception}"
+    )
+    .CreateLogger();
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -23,9 +33,28 @@ builder.Services.AddScoped<ISagaCompensationHandler, SaleSagaCompensationHandler
 builder.Services.AddScoped<ISagaCompensationCoordinator, SagaCompensationCoordinator>();
 builder.Services.AddHostedService<FailedSagaProcessor>();
 
+
 builder.Host.UseSerilog((context, loggerConfig) =>
     loggerConfig.ReadFrom.Configuration(context.Configuration));
 
+
+// In your Startup/Program.cs
+builder.Services.AddHttpClient("Default")
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+    })
+    .SetHandlerLifetime(TimeSpan.FromSeconds(5));
+
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(
+        outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} " +
+        "SagaId={SagaId} SaleId={SaleId}{NewLine}{Exception}"
+    )
+    .CreateLogger();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,7 +72,7 @@ if (app.Environment.IsDevelopment())
         options.EnableFilter();
     });
     await app.InitialiseDatabaseAsync();
-    
+
 
     app.MapScalarApiReference();
 }
@@ -51,9 +80,22 @@ else
 {
     app.UseHsts();
 }
-
+app.UseRouting();
 app.UseMiddleware<IdempotencyMiddleware>();
-//app.UseCoreMiddlewares(builder.Configuration, app.Environment);
+
+
+app.UseCoreMiddlewares(builder.Configuration, app.Environment);
+app.Use(async (context, next) =>
+{
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation($"Request: {context.Request.Method} {context.Request.Path}");
+
+    var stopwatch = Stopwatch.StartNew();
+    await next();
+    stopwatch.Stop();
+
+    logger.LogInformation($"Response: {context.Response.StatusCode} - {stopwatch.ElapsedMilliseconds}ms");
+});
 
 app.MapControllers();
 
@@ -63,3 +105,10 @@ app.MapStaticAssets();
 
 
 app.Run();
+
+
+app.MapGet("/di-test", (IServiceProvider sp) =>
+{
+    var svc = sp.GetService<ISagaStateService>();
+    return svc is null ? "NULL" : "RESOLVED";
+});

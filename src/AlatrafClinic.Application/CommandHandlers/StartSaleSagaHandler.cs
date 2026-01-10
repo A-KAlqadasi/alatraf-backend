@@ -18,5 +18,5 @@ public sealed class StartSaleSagaHandler : IRequestHandler<StartSaleSagaCommand,
     }
 
     public Task<SaleSagaResult> Handle(StartSaleSagaCommand request, CancellationToken cancellationToken)
-        => _orchestrator.StartAsync(request, cancellationToken);
+        => _orchestrator.ProcessCompleteSaleAsync(request, cancellationToken);
 }

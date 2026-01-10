@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using AlatrafClinic.Application.Commands;
 using AlatrafClinic.Application.Common.Interfaces;
@@ -17,9 +19,6 @@ using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.Enums;
 using AlatrafClinic.Domain.Sales.SalesItems;
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
 namespace AlatrafClinic.Application.Sagas
 {
     public sealed class SaleSagaOrchestrator
@@ -31,12 +30,11 @@ namespace AlatrafClinic.Application.Sagas
         private readonly ISagaCompensationHandler _compensationHandler;
 
         public SaleSagaOrchestrator(
-      IAppDbContext db,
-      ILogger<SaleSagaOrchestrator> logger,
-      IDiagnosisCreationService diagnosisService,
-      ISagaStateService sagaStateService,
-      ISagaCompensationHandler compensationHandler
-  )
+            IAppDbContext db,
+            ILogger<SaleSagaOrchestrator> logger,
+            IDiagnosisCreationService diagnosisService,
+            ISagaStateService sagaStateService,
+            ISagaCompensationHandler compensationHandler)
         {
             _db = db;
             _logger = logger;
@@ -45,28 +43,44 @@ namespace AlatrafClinic.Application.Sagas
             _compensationHandler = compensationHandler;
         }
 
-
-        public async Task<SaleSagaResult> StartAsync(StartSaleSagaCommand command, CancellationToken ct)
+        /// <summary>
+        /// تنفيذ جميع مراحل البيع في طلب واحد مع Rollback تلقائي عند الفشل
+        /// </summary>
+        public async Task<SaleSagaResult> ProcessCompleteSaleAsync(StartSaleSagaCommand command, CancellationToken ct)
         {
             var sagaId = command.SagaId == Guid.Empty ? Guid.NewGuid() : command.SagaId;
 
+            // التحقق من أن الـ DbContext يدعم Transaction
+            if (_db is not DbContext efDb)
+            {
+                return SaleSagaResult.Fail("DbContext لا يدعم المعاملات (Transactions).");
+            }
+
             // إنشاء/تحديث حالة الساغا
             await _sagaStateService.StartOrContinueSagaAsync(
-                sagaId, "SaleSaga", "ValidateStock", ct);
+                sagaId, "CompleteSaleSaga", "StartingTransaction", ct);
+
+            // بدء Transaction واحدة لجميع العمليات
+            await using var transaction = await efDb.Database.BeginTransactionAsync(ct);
 
             try
             {
-                // Step 1: Validate stock
+                _logger.LogInformation("بدء معاملة البيع الكاملة للساغا {SagaId}", sagaId);
+                await _sagaStateService.RecordStepAsync(sagaId, "StartingTransaction", ct);
+
+                // الخطوة 1: التحقق من المخزون
                 await _sagaStateService.RecordStepAsync(sagaId, "ValidateStock", ct);
                 var stockOk = await ValidateStockAsync(command.Items, ct);
                 if (!stockOk)
                 {
                     await _sagaStateService.RecordStepFailureAsync(
-                        sagaId, "ValidateStock", "Insufficient stock", ct);
-                    return SaleSagaResult.Fail("Insufficient stock for one or more items.");
+                        sagaId, "ValidateStock", "المخزون غير كافٍ", ct);
+                    await transaction.RollbackAsync(ct);
+                    return SaleSagaResult.Fail("المخزون غير كافٍ لواحد أو أكثر من العناصر.");
                 }
+                await _sagaStateService.RecordStepSuccessAsync(sagaId, "ValidateStock", ct);
 
-                // Step 2: Create Diagnosis
+                // الخطوة 2: إنشاء التشخيص
                 await _sagaStateService.RecordStepAsync(sagaId, "CreateDiagnosis", ct);
                 var diagnosisResult = await _diagnosisService.CreateAsync(
                     command.TicketId,
@@ -83,6 +97,7 @@ namespace AlatrafClinic.Application.Sagas
                     await _sagaStateService.RecordStepFailureAsync(
                         sagaId, "CreateDiagnosis",
                         string.Join(", ", diagnosisResult.Errors.Select(e => e.Description)), ct);
+                    await transaction.RollbackAsync(ct);
                     return SaleSagaResult.Fail(diagnosisResult.Errors.Select(e => e.Description).ToArray());
                 }
 
@@ -91,295 +106,315 @@ namespace AlatrafClinic.Application.Sagas
                 await _db.SaveChangesAsync(ct);
                 await _sagaStateService.RecordStepSuccessAsync(sagaId, "CreateDiagnosis", ct);
 
-                // Step 3: Create sale draft
+                // الخطوة 3: إنشاء مسودة البيع
                 await _sagaStateService.RecordStepAsync(sagaId, "CreateSaleDraft", ct);
-                var draftResult = await CreateSaleDraftAsync(sagaId, command, ct);
-                if (!draftResult.Success)
+                var draftResult = await CreateSaleDraftInternalAsync(sagaId, command, diagnosis.Id, ct);
+                if (!draftResult.IsSuccess)
                 {
                     await _sagaStateService.RecordStepFailureAsync(
                         sagaId, "CreateSaleDraft",
                         string.Join(", ", draftResult.Errors), ct);
-                    return draftResult;
+                    await transaction.RollbackAsync(ct);
+                    return draftResult.Errors.Length == 1
+                        ? SaleSagaResult.Fail(draftResult.Errors[0])
+                        : SaleSagaResult.Fail(draftResult.Errors);
                 }
-
                 await _sagaStateService.RecordStepSuccessAsync(sagaId, "CreateSaleDraft", ct);
-                return draftResult;
+
+                var sale = draftResult.Value; // Sale entity
+
+                // الخطوة 4: حجز المخزون
+                await _sagaStateService.RecordStepAsync(sagaId, "ReserveInventory", ct);
+                var reserveResult = await ReserveInventoryInternalAsync(sagaId, sale, ct);
+                if (!reserveResult.IsSuccess)
+                {
+                    await _sagaStateService.RecordStepFailureAsync(
+                        sagaId, "ReserveInventory",
+                        string.Join(", ", reserveResult.Errors), ct);
+                    await transaction.RollbackAsync(ct);
+                    return reserveResult;
+                }
+                await _sagaStateService.RecordStepSuccessAsync(sagaId, "ReserveInventory", ct);
+
+                // الخطوة 5: تأكيد البيع
+                await _sagaStateService.RecordStepAsync(sagaId, "ConfirmSale", ct);
+                var confirmResult = await ConfirmSaleInternalAsync(sagaId, sale, ct);
+                if (!confirmResult.IsSuccess)
+                {
+                    await _sagaStateService.RecordStepFailureAsync(
+                        sagaId, "ConfirmSale",
+                        string.Join(", ", confirmResult.Errors), ct);
+                    await transaction.RollbackAsync(ct);
+                    return confirmResult;
+                }
+                await _sagaStateService.RecordStepSuccessAsync(sagaId, "ConfirmSale", ct);
+
+                // الخطوة 6: إنشاء الدفع
+                await _sagaStateService.RecordStepAsync(sagaId, "CreatePayment", ct);
+                var paymentResult = await CreatePaymentInternalAsync(sagaId, sale, ct);
+                if (!paymentResult.IsSuccess)
+                {
+                    await _sagaStateService.RecordStepFailureAsync(
+                        sagaId, "CreatePayment",
+                        string.Join(", ", paymentResult.Errors), ct);
+                    await transaction.RollbackAsync(ct);
+                    return paymentResult;
+                }
+                await _sagaStateService.RecordStepSuccessAsync(sagaId, "CreatePayment", ct);
+
+                // حفظ جميع التغييرات وإكمال المعاملة
+                await _db.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+
+                _logger.LogInformation("تم إكمال معاملة البيع بنجاح للساغا {SagaId}، رقم البيع: {SaleId}", sagaId, sale.Id);
+
+                // تحديث حالة الساغا كمنتهية بنجاح
+                await _sagaStateService.MarkSagaCompletedAsync(sagaId, "CompletedSuccessfully", ct);
+
+                return SaleSagaResult.Ok(sale.Id, sale.Total);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Saga {SagaId} failed", sagaId);
-                await _sagaStateService.RecordStepFailureAsync(
-                    sagaId, "Unknown", ex.Message, ct);
+                _logger.LogError(ex, "فشل الساغا {SagaId} أثناء المعاملة", sagaId);
 
-                // التعويض التلقائي
+                try
+                {
+                    // محاولة Rollback للمعاملة
+                    await transaction.RollbackAsync(ct);
+                    _logger.LogInformation("تم التراجع عن المعاملة للساغا {SagaId}", sagaId);
+                }
+                catch (Exception rollbackEx)
+                {
+                    _logger.LogError(rollbackEx, "فشل في التراجع عن المعاملة للساغا {SagaId}", sagaId);
+                }
+
+                await _sagaStateService.RecordStepFailureAsync(
+                    sagaId, "TransactionFailed", ex.Message, ct);
+
+                // محاولة التعويض التلقائي لأي عمليات خارجية
                 await TryAutoCompensateAsync(sagaId, ex, ct);
 
-                return SaleSagaResult.Fail($"Saga failed: {ex.Message}");
+                return SaleSagaResult.Fail($"فشل العملية: {ex.Message}");
             }
         }
 
-        private async Task TryAutoCompensateAsync(Guid sagaId, Exception exception, CancellationToken ct)
+        #region الدوال المساعدة الداخلية
+
+        private async Task<SaleSagaResultInternal<Sale>> CreateSaleDraftInternalAsync(
+            Guid sagaId,
+            StartSaleSagaCommand command,
+            int diagnosisId,
+            CancellationToken ct)
         {
             try
             {
-                _logger.LogWarning(
-                    "Attempting automatic compensation for saga {SagaId}", sagaId);
-
-                var result = await _compensationHandler.CompensateAsync(sagaId, ct);
-
-                if (result.Success)
+                var newItems = new List<(Domain.Inventory.Items.ItemUnit itemUnit, decimal quantity)>();
+                foreach (var item in command.Items)
                 {
-                    _logger.LogInformation(
-                        "Automatic compensation successful for saga {SagaId}", sagaId);
-                }
-                else
-                {
-                    _logger.LogError(
-                        "Automatic compensation failed for saga {SagaId}: {Errors}",
-                        sagaId, string.Join(", ", result.Errors));
-                }
-            }
-            catch (Exception compEx)
-            {
-                _logger.LogError(
-                    compEx,
-                    "Failed to execute automatic compensation for saga {SagaId}", sagaId);
-            }
-        }
-        public async Task<SaleSagaResult> ReserveInventoryAsync(ReserveInventoryCommand command, CancellationToken ct)
-        {
-            // Idempotent: if reservations exist for sagaId+saleId, return success
-            // Load sale with items
-            var sale = await _db.Sales
-                .Include(s => s.SaleItems)
-                .ThenInclude(si => si.ItemUnit)
-                .FirstOrDefaultAsync(s => s.Id == command.SaleId, ct);
+                    var itemUnit = await _db.ItemUnits
+                        .FirstOrDefaultAsync(iu => iu.ItemId == item.ItemId && iu.Id == item.UnitId, ct);
 
-            if (sale is null)
-            {
-                return SaleSagaResult.Fail($"Sale {command.SaleId} not found.");
-            }
-
-            if (sale.SagaId is null)
-            {
-                var attach = sale.AttachSaga(command.SagaId);
-                if (attach.IsError)
-                {
-                    return SaleSagaResult.Fail(attach.Errors.Select(e => e.Description).ToArray());
-                }
-                await _db.SaveChangesAsync(ct);
-            }
-            else if (sale.SagaId != command.SagaId)
-            {
-                return SaleSagaResult.Fail("Saga mismatch for reservation step.");
-            }
-
-            if (sale.InventoryReservationCompleted)
-            {
-                _logger.LogInformation("Saga {SagaId}: inventory already reserved for sale {SaleId}", command.SagaId, command.SaleId);
-                if (sale.SagaId is null)
-                {
-                    var attachReserved = sale.AttachSaga(command.SagaId);
-                    if (attachReserved.IsError)
+                    if (itemUnit is null)
                     {
-                        return SaleSagaResult.Fail(attachReserved.Errors.Select(e => e.Description).ToArray());
+                        return SaleSagaResultInternal<Sale>.Fail($"الوحدة {item.UnitId} غير موجودة.");
                     }
-                    await _db.SaveChangesAsync(ct);
+
+                    if (itemUnit.Price != item.UnitPrice)
+                    {
+                        return SaleSagaResultInternal<Sale>.Fail($"سعر الوحدة {item.UnitId} غير متطابق.");
+                    }
+
+                    newItems.Add((itemUnit, item.Quantity));
                 }
-                return SaleSagaResult.Ok(command.SaleId, sale.Total);
-            }
 
-            var existing = await _db.InventoryReservations
-                .AnyAsync(r => r.SagaId == command.SagaId && r.SaleId == command.SaleId, ct);
-
-            if (existing)
-            {
-                _logger.LogInformation("Saga {SagaId}: inventory already reserved for sale {SaleId}", command.SagaId, command.SaleId);
-                var attach = sale.MarkInventoryReserved(command.SagaId);
-                if (attach.IsError)
+                var saleResult = Sale.Create(diagnosisId, command.Notes);
+                if (saleResult.IsError)
                 {
-                    return SaleSagaResult.Fail(attach.Errors.Select(e => e.Description).ToArray());
+                    return SaleSagaResultInternal<Sale>.Fail(saleResult.Errors.Select(e => e.Description).ToArray());
                 }
 
-                await _db.SaveChangesAsync(ct);
-                return SaleSagaResult.Ok(command.SaleId, sale.Total);
-            }
+                var sale = saleResult.Value;
 
-            // Atomic reservation: validate all stock upfront before any mutation
-            var saleItemUnits = sale.SaleItems.Select(si => si.ItemUnitId).ToList();
-            var storeUnits = await _db.StoreItemUnits
-                .Where(x => saleItemUnits.Contains(x.ItemUnitId))
-                .ToListAsync(ct);
-
-            foreach (var saleItem in sale.SaleItems)
-            {
-                var stock = storeUnits.FirstOrDefault(su => su.ItemUnitId == saleItem.ItemUnitId);
-                if (stock is null || stock.Quantity < saleItem.Quantity)
+                // ربط الساغا بالبيع
+                var sagaAttach = sale.AttachSaga(sagaId);
+                if (sagaAttach.IsError)
                 {
-                    return SaleSagaResult.Fail($"Insufficient stock for ItemUnit {saleItem.ItemUnitId}");
+                    return SaleSagaResultInternal<Sale>.Fail(sagaAttach.Errors.Select(e => e.Description).ToArray());
                 }
-            }
 
-            if (_db is not DbContext efDb)
-            {
-                return SaleSagaResult.Fail("DbContext not available for transaction.");
-            }
-
-            using var tx = await efDb.Database.BeginTransactionAsync(ct);
-            foreach (var saleItem in sale.SaleItems)
-            {
-                var storeItemUnit = storeUnits.First(su => su.ItemUnitId == saleItem.ItemUnitId);
-
-                var decrease = storeItemUnit.Decrease(saleItem.Quantity);
-                if (decrease.IsError)
+                // إضافة العناصر
+                var upsertResult = sale.UpsertItems(newItems);
+                if (upsertResult.IsError)
                 {
-                    await tx.RollbackAsync(ct);
-                    return SaleSagaResult.Fail($"Insufficient stock for ItemUnit {saleItem.ItemUnitId}");
+                    return SaleSagaResultInternal<Sale>.Fail(upsertResult.Errors.Select(e => e.Description).ToArray());
                 }
 
-                saleItem.AssignStoreItemUnit(storeItemUnit);
-                var reservation = InventoryReservation.Create(command.SagaId, sale.Id, storeItemUnit.Id, saleItem.Quantity);
-                await _db.InventoryReservations.AddAsync(reservation, ct);
+                await _db.Sales.AddAsync(sale, ct);
+                return SaleSagaResultInternal<Sale>.Success(sale);
             }
-
-            var markReserved = sale.MarkInventoryReserved(command.SagaId);
-            if (markReserved.IsError)
+            catch (Exception ex)
             {
-                await tx.RollbackAsync(ct);
-                return SaleSagaResult.Fail(markReserved.Errors.Select(e => e.Description).ToArray());
+                _logger.LogError(ex, "فشل في إنشاء مسودة البيع للساغا {SagaId}", sagaId);
+                return SaleSagaResultInternal<Sale>.Fail($"فشل في إنشاء مسودة البيع: {ex.Message}");
             }
-
-            await _db.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
-
-            return SaleSagaResult.Ok(sale.Id, sale.Total);
         }
 
-        public async Task<SaleSagaResult> ConfirmSaleAsync(ConfirmSaleCommand command, CancellationToken ct)
+        private async Task<SaleSagaResult> ReserveInventoryInternalAsync(Guid sagaId, Sale sale, CancellationToken ct)
         {
-            var sale = await _db.Sales.FirstOrDefaultAsync(s => s.Id == command.SaleId, ct);
-            if (sale is null)
+            try
             {
-                return SaleSagaResult.Fail($"Sale {command.SaleId} not found.");
-            }
-
-            if (sale.SagaId is null)
-            {
-                var attach = sale.AttachSaga(command.SagaId);
-                if (attach.IsError)
+                // التحقق من أن البيع يحتوي على عناصر
+                if (!sale.SaleItems.Any())
                 {
-                    return SaleSagaResult.Fail(attach.Errors.Select(e => e.Description).ToArray());
+                    return SaleSagaResult.Fail("لا توجد عناصر في البيع.");
                 }
-                await _db.SaveChangesAsync(ct);
-            }
-            else if (sale.SagaId != command.SagaId)
-            {
-                return SaleSagaResult.Fail("Saga mismatch for confirm step.");
-            }
 
-            if (!sale.InventoryReservationCompleted)
-            {
-                return SaleSagaResult.Fail("Inventory not reserved; cannot confirm sale.");
-            }
-            if (sale.Status == SaleStatus.Confirmed)
-            {
+                // تحميل عناصر البيع مع الوحدات
+                // بدلاً من استخدام Entry، نقوم بتحميل SaleItems بشكل مباشر
+                var saleItemUnits = sale.SaleItems.Select(si => si.ItemUnitId).ToList();
+                var storeUnits = await _db.StoreItemUnits
+                    .Where(x => saleItemUnits.Contains(x.ItemUnitId))
+                    .ToListAsync(ct);
+
+                // التحقق من توفر المخزون لجميع العناصر
+                foreach (var saleItem in sale.SaleItems)
+                {
+                    var stock = storeUnits.FirstOrDefault(su => su.ItemUnitId == saleItem.ItemUnitId);
+                    if (stock is null || stock.Quantity < saleItem.Quantity)
+                    {
+                        return SaleSagaResult.Fail($"المخزون غير كافٍ للوحدة {saleItem.ItemUnitId}");
+                    }
+                }
+
+                // حجز المخزون وإنشاء سجلات الحجز
+                foreach (var saleItem in sale.SaleItems)
+                {
+                    var storeItemUnit = storeUnits.First(su => su.ItemUnitId == saleItem.ItemUnitId);
+
+                    var decrease = storeItemUnit.Decrease(saleItem.Quantity);
+                    if (decrease.IsError)
+                    {
+                        return SaleSagaResult.Fail($"فشل في تقليل المخزون للوحدة {saleItem.ItemUnitId}");
+                    }
+
+                    saleItem.AssignStoreItemUnit(storeItemUnit);
+                    var reservation = InventoryReservation.Create(sagaId, sale.Id, storeItemUnit.Id, saleItem.Quantity);
+                    await _db.InventoryReservations.AddAsync(reservation, ct);
+                }
+
+                // تحديث حالة البيع
+                var markReserved = sale.MarkInventoryReserved(sagaId);
+                if (markReserved.IsError)
+                {
+                    return SaleSagaResult.Fail(markReserved.Errors.Select(e => e.Description).ToArray());
+                }
+
                 return SaleSagaResult.Ok(sale.Id, sale.Total);
             }
-
-            if (_db is not DbContext efDb)
+            catch (Exception ex)
             {
-                return SaleSagaResult.Fail("DbContext not available for transaction.");
+                _logger.LogError(ex, "فشل في حجز المخزون للساغا {SagaId}", sagaId);
+                return SaleSagaResult.Fail($"فشل في حجز المخزون: {ex.Message}");
             }
-
-            await using var tx = await efDb.Database.BeginTransactionAsync(ct);
-
-            var result = sale.Confirm(command.SagaId);
-            if (result.IsError)
-            {
-                await tx.RollbackAsync(ct);
-                return SaleSagaResult.Fail(result.Errors.Select(e => e.Description).ToArray());
-            }
-
-            await _db.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
-            return SaleSagaResult.Ok(sale.Id, sale.Total);
         }
 
-        public async Task<SaleSagaResult> CreatePaymentAsync(CreatePaymentCommand command, CancellationToken ct)
+        private async Task<SaleSagaResult> ConfirmSaleInternalAsync(Guid sagaId, Sale sale, CancellationToken ct)
         {
-            var sale = await _db.Sales
-                .Include(s => s.Diagnosis)
-                .ThenInclude(d => d.Payments)
-                .FirstOrDefaultAsync(s => s.Id == command.SaleId, ct);
-
-            if (sale is null)
+            try
             {
-                return SaleSagaResult.Fail($"Sale {command.SaleId} not found.");
-            }
+                // التحقق من حجز المخزون
+                if (!sale.InventoryReservationCompleted)
+                {
+                    return SaleSagaResult.Fail("لم يتم حجز المخزون بعد؛ لا يمكن تأكيد البيع.");
+                }
 
-            // Guard ordering/idempotency: payment only after reservation + confirmation and within the same saga
-            if (sale.SagaId is not null && sale.SagaId != command.SagaId)
+                // إذا كان البيع مؤكداً بالفعل
+                if (sale.Status == SaleStatus.Confirmed)
+                {
+                    return SaleSagaResult.Success();
+                }
+
+                // تأكيد البيع
+                var result = sale.Confirm(sagaId);
+                if (result.IsError)
+                {
+                    return SaleSagaResult.Fail(result.Errors.Select(e => e.Description).ToArray());
+                }
+
+                return SaleSagaResult.Success();
+            }
+            catch (Exception ex)
             {
-                return SaleSagaResult.Fail("Saga mismatch for payment step.");
+                _logger.LogError(ex, "فشل في تأكيد البيع للساغا {SagaId}", sagaId);
+                return SaleSagaResult.Fail($"فشل في تأكيد البيع: {ex.Message}");
             }
-            if (!sale.InventoryReservationCompleted)
+        }
+
+        private async Task<SaleSagaResult> CreatePaymentInternalAsync(Guid sagaId, Sale sale, CancellationToken ct)
+        {
+            try
             {
-                return SaleSagaResult.Fail("Inventory not reserved; payment is blocked.");
+                // تحميل التشخيص والمدفوعات
+                var diagnosis = await _db.Diagnoses.Include(s => s.Payments).FirstOrDefaultAsync(d => d.Id == sale.DiagnosisId, ct);
+
+                if (diagnosis is null)
+                {
+                    return SaleSagaResult.Fail($"التشخيص غير موجود للبيع {sale.Id}.");
+                }
+
+                // التحقق من الشروط المسبقة
+                if (!sale.InventoryReservationCompleted)
+                {
+                    return SaleSagaResult.Fail("لم يتم حجز المخزون بعد؛ لا يمكن إنشاء الدفع.");
+                }
+
+                if (sale.Status != SaleStatus.Confirmed)
+                {
+                    return SaleSagaResult.Fail("يجب تأكيد البيع قبل إنشاء الدفع.");
+                }
+
+
+                // التحقق من عدم وجود دفع مسبق لهذه الساغا
+                var existing = sale.Diagnosis.Payments
+                    .FirstOrDefault(p => p.SagaId == sagaId && p.PaymentReference == Domain.Payments.PaymentReference.Sales);
+
+                if (existing is not null)
+                {
+                    return SaleSagaResult.Success();
+                }
+
+                // إنشاء الدفع
+                var paymentResult = Domain.Payments.Payment.Create(
+                    sagaId,
+                    sale.Diagnosis.TicketId,
+                    sale.DiagnosisId,
+                    sale.Total,
+                    Domain.Payments.PaymentReference.Sales);
+
+                if (paymentResult.IsError)
+                {
+                    return SaleSagaResult.Fail(paymentResult.Errors.Select(e => e.Description).ToArray());
+                }
+
+                var payment = paymentResult.Value;
+                sale.Diagnosis.AssignPayment(payment);
+
+                await _db.Payments.AddAsync(payment, ct);
+
+                // تحديث حالة البيع
+                var markPayment = sale.MarkPaymentCreated(sagaId);
+                if (markPayment.IsError)
+                {
+                    return SaleSagaResult.Fail(markPayment.Errors.Select(e => e.Description).ToArray());
+                }
+
+                return SaleSagaResult.Success();
             }
-            if (sale.Status != SaleStatus.Confirmed)
+            catch (Exception ex)
             {
-                return SaleSagaResult.Fail("Sale must be confirmed before payment.");
+                _logger.LogError(ex, "فشل في إنشاء الدفع للساغا {SagaId}", sagaId);
+                return SaleSagaResult.Fail($"فشل في إنشاء الدفع: {ex.Message}");
             }
-
-            if (_db is not DbContext efDb)
-            {
-                return SaleSagaResult.Fail("DbContext not available for transaction.");
-            }
-
-            await using var tx = await efDb.Database.BeginTransactionAsync(ct);
-
-            // Idempotent: existing payment with sagaId
-            var existing = sale.Diagnosis.Payments.FirstOrDefault(p => p.SagaId == command.SagaId && p.PaymentReference == Domain.Payments.PaymentReference.Sales);
-            if (existing is not null)
-            {
-                await tx.CommitAsync(ct);
-                return SaleSagaResult.Ok(sale.Id, sale.Total);
-            }
-
-            // Idempotent replay: if already marked, ensure same saga
-            if (sale.PaymentRecorded && sale.SagaId == command.SagaId)
-            {
-                await tx.CommitAsync(ct);
-                return SaleSagaResult.Ok(sale.Id, sale.Total);
-            }
-            if (sale.PaymentRecorded && sale.SagaId != command.SagaId)
-            {
-                await tx.RollbackAsync(ct);
-                return SaleSagaResult.Fail("Payment already recorded by a different saga.");
-            }
-
-            var paymentResult = Domain.Payments.Payment.Create(command.SagaId, sale.Diagnosis.TicketId, sale.DiagnosisId, command.Total, Domain.Payments.PaymentReference.Sales);
-            if (paymentResult.IsError)
-            {
-                await tx.RollbackAsync(ct);
-                return SaleSagaResult.Fail(paymentResult.Errors.Select(e => e.Description).ToArray());
-            }
-
-            var payment = paymentResult.Value;
-            sale.Diagnosis.AssignPayment(payment);
-
-            await _db.Payments.AddAsync(payment, ct);
-
-            var markPayment = sale.MarkPaymentCreated(command.SagaId);
-            if (markPayment.IsError)
-            {
-                await tx.RollbackAsync(ct);
-                return SaleSagaResult.Fail(markPayment.Errors.Select(e => e.Description).ToArray());
-            }
-
-            await _db.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
-            return SaleSagaResult.Ok(sale.Id, sale.Total);
         }
 
         private async Task<bool> ValidateStockAsync(IReadOnlyCollection<SaleItemInput> items, CancellationToken ct)
@@ -401,86 +436,53 @@ namespace AlatrafClinic.Application.Sagas
             return true;
         }
 
-        private async Task<SaleSagaResult> CreateSaleDraftAsync(Guid sagaId, StartSaleSagaCommand command, CancellationToken ct)
+        private async Task TryAutoCompensateAsync(Guid sagaId, Exception exception, CancellationToken ct)
         {
-            // Idempotent: existing sale for this ticket and saga
-            var existingSale = await _db.Sales
-                .Include(s => s.SaleItems)
-                .FirstOrDefaultAsync(s => s.Diagnosis.TicketId == command.TicketId, ct);
-
-            if (existingSale is not null)
+            try
             {
-                if (existingSale.SagaId is null)
+                _logger.LogWarning("محاولة التعويض التلقائي للساغا {SagaId}", sagaId);
+                var result = await _compensationHandler.CompensateAsync(sagaId, ct);
+
+                if (result.Success)
                 {
-                    // Backward compatibility: attach saga once
-                    var attach = existingSale.AttachSaga(sagaId);
-                    if (attach.IsError)
-                    {
-                        return SaleSagaResult.Fail(attach.Errors.Select(e => e.Description).ToArray());
-                    }
-
-                    await _db.SaveChangesAsync(ct);
-                    return SaleSagaResult.Ok(existingSale.Id, existingSale.Total);
+                    _logger.LogInformation("تم التعويض بنجاح للساغا {SagaId}", sagaId);
                 }
-
-                if (existingSale.SagaId != sagaId)
+                else
                 {
-                    return SaleSagaResult.Fail("Saga mismatch for existing sale draft.");
+                    _logger.LogError("فشل التعويض التلقائي للساغا {SagaId}: {Errors}",
+                        sagaId, string.Join(", ", result.Errors));
                 }
-
-                return SaleSagaResult.Ok(existingSale.Id, existingSale.Total);
             }
-
-            var diagnosis = await _db.Diagnoses
-                .Include(d => d.InjuryReasons)
-                .Include(d => d.InjurySides)
-                .Include(d => d.InjuryTypes)
-                .FirstOrDefaultAsync(d => d.TicketId == command.TicketId, ct);
-
-            if (diagnosis is null)
+            catch (Exception compEx)
             {
-                return SaleSagaResult.Fail($"Diagnosis for Ticket {command.TicketId} not found.");
+                _logger.LogError(compEx, "فشل في تنفيذ التعويض التلقائي للساغا {SagaId}", sagaId);
             }
-
-            var newItems = new System.Collections.Generic.List<(AlatrafClinic.Domain.Inventory.Items.ItemUnit itemUnit, decimal quantity)>();
-            foreach (var item in command.Items)
-            {
-                var itemUnit = await _db.ItemUnits.FirstOrDefaultAsync(iu => iu.ItemId == item.ItemId && iu.Id == item.UnitId, ct);
-                if (itemUnit is null)
-                {
-                    return SaleSagaResult.Fail($"ItemUnit {item.UnitId} not found.");
-                }
-                if (itemUnit.Price != item.UnitPrice)
-                {
-                    return SaleSagaResult.Fail($"ItemUnit {item.UnitId} price mismatch.");
-                }
-                newItems.Add((itemUnit, item.Quantity));
-            }
-
-            var saleResult = Sale.Create(diagnosis.Id, command.Notes);
-            if (saleResult.IsError)
-            {
-                return SaleSagaResult.Fail(saleResult.Errors.Select(e => e.Description).ToArray());
-            }
-
-            var sale = saleResult.Value;
-            var sagaAttach = sale.AttachSaga(sagaId);
-            if (sagaAttach.IsError)
-            {
-                return SaleSagaResult.Fail(sagaAttach.Errors.Select(e => e.Description).ToArray());
-            }
-            var upsertResult = sale.UpsertItems(newItems);
-            if (upsertResult.IsError)
-            {
-                return SaleSagaResult.Fail(upsertResult.Errors.Select(e => e.Description).ToArray());
-            }
-
-            diagnosis.AssignToSale(sale);
-
-            await _db.Sales.AddAsync(sale, ct);
-            await _db.SaveChangesAsync(ct);
-
-            return SaleSagaResult.Ok(sale.Id, sale.Total);
         }
+
+        #endregion
+
+        #region فئات النتائج المساعدة (الداخلية)
+
+        internal class SaleSagaResultInternal<T> where T : class
+        {
+            public bool IsSuccess { get; }
+            public T? Value { get; }
+            public string[] Errors { get; }
+
+            private SaleSagaResultInternal(bool isSuccess, T? value, string[] errors)
+            {
+                IsSuccess = isSuccess;
+                Value = value;
+                Errors = errors ?? Array.Empty<string>();
+            }
+
+            public static SaleSagaResultInternal<T> Success(T value)
+                => new(true, value, Array.Empty<string>());
+
+            public static SaleSagaResultInternal<T> Fail(params string[] errors)
+                => new(false, default, errors);
+        }
+
+        #endregion
     }
 }

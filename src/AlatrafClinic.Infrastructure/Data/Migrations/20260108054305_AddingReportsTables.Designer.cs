@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlatrafClinic.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AlatrafClinicDbContext))]
-<<<<<<<< HEAD:src/AlatrafClinic.Infrastructure/Data/Migrations/20260107205454_CompensationSagas.Designer.cs
-    [Migration("20260107205454_CompensationSagas")]
-    partial class CompensationSagas
-========
-    [Migration("20260107063136_AddingReportsDomain")]
-    partial class AddingReportsDomain
->>>>>>>> upstream/main:src/AlatrafClinic.Infrastructure/Data/Migrations/20260107063136_AddingReportsDomain.Designer.cs
+    [Migration("20260108054305_AddingReportsTables")]
+    partial class AddingReportsTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
