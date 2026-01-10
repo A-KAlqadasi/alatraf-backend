@@ -1,4 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Application.Features.People.Services.CreatePerson;
 using AlatrafClinic.Domain.Common.Results;
 
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
 
 public sealed class CreateUserCommandHandler
-    : IRequestHandler<CreateUserCommand, Result<string>>
+    : IRequestHandler<CreateUserCommand, Result<UserCreatedDto>>
 {
     private readonly IAppDbContext _context;
     private readonly IIdentityService _identityService;
@@ -24,7 +25,7 @@ public sealed class CreateUserCommandHandler
         _logger = logger;
     }
 
-    public async Task<Result<string>> Handle(
+    public async Task<Result<UserCreatedDto>> Handle(
         CreateUserCommand command,
         CancellationToken ct)
     {
@@ -61,6 +62,9 @@ public sealed class CreateUserCommandHandler
             command.IsActive,
             ct);
 
-        return result;
+        return new UserCreatedDto
+        {
+            UserId = result.Value
+        };
     }
 }
