@@ -10,8 +10,8 @@ public class SaleItem : AuditableEntity<int>
     public int SaleId { get; private set; }
     public Sale Sale { get; set; } = default!;
 
-    public int StoreItemUnitId { get; private set; }
-    public StoreItemUnit StoreItemUnit { get; set; } = default!;
+    public int? StoreItemUnitId { get; private set; }
+    public StoreItemUnit? StoreItemUnit { get; private set; }
     public int ItemUnitId { get; private set; }
     public ItemUnit ItemUnit { get; set; } = default!;
 
@@ -24,6 +24,7 @@ public class SaleItem : AuditableEntity<int>
     private SaleItem(int saleId, ItemUnit itemUnit, decimal quantity)
     {
         SaleId = saleId;
+        ItemUnit = itemUnit;
         ItemUnitId = itemUnit.Id;
         Quantity = quantity;
         Price = itemUnit.Price;
@@ -65,4 +66,15 @@ public class SaleItem : AuditableEntity<int>
 
         return Result.Updated;
     }
+    public Result<Updated> AssignStoreItemUnit(StoreItemUnit storeItemUnit)
+    {
+        if (storeItemUnit is null)
+            return SaleItemErrors.InvalidStoreItemUnit;
+
+        StoreItemUnit = storeItemUnit;
+        StoreItemUnitId = storeItemUnit.Id;
+
+        return Result.Updated;
+    }
+
 }

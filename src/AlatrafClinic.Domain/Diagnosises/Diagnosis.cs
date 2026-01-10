@@ -16,7 +16,7 @@ using AlatrafClinic.Domain.TherapyCards;
 
 namespace AlatrafClinic.Domain.Diagnosises;
 
-public class Diagnosis : AuditableEntity<int>
+public class Diagnosis : AuditableEntity<int>, IAggregateRoot
 {
     public string DiagnosisText { get; private set; } = string.Empty;
     public DateOnly InjuryDate { get; private set; }

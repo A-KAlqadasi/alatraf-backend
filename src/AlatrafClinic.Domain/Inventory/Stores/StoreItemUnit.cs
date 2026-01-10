@@ -14,6 +14,7 @@ public class StoreItemUnit : AuditableEntity<int>
     public decimal Quantity { get; private set; }
 
     public ICollection<SaleItem> SaleItems { get; private set; } = new List<SaleItem>();
+    public byte[] RowVersion { get; private set; } = Array.Empty<byte>();
 
     private StoreItemUnit() { }
 

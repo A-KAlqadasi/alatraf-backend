@@ -2,11 +2,14 @@ using System.Data;
 using System.Text;
 
 using AlatrafClinic.Application.Common.Interfaces;
+using AlatrafClinic.Application.Common.Events;
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+
 using AlatrafClinic.Application.Reports.Dtos;
 using AlatrafClinic.Application.Reports.Interfaces;
 using AlatrafClinic.Application.Reports.Validators;
 using AlatrafClinic.Infrastructure.Data;
+using AlatrafClinic.Infrastructure.Data.Inbox;
 using AlatrafClinic.Infrastructure.Data.Interceptors;
 using AlatrafClinic.Infrastructure.Data.Repositories;
 using AlatrafClinic.Infrastructure.Identity;
@@ -24,6 +27,11 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using AlatrafClinic.Application.Sagas;
+using AlatrafClinic.Application.Sagas.Compensation;
+using AlatrafClinic.Infrastructure.Eventing;
+using AlatrafClinic.Application.Common.Interfaces.Messaging;
+using AlatrafClinic.Infrastructure.Messaging;
 
 
 namespace AlatrafClinic.Infrastructure;
@@ -46,7 +54,10 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString);
         });
 
-        services.AddScoped<IAppDbContext>(provider => provider. GetRequiredService<AlatrafClinicDbContext>());
+
+
+        // services.AddScoped<ApplicationDbContextInitialiser>();
+        services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AlatrafClinicDbContext>());
         services.AddScoped<AlatrafClinicDbContextInitialiser>();
 
         services.AddAuthentication(options =>
@@ -94,7 +105,7 @@ public static class DependencyInjection
         //         policy.Requirements.Add(new LaborAssignedRequirement()));
 
         services.AddTransient<IIdentityService, IdentityService>();
-        
+
 
         services.AddHybridCache(options => options.DefaultEntryOptions = new HybridCacheEntryOptions
         {
@@ -104,13 +115,27 @@ public static class DependencyInjection
 
         services.AddScoped<ITokenProvider, TokenProvider>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        // EventContext implementation lives in Infrastructure (concrete moved)
+        services.AddScoped<IEventContext, EventContext>();
+        // Register Domain Events dispatcher behavior
+        services.AddTransient(typeof(MediatR.IPipelineBehavior<,>), typeof(DomainEventsDispatcherBehavior<,>));
+        // Messaging transport (No-op by default)
+       services.AddScoped<IMessagePublisher, NoopMessagePublisher>();
+        services.AddHostedService<OutboxProcessor>();
+        services.AddScoped<IInbox, Inbox>();
+        services.AddScoped<IIdempotencyContext, IdempotencyContext>();
+
 
         // Dapper Services
         services.AddReportServices(configuration);
 
+        services.AddScoped<ISagaStateService, SagaStateService>();
+        services.AddScoped<ISagaCompensationHandler, SaleSagaCompensationHandler>();
+        services.AddScoped<IEnumerable<ISagaCompensationHandler>>(sp =>
+            sp.GetServices<ISagaCompensationHandler>().ToList());
         return services;
     }
-    
+
     public static IServiceCollection AddReportServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Core services
@@ -118,16 +143,16 @@ public static class DependencyInjection
         services.AddScoped<IReportSqlBuilder, ReportSqlBuilder>();
         services.AddScoped<IReportQueryExecutor, DapperReportQueryExecutor>();
         services.AddScoped<IReportService, ReportService>();
-        
+
         // Infrastructure
         services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
         services.AddSingleton<ISqlDialect>(GetSqlDialect(configuration));
-        
+
         // Validation
         services.AddScoped<IValidator<ReportRequestDto>, ReportRequestValidator>();
         services.AddScoped<IValidator<ReportFilterDto>, ReportFilterValidator>();
         services.AddScoped<IValidator<ReportSortDto>, ReportSortValidator>();
-        
+
         // Caching
         services.AddHybridCache(options =>
         {
@@ -137,17 +162,17 @@ public static class DependencyInjection
                 Expiration = TimeSpan.FromMinutes(30)
             };
         });
-        
+
         services.AddScoped<IReportExportService, ReportExportService>();
-        
-        
+
+
         return services;
     }
-    
+
     private static ISqlDialect GetSqlDialect(IConfiguration configuration)
     {
         var databaseType = configuration["Database:Type"]?.ToLower() ?? "sqlserver";
-        
+
         return databaseType switch
         {
             "postgresql" or "postgres" => new PostgreSqlDialect(),

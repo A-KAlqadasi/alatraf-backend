@@ -23,22 +23,27 @@ public sealed class SaleItemConfiguration : IEntityTypeConfiguration<SaleItem>
             .HasColumnType("decimal(18,2)")
             .IsRequired();
 
+        builder.Property(i => i.StoreItemUnitId)
+            .IsRequired(false);
+
         // FK to Sale
         builder.HasOne(i => i.Sale)
             .WithMany(s => s.SaleItems)
             .HasForeignKey(i => i.SaleId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // FK to StoreItemUnit (Inventory traceability)
         builder.HasOne(i => i.StoreItemUnit)
             .WithMany(siu => siu.SaleItems)
             .HasForeignKey(i => i.StoreItemUnitId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // FK to ItemUnit
         builder.HasOne(i => i.ItemUnit)
             .WithMany()
             .HasForeignKey(i => i.ItemUnitId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.HasIndex(i => i.SaleId);
 
         builder.HasQueryFilter(i => !i.IsDeleted);

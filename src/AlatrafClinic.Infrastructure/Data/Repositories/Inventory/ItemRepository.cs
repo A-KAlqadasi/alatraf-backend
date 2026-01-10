@@ -18,8 +18,8 @@ public class ItemRepository : GenericRepository<Item, int>, IItemRepository
 
     public async Task<ItemUnit?> GetByIdAndUnitIdAsync(int id, int unitId, CancellationToken ct)
     {
+        // Use tracking so the ItemUnit is treated as existing when attached to aggregates (e.g., SaleItem)
         return await dbContext.ItemUnits
-            .AsNoTracking()
             .SingleOrDefaultAsync(iu => iu.ItemId == id && iu.UnitId == unitId, ct);
     }
 

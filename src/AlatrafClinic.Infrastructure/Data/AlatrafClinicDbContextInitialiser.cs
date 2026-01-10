@@ -45,7 +45,7 @@ public sealed class AlatrafClinicDbContextInitialiser
     public async Task InitialiseAsync(CancellationToken ct = default)
     {
         try
-        {   
+        {
             await _context.Database.MigrateAsync(ct);
         }
         catch (Exception ex)
@@ -73,7 +73,7 @@ public sealed class AlatrafClinicDbContextInitialiser
         if (!await _roleManager.RoleExistsAsync(adminRole.Name!))
         {
             var result = await _roleManager.CreateAsync(adminRole);
-             // 3. ASSIGN PERMISSIONS TO ROLE - RIGHT AFTER CREATING THE ROLE
+            // 3. ASSIGN PERMISSIONS TO ROLE - RIGHT AFTER CREATING THE ROLE
             var allPermissions = await _context.Permissions.ToListAsync();
             foreach (var permission in allPermissions)
             {
@@ -83,7 +83,7 @@ public sealed class AlatrafClinicDbContextInitialiser
                     PermissionId = permission.Id
                 });
             }
-            await _context.SaveChangesAsync();     
+            await _context.SaveChangesAsync();
         }
         // Default users
         var adminEmail = "admin@alatrafclinic.com";
@@ -103,10 +103,10 @@ public sealed class AlatrafClinicDbContextInitialiser
         {
             // Use a proper password
             var password = "Admin@123";  // Must meet your password policy
-            
+
             // Check if creation succeeded
             var createResult = await _userManager.CreateAsync(admin, password);
-            
+
             if (createResult.Succeeded)
             {
                 if (!string.IsNullOrWhiteSpace(adminRole.Name))
@@ -123,8 +123,8 @@ public sealed class AlatrafClinicDbContextInitialiser
         }
 
         int? id1 = null;
-        int? id2  = null;
-        if(!await _context.Departments.AnyAsync())
+        int? id2 = null;
+        if (!await _context.Departments.AnyAsync())
         {
             var dep1 = Department.Create(1, "العلاج الطبيعي").Value;
             var dep2 = Department.Create(2, "الادارة الفنية").Value;
@@ -201,7 +201,7 @@ public sealed class AlatrafClinicDbContextInitialiser
                 GeneralUnit.Create("الطرفين السفليين").Value
             );
         }
-        
+
         if (!await _context.MedicalPrograms.AnyAsync())
         {
             _context.MedicalPrograms.AddRange(
@@ -366,13 +366,13 @@ public sealed class AlatrafClinicDbContextInitialiser
                 new ApplicationPermission { Name = Permission.Role.RemovePermissions }
             );
         }
-        
+
 
         // In your DbContext seed method
         if (!await _context.ReportDomains.AnyAsync())
         {
-            var now = new DateTime(2026,01,07);
-            
+            var now = new DateTime(2026, 01, 07);
+
             var reportDomain = new ReportDomain
             {
                 Name = "تقرير المرضى",
@@ -497,12 +497,25 @@ public sealed class AlatrafClinicDbContextInitialiser
                     CreatedAt = now,
                     UpdatedAt = now
                 },
+                 new ReportJoin
+                {
+                    DomainId = reportDomain.Id,
+                    FromTable = "Patients",
+                    ToTable = "Tickets",
+                    JoinType = "INNER",
+                    JoinCondition = "Patients.Id = Tickets.PatientId",
+                    IsActive = true,
+                    IsRequired = true,
+                    JoinOrder = 2,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                },
             };
             _context.ReportJoins.AddRange(reportJoins);
 
         }
-        
-                
+
+
         await _context.SaveChangesAsync();
     }
 }
