@@ -84,7 +84,11 @@ public sealed class IdentityController(ISender sender) : ApiController
             response => Ok(response),
             Problem);
     }
+
     [HttpPost("users")]
+    [ProducesResponseType(typeof(UserCreatedDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [EndpointSummary("Creates a new user.")]
     [EndpointName("CreateUser")]
     public async Task<IActionResult> CreateUser(

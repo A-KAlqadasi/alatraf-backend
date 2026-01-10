@@ -33,3 +33,8 @@ public class PermissionDto
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
 }
+
+public class UserCreatedDto
+{
+    public string UserId { get; set; } = default!;
+}

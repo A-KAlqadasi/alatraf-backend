@@ -1,3 +1,4 @@
+using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
@@ -14,4 +15,4 @@ public sealed record CreateUserCommand(
     string UserName,
     string Password,
     bool IsActive
-) : IRequest<Result<string>>;
+) : IRequest<Result<UserCreatedDto>>;
