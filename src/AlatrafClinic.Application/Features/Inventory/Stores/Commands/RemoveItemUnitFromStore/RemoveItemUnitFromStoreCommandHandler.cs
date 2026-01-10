@@ -1,10 +1,11 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Stores;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Stores.Commands.RemoveItemUnitFromStore;
@@ -12,24 +13,27 @@ namespace AlatrafClinic.Application.Features.Inventory.Stores.Commands.RemoveIte
 public class RemoveItemUnitFromStoreCommandHandler : IRequestHandler<RemoveItemUnitFromStoreCommand, Result<Deleted>>
 {
     private readonly ILogger<RemoveItemUnitFromStoreCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public RemoveItemUnitFromStoreCommandHandler(ILogger<RemoveItemUnitFromStoreCommandHandler> logger, IUnitOfWork unitOfWork)
+    public RemoveItemUnitFromStoreCommandHandler(ILogger<RemoveItemUnitFromStoreCommandHandler> logger, IAppDbContext dbContext)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<Deleted>> Handle(RemoveItemUnitFromStoreCommand command, CancellationToken ct)
     {
-        var itemUnit = await _unitOfWork.Items.GetByIdAndUnitIdAsync(command.ItemId, command.UnitId, ct);
+        var itemUnit = await _dbContext.ItemUnits.SingleOrDefaultAsync(iu => iu.ItemId == command.ItemId && iu.UnitId == command.UnitId, ct);
         if (itemUnit is null)
         {
             _logger.LogWarning("ItemUnit not found for ItemId={ItemId} UnitId={UnitId}", command.ItemId, command.UnitId);
             return ItemUnitErrors.ItemUnitNotFound;
         }
 
-        var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(command.StoreId, ct);
+        var store = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+                .ThenInclude(siu => siu.ItemUnit)
+            .SingleOrDefaultAsync(s => s.Id == command.StoreId, ct);
         if (store is null)
         {
             _logger.LogWarning("Store not found with id {StoreId}", command.StoreId);
@@ -43,8 +47,8 @@ public class RemoveItemUnitFromStoreCommandHandler : IRequestHandler<RemoveItemU
             return removeResult.Errors;
         }
 
-        await _unitOfWork.Stores.UpdateAsync(store, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.Stores.Update(store);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Removed ItemUnit (ItemId={ItemId},UnitId={UnitId}) from Store {StoreId}", command.ItemId, command.UnitId, command.StoreId);
 

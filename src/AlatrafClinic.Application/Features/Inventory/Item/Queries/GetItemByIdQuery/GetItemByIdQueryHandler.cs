@@ -1,22 +1,23 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Items.Queries.GetItemByIdQuery;
 
 public sealed class GetItemByIdQueryHandler : IRequestHandler<GetItemByIdQuery, Result<ItemDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetItemByIdQueryHandler> _logger;
 
-    public GetItemByIdQueryHandler(IUnitOfWork unitOfWork, ILogger<GetItemByIdQueryHandler> logger)
+    public GetItemByIdQueryHandler(IAppDbContext dbContext, ILogger<GetItemByIdQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -24,18 +25,16 @@ public sealed class GetItemByIdQueryHandler : IRequestHandler<GetItemByIdQuery, 
     {
         _logger.LogInformation("Fetching item with Id: {Id}", request.Id);
 
-        var item = await _unitOfWork.Items.GetByIdAsync(request.Id, cancellationToken);
+        var item = await _dbContext.Items
+            .AsNoTracking()
+            .Include(i => i.BaseUnit)
+            .Include(i => i.ItemUnits).ThenInclude(u => u.Unit)
+            .SingleOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
 
         if (item is null)
         {
             _logger.LogWarning("Item with Id {Id} not found.", request.Id);
             return ItemErrors.NotFound;
-        }
-
-        // تأكد من أن الوحدات تم تحميلها (في حال استخدام lazy loading أو need explicit Include)
-        if (item.ItemUnits is null || !item.ItemUnits.Any())
-        {
-            _logger.LogInformation("Item with Id {Id} has no associated units.", request.Id);
         }
 
         var dto = item.ToDto();

@@ -29,4 +29,6 @@ public static class StoreErrors
         Error.Validation("Store.ItemUnitIsRequired", "Item unit is required.");
     public static readonly Error CannotDelete =
         Error.Conflict("Store.CannotDelete", "Store cannot be deleted because it contains items or linked records.");
+    public static readonly Error StoreHasAssociations =
+        Error.Conflict("Store.HasAssociations", "Cannot delete store because it has associated records.");
 }

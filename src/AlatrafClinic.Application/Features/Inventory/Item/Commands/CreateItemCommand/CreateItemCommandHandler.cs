@@ -1,9 +1,10 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 using MediatR;
 using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Items.Commands.CreateItemCommand;
@@ -12,33 +13,33 @@ public class CreateItemCommandHandler : IRequestHandler<CreateItemCommand, Resul
 {
     private readonly HybridCache _cache;
     private readonly ILogger<CreateItemCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
     public CreateItemCommandHandler(
         HybridCache cache,
         ILogger<CreateItemCommandHandler> logger,
-        IUnitOfWork unitOfWork)
+        IAppDbContext dbContext)
     {
         _cache = cache;
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<ItemDto>> Handle(CreateItemCommand request, CancellationToken cancellationToken)
     {
-        
-        var baseUnit = await _unitOfWork.Units.GetByIdAsync(request.BaseUnitId, cancellationToken);
+
+        var baseUnit = await _dbContext.Units.SingleOrDefaultAsync(u => u.Id == request.BaseUnitId, cancellationToken);
         if (baseUnit is null)
             return ItemErrors.BaseUnitIsRequired;
 
-        
-        var createResult =  Domain.Inventory.Items.Item.Create(request.Name, baseUnit, request.Description);
+
+        var createResult = Domain.Inventory.Items.Item.Create(request.Name, baseUnit, request.Description);
         if (createResult.IsError)
             return createResult.Errors;
 
         var item = createResult.Value;
 
-        
+
         if (request.Units is not null && request.Units.Any())
         {
             foreach (var unitDto in request.Units)
@@ -55,11 +56,11 @@ public class CreateItemCommandHandler : IRequestHandler<CreateItemCommand, Resul
             }
         }
 
-        
-        await _unitOfWork.Items.AddAsync(item, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        
+        await _dbContext.Items.AddAsync(item, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+
         var itemDto = new ItemDto
         {
             Id = item.Id,
@@ -78,12 +79,12 @@ public class CreateItemCommandHandler : IRequestHandler<CreateItemCommand, Resul
             }).ToList()
         };
 
-        
+
         await _cache.SetAsync($"item:{item.Id}", itemDto, cancellationToken: cancellationToken);
 
         _logger.LogInformation("Created new item: {ItemName} (Id={ItemId})", item.Name, item.Id);
 
-        
+
         return itemDto;
     }
 }

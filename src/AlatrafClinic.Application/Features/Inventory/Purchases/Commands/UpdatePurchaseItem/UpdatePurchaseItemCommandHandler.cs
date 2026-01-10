@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Purchases.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Purchases.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -7,25 +7,30 @@ using AlatrafClinic.Domain.Inventory.Stores;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Purchases.Commands.UpdatePurchaseItem;
 
 public class UpdatePurchaseItemCommandHandler : IRequestHandler<UpdatePurchaseItemCommand, Result<PurchaseInvoiceDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<UpdatePurchaseItemCommandHandler> _logger;
 
-    public UpdatePurchaseItemCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdatePurchaseItemCommandHandler> logger)
+    public UpdatePurchaseItemCommandHandler(IAppDbContext dbContext, ILogger<UpdatePurchaseItemCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
     public async Task<Result<PurchaseInvoiceDto>> Handle(UpdatePurchaseItemCommand request, CancellationToken ct)
     {
         // Load invoice aggregate root
-        var invoice = await _unitOfWork.PurchaseInvoices.GetByIdAsync(request.PurchaseInvoiceId, ct);
+        var invoice = await _dbContext.PurchaseInvoices
+            .Include(i => i.Items)
+            .Include(i => i.Supplier)
+            .Include(i => i.Store)
+            .SingleOrDefaultAsync(i => i.Id == request.PurchaseInvoiceId, ct);
         if (invoice is null)
         {
             _logger.LogWarning("PurchaseInvoice {Id} not found.", request.PurchaseInvoiceId);
@@ -33,7 +38,9 @@ public class UpdatePurchaseItemCommandHandler : IRequestHandler<UpdatePurchaseIt
         }
 
         // Load store aggregate (with item units) to find the new StoreItemUnit
-        var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(invoice.StoreId, ct);
+        var store = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+            .SingleOrDefaultAsync(s => s.Id == invoice.StoreId, ct);
         if (store is null)
         {
             _logger.LogWarning("Store {StoreId} not found when updating item for invoice {InvoiceId}.", invoice.StoreId, invoice.Id);
@@ -60,8 +67,7 @@ public class UpdatePurchaseItemCommandHandler : IRequestHandler<UpdatePurchaseIt
             return updateResult.Errors;
         }
 
-        await _unitOfWork.PurchaseInvoices.UpdateAsync(invoice, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Updated item on PurchaseInvoice {InvoiceId} (existingStoreItemUnitId={ExistingId}).", invoice.Id, request.ExistingStoreItemUnitId);
 

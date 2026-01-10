@@ -1,29 +1,33 @@
 using Microsoft.Extensions.Logging;
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
 using AlatrafClinic.Domain.RepairCards.Orders;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpsertOrderItems;
 
 public sealed class UpsertOrderItemsCommandHandler : IRequestHandler<UpsertOrderItemsCommand, Result<Updated>>
 {
     private readonly ILogger<UpsertOrderItemsCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public UpsertOrderItemsCommandHandler(ILogger<UpsertOrderItemsCommandHandler> logger, IUnitOfWork unitOfWork)
+    public UpsertOrderItemsCommandHandler(ILogger<UpsertOrderItemsCommandHandler> logger, IAppDbContext dbContext)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<Updated>> Handle(UpsertOrderItemsCommand command, CancellationToken ct)
     {
-        var repairCard = await _unitOfWork.RepairCards.GetByIdAsync(command.RepairCardId, ct);
+        var repairCard = await _dbContext.RepairCards
+            .Include(rc => rc.Orders)
+                .ThenInclude(o => o.OrderItems)
+            .SingleOrDefaultAsync(rc => rc.Id == command.RepairCardId, ct);
         if (repairCard is null)
         {
             _logger.LogError("RepairCard with Id {RepairCardId} not found.", command.RepairCardId);
@@ -39,7 +43,10 @@ public sealed class UpsertOrderItemsCommandHandler : IRequestHandler<UpsertOrder
 
         foreach (var item in command.Items)
         {
-            var itemUnit = await _unitOfWork.Items.GetByIdAndUnitIdAsync(item.ItemId, item.UnitId, ct);
+            var itemUnit = await _dbContext.ItemUnits
+                .Include(iu => iu.Item)
+                .Include(iu => iu.Unit)
+                .SingleOrDefaultAsync(iu => iu.ItemId == item.ItemId && iu.UnitId == item.UnitId, ct);
             if (itemUnit is null)
             {
                 _logger.LogError("ItemUnit not found (ItemId={ItemId}, UnitId={UnitId}).", item.ItemId, item.UnitId);
@@ -62,8 +69,8 @@ public sealed class UpsertOrderItemsCommandHandler : IRequestHandler<UpsertOrder
             return result.Errors;
         }
 
-        await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.RepairCards.Update(repairCard);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Upserted {Count} items for Order {OrderId} in RepairCard {RepairCardId}.", command.Items.Count, command.OrderId, command.RepairCardId);
 

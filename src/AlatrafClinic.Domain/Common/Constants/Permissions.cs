@@ -156,7 +156,20 @@ public static class Permission
         public const string AssignRoles = "user:assign_roles";
         public const string RemoveRoles = "user:remove_roles";
     }
-    
+
+    public static class Item
+    {
+        public const string Create = "item:create";
+        public const string Read = "item:read";
+        public const string Update = "item:update";
+        public const string Delete = "item:delete";
+        public const string ActiveItem = "item:active_item";
+        public const string DeactiveItem = "item:deactive_item";
+        public const string RemoveItemUnit = "item:remove_item_unit";
+        public const string AddOrUpdateItemUnit = "item:add_or_update_item_unit";
+
+    }
+
     public static class Role
     {
         public const string Create = "role:create";
@@ -166,4 +179,5 @@ public static class Permission
         public const string AssignPermissions = "role:assign_permissions";
         public const string RemovePermissions = "role:remove_permissions";
     }
+    
 }

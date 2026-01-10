@@ -1,5 +1,5 @@
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Application.Features.Sales.Dtos;
 using AlatrafClinic.Application.Features.Sales.Mappers;
@@ -11,6 +11,7 @@ using AlatrafClinic.Domain.Sales;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
@@ -18,14 +19,14 @@ namespace AlatrafClinic.Application.Features.Sales.Commands.CreateSale;
 public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Result<SaleDto>>
 {
     private readonly ILogger<CreateSaleCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly IDiagnosisCreationService _diagnosisService;
 
- 
-    public CreateSaleCommandHandler(ILogger<CreateSaleCommandHandler> logger, IUnitOfWork unitOfWork, IDiagnosisCreationService diagnosisService)
+
+    public CreateSaleCommandHandler(ILogger<CreateSaleCommandHandler> logger, IAppDbContext dbContext, IDiagnosisCreationService diagnosisService)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _diagnosisService = diagnosisService;
     }
 
@@ -60,8 +61,8 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
 
         foreach (var saleItem in command.SaleItems)
         {
-            var itemUnit = await _unitOfWork.Items
-                .GetByIdAndUnitIdAsync(saleItem.ItemId, saleItem.UnitId, ct);
+            var itemUnit = await _dbContext.ItemUnits
+                .SingleOrDefaultAsync(iu => iu.ItemId == saleItem.ItemId && iu.UnitId == saleItem.UnitId, ct);
 
             if (itemUnit is null)
                 return ItemUnitErrors.ItemUnitNotFound;
@@ -100,12 +101,12 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Resul
         diagnosis.AssignPayment(payment);
         diagnosis.AssignToSale(sale);
 
-        await _unitOfWork.Diagnoses.AddAsync(diagnosis, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.Diagnoses.AddAsync(diagnosis, ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         // Now Sale.Id is available — raise domain event and persist it
         sale.MarkCreated();
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
         _logger.LogInformation(
                    "Created Sale {saleId} for Diagnosis {diagnosisId} and Ticket {ticketId}",
                    sale.Id,

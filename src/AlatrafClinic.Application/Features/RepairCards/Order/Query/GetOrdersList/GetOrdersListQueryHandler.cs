@@ -1,19 +1,20 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.RepairCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetOrdersList;
 
 public sealed class GetOrdersListQueryHandler : IRequestHandler<GetOrdersListQuery, Result<List<AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetOrdersListQueryHandler> _logger;
 
-    public GetOrdersListQueryHandler(IUnitOfWork unitOfWork, ILogger<GetOrdersListQueryHandler> logger)
+    public GetOrdersListQueryHandler(IAppDbContext dbContext, ILogger<GetOrdersListQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -21,7 +22,18 @@ public sealed class GetOrdersListQueryHandler : IRequestHandler<GetOrdersListQue
     {
         _logger.LogInformation("Fetching all orders...");
 
-        var orders = await _unitOfWork.Orders.GetAllAsync(ct);
+        var orders = await _dbContext.Orders
+            .AsNoTracking()
+            .Select(o => new AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto
+            {
+                Id = o.Id,
+                RepairCardId = o.RepairCardId,
+                SectionId = o.SectionId,
+                OrderType = o.OrderType,
+                Status = o.Status,
+                IsEditable = o.IsEditable
+            })
+            .ToListAsync(ct);
 
         if (orders is null || !orders.Any())
         {
@@ -29,10 +41,8 @@ public sealed class GetOrdersListQueryHandler : IRequestHandler<GetOrdersListQue
             return new List<AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto>();
         }
 
-        var dtos = orders.Select(o => o.ToDto()).ToList();
+        _logger.LogInformation("Retrieved {Count} orders.", orders.Count);
 
-        _logger.LogInformation("Retrieved {Count} orders.", dtos.Count);
-
-        return dtos;
+        return orders;
     }
 }

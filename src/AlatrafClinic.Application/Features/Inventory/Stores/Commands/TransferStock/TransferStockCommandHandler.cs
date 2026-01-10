@@ -1,10 +1,11 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Stores;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Stores.Commands.TransferStock;
@@ -12,12 +13,12 @@ namespace AlatrafClinic.Application.Features.Inventory.Stores.Commands.TransferS
 public class TransferStockCommandHandler : IRequestHandler<TransferStockCommand, Result<Updated>>
 {
     private readonly ILogger<TransferStockCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public TransferStockCommandHandler(ILogger<TransferStockCommandHandler> logger, IUnitOfWork unitOfWork)
+    public TransferStockCommandHandler(ILogger<TransferStockCommandHandler> logger, IAppDbContext dbContext)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<Updated>> Handle(TransferStockCommand command, CancellationToken ct)
@@ -34,7 +35,7 @@ public class TransferStockCommandHandler : IRequestHandler<TransferStockCommand,
         }
 
         // validate item unit exists
-        var itemUnit = await _unitOfWork.Items.GetByIdAndUnitIdAsync(command.ItemId, command.UnitId, ct);
+        var itemUnit = await _dbContext.ItemUnits.SingleOrDefaultAsync(iu => iu.ItemId == command.ItemId && iu.UnitId == command.UnitId, ct);
         if (itemUnit is null)
         {
             _logger.LogWarning("ItemUnit not found for ItemId={ItemId} UnitId={UnitId}", command.ItemId, command.UnitId);
@@ -42,14 +43,20 @@ public class TransferStockCommandHandler : IRequestHandler<TransferStockCommand,
         }
 
         // load source and destination aggregate roots
-        var sourceStore = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(command.SourceStoreId, ct);
+        var sourceStore = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+                .ThenInclude(siu => siu.ItemUnit)
+            .SingleOrDefaultAsync(s => s.Id == command.SourceStoreId, ct);
         if (sourceStore is null)
         {
             _logger.LogWarning("Source store not found: {StoreId}", command.SourceStoreId);
             return StoreErrors.StoreNotFound;
         }
 
-        var destStore = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(command.DestinationStoreId, ct);
+        var destStore = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+                .ThenInclude(siu => siu.ItemUnit)
+            .SingleOrDefaultAsync(s => s.Id == command.DestinationStoreId, ct);
         if (destStore is null)
         {
             _logger.LogWarning("Destination store not found: {StoreId}", command.DestinationStoreId);
@@ -82,9 +89,9 @@ public class TransferStockCommandHandler : IRequestHandler<TransferStockCommand,
         }
 
         // persist both aggregates
-        await _unitOfWork.Stores.UpdateAsync(sourceStore, ct);
-        await _unitOfWork.Stores.UpdateAsync(destStore, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.Stores.Update(sourceStore);
+        _dbContext.Stores.Update(destStore);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Transferred {Qty} of ItemId={ItemId} UnitId={UnitId} from Store {Source} to Store {Dest}", command.Quantity, command.ItemId, command.UnitId, command.SourceStoreId, command.DestinationStoreId);
 
