@@ -16,7 +16,9 @@ public sealed class Payment : AuditableEntity<int>
     public Guid? SagaId { get; private set; }
     public decimal TotalAmount { get; private set; }
     public decimal? PaidAmount { get; private set; }
-    public decimal? Discount { get; private set; }
+    public decimal? DiscountPercentage { get; private set; }
+    public decimal? DiscountAmount => 
+        DiscountPercentage != null ? TotalAmount * (DiscountPercentage.Value / 100m) : null;
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
     public int TicketId { get; private set; }
@@ -33,7 +35,7 @@ public sealed class Payment : AuditableEntity<int>
 
 
     public decimal Residual =>
-        Math.Max(0, TotalAmount - ((PaidAmount ?? 0m) + (Discount ?? 0m)));
+        Math.Max(0, TotalAmount - ((PaidAmount ?? 0m) + (DiscountPercentage ?? 0m)));
 
     private Payment() { }
 
@@ -76,15 +78,12 @@ public sealed class Payment : AuditableEntity<int>
 
     public Result<Updated> Pay(decimal? paid, decimal? discountPercentage)
     {
-        // paid must be non-negative if provided
         if (paid != null && paid < 0m)
             return PaymentErrors.InvalidPaid;
 
-        // discount must be between 0 and 100 if provided
         if (discountPercentage != null && (discountPercentage < 0m || discountPercentage > 100m))
             return PaymentErrors.InvalidDiscount;
 
-        decimal paidAmount = paid ?? 0m;
         decimal discountAmount = 0m;
 
         if (discountPercentage != null)
@@ -92,26 +91,24 @@ public sealed class Payment : AuditableEntity<int>
             discountAmount = TotalAmount * (discountPercentage.Value / 100m);
         }
 
-        decimal totalCovered = paidAmount + discountAmount;
+        decimal totalCovered = (paid.HasValue ? paid.Value : 0) + discountAmount;
 
-        if (totalCovered > TotalAmount)
+        if (AccountKind == Payments.AccountKind.Patient && totalCovered > TotalAmount)
             return PaymentErrors.OverPayment;
 
-        if (totalCovered < TotalAmount)
+        if (AccountKind == Payments.AccountKind.Patient && totalCovered < TotalAmount)
             return PaymentErrors.UnderPayment;
 
         // Assign
-        PaidAmount = paidAmount;
-        Discount = discountPercentage; // store percentage (recommended)
-        //DiscountAmount = discountAmount; // optional but highly recommended
-
+        PaidAmount = paid;
+        DiscountPercentage = discountPercentage;
         IsCompleted = true;
         PaymentDate = DateTime.Now;
 
         AddDomainEvent(
        new PaymentCompletedDomainEvent(
            Id,
-           DiagnosisId // 👈 الربط الصحيح
+           DiagnosisId
             )
         );
         return Result.Updated;

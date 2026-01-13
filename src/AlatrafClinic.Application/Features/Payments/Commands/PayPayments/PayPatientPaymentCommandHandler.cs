@@ -36,7 +36,6 @@ public sealed class PayPatientPaymentCommandHandler
 
         var payment = load.Value;
 
-        // Ensure voucher is unique (your existing rule)
         var voucherExists = await _context.Payments
             .Include(p => p.PatientPayment)
             .AnyAsync(p => p.PatientPayment != null && p.PatientPayment.VoucherNumber == command.VoucherNumber, ct);

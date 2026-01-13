@@ -2,7 +2,6 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.Payments.Dtos;
-using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Payments;
 
 namespace AlatrafClinic.Application.Features.Payments.Mappers;
@@ -20,8 +19,8 @@ public static class PaymentMapper
         PaymentDate = p.PaymentDate,
         TotalAmount = p.TotalAmount,
         PaidAmount = p.PaidAmount,
-        Discount = p.Discount,
-        Residual =p.AccountKind == AccountKind.Patient ?  Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.Discount ?? 0m))) : 0m,
+        Discount = p.DiscountPercentage,
+        Residual =p.AccountKind == AccountKind.Patient ?  Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.DiscountAmount ?? 0m))) : 0m,
         Notes = p.Notes
     };
 
@@ -96,7 +95,7 @@ public static class PaymentMapper
             IsCompleted = payment.IsCompleted,
             TotalAmount = payment.TotalAmount,
             PaidAmount = payment.PaidAmount,
-            Discount  = payment.Discount,
+            Discount  = payment.DiscountPercentage,
             AccountKind = payment.AccountKind.ToArabicAccountKind(),
             PaymentDate = payment.PaymentDate
         };
@@ -121,7 +120,7 @@ public static class PaymentMapper
             IsCompleted = payment.IsCompleted,
             TotalAmount = payment.TotalAmount,
             PaidAmount = payment.PaidAmount,
-            Discount  = payment.Discount,
+            Discount  = payment.DiscountPercentage,
             AccountKind = payment.AccountKind.ToArabicAccountKind(),
             PaymentDate = payment.PaymentDate
         };
