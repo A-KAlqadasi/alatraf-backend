@@ -256,7 +256,7 @@ public sealed class IdentityService : IIdentityService
             .ToListAsync(ct);
     }
 
-   public async Task<Result<Updated>> AssignRolesToUserAsync(
+    public async Task<Result<Updated>> UpsertUserRolesAsync(
     string userId,
     IReadOnlyCollection<string> roleIds,
     CancellationToken ct)
@@ -274,7 +274,7 @@ public sealed class IdentityService : IIdentityService
         // Resolve roles by IDs
         var roles = new List<IdentityRole>();
 
-        foreach (var roleId in roleIds)
+        foreach (var roleId in roleIds.Distinct())
         {
             var role = await _roleManager.FindByIdAsync(roleId);
             if (role is null)
@@ -283,70 +283,41 @@ public sealed class IdentityService : IIdentityService
             roles.Add(role);
         }
 
-        // Identity works with role names, not IDs
-        var roleNames = roles
+        // Identity works with role NAMES, not IDs
+        var desiredRoleNames = roles
             .Select(r => r.Name!)
-            .Distinct()
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // Get current user roles
+        var existingRoleNames = await _userManager.GetRolesAsync(user);
+
+        // Roles to add (desired - existing)
+        var rolesToAdd = desiredRoleNames
+            .Except(existingRoleNames, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        // Filter out roles the user already has
-        var existingRoles = await _userManager.GetRolesAsync(user);
-        var rolesToAdd = roleNames
-            .Except(existingRoles)
+        // Roles to remove (existing - desired)
+        var rolesToRemove = existingRoleNames
+            .Except(desiredRoleNames, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        if (rolesToAdd.Count == 0)
-            return Result.Updated;
+        if (rolesToAdd.Count > 0)
+        {
+            var addResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
+            if (!addResult.Succeeded)
+                return MyIdentityErrors.FaliedToAssignRoleToUser;
+        }
 
-        var result = await _userManager.AddToRolesAsync(user, rolesToAdd);
-
-        if (!result.Succeeded)
-            return MyIdentityErrors.FaliedToAssignRoleToUser;
+        if (rolesToRemove.Count > 0)
+        {
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            if (!removeResult.Succeeded)
+                return MyIdentityErrors.FaliedToRemoveRoleFromUser;
+        }
 
         return Result.Updated;
     }
 
-
-   public async Task<Result<Deleted>> RemoveRolesFromUserAsync(
-    string userId,
-    IReadOnlyCollection<string> roleIds,
-    CancellationToken ct)
-    {
-        if (string.IsNullOrWhiteSpace(userId))
-            return MyIdentityErrors.UserNotFound;
-
-        if (roleIds is null || roleIds.Count == 0)
-            return MyIdentityErrors.RoleNotFound;
-
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user is null)
-            return MyIdentityErrors.UserNotFound;
-
-        // Resolve roles by IDs
-        var roles = new List<IdentityRole>();
-
-        foreach (var roleId in roleIds)
-        {
-            var role = await _roleManager.FindByIdAsync(roleId);
-            if (role is null)
-                return MyIdentityErrors.RoleNotFound;
-
-            roles.Add(role);
-        }
-
-        // Extract role names (Identity works with names, not IDs)
-        var roleNames = roles
-            .Select(r => r.Name!)
-            .Distinct()
-            .ToList();
-
-        var result = await _userManager.RemoveFromRolesAsync(user, roleNames);
-
-        if (!result.Succeeded)
-            return MyIdentityErrors.FaliedToRemoveRoleFromUser;
-
-        return Result.Deleted;
-    }
     public async Task<Result<Updated>> ActivateRolePermissionsAsync(
         string roleId,
         IReadOnlyCollection<int> permissionIds,
@@ -441,44 +412,29 @@ public sealed class IdentityService : IIdentityService
     // =========================
     // User Permission Overrides
     // =========================
-    
-    public Task<Result<Updated>> GrantPermissionsToUserAsync(
+
+   public async Task<Result<Updated>> UpsertPermissionsForUserAsync(
     string userId,
     IReadOnlyCollection<int> permissionIds,
-    CancellationToken ct)
-    => SetUserPermissionOverrides(userId, permissionIds, Effect.Grant, ct);
-
-    public Task<Result<Updated>> DenyPermissionsToUserAsync(
-    string userId,
-    IReadOnlyCollection<int> permissionIds,
-    CancellationToken ct)
-    => SetUserPermissionOverrides(userId, permissionIds, Effect.Deny, ct);
-
-
-    private async Task<Result<Updated>> SetUserPermissionOverrides(
-    string userId,
-    IReadOnlyCollection<int> permissionIds,
-    Effect effect,
     CancellationToken ct)
     {
-        if (permissionIds is null || permissionIds.Count == 0)
-            return Result.Updated;
+        var desiredPermissions = permissionIds?.Distinct().ToHashSet()
+            ?? new HashSet<int>();
 
         var existingOverrides = await _db.Set<UserPermissionOverride>()
-            .Where(x =>
-                x.UserId == userId &&
-                permissionIds.Contains(x.PermissionId))
+            .Where(x => x.UserId == userId)
             .ToListAsync(ct);
 
         var existingMap = existingOverrides
             .ToDictionary(x => x.PermissionId);
 
-        foreach (var permissionId in permissionIds.Distinct())
+        // 1. Grant permissions that should exist
+        foreach (var permissionId in desiredPermissions)
         {
             if (existingMap.TryGetValue(permissionId, out var existing))
             {
-                if (existing.Effect != effect)
-                    existing.Effect = effect;
+                if (existing.Effect != Effect.Grant)
+                    existing.Effect = Effect.Grant;
             }
             else
             {
@@ -486,8 +442,18 @@ public sealed class IdentityService : IIdentityService
                 {
                     UserId = userId,
                     PermissionId = permissionId,
-                    Effect = effect
+                    Effect = Effect.Grant
                 });
+            }
+        }
+
+        // 2. Deny permissions that should NOT exist
+        foreach (var existing in existingOverrides)
+        {
+            if (!desiredPermissions.Contains(existing.PermissionId) &&
+                existing.Effect != Effect.Deny)
+            {
+                existing.Effect = Effect.Deny;
             }
         }
 

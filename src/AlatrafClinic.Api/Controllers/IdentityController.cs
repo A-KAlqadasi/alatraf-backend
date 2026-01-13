@@ -5,14 +5,12 @@ using AlatrafClinic.Api.Requests.Identity;
 using AlatrafClinic.Application.Features.Identity;
 using AlatrafClinic.Application.Features.Identity.Commands.ActivatePermissionsInRole;
 using AlatrafClinic.Application.Features.Identity.Commands.ActivateUser;
-using AlatrafClinic.Application.Features.Identity.Commands.AssignRolesToUser;
 using AlatrafClinic.Application.Features.Identity.Commands.ChangeUserCredentials;
 using AlatrafClinic.Application.Features.Identity.Commands.CreateUser;
 using AlatrafClinic.Application.Features.Identity.Commands.DeActivatePermissionsInRole;
-using AlatrafClinic.Application.Features.Identity.Commands.DenyPermissionsToUser;
-using AlatrafClinic.Application.Features.Identity.Commands.GrantPermissionsToUser;
-using AlatrafClinic.Application.Features.Identity.Commands.RemoveRolesFromUser;
 using AlatrafClinic.Application.Features.Identity.Commands.ResetUserPassword;
+using AlatrafClinic.Application.Features.Identity.Commands.UpsertUserPermissions;
+using AlatrafClinic.Application.Features.Identity.Commands.UpsertUserRoles;
 using AlatrafClinic.Application.Features.Identity.Dtos;
 using AlatrafClinic.Application.Features.Identity.Queries.GenerateTokens;
 using AlatrafClinic.Application.Features.Identity.Queries.GetAllPermissions;
@@ -180,34 +178,19 @@ public sealed class IdentityController(ISender sender) : ApiController
         return result.Match(Ok, Problem);
     }
 
-    [HttpPost("users/{userId}/roles")]
-    [EndpointSummary("Assigns a role to a user.")]
-    [EndpointName("AssignRoleToUser")]
-    public async Task<IActionResult> AssignRole(
+    [HttpPut("users/{userId}/roles")]
+    [EndpointSummary("Upsert a role to a user.")]
+    [EndpointName("UpsertRoleToUser")]
+    public async Task<IActionResult> UpsertRole(
         string userId,
         AssignRolesRequest request,
         CancellationToken ct)
     {
-        var command = new AssignRolesToUserCommand(userId, request.RoleIds);
+        var command = new UpsertUserRolesCommand(userId, request.RoleIds);
         var result = await sender.Send(command, ct);
 
         return result.Match(_ => NoContent(), Problem);
     }
-
-    [HttpDelete("users/{userId}/roles")]
-    [EndpointSummary("Removes a role from a user.")]
-    [EndpointName("RemoveRoleFromUser")]
-    public async Task<IActionResult> RemoveRole(
-        string userId,
-        RemoveRolesRequest request,
-        CancellationToken ct)
-    {
-        var command = new RemoveRolesFromUserCommand(userId, request.RoleIds);
-        var result = await sender.Send(command, ct);
-
-        return result.Match(_ => NoContent(), Problem);
-    }
-
     // =========================
     // Roles
     // =========================
@@ -255,34 +238,20 @@ public sealed class IdentityController(ISender sender) : ApiController
     // User Permission Overrides
     // =========================
 
-    [HttpPost("users/{userId}/permissions/grant")]
-    [EndpointSummary("Grants permissions to a user.")]
-    [EndpointName("GrantPermissionsToUser")]
-    public async Task<IActionResult> GrantPermissions(
+    [HttpPut("users/{userId}/permissions")]
+    [EndpointSummary("Upsert permissions to a user.")]
+    [EndpointName("UpsertPermissionsToUser")]
+    public async Task<IActionResult> UpsertPermissions(
         string userId,
         [FromBody] PermissionIdsRequest request,
         CancellationToken ct)
     {
-        var command = new GrantPermissionsToUserCommand(userId, request.PermissionIds);
+        var command = new UpsertUserPermissionsCommand(userId, request.PermissionIds);
         var result = await sender.Send(command, ct);
 
         return result.Match(_ => NoContent(), Problem);
     }
-
-    [HttpPost("users/{userId}/permissions/deny")]
-    [EndpointSummary("Denies permissions to a user.")]
-    [EndpointName("DenyPermissionsToUser")]
-    public async Task<IActionResult> DenyPermissions(
-        string userId,
-        [FromBody] PermissionIdsRequest request,
-        CancellationToken ct)
-    {
-        var command = new DenyPermissionsToUserCommand(userId, request.PermissionIds);
-        var result = await sender.Send(command, ct);
-
-        return result.Match(_ => NoContent(), Problem);
-    }
-
+    
     // =========================
     // Permissions Queries
     // =========================
