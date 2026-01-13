@@ -4,17 +4,6 @@ namespace AlatrafClinic.Application.Common.Interfaces;
 
 public static class UtilityService
 {
-    public static int CalculateAge(DateOnly dateOfBirth, DateOnly now)
-    {
-        var age = now.Year - dateOfBirth.Year;
-
-        if (dateOfBirth > now.AddYears(-age))
-        {
-            age -= 1;
-        }
-
-        return age;
-    }
     
     public static string GenderToArabicString(bool gender)
     {
@@ -25,4 +14,11 @@ public static class UtilityService
         // "dddd" format specifier gives the full day name
         return date.ToString("dddd", new CultureInfo("ar-SA")); 
     }
+    
+    public static decimal CalculatePercentage(decimal part, decimal total)
+    {
+        if (total == 0) return 0;
+        return Math.Round((part / total) * 100, 2);
+    }
+
 }
