@@ -27,9 +27,10 @@ public interface IIdentityService
 
     Task<Result<UserDetailsDto>> GetUserByIdAsync(string userId, CancellationToken ct = default);
     Task<Result<IReadOnlyList<UserListItemDto>>> GetUsersAsync(string? searchBy, bool? isActive, CancellationToken ct = default);
-
-    Task<Result<Updated>> AssignRolesToUserAsync(string userId, IReadOnlyCollection<string> roleIds, CancellationToken ct);
-    Task<Result<Deleted>> RemoveRolesFromUserAsync(string userId, IReadOnlyCollection<string> roleIds, CancellationToken ct = default);
+    Task<Result<Updated>> UpsertUserRolesAsync(
+    string userId,
+    IReadOnlyCollection<string> roleIds,
+    CancellationToken ct);
     
 
     // =========================
@@ -37,12 +38,6 @@ public interface IIdentityService
     // =========================
 
     Task<Result<IReadOnlyList<RoleDetailsDto>>> GetRolesAsync(CancellationToken ct = default);
-
-    // =========================
-    // User Permission Overrides
-    // =========================
-    Task<Result<Updated>> GrantPermissionsToUserAsync(string userId, IReadOnlyCollection<int> permissionIds, CancellationToken ct = default);
-    Task<Result<Updated>> DenyPermissionsToUserAsync(string userId, IReadOnlyCollection<int> permissionIds, CancellationToken ct = default);
 
     // =========================
     // Permission Queries (VERY IMPORTANT)
@@ -61,6 +56,10 @@ public interface IIdentityService
         IReadOnlyCollection<int> permissionIds,
         CancellationToken ct = default);
     Task<bool> IsUserNameExistsAsync(string userName, CancellationToken ct = default);
-
+    
+    Task<Result<Updated>> UpsertPermissionsForUserAsync(
+    string userId,
+    IReadOnlyCollection<int> permissionIds,
+    CancellationToken ct);
     
 }
