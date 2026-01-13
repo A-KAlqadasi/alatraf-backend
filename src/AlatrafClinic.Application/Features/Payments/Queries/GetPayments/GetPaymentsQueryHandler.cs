@@ -53,8 +53,8 @@ public sealed class GetPaymentsQueryHandler
                 PaymentDate = p.PaymentDate,
                 TotalAmount = p.TotalAmount,
                 PaidAmount = p.PaidAmount,
-                Discount = p.Discount,
-                Residual = Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.Discount ?? 0m))),
+                Discount = p.DiscountPercentage,
+                Residual = Math.Max(0m, p.TotalAmount - ((p.PaidAmount ?? 0m) + (p.DiscountPercentage ?? 0m))),
 
                 VoucherNumber = p.PatientPayment != null ? p.PatientPayment.VoucherNumber : null,
                 DisabledCardId = p.DisabledPayment != null ? p.DisabledPayment.DisabledCardId : null,
