@@ -1,6 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
 
-namespace AlatrafClinic.Domain.Services.Appointments.Holidays;
+namespace AlatrafClinic.Domain.Holidays;
 
 public static class HolidayErrors
 {

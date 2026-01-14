@@ -1,8 +1,8 @@
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.Services.Enums;
 
 using MediatR;
 

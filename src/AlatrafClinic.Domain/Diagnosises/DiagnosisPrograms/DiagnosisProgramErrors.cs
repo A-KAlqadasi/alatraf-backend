@@ -6,16 +6,16 @@ public static class DiagnosisProgramErrors
 {
     public static readonly Error InvalidDiagnosisId = Error.Validation(
         "DiagnosisProgram.InvalidDiagnosisId",
-        "The diagnosis Id is invalid.");
+        "رقم التشخيص غير صالح");
     public static readonly Error InvalidMedicalProgramId = Error.Validation(
         "DiagnosisProgram.InvalidMedicalProgramId",
-        "The medical program Id is invalid.");
+        "رقم برنامج العلاج غير صالح");
 
     public static readonly Error InvalidDuration = Error.Validation(
         "DiagnosisProgram.InvalidDuration",
-        "The duration provided for the diagnosis program is invalid.");
+        "المدة المقدمة لبرنامج العلاج غير صالحة");
 
     public static readonly Error NotesTooLong = Error.Validation(
         "DiagnosisProgram.NotesTooLong",
-        "The notes for the diagnosis program exceed the maximum allowed length.");
+        "الملاحظات الخاصة ببرنامج العلاج تتجاوز الطول المسموح به");
 }

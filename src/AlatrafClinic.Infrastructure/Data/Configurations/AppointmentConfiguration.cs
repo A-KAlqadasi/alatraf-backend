@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Services.Appointments;
+using AlatrafClinic.Domain.Appointments;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

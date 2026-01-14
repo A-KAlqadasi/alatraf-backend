@@ -7,55 +7,54 @@ public static class DiagnosisErrors
     public static readonly Error DiagnosisTextIsRequired =
         Error.Validation(
             code: "Diagnosis.DiagnosisTextIsRequired",
-            description: "Diagnosis text is required.");
+            description: "نص التشخيص مطلوب");
     public static readonly Error InvalidInjuryDate =
         Error.Validation(
             code: "Diagnosis.InvalidInjuryDate",
-            description: "Injury date is invalid.");
+            description: "تاريخ الإصابة غير صالح");
     public static readonly Error InjuryReasonIsRequired =
         Error.Validation(
             code: "Diagnosis.InjuryReasonIsRequired",
-            description: "Injury reason is required.");
+            description: "سبب الإصابة مطلوب");
     public static readonly Error InjurySideIsRequired =
         Error.Validation(
             code: "Diagnosis.InjurySideIsRequired",
-            description: "Injury side is required.");
+            description: "جانب الإصابة مطلوب");
     public static readonly Error InjuryTypeIsRequired =
         Error.Validation(
             code: "Diagnosis.InjuryTypeIsRequired",
-            description: "Injury type is required.");
+            description: "نوع الإصابة مطلوب");
     public static readonly Error InvalidTicketId =
         Error.Validation(
             code: "Diagnosis.InvalidTicketId",
-            description: "Ticket ID is invalid.");
+            description: "رقم التذكرة غير صالح");
     public static readonly Error InvalidPatientId =
         Error.Validation(
             code: "Diagnosis.InvalidPatientId",
-            description: "Patient ID is invalid.");
+            description: "رقم المريض غير صالح");
     public static readonly Error InvalidDiagnosisType =
         Error.Validation(
             code: "Diagnosis.InvalidDiagnosisType",
-            description: "Diagnosis type is invalid.");
+            description: "نوع التشخيص غير صالح");
     public static readonly Error DiagnosisProgramAdditionOnlyForTherapyDiagnosis =
         Error.Conflict(
             code: "Diagnosis.DiagnosisProgramAdditionOnlyForTherapyDiagnosis",
-            description: "Adding diagnosis programs is only allowed for therapy diagnoses.");
-    public static readonly Error IndustrialPartAdditionOnlyForLimbsDiagnosis = Error.Conflict("Diagnosis.IndustrialPartAdditionOnlyForLimbsDiagnosis", "Adding industrial parts is only allowed for limbs diagnoses.");
+            description: "إضافة برامج العلاج مسموح بها فقط لتشخيصات العلاج");
+    public static readonly Error IndustrialPartAdditionOnlyForLimbsDiagnosis = Error.Conflict("Diagnosis.IndustrialPartAdditionOnlyForLimbsDiagnosis", "إضافة الأجزاء الصناعية مسموح بها فقط لتشخيصات الأطراف");
 
-    public static readonly Error IndustrialPartsAreRequired = Error.Validation("Diagnosis.IndustrialPartsAreRequired", "Industrial parts are required for this diagnosis.");
+    public static readonly Error IndustrialPartsAreRequired = Error.Validation("Diagnosis.IndustrialPartsAreRequired", "الاطراف الصناعية مطلوبة لهذا التشخيص");
 
-    public static readonly Error MedicalProgramsAreRequired = Error.Validation("Diagnosis.MedicalProgramsAreRequired", "Medical programs are required for this diagnosis.");
+    public static readonly Error MedicalProgramsAreRequired = Error.Validation("Diagnosis.MedicalProgramsAreRequired", "برامج العلاج مطلوبة لهذا التشخيص");
     public static readonly Error DiagnosisNotFound =
         Error.NotFound(
             code: "Diagnosis.DiagnosisNotFound",
-            description: "Diagnosis not found.");
-    public static readonly Error SaleIsRequired = Error.Validation("Diagnosis.SaleIsRequired", "Sale is required to assign diagnosis to sale.");
-    public static readonly Error SaleAssignOnlyForSaleDiagnosis = Error.Conflict("Diagnosis.SaleAssignOnlyForSaleDiagnosis", "Assigning sale is only allowed for sale diagnoses.");
-    public static readonly Error SaleItemsAreRequired = Error.Validation("Diagnosis.SaleItemsAreRequired", "Sale items are required for sale diagnosis.");
-    public static readonly Error PaymentIsRequired = Error.Validation("Diagnosis.PaymentIsRequired", "Payment is required to assign diagnosis to payment.");
-    public static readonly Error TherpyCardAssignmentOnlyForTherapyDiagnosis = Error.Conflict("Diagnosis.TherpyCardAssignmentOnlyForTherapyDiagnosis", "Therapy card assignment only for therapy diagnosis");
-    public static readonly Error TherapyCardIsRequired = Error.Validation("Diagnosis.TherapyCardIsRequired", "Therapy Card is required for diagnosis");
-    public static readonly Error RepairCardAssignmentOnlyForLimbsDiagnosis = Error.Conflict("Diagnosis.RepairCardAssignmentOnlyForLimbsDiagnosis", "Repair card assignment only for limbs diagnosis");
-    public static readonly Error RepairCardIsRequired = Error.Validation("Diagnosis.RepairCardIsRequired", "Repair Card is required for diagnosis");
+            description: "التشخيص غير موجود");
+    public static readonly Error SaleIsRequired = Error.Validation("Diagnosis.SaleIsRequired", "المبيعات مطلوبة لتعيين التشخيص للمبيعات");
+    public static readonly Error SaleAssignOnlyForSaleDiagnosis = Error.Conflict("Diagnosis.SaleAssignOnlyForSaleDiagnosis", "تعيين المبيعات فقط لتشخيصات المبيعات");
+    public static readonly Error PaymentIsRequired = Error.Validation("Diagnosis.PaymentIsRequired", "الدفع مطلوب لتعيين التشخيص للمدفوعات");
+    public static readonly Error TherpyCardAssignmentOnlyForTherapyDiagnosis = Error.Conflict("Diagnosis.TherpyCardAssignmentOnlyForTherapyDiagnosis", "تعيين كرت العلاج فقط لتشخيصات العلاج");
+    public static readonly Error TherapyCardIsRequired = Error.Validation("Diagnosis.TherapyCardIsRequired", "كرت العلاج مطلوب للتشخيص");
+    public static readonly Error RepairCardAssignmentOnlyForLimbsDiagnosis = Error.Conflict("Diagnosis.RepairCardAssignmentOnlyForLimbsDiagnosis", "تعيين كرت الإصلاح فقط لتشخيصات الأطراف");
+    public static readonly Error RepairCardIsRequired = Error.Validation("Diagnosis.RepairCardIsRequired", "كرت الإصلاح مطلوب للتشخيص");
 
 }

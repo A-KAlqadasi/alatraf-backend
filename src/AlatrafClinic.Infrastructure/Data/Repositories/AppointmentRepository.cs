@@ -1,6 +1,6 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.Services.Appointments;
 
 using Microsoft.EntityFrameworkCore;
 

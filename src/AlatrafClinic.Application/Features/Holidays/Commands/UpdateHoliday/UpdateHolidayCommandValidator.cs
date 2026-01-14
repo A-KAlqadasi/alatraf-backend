@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Holidays;
 
 using FluentValidation;
 

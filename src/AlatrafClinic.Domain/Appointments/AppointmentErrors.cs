@@ -1,7 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
 
-namespace AlatrafClinic.Domain.Services.Appointments;
+namespace AlatrafClinic.Domain.Appointments;
 
 public static class AppointmentErrors
 {

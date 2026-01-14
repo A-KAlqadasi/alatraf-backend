@@ -5,7 +5,7 @@ using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

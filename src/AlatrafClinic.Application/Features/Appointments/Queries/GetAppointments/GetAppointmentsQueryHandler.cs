@@ -3,8 +3,8 @@ using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Appointments.Mappers;
 using AlatrafClinic.Application.Features.Tickets.Mappers;
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Appointments;
 
 using MediatR;
 

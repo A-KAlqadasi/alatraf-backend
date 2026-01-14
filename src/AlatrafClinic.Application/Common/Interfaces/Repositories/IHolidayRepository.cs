@@ -1,5 +1,5 @@
 
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
+using AlatrafClinic.Domain.Holidays;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

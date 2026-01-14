@@ -9,15 +9,6 @@ public static class DisabledCardErrors
         "Card number is required."
     );
 
-    public static readonly Error ExpirationIsRequired = Error.Validation(
-        "DisabledCard.ExpirationIsRequired",
-        "Expiration date is required."
-    );
-
-    public static readonly Error CardIsExpired = Error.Validation(
-        "DisabledCard.CardIsExpired",
-        "Card is expired!"
-    );
 
     public static readonly Error PatientIdIsRequired = Error.Validation(
         "DisabledCard.PatientIdIsRequired",

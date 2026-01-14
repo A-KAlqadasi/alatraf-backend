@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Tickets;
 
 namespace AlatrafClinic.Api.Requests.Tickets;
 

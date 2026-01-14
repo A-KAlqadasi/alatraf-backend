@@ -7,10 +7,10 @@ using AlatrafClinic.Application.Features.People.Services.UpdatePerson;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Application.Features.Diagnosises.Services.UpdateDiagnosis;
 
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
 using AlatrafClinic.Application.Sagas;
 using AlatrafClinic.Application.Features.Payments.Commands.PayPayments;
+using AlatrafClinic.Application.Features.Appointments.Services;
+using AlatrafClinic.Domain.Appointments.SchedulingRulesService;
 
 namespace AlatrafClinic.Application;
 
@@ -36,9 +36,12 @@ public static class DependencyInjection
 
         // Saga orchestrator lives in Application layer and is explicitly registered
         services.AddScoped<SaleSagaOrchestrator>();
-
-
+        
         services.AddScoped<PaymentProcessor>();
+
+        services.AddScoped<AppointmentSchedulingService>();
+        services.AddScoped<ISchedulingRulesProvider>(sp => 
+            sp.GetRequiredService<AppointmentSchedulingService>());
 
         return services;
     }

@@ -1,6 +1,7 @@
 using AlatrafClinic.Application.Features.Holidays.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Holidays;
+
 using MediatR;
 
 namespace AlatrafClinic.Application.Features.Holidays.Commands.CreateHoliday;

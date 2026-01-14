@@ -4,7 +4,7 @@ using AlatrafClinic.Application.Features.Tickets.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Services;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 
 using MediatR;
 

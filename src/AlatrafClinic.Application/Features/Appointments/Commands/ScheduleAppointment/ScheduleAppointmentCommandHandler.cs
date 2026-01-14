@@ -2,13 +2,12 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Appointments.Mappers;
-using AlatrafClinic.Application.Features.Appointments.Shared;
+using AlatrafClinic.Application.Features.Appointments.Services;
+using AlatrafClinic.Domain.Appointments;
+using AlatrafClinic.Domain.Appointments.SchedulingRulesService;
 using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
-using AlatrafClinic.Domain.Services.Enums;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 
 using MediatR;
 
@@ -22,72 +21,69 @@ public sealed class ScheduleAppointmentCommandHandler
 {
     private readonly ILogger<ScheduleAppointmentCommandHandler> _logger;
     private readonly IAppDbContext _context;
-
+    private readonly AppointmentSchedulingService _schedulingService;
+    
     public ScheduleAppointmentCommandHandler(
         ILogger<ScheduleAppointmentCommandHandler> logger,
-        IAppDbContext context)
+        IAppDbContext context,
+        AppointmentSchedulingService schedulingService)
     {
         _logger = logger;
         _context = context;
+        _schedulingService = schedulingService;
     }
-
-    public async Task<Result<AppointmentDto>> Handle(ScheduleAppointmentCommand command, CancellationToken ct)
+    
+    public async Task<Result<AppointmentDto>> Handle(
+        ScheduleAppointmentCommand command, 
+        CancellationToken ct)
     {
+        // 1. Load ticket
         var ticket = await LoadTicketOrFail(command.TicketId, ct);
         if (ticket.IsError) return ticket.Errors;
-
-        // Business rules
+        
+        // 2. Business validation
         if (!ticket.Value.IsEditable)
         {
             _logger.LogError("Ticket {TicketId} is not editable!", command.TicketId);
             return TicketErrors.ReadOnly;
         }
-
+        
         if (ticket.Value.Status == TicketStatus.Pause)
         {
             _logger.LogWarning("Ticket {TicketId} is already scheduled", command.TicketId);
             return TicketErrors.TicketAlreadHasAppointment;
         }
-
-        // Determine the base start date
-        var lastDateResult = await GetLastSchedulingPressureDate(ct);
-        var lastDate = lastDateResult ?? DateOnly.MinValue;
-        var today = AlatrafClinicConstants.TodayDate;
-
-        // baseStart = max(today, lastDate, requestedDate(if any))
-        var baseStart = MaxDate(today, lastDate);
-
-        // --- CHANGE START: Load Capacity Rules and Find Date ---
         
-        var (allowedDays, holidays, dailyCapacity) = await LoadSchedulingRulesWithCapacityAsync(ct);
-
-        // We use the new async calculator that checks DB counts
-        var finalDate = await AppointmentSchedulingCalculator.FindNextValidDateWithCapacityAsync(
-            startInclusive: baseStart,
-            allowedDays: allowedDays,
-            holidays: holidays,
-            dailyCapacity: dailyCapacity,
-            getCountForDateAsync: async (date, token) =>
-            {
-                // Count how many valid appointments exist on this date
-                return await _context.Appointments
-                    .AsNoTracking()
-                    .CountAsync(a => a.AttendDate == date 
-                                     && a.Status != AppointmentStatus.Cancelled 
-                                     && a.Status != AppointmentStatus.Absent, token);
-            },
-            ct: ct);
-
-        // --- CHANGE END ---
-
-        // Domain validation
+        // 3. Get scheduling rules and context
+        var rules = await _schedulingService.GetSchedulingRulesAsync(ct);
+        var lastAppointmentDate = await _schedulingService.GetLastAppointmentDateAsync(ct);
+        
+        var context = SchedulingContext.Create(
+            AlatrafClinicConstants.TodayDate,
+            lastAppointmentDate,
+            rules);
+        
+        // 4. Find next available date
+        DateOnly appointmentDate;
+        try
+        {
+            appointmentDate = await _schedulingService.GetNextValidDateAsync(
+                context,
+                async date => await _schedulingService.GetAppointmentCountForDateAsync(date, null, ct));
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "No available appointment dates found for Ticket {TicketId}", command.TicketId);
+            return Error.Failure("Appointment.NoAvailableDates", ex.Message);
+        }
+        
+        // 5. Create appointment
         var appointmentResult = Appointment.Schedule(
             ticketId: ticket.Value.Id,
             patientType: ticket.Value.Patient!.PatientType,
-            attendDate: finalDate,
-            notes: command.Notes
-        );
-
+            attendDate: appointmentDate,
+            notes: command.Notes);
+        
         if (appointmentResult.IsError)
         {
             _logger.LogError(
@@ -96,72 +92,38 @@ public sealed class ScheduleAppointmentCommandHandler
                 appointmentResult.TopError);
             return appointmentResult.Errors;
         }
-
+        
         var appointment = appointmentResult.Value;
-
-        // Maintain relationship and state changes
+        
+        // 6. Update relationships
         appointment.Ticket = ticket.Value;
         ticket.Value.Pause();
-
+        
         await _context.Appointments.AddAsync(appointment, ct);
         await _context.SaveChangesAsync(ct);
-
+        
         _logger.LogInformation(
             "Appointment {AppointmentId} scheduled for Ticket {TicketId} on {AttendDate}",
             appointment.Id,
             ticket.Value.Id,
             appointment.AttendDate);
-
+        
         return appointment.ToDto();
     }
-
+    
     private async Task<Result<Ticket>> LoadTicketOrFail(int ticketId, CancellationToken ct)
     {
         var ticket = await _context.Tickets
             .Include(t => t.Patient!)
                 .ThenInclude(p => p.Person)
             .FirstOrDefaultAsync(t => t.Id == ticketId, ct);
-
+        
         if (ticket is null)
         {
             _logger.LogError("Ticket {TicketId} is not found!", ticketId);
             return TicketErrors.TicketNotFound;
         }
-
+        
         return ticket;
     }
-    
-    private async Task<DateOnly?> GetLastSchedulingPressureDate(CancellationToken ct)
-    {
-        return await _context.Appointments.AsNoTracking()
-            .Where(a => a.Status != AppointmentStatus.Cancelled && a.Status != AppointmentStatus.Absent)
-            .MaxAsync(a => (DateOnly?)a.AttendDate, ct);
-    }
-
-    private async Task<(IReadOnlyCollection<DayOfWeek> AllowedDays, IReadOnlyCollection<Holiday> Holidays, int DailyCapacity)>
-        LoadSchedulingRulesWithCapacityAsync(CancellationToken ct)
-    {
-        var allowedDaysString = await _context.AppSettings.AsNoTracking()
-            .Where(a => a.Key == AlatrafClinicConstants.AllowedDaysKey)
-            .Select(a => a.Value)
-            .FirstOrDefaultAsync(ct);
-
-        var allowedDays = AppointmentSchedulingCalculator.ParseAllowedDaysOrDefault(allowedDaysString);
-        
-        var holidays = await _context.Holidays.AsNoTracking().ToListAsync(ct);
-
-        var capacityString = await _context.AppSettings.AsNoTracking()
-            .Where(a => a.Key == AlatrafClinicConstants.AppointmentDailyCapacityKey)
-            .Select(a => a.Value)
-            .FirstOrDefaultAsync(ct);
-
-        var dailyCapacity = AlatrafClinicConstants.DefaultAppointmentDailyCapacity;
-
-        if (!string.IsNullOrWhiteSpace(capacityString) && int.TryParse(capacityString, out var parsed) && parsed > 0)
-            dailyCapacity = parsed;
-
-        return (allowedDays, holidays, dailyCapacity);
-    }
-
-    private static DateOnly MaxDate(DateOnly a, DateOnly b) => a > b ? a : b;
 }

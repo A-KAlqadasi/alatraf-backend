@@ -6,5 +6,5 @@ public static class InjuryReasonErrors
 {
     public static readonly Error NameIsRequired = Error.Validation(
         "InjuryReason.NameIsRequired",
-        "Injury reason name is required.");
+        "اسم سبب الإصابة مطلوب");
 }

@@ -1,5 +1,5 @@
 using AlatrafClinic.Domain.Services;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

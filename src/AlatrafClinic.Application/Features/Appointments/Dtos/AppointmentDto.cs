@@ -1,7 +1,7 @@
 
 using AlatrafClinic.Application.Features.Tickets.Dtos;
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.Services.Enums;
 
 namespace AlatrafClinic.Application.Features.Appointments.Dtos;
 

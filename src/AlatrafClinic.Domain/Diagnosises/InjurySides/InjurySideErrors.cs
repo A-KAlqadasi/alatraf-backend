@@ -6,5 +6,5 @@ public static class InjurySideErrors
 {
     public static readonly Error NameIsRequired = Error.Validation(
         "InjurySide.NameIsRequired",
-        "Injury side name is required.");
+        "اسم جانب الإصابة مطلوب");
 }

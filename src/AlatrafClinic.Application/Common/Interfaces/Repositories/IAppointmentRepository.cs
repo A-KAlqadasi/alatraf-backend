@@ -1,5 +1,5 @@
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.Services.Appointments;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

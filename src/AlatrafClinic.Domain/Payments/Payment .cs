@@ -7,7 +7,7 @@ using AlatrafClinic.Domain.Payments.DisabledPayments;
 using AlatrafClinic.Domain.Payments.Events;
 using AlatrafClinic.Domain.Payments.PatientPayments;
 using AlatrafClinic.Domain.Payments.WoundedPayments;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 
 namespace AlatrafClinic.Domain.Payments;
 
@@ -17,8 +17,7 @@ public sealed class Payment : AuditableEntity<int>
     public decimal TotalAmount { get; private set; }
     public decimal? PaidAmount { get; private set; }
     public decimal? DiscountPercentage { get; private set; }
-    public decimal? DiscountAmount => 
-        DiscountPercentage != null ? TotalAmount * (DiscountPercentage.Value / 100m) : null;
+    public decimal? DiscountAmount { get; private set; }
     public int DiagnosisId { get; private set; }
     public Diagnosis Diagnosis { get; set; } = default!;
     public int TicketId { get; private set; }
@@ -102,6 +101,7 @@ public sealed class Payment : AuditableEntity<int>
         // Assign
         PaidAmount = paid;
         DiscountPercentage = discountPercentage;
+        DiscountAmount = discountAmount;
         IsCompleted = true;
         PaymentDate = DateTime.Now;
 

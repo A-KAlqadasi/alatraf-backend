@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using AlatrafClinic.Application.Features.Holidays.Dtos;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
+using AlatrafClinic.Domain.Holidays;
 
 namespace AlatrafClinic.Application.Features.Holidays.Mappers;
 

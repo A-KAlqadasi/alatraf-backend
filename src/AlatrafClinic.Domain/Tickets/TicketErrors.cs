@@ -1,7 +1,6 @@
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
 
-namespace AlatrafClinic.Domain.Services.Tickets;
+namespace AlatrafClinic.Domain.Tickets;
 
 public static class TicketErrors
 {

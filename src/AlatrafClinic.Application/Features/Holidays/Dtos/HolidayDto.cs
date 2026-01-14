@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Holidays;
 
 namespace AlatrafClinic.Application.Features.Holidays.Dtos;
 public sealed class HolidayDto

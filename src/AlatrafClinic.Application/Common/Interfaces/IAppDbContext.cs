@@ -1,4 +1,5 @@
 
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Departments;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections;
@@ -10,6 +11,7 @@ using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
+using AlatrafClinic.Domain.Holidays;
 using AlatrafClinic.Domain.Identity;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Purchases;
@@ -32,14 +34,12 @@ using AlatrafClinic.Domain.Sagas;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.SalesItems;
 using AlatrafClinic.Domain.Services;
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
-using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.Sessions;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
+using AlatrafClinic.Domain.Tickets;
 using AlatrafClinic.Domain.WoundedCards;
 
 

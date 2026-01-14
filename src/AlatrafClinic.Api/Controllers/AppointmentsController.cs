@@ -8,7 +8,7 @@ using AlatrafClinic.Application.Features.Appointments.Queries.GetAppointmentById
 using AlatrafClinic.Application.Features.Appointments.Queries.GetAppointments;
 using AlatrafClinic.Application.Features.Appointments.Queries.GetLastScheduledAppointmentDaySummary;
 using AlatrafClinic.Application.Features.Appointments.Queries.GetNextValidAppointmentDate;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Appointments;
 
 using Asp.Versioning;
 
@@ -136,13 +136,13 @@ public sealed class AppointmentsController(ISender sender) : ApiController
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [EndpointSummary("Change appointment date.")]
-    [EndpointDescription("Updates appointment date to a new valid date.")]
+    [EndpointSummary("Reschedule appointment date to last valid date.")]
+    [EndpointDescription("Updates appointment date to last valid date.")]
     [EndpointName("UpdateAppointmentDate")]
     [ApiVersion("1.0")]
-    public async Task<IActionResult> UpdateDate(int appointmentId, [FromBody] RescheduleAppointmentRequest request, CancellationToken ct = default)
+    public async Task<IActionResult> UpdateDate(int appointmentId, CancellationToken ct = default)
     {
-        var result = await sender.Send(new RescheduleAppointmentCommand(appointmentId, request.NewAttendDate), ct);
+        var result = await sender.Send(new RescheduleAppointmentCommand(appointmentId), ct);
       
          return result.Match(
             response => NoContent(),

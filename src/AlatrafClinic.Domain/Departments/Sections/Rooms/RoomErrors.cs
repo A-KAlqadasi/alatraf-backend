@@ -5,13 +5,13 @@ namespace AlatrafClinic.Domain.Departments.Sections.Rooms;
 public static class RoomErrors
 {
     public static readonly Error InvalidName =
-        Error.Validation("Room.InvalidName", "Room name is invalid.");
+        Error.Validation("Room.InvalidName", "اسم الغرفة غير صالح");
     public static readonly Error InvalidSection =
-        Error.Validation("Room.InvalidSection", "Section is invalid.");
+        Error.Validation("Room.InvalidSection", "القسم غير صالح");
     public static readonly Error DuplicateRoomName = Error.Conflict(
         code: "Room.DuplicateRoomName",
-        description: "A room with the same name already exists in this section.");
+        description: "يوجد غرفة بنفس الاسم في هذا القسم");
     public static readonly Error NotFound = Error.NotFound(
         code: "Room.NotFound",
-        description: "The specified room was not found.");
+        description: "الغرفة المحددة غير موجودة");
 }

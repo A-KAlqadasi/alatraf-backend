@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
+using AlatrafClinic.Domain.Holidays;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

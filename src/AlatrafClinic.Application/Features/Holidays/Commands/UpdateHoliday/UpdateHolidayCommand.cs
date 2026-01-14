@@ -1,5 +1,5 @@
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Holidays;
 
 using MediatR;
 

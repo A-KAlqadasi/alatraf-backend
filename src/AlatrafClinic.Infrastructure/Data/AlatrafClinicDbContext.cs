@@ -38,9 +38,6 @@ using AlatrafClinic.Domain.Reports;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.SalesItems;
 using AlatrafClinic.Domain.Services;
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Appointments.Holidays;
-using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
@@ -56,6 +53,9 @@ using Microsoft.EntityFrameworkCore;
 using AlatrafClinic.Infrastructure.Data.Idempotency;
 using AlatrafClinic.Infrastructure.Data.Outbox;
 using AlatrafClinic.Domain.Sagas;
+using AlatrafClinic.Domain.Appointments;
+using AlatrafClinic.Domain.Holidays;
+using AlatrafClinic.Domain.Tickets;
 
 
 namespace AlatrafClinic.Infrastructure.Data;

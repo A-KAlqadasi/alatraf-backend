@@ -1,6 +1,6 @@
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Diagnosises;
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

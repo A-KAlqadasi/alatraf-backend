@@ -7,7 +7,7 @@ using AlatrafClinic.Application.Features.Holidays.Commands.UpdateHoliday;
 using AlatrafClinic.Application.Features.Holidays.Dtos;
 using AlatrafClinic.Application.Features.Holidays.Queries.GetHoliday;
 using AlatrafClinic.Application.Features.Holidays.Queries.GetHolidays;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Holidays;
 
 using Asp.Versioning;
 

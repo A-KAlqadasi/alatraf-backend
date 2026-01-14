@@ -1,11 +1,10 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.Services.Enums;
-using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.Common.Constants;
+using AlatrafClinic.Domain.Tickets;
 
-namespace AlatrafClinic.Domain.Services.Appointments;
+namespace AlatrafClinic.Domain.Appointments;
 
 public class Appointment : AuditableEntity<int>
 {

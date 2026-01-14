@@ -11,7 +11,7 @@ using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTicketById;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTicketForScheduleAppointment;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTickets;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Tickets;
 
 using Asp.Versioning;
 

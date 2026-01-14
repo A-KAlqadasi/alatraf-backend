@@ -11,8 +11,8 @@ using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.Sales;
-using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.TherapyCards;
+using AlatrafClinic.Domain.Tickets;
 
 namespace AlatrafClinic.Domain.Diagnosises;
 

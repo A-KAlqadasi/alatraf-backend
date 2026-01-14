@@ -1,8 +1,7 @@
 using AlatrafClinic.Application.Features.Patients.Mappers;
 using AlatrafClinic.Application.Features.Services.Mappers;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
-using AlatrafClinic.Domain.Services.Enums;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 
 namespace AlatrafClinic.Application.Features.Tickets.Mappers;
 

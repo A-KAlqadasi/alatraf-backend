@@ -25,6 +25,9 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .IsRequired(false);
 
         builder.Property(p => p.DiscountPercentage)
+            .HasColumnType("int")
+            .IsRequired(false);
+        builder.Property(p => p.DiscountAmount)
             .HasColumnType("decimal(18,2)")
             .IsRequired(false);
 

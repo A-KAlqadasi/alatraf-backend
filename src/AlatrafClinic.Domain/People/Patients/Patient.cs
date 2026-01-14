@@ -5,7 +5,7 @@ using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.ExitCards;
 using AlatrafClinic.Domain.Patients.Enums;
 using AlatrafClinic.Domain.People;
-using AlatrafClinic.Domain.Services.Tickets;
+using AlatrafClinic.Domain.Tickets;
 using AlatrafClinic.Domain.WoundedCards;
 
 namespace AlatrafClinic.Domain.Patients;

@@ -1,12 +1,12 @@
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Services;
 
-namespace AlatrafClinic.Domain.Services.Tickets;
+namespace AlatrafClinic.Domain.Tickets;
 
 public class Ticket : AuditableEntity<int>
 {

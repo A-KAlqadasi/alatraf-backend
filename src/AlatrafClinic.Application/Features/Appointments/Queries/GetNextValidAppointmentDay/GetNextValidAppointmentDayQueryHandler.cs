@@ -1,63 +1,46 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
-using AlatrafClinic.Application.Features.Appointments.Shared;
-using AlatrafClinic.Domain.Common.Constants;
+using AlatrafClinic.Application.Features.Appointments.Services;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
 
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Appointments.Queries.GetNextValidAppointmentDate;
 
 public sealed class GetNextValidAppointmentDayQueryHandler
     : IRequestHandler<GetNextValidAppointmentDayQuery, Result<NextAppointmentDayDto>>
 {
-    private readonly IAppDbContext _context;
-
-    public GetNextValidAppointmentDayQueryHandler(IAppDbContext context)
+    private readonly AppointmentSchedulingService _schedulingService;
+    
+    public GetNextValidAppointmentDayQueryHandler(AppointmentSchedulingService schedulingService)
     {
-        _context = context;
+        _schedulingService = schedulingService;
     }
-
-    public async Task<Result<NextAppointmentDayDto>> Handle(GetNextValidAppointmentDayQuery query, CancellationToken ct)
+    
+    public async Task<Result<NextAppointmentDayDto>> Handle(
+        GetNextValidAppointmentDayQuery query, 
+        CancellationToken ct)
     {
-        // 1) Load rules
-        var allowedDaysString = await _context.AppSettings.AsNoTracking()
-            .Where(a => a.Key == AlatrafClinicConstants.AllowedDaysKey)
-            .Select(a => a.Value)
-            .FirstOrDefaultAsync(ct);
-
-        var allowedDays = AppointmentSchedulingCalculator.ParseAllowedDaysOrDefault(allowedDaysString);
-
-        var holidays = await _context.Holidays.AsNoTracking().ToListAsync(ct);
-
-        // 2) Determine the “after” date
-        DateOnly afterDate;
-
-        if (query.AfterDate.HasValue)
+        try
         {
-            afterDate = query.AfterDate.Value;
+            var nextDate = await _schedulingService.GetNextValidDateForDisplayAsync(
+                query.AfterDate, 
+                ct);
+            
+            var appointmentCount = await _schedulingService.GetAppointmentCountForDateAsync(
+                nextDate, 
+                null, 
+                ct);
+            
+            return new NextAppointmentDayDto(
+                nextDate, 
+                UtilityService.GetDayNameArabic(nextDate), 
+                appointmentCount);
         }
-        else
+        catch (InvalidOperationException ex)
         {
-            // fallback: after last scheduled day, else after today
-            var lastDate = await _context.Appointments.AsNoTracking()
-                .Where(a => a.Status != AppointmentStatus.Cancelled)
-                .MaxAsync(a => (DateOnly?)a.AttendDate, ct);
-
-            afterDate = lastDate ?? AlatrafClinicConstants.TodayDate;
+            // Handle no available dates
+            return Error.Failure("Appointment.NoAvailableDates", ex.Message);
         }
-
-        // 3) Compute next valid day (exclusive)
-        var nextValid = AppointmentSchedulingCalculator.GetNextValidDateExclusive(afterDate, allowedDays, holidays);
-
-        // 4) Count appointments on that day (same status policy as you choose)
-        var count = await _context.Appointments.AsNoTracking()
-            .Where(a => a.Status != AppointmentStatus.Cancelled && a.Status != AppointmentStatus.Absent && a.AttendDate == nextValid)
-            .CountAsync(ct);
-
-        return new NextAppointmentDayDto(nextValid, UtilityService.GetDayNameArabic(nextValid), count);
     }
 }

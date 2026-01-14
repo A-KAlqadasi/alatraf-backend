@@ -2,7 +2,6 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
-using AlatrafClinic.Domain.Services.Tickets;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Patients.Enums;
-using AlatrafClinic.Domain.Services.Enums;
 
 
 namespace AlatrafClinic.Api.Requests.Appointments;

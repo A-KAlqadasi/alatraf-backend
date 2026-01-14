@@ -1,8 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
 
-namespace AlatrafClinic.Domain.Services.Appointments.Holidays;
+namespace AlatrafClinic.Domain.Holidays;
 
 public sealed class Holiday : AuditableEntity<int>
 {

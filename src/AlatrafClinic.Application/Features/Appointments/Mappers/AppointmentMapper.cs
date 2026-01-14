@@ -1,8 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.Patients.Mappers;
-using AlatrafClinic.Domain.Services.Appointments;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Appointments;
 
 
 namespace AlatrafClinic.Application.Features.Appointments.Mappers;

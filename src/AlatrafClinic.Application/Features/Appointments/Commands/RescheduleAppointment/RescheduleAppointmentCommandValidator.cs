@@ -10,8 +10,5 @@ public class RescheduleAppointmentCommandValidator : AbstractValidator<Reschedul
     {
         RuleFor(x => x.AppointmentId)
             .GreaterThan(0).WithMessage("Appointment ID must be greater than zero.");
-
-        RuleFor(x => x.NewAttendDate)
-            .GreaterThan(AlatrafClinicConstants.TodayDate).WithMessage("New attend date must be in the future.");
     }
 }

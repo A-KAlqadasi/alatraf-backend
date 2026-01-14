@@ -1,4 +1,4 @@
-namespace AlatrafClinic.Domain.Services.Enums;
+namespace AlatrafClinic.Domain.Holidays;
 
 public enum HolidayType
 {

@@ -5,17 +5,17 @@ namespace AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 public static class DoctorSectionRoomErrors
 {
     public static readonly Error DoctorIdRequired =
-        Error.Validation("DoctorSectionRoom.DoctorIdRequired", "Doctor Id is required.");
+        Error.Validation("DoctorSectionRoom.DoctorIdRequired", "رقم الطبيب مطلوب");
 
     public static readonly Error SectionIdRequired =
-        Error.Validation("DoctorSectionRoom.SectionIdRequired", "Section Id is required.");
+        Error.Validation("DoctorSectionRoom.SectionIdRequired", "رقم القسم مطلوب");
 
     public static readonly Error RoomIdRequired =
-        Error.Validation("DoctorSectionRoom.RoomIdRequired", "Room Id is required.");
+        Error.Validation("DoctorSectionRoom.RoomIdRequired", "رقم الغرفة مطلوب");
 
     public static readonly Error AssignmentAlreadyEnded =
-        Error.Conflict("DoctorSectionRoom.AssignmentAlreadyEnded", "The assignment has already ended.");
+        Error.Conflict("DoctorSectionRoom.AssignmentAlreadyEnded", "انتهى تعيين الدكتور في هذه الغرفة");
     public static readonly Error DoctorSectionRoomNotFound =
-        Error.NotFound("DoctorSectionRoom.NotFound", "Doctor section room Id not found.");
-    public static readonly Error DoctorIsNotActive = Error.Conflict("DoctorSectionRoom.DoctorIsNotActive", "Doctor is not active in this section room");
+        Error.NotFound("DoctorSectionRoom.NotFound", "معرف غرفة قسم الطبيب غير موجود.");
+    public static readonly Error DoctorIsNotActive = Error.Conflict("DoctorSectionRoom.DoctorIsNotActive", "الطبيب غير نشط في هذه الغرفة");
 }

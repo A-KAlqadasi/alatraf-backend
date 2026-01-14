@@ -1,5 +1,5 @@
+using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
 
 using MediatR;
 

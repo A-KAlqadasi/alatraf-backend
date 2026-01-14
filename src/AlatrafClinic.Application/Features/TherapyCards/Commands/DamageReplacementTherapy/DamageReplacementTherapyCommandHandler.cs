@@ -2,8 +2,8 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Services;
-using AlatrafClinic.Domain.Services.Tickets;
 using AlatrafClinic.Domain.TherapyCards;
+using AlatrafClinic.Domain.Tickets;
 
 using MediatR;
 

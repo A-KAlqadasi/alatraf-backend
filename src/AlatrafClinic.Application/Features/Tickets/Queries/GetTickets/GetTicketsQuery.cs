@@ -1,7 +1,7 @@
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.Services.Enums;
+using AlatrafClinic.Domain.Tickets;
 
 using MediatR;
 
