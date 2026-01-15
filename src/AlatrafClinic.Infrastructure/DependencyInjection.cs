@@ -20,7 +20,6 @@ using FluentValidation;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -32,6 +31,10 @@ using AlatrafClinic.Application.Sagas.Compensation;
 using AlatrafClinic.Infrastructure.Eventing;
 using AlatrafClinic.Application.Common.Interfaces.Messaging;
 using AlatrafClinic.Infrastructure.Messaging;
+using AlatrafClinic.Application.Common.Printing.Interfaces;
+using AlatrafClinic.Infrastructure.Printing.QuestPDF;
+using QuestPDF.Infrastructure;
+using QuestPDF.Drawing;
 
 
 namespace AlatrafClinic.Infrastructure;
@@ -133,7 +136,18 @@ public static class DependencyInjection
         services.AddScoped<ISagaCompensationHandler, SaleSagaCompensationHandler>();
         services.AddScoped<IEnumerable<ISagaCompensationHandler>>(sp =>
             sp.GetServices<ISagaCompensationHandler>().ToList());
+
+        services.AddScoped<IPdfGenerator<Domain.Tickets.Ticket>, TicketPdfGenerator>();
+
         return services;
+    }
+     private static void ConfigureQuestPdf()
+    {
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        // Register Arabic font
+        FontManager.RegisterFont(
+            File.OpenRead("Infrastructure/Printing/Fonts/Cairo-Regular.ttf"));
     }
 
     public static IServiceCollection AddReportServices(this IServiceCollection services, IConfiguration configuration)

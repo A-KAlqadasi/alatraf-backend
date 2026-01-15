@@ -6,6 +6,7 @@ using AlatrafClinic.Application.Features.Appointments.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.DamageReplacementTherapy;
 using AlatrafClinic.Application.Features.Tickets.Commands.CreateTicket;
 using AlatrafClinic.Application.Features.Tickets.Commands.DeleteTicket;
+using AlatrafClinic.Application.Features.Tickets.Commands.PrintTicket;
 using AlatrafClinic.Application.Features.Tickets.Commands.UpdateTicket;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Queries.GetTicketById;
@@ -188,6 +189,20 @@ public sealed class TicketsController(ISender sender) : ApiController
             _ => Ok(),
             Problem
         );
+    }
+
+    [HttpGet("{id:int}/print")]
+    public async Task<IActionResult> PrintTicket(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new PrintTicketCommand(id),
+            cancellationToken);
+
+          return result.Match(
+          response => File(response.Content!, "application/pdf", response.FileName),
+          Problem);
     }
 
 }

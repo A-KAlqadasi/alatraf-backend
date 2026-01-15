@@ -32,5 +32,6 @@ public static class PersonErrors
     public static readonly Error PersonNotFound = Error.NotFound("Person.PersonNotFound", "الشخص غير موجود");
     public static readonly Error AddressNotFound = Error.NotFound("Person.AddressNotFound", "العنوان غير موجود");
     public static readonly Error AddressIdIsAlreadyInUse = Error.Conflict("Person.AddressIdIsAlreadyInUse", "معرف العنوان مستخدم مسبقاً");
+    public static readonly Error AddressNameIsAlreadyExist = Error.Conflict("Person.AddressNameIsAlreadyInUse", "اسم العنوان موجود مسبقاً");
     
 }

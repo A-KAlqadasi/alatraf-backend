@@ -50,9 +50,9 @@ public class PersonCreateService : IPersonCreateService
             _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
             return PersonErrors.PhoneExists; 
         }
-        var isAddressExists =  await _context.Addresses
-            .AnyAsync(a => a.Id == AddressId, ct);
-        if (!isAddressExists)
+        var address =  await _context.Addresses
+            .FirstOrDefaultAsync(a => a.Id == AddressId, ct);
+        if (address is null)
         {
             _logger.LogWarning("Person creation aborted. Address not found: {AddressId}", AddressId);
             return PersonErrors.AddressNotFound;
@@ -67,15 +67,19 @@ public class PersonCreateService : IPersonCreateService
             Gender
             );
 
+
         if (createResult.IsError)
         {
             return createResult.Errors;
         }
 
+        var person = createResult.Value;
+        person.Address = address;
+
 
         _logger.LogInformation("Person domain entity  prepered to created (not persisted yet).");
 
 
-        return createResult.Value;
+        return person;
     }
 }

@@ -31,6 +31,7 @@ using AlatrafClinic.Domain.Payments.PatientPayments;
 using AlatrafClinic.Domain.Payments.WoundedPayments;
 using AlatrafClinic.Domain.People;
 using AlatrafClinic.Domain.People.Doctors;
+using AlatrafClinic.Domain.Printing;
 using AlatrafClinic.Domain.RepairCards;
 using AlatrafClinic.Domain.Reports;
 
@@ -126,6 +127,7 @@ public interface IAppDbContext
     DbSet<CompensationNotification> CompensationNotifications { get; }
     DbSet<ManualInterventionRequired> ManualInterventions { get; }
     DbSet<Address> Addresses { get; }
+    DbSet<PrintedDocument> PrintedDocuments { get; }
 
 
     Task<int> SaveChangesAsync(CancellationToken ct);

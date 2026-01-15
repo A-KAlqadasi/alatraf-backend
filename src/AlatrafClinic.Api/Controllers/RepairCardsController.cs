@@ -18,6 +18,10 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
+using QuestPDF.Companion;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+
 namespace AlatrafClinic.Api.Controllers;
 
 [Route("api/v{version:apiVersion}/repair-cards")]
@@ -244,4 +248,180 @@ public sealed class RepairCardsController(ISender sender) : ApiController
         var result = await sender.Send(query, ct);
         return result.Match(response => Ok(response), Problem);
     }
+
+    [HttpGet("{repairCardId:int}/print")]
+    public async Task<IActionResult> Print(int repairCardId, CancellationToken ct = default)
+    {
+        // For demonstration, we generate a static PDF.
+        var pdfBytes = Generate();
+        return File(pdfBytes, "application/pdf", $"RepairCard_{repairCardId}.pdf");
+    }
+
+    private byte[] Generate()
+    {
+    var document = Document.Create(container =>
+    {
+        container.Page(page =>
+        {
+            page.Size(PageSizes.A4);
+            page.Margin(20);
+
+            page.Content().Column(col =>
+            {
+                col.Spacing(10);
+
+                // ================= HEADER =================
+                col.Item().Row(row =>
+                {
+                    // Right side (clinic info)
+                    row.RelativeItem().Column(c =>
+                    {
+                        c.Item().Text("مركز الأطراف والعلاج الطبيعي")
+                            .FontFamily("Cairo").Bold().AlignRight();
+                        c.Item().Text("إدارة الشؤون المالية")
+                            .FontFamily("Cairo").AlignRight();
+                        c.Item().Text("قسم حسابات الإيرادات")
+                            .FontFamily("Cairo").AlignRight();
+                    });
+
+                    // Left side (numbers)
+                    row.ConstantItem(180).Column(c =>
+                    {
+                        c.Item().Text("139075").Bold();
+                        c.Item().Text("43050");
+                        c.Item().Text("29/04/2025");
+                    });
+                });
+
+                col.Item().LineHorizontal(1);
+
+                // ================= TITLE BOX =================
+                col.Item().AlignCenter().Container()
+                    .Border(1)
+                    .Background(Colors.Grey.Lighten3)
+                    .Padding(10)
+                    .Column(c =>
+                    {
+                        c.Item().Text("بطاقة")
+                            .FontFamily("Cairo")
+                            .Bold()
+                            .FontSize(16)
+                            .AlignCenter();
+
+                        c.Item().Text("إصلاح فني")
+                            .FontFamily("Cairo")
+                            .FontSize(14)
+                            .AlignCenter();
+                    });
+
+                // ================= META INFO =================
+                col.Item().Text("بالإدارة الفنية")
+                    .FontFamily("Cairo")
+                    .AlignRight();
+
+                col.Item().Text("استمارة تحويل رقم : ٥٢٧٢٨٨")
+                    .FontFamily("Cairo")
+                    .AlignRight();
+
+                col.Item().Text("الأخ رئيس قسم : الحديد")
+                    .FontFamily("Cairo")
+                    .AlignRight();
+
+                col.Item().Text("يتم سرعة إصلاح :")
+                    .FontFamily("Cairo")
+                    .AlignRight();
+
+                // ================= TABLE =================
+                col.Item().Table(table =>
+                {
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.ConstantColumn(30);   // م
+                        columns.RelativeColumn(4);    // التفصيل
+                        columns.ConstantColumn(50);   // الكمية
+                        columns.ConstantColumn(50);   // الوحدة
+                        columns.RelativeColumn(2);    // القسم
+                        columns.RelativeColumn(3);    // اسم الفني
+                        columns.RelativeColumn(3);    // ملاحظات
+                    });
+
+                    void Header(string text) =>
+                        table.Cell().Background(Colors.Grey.Lighten2)
+                            .Padding(3)
+                            .Text(text)
+                            .FontFamily("Cairo")
+                            .Bold()
+                            .AlignCenter();
+
+                    Header("م");
+                    Header("التفصيل (نوع الخدمة)");
+                    Header("الكمية");
+                    Header("الوحدة");
+                    Header("القسم");
+                    Header("اسم الفني");
+                    Header("ملاحظات");
+
+                    void Cell(string text) =>
+                        table.Cell().Padding(3)
+                            .Text(text)
+                            .FontFamily("Cairo")
+                            .AlignRight();
+
+                    // Row 1
+                    Cell("1");
+                    Cell("جهاز حديد مع المفصل يمين");
+                    Cell("1");
+                    Cell("جهاز");
+                    Cell("الحديد");
+                    Cell("عبدالعزيز السنجاني");
+                    Cell("convannt");
+
+                    // Row 2
+                    Cell("2");
+                    Cell("جهاز حديد مع المفصل شمال");
+                    Cell("1");
+                    Cell("جهاز");
+                    Cell("الحديد");
+                    Cell("عبدالعزيز السنجاني");
+                    Cell("");
+                });
+
+                // ================= NOTES =================
+                col.Item().Text("كونه قد استكمل الإجراءات اللازمة لدينا.")
+                    .FontFamily("Cairo")
+                    .AlignRight();
+
+                col.Item().Text("الملاحظات : حسب توجيهات الإدارة")
+                    .FontFamily("Cairo")
+                    .AlignRight();
+
+                // ================= FOOTER =================
+                col.Item().LineHorizontal(1);
+
+                col.Item().Row(row =>
+                {
+                    row.RelativeItem().Text("المختص\nهدى الحمزي")
+                        .FontFamily("Cairo")
+                        .AlignCenter();
+
+                    row.RelativeItem().Text("رئيس قسم الإيرادات")
+                        .FontFamily("Cairo")
+                        .AlignCenter();
+
+                    row.RelativeItem().Text("مدير المركز")
+                        .FontFamily("Cairo")
+                        .AlignCenter();
+                });
+
+                col.Item().Text("تاريخ الطباعة : 29/04/2025 12:09")
+                    .FontFamily("Cairo")
+                    .AlignRight();
+            });
+        });
+    });
+
+    document.ShowInCompanion();
+    return document.GeneratePdf();
+}
+
 }

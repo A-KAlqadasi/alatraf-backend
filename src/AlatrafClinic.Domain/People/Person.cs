@@ -17,7 +17,7 @@ public sealed class Person : AuditableEntity<int>
     public string? NationalNo { get; private set; }
     public bool Gender { get; private set; } // Added: true = Male, false = Female
     public int AddressId { get; private set; }
-    public Address Address { get; private set; } = null!;
+    public Address Address { get; set; } = null!;
     public string? AutoRegistrationNumber { get; set; }
 
     public Patient? Patient { get; private set; }

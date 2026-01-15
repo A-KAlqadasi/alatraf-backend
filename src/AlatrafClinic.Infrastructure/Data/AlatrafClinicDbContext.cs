@@ -56,6 +56,7 @@ using AlatrafClinic.Domain.Orders;
 using AlatrafClinic.Domain.IndustrialParts;
 using AlatrafClinic.Domain.MedicalPrograms;
 using AlatrafClinic.Domain.Sessions;
+using AlatrafClinic.Domain.Printing;
 
 
 namespace AlatrafClinic.Infrastructure.Data;
@@ -157,6 +158,7 @@ public class AlatrafClinicDbContext
     public DbSet<ReportField> Fields => Set<ReportField>();
     public DbSet<ReportJoin> Joins => Set<ReportJoin>();
     public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<PrintedDocument> PrintedDocuments => Set<PrintedDocument>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
