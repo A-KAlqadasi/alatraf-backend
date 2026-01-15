@@ -33,9 +33,10 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
         builder.Property(x => x.Gender)
             .IsRequired();
 
-        builder.Property(x => x.Address)
-            .IsRequired()
-            .HasMaxLength(100);
+        builder.HasOne(x => x.Address)
+            .WithMany(x=> x.People)
+            .HasForeignKey(x => x.AddressId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(x => x.AutoRegistrationNumber)
         .HasMaxLength(100)

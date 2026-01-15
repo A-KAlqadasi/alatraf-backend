@@ -38,3 +38,8 @@ public class UserCreatedDto
 {
     public string UserId { get; set; } = default!;
 }
+
+public class GetEffectivePermissionsDto
+{
+    public string PermissionName { get; set; } = default!;
+}

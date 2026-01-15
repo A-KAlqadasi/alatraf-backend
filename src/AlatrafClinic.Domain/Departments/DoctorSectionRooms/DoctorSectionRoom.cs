@@ -6,7 +6,7 @@ using AlatrafClinic.Domain.Departments.Sections;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.People.Doctors;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
+using AlatrafClinic.Domain.Sessions;
 
 namespace AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 

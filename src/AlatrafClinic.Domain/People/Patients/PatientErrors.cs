@@ -7,9 +7,9 @@ namespace AlatrafClinic.Domain.Patients;
 public static class PatientErrors
 {
     public static readonly Error PersonIdRequired =
-        Error.Validation("Patient.PersonIdRequired", "Patient PersonId is required.");
+        Error.Validation("Patient.PersonIdRequired", "معرفه الشخص مطلوب");
     public static Error PatientTypeInvalid =>
-        Error.Validation("Patient.PatientTypeInvalid", "Invalid patient type.");
+        Error.Validation("Patient.PatientTypeInvalid", "نوع المريض غير صالح");
     public static readonly Error PatientNotFound =
-        Error.NotFound("Patient.NotFound", "Patient not found.");
+        Error.NotFound("Patient.NotFound", "المريض غير موجود");
 }

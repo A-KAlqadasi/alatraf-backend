@@ -6,7 +6,6 @@ using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.RepairCards;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Payments;
 
 using MediatR;
@@ -14,6 +13,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using AlatrafClinic.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Domain.IndustrialParts;
 
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCard;

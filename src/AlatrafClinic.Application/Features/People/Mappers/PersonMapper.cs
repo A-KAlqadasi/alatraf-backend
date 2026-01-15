@@ -16,7 +16,7 @@ public static class PersonMapper
             Birthdate = entity.Birthdate,
             Phone = entity.Phone,
             NationalNo = entity.NationalNo,
-            Address = entity.Address,
+            Address = entity.Address.Name,
             Gender= entity.Gender ?"ذكر" : "أنثى",
             AutoRegistrationNumber = entity.AutoRegistrationNumber
         };

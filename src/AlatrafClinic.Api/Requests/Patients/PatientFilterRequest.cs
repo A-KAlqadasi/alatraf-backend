@@ -8,6 +8,7 @@ public class PatientFilterRequest
 {
     public string? SearchTerm { get; set; }
     public PatientType? PatientType { get; set; }
+    public int? AddressId { get; set; }
     public bool? Gender { get; set; }
     public DateOnly? BirthDateFrom { get; set; }
     public DateOnly? BirthDateTo { get; set; }

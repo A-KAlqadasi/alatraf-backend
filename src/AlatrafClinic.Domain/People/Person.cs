@@ -16,7 +16,8 @@ public sealed class Person : AuditableEntity<int>
     public string Phone { get; private set; } = null!;
     public string? NationalNo { get; private set; }
     public bool Gender { get; private set; } // Added: true = Male, false = Female
-    public string Address { get; private set; } = null!;
+    public int AddressId { get; private set; }
+    public Address Address { get; private set; } = null!;
     public string? AutoRegistrationNumber { get; set; }
 
     public Patient? Patient { get; private set; }
@@ -24,18 +25,18 @@ public sealed class Person : AuditableEntity<int>
 
     private Person() { }
 
-    private Person(string fullname, DateOnly birthdate, string phone, string? nationalNo, string address, bool gender, int age)
+    private Person(string fullname, DateOnly birthdate, string phone, string? nationalNo, int addressId, bool gender, int age)
     {
         FullName = fullname;
         Birthdate = birthdate;
         Phone = phone;
         NationalNo = nationalNo;
-        Address = address;
+        AddressId = addressId;
         Gender = gender;
         Age = age;
     }
 
-    public static Result<Person> Create(string fullname, DateOnly birthdate, string phone, string? nationalNo, string address, bool gender)
+    public static Result<Person> Create(string fullname, DateOnly birthdate, string phone, string? nationalNo, int addressId, bool gender)
     {
         if (string.IsNullOrWhiteSpace(fullname))
             return PersonErrors.NameRequired;
@@ -46,12 +47,12 @@ public sealed class Person : AuditableEntity<int>
         if (birthdate > AlatrafClinicConstants.TodayDate)
             return PersonErrors.InvalidBirthdate;
 
-        if (string.IsNullOrWhiteSpace(address))
+        if (addressId <= 0)
             return PersonErrors.AddressRequired;
         
         int age = CalculateAge(birthdate, AlatrafClinicConstants.TodayDate);
 
-        return new Person(fullname, birthdate, phone, nationalNo, address, gender, age);
+        return new Person(fullname, birthdate, phone, nationalNo, addressId, gender, age);
     }
 
     private static int CalculateAge(DateOnly dateOfBirth, DateOnly now)
@@ -66,7 +67,7 @@ public sealed class Person : AuditableEntity<int>
         return age;
     }
 
-    public Result<Updated> Update(string fullname, DateOnly birthdate, string phone, string? nationalNo, string address, bool gender)
+    public Result<Updated> Update(string fullname, DateOnly birthdate, string phone, string? nationalNo, int addressId, bool gender)
     {
         if (string.IsNullOrWhiteSpace(fullname))
             return PersonErrors.NameRequired;
@@ -77,14 +78,14 @@ public sealed class Person : AuditableEntity<int>
         if (birthdate > AlatrafClinicConstants.TodayDate)
             return PersonErrors.InvalidBirthdate;
 
-        if (string.IsNullOrWhiteSpace(address))
+        if (addressId <= 0)
             return PersonErrors.AddressRequired;
 
         FullName = fullname;
         Birthdate = birthdate;
         Phone = phone;
         NationalNo = nationalNo;
-        Address = address;
+        AddressId = addressId;
         Gender = gender;
         Age = CalculateAge(birthdate, AlatrafClinicConstants.TodayDate);
 

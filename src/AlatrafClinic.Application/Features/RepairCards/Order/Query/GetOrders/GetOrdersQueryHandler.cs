@@ -2,6 +2,8 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.Orders.Enums;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -33,7 +35,7 @@ public sealed class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, Resu
 
         if (!string.IsNullOrWhiteSpace(request.Status))
         {
-            if (Enum.TryParse<AlatrafClinic.Domain.RepairCards.Enums.OrderStatus>(request.Status, true, out var st))
+            if (Enum.TryParse<OrderStatus>(request.Status, true, out var st))
             {
                 query = query.Where(o => o.Status == st);
             }

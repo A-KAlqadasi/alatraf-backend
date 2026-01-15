@@ -6,26 +6,26 @@ public static class DisabledCardErrors
 {
     public static readonly Error CardNumberIsRequired = Error.Validation(
         "DisabledCard.CardNumberIsRequired",
-        "Card number is required."
+        "رقم البطاقة مطلوب."
     );
 
 
     public static readonly Error PatientIdIsRequired = Error.Validation(
         "DisabledCard.PatientIdIsRequired",
-        "Patient Id is required."
+        "معرف المريض مطلوب"
     );
-    public static readonly Error CardNumberDuplicated = Error.Conflict("DisabledCard.CardNumberDuplicate", "Card number is already exists!");
-    public static readonly Error DisabledCardNotFound = Error.NotFound("DisabledCard.DisabledCardNotFound", "Disabled card not found!");
+    public static readonly Error CardNumberDuplicated = Error.Conflict("DisabledCard.CardNumberDuplicate", "رقم البطاقة موجود بالفعل!");
+    public static readonly Error DisabledCardNotFound = Error.NotFound("DisabledCard.DisabledCardNotFound", "البطاقة غير موجودة!");
     public static readonly Error IssueDateInvalid = Error.Validation(
         "DisabledCard.IssueDateInvalid",
-        "Issue date cannot be in the future."
+        "تاريخ الإصدار لا يمكن أن يكون في المستقبل"
     );
     public static readonly Error DisabilityTypeIsRequired = Error.Validation(
         "DisabledCard.DisabilityTypeIsRequired",
-        "Disability type is required."
+        "نوع الإعاقة مطلوب"
     );
     public static readonly Error DisabledCardDesnotBelongToPatient = Error.Conflict(
         "DisabledCard.DisabledCardDesnotBelongToPatient",
-        "Disabled card does not belong to the patient."
+        "البطاقة لا تنتمي إلى المريض"
     );
 }

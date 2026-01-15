@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Appointments.Services;
 
-public abstract class AppointmentSchedulingService : ISchedulingRulesProvider
+public sealed class AppointmentSchedulingService : ISchedulingRulesProvider
 {
     private readonly IAppDbContext _context;
     private readonly ILogger<AppointmentSchedulingService> _logger;

@@ -29,6 +29,7 @@ public class GetPatientsQueryHandler
         
         IQueryable<Patient> patientsQuery = _context.Patients
             .Include(p => p.Person)
+                .ThenInclude(p => p.Address)
             .AsNoTracking();
 
         patientsQuery = ApplyFilters(patientsQuery, query);
@@ -79,6 +80,11 @@ public class GetPatientsQueryHandler
         {
             var type = q.PatientType.Value;
             query = query.Where(p => p.PatientType == type);
+        }
+        if (q.AddressId.HasValue)
+        {
+            var addressId = q.AddressId.Value;
+            query = query.Where(p => p.Person != null && p.Person.AddressId == addressId);
         }
 
         if (q.Gender.HasValue)

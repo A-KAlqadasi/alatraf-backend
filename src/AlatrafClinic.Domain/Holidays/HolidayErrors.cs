@@ -6,12 +6,12 @@ public static class HolidayErrors
 {
     public static readonly Error HolidayNameIsRequired = Error.Validation(
         code: "Holiday.NameRequired",
-        description: "Holiday name is required.");
+        description: "اسم العطلة مطلوب");
     public static readonly Error HolidayFixedDateYearMustBeOne = Error.Validation(
         code: "Holiday.FixedDateYearMustBeOne",
-        description: "Fixed holiday date must have year set to 1.");
+        description: "يجب أن يكون سنة تاريخ العطلة الثابتة 1");
 
-    public static readonly Error HolidayEndDateBeforeStartDate = Error.Failure("Holiday end date cannot be before the start date.");
+    public static readonly Error HolidayEndDateBeforeStartDate = Error.Failure("لا يمكن أن يكون تاريخ نهاية العطلة قبل تاريخ البدء");
     public static readonly Error InvalidHolidayType =
-       Error.Validation("InvalidHolidayType", "The holiday type is invalid.");
+       Error.Validation("InvalidHolidayType", "نوع العطلة غير صالح");
 }

@@ -9,14 +9,16 @@ public class UnitConfiguration : IEntityTypeConfiguration<GeneralUnit>
 {
        public void Configure(EntityTypeBuilder<GeneralUnit> builder)
        {
-              builder.ToTable("Units");
+            builder.ToTable("Units");
 
-              builder.HasKey(x => x.Id);
-              builder.Property(x => x.Id).ValueGeneratedOnAdd();
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-              builder.Property(x => x.Name)
-                     .IsRequired()
-                     .HasMaxLength(100);
+            builder.Property(x => x.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+            builder.HasQueryFilter(x => !x.IsDeleted);
+
 
               // // Audit properties
               // builder.Property(x => x.CreatedAtUtc)

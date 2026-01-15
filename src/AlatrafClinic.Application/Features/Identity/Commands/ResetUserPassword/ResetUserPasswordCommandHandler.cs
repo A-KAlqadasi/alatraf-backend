@@ -13,10 +13,10 @@ public sealed class ResetUserPasswordCommandHandler
     public ResetUserPasswordCommandHandler(IIdentityService identityService)
         => _identityService = identityService;
 
-    public Task<Result<Updated>> Handle(
+    public async Task<Result<Updated>> Handle(
         ResetUserPasswordCommand request,
         CancellationToken ct)
-        => _identityService.ResetUserPasswordAsync(
+        => await _identityService.ResetUserPasswordAsync(
             request.UserId,
             request.NewPassword,
             ct);

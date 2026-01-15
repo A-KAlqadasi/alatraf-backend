@@ -13,11 +13,11 @@ public sealed class ActivateUserCommandHandler
     public ActivateUserCommandHandler(IIdentityService identityService)
         => _identityService = identityService;
 
-    public Task<Result<Updated>> Handle(
+    public async Task<Result<Updated>> Handle(
         ActivateUserCommand request,
         CancellationToken ct)
-        => _identityService.ActivateUserAsync(
-            request.UserId,
-            request.IsActive,
-            ct);
+    {
+        return await _identityService
+            .ActivateUserAsync(request.UserId, request.IsActive, ct);
+    }
 }

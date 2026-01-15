@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
-using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Orders;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Mappers;
 

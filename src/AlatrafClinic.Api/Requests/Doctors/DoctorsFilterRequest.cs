@@ -6,6 +6,7 @@ public class DoctorsFilterRequest
 {
     public int? DepartmentId { get; set; }
     public int? SectionId {get; set; }
+    public int? AddressId {get; set;}
     public int? RoomId {get; set;}
     public string? Search { get; set; }
     public string? Specialization {get; set; }

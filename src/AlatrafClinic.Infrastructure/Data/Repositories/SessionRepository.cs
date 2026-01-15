@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
+using AlatrafClinic.Domain.Sessions;
 
 namespace AlatrafClinic.Infrastructure.Data.Repositories;
 

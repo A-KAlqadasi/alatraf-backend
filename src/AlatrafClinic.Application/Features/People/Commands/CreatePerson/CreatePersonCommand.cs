@@ -10,4 +10,4 @@ public sealed record CreatePersonCommand(
     DateOnly Birthdate,
     string Phone,
     string NationalNo,
-    string Address, bool Gender) : IRequest<Result<PersonDto>>;
+    int AddressId, bool Gender) : IRequest<Result<PersonDto>>;

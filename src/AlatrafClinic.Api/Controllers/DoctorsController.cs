@@ -42,6 +42,7 @@ public sealed class DoctorsController(ISender sender) : ApiController
             pageRequest.Page,
             pageRequest.PageSize,
             filter.DepartmentId,
+            filter.AddressId,
             filter.SectionId,
             filter.RoomId,
             filter.Search,
@@ -92,7 +93,7 @@ public sealed class DoctorsController(ISender sender) : ApiController
             request.Birthdate,
             request.Phone,
             request.NationalNo,
-            request.Address,
+            request.AddressId,
             request.Gender,
             request.Specialization,
             request.DepartmentId
@@ -124,7 +125,7 @@ public sealed class DoctorsController(ISender sender) : ApiController
             request.Birthdate,
             request.Phone,
             request.NationalNo,
-            request.Address,
+            request.AddressId,
             request.Gender,
             request.Specialization,
             request.DepartmentId

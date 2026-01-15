@@ -28,7 +28,7 @@ public class CreateDoctorCommandHandler(
             command.Birthdate,
             command.Phone,
             command.NationalNo,
-            command.Address,
+            command.AddressId,
             command.Gender,
             ct);
 

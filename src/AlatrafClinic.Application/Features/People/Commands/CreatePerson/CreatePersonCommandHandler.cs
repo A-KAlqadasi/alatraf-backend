@@ -23,21 +23,29 @@ public  class CreatePersonCommandHandler(
 
         if (!string.IsNullOrWhiteSpace(command.NationalNo))
         {
-        var existing = await _context.People
-            .AnyAsync(p => p.NationalNo == command.NationalNo, ct);
+            var existing = await _context.People
+                .AnyAsync(p => p.NationalNo == command.NationalNo, ct);
 
-        if (existing)
+            if (existing)
+            {
+                _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", command.NationalNo);
+                return PersonErrors.NationalNoExists;
+            }
+        }
+        var isAddressExists =  await _context.Addresses
+            .AnyAsync(a => a.Id == command.AddressId, ct);
+        if (!isAddressExists)
         {
-            _logger.LogWarning("Person creation aborted. National number already exists: {NationalNo}", command.NationalNo);
-            return PersonErrors.NationalNoExists;
+            _logger.LogWarning("Person creation aborted. Address not found: {AddressId}", command.AddressId);
+            return PersonErrors.AddressNotFound;
         }
-        }
+        
         var createResult = Person.Create(
             command.Fullname.Trim(),
             command.Birthdate,
             command.Phone.Trim(),
             command.NationalNo?.Trim(),
-            command.Address.Trim(),
+            command.AddressId,
             command.Gender);
 
         if (createResult.IsError)
@@ -52,5 +60,6 @@ public  class CreatePersonCommandHandler(
         _logger.LogInformation("Person created successfully with ID: {PersonId}", person.Id);
 
         return person.ToDto();
+    
     }
 }

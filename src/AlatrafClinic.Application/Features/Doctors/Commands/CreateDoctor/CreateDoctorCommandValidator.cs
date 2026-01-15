@@ -20,9 +20,8 @@ public sealed class CreateDoctorCommandValidator : AbstractValidator<CreateDocto
             .Matches(@"^(77|78|73|71)\d{7}$")
             .WithMessage("Phone number must start with 77, 78, 73, or 71 and be 9 digits long.");
 
-        RuleFor(x => x.Address)
-            .NotEmpty()
-            .MaximumLength(250);
+        RuleFor(x => x.AddressId)
+            .GreaterThan(0).WithMessage("AddressId must be greater than zero.");
 
         RuleFor(x => x.Gender)
         .NotNull()

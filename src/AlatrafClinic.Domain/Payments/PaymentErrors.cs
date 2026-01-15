@@ -5,27 +5,27 @@ namespace AlatrafClinic.Domain.Payments;
 public static class PaymentErrors
 {
     public static readonly Error InvalidTotal =
-        Error.Validation("Payment.InvalidTotal", "Total amount is invalid");
+        Error.Validation("Payment.InvalidTotal", "المبلغ الإجمالي يجب أن يكون موجبا");
 
     public static readonly Error InvalidPaid =
-        Error.Validation("Payment.InvalidPaid", "Paid amount must be positive.");
+        Error.Validation("Payment.InvalidPaid", "المبلغ المدفوع يجب أن يكون موجبا");
 
     public static readonly Error InvalidDiscount =
-        Error.Validation("Payment.InvalidDiscount", "Discount cannot be negative.");
+        Error.Validation("Payment.InvalidDiscount", "الخصم لا يمكن أن يكون سالبا");
 
     public static readonly Error OverPayment =
-        Error.Conflict("Payment.OverPayment", "Paid ammount and discount is over required total ammount");
+        Error.Conflict("Payment.OverPayment", "المبلغ المدفوع والخصم يتجاوزان المبلغ الإجمالي المطلوب");
     public static readonly Error InvalidDiagnosisId =
-        Error.Validation("Payment.InvalidDiagnosisId", "Diagnosis Id is invalid.");
-    public static readonly Error InvalidPaymentReference = Error.Validation("Payment.InvalidPaymentReference", "Payement Reference is invalid");
-    public static readonly Error PaymentAlreadyCompleted = Error.Conflict("Payment.PaymentAlreadyCompleted", "The payment is already completed");
-    public static readonly Error InvalidPatientPayment = Error.Validation("Payment.InvalidPatientPayment", "Patient payments must be of type Patient");
-    public static readonly Error InvalidDisabledPayment = Error.Validation("Payment.InvalidDisabledPayment", "Disabled payments must be of type Disabled");
-    public static readonly Error InvalidWoundedPayment = Error.Validation("Payment.InvalidWoundedPayment", "Wounded payments must be of type Wounded");
-    public static readonly Error PaymentNotFound = Error.NotFound("Payment.PaymentNotFound", "Payment not found");
-    public static readonly Error InvalidAccountKind = Error.Conflict("Payment.InvalidAccountKind", "Invalid account kind");
-    public static readonly Error InvalidTicketId = Error.Validation("Payment.InvalidTicketId", "Ticket Id is invalid");
+        Error.Validation("Payment.InvalidDiagnosisId", "معرف التشخيص غير صالح");
+    public static readonly Error InvalidPaymentReference = Error.Validation("Payment.InvalidPaymentReference", "مرجع الدفع غير صالح");
+    public static readonly Error PaymentAlreadyCompleted = Error.Conflict("Payment.PaymentAlreadyCompleted", "تم إكمال الدفع بالفعل");
+    public static readonly Error InvalidPatientPayment = Error.Validation("Payment.InvalidPatientPayment", "مدفوعات المرضى يجب أن تكون من نوع حساب المرضى");
+    public static readonly Error InvalidDisabledPayment = Error.Validation("Payment.InvalidDisabledPayment", "مدفوعات المعاقين يجب أن تكون من نوع حساب المعاقين");
+    public static readonly Error InvalidWoundedPayment = Error.Validation("Payment.InvalidWoundedPayment", "مدفوعات الجرحى يجب أن تكون من نوع حساب الجرحى");
+    public static readonly Error PaymentNotFound = Error.NotFound("Payment.PaymentNotFound", "الدفع غير موجود");
+    public static readonly Error InvalidAccountKind = Error.Conflict("Payment.InvalidAccountKind", "نوع الحساب غير صالح");
+    public static readonly Error InvalidTicketId = Error.Validation("Payment.InvalidTicketId", "معرف التذكرة غير صالح");
 
     public static readonly Error UnderPayment =
-        Error.Conflict("Payment.UnderPayment", "Paid ammount and discount is under required total ammount");
+        Error.Conflict("Payment.UnderPayment", "المبلغ المدفوع والخصم لا يغطيان المبلغ الإجمالي المطلوب");
 }

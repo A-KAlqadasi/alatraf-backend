@@ -4,14 +4,14 @@ using AlatrafClinic.Domain.Diagnosises.InjuryReasons;
 using AlatrafClinic.Domain.Diagnosises.InjurySides;
 using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.IndustrialParts;
 using AlatrafClinic.Domain.Inventory.Units;
+using AlatrafClinic.Domain.MedicalPrograms;
 using AlatrafClinic.Domain.People;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Reports;
 using AlatrafClinic.Domain.Services;
 using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards.Enums;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Infrastructure.Identity;
 
@@ -444,8 +444,19 @@ public sealed class AlatrafClinicDbContextInitialiser
             );
         }
 
+        if (!await _context.Addresses.AnyAsync())
+        {
+            _context.Addresses.AddRange(
+                Address.Create(1, "تعز").Value,
+                Address.Create(2, "صنعاء").Value,
+                Address.Create(3, "الحديدة").Value
+            );
+
+            await _context.SaveChangesAsync();
+        } 
+
         var birthdate = new DateOnly(2004,11,03);
-        var person = Person.Create("عبدالكريم شوقي", birthdate, "782422822", null, "صنعاء", true).Value;
+        var person = Person.Create("عبدالكريم شوقي", birthdate, "782422822", null, 1, true).Value;
 
         if(!await _context.People.AnyAsync())
         {

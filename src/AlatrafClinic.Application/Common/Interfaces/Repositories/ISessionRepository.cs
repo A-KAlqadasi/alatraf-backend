@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.TherapyCards.Sessions;
+using AlatrafClinic.Domain.Sessions;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

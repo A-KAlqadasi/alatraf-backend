@@ -43,6 +43,7 @@ public sealed class PatientsController(ISender sender) : ApiController
             pageRequest.PageSize,
             filter.SearchTerm,
             filter.PatientType,
+            filter.AddressId,
             filter.Gender,
             filter.BirthDateFrom,
             filter.BirthDateTo,
@@ -133,7 +134,7 @@ public sealed class PatientsController(ISender sender) : ApiController
             request.Birthdate,
             request.Phone,
             request.NationalNo,
-            request.Address,
+            request.AddressId,
             request.Gender,
             request.PatientType
         ), ct);
@@ -164,7 +165,7 @@ public sealed class PatientsController(ISender sender) : ApiController
             request.Birthdate,
             request.Phone,
             request.NationalNo,
-            request.Address,
+            request.AddressId,
             request.Gender,
             request.PatientType
         ), ct);

@@ -11,7 +11,7 @@ public sealed record CreatePatientCommand(
     DateOnly Birthdate,
     string Phone,
     string? NationalNo,
-    string Address,
+    int AddressId,
     bool Gender,
     PatientType PatientType
 ) : IRequest<Result<PatientDto>>;

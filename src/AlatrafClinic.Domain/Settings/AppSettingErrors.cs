@@ -8,11 +8,10 @@ public static class AppSettingErrors
    public static readonly Error InvalidKey =
         Error.Validation("AppSetting.InvalidKey", "Key is required.");
     public static readonly Error InvalidValue =
-        Error.Validation("AppSetting.InvalidValue", "Value is not valid for the specified type.");
+        Error.Validation("AppSetting.InvalidValue", "القيمة مطلوبة.");
 
     public static readonly Error KeyAlreadyExists =
-        Error.Conflict("AppSetting.KeyAlreadyExists", "An AppSetting with the same key already exists.");
-
+        Error.Conflict("AppSetting.KeyAlreadyExists", "مفتاح الإعدادات التطبيقية موجود بالفعل.");
 
 
 }

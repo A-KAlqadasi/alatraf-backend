@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

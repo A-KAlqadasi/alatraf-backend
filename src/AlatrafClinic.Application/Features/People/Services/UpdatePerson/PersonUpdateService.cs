@@ -28,15 +28,15 @@ public class PersonUpdateService : IPersonUpdateService
         DateOnly Birthdate,
         string Phone,
         string? NationalNo,
-        string Address,
+        int AddressId,
         bool Gender,
         CancellationToken ct)
     {
         var person = await _context.People.FirstOrDefaultAsync(p => p.Id == personId, ct);
         if (person is null)
         {
-        _logger.LogWarning("Person {personId} not found for update.", personId);
-        return ApplicationErrors.PersonNotFound;
+            _logger.LogWarning("Person {personId} not found for update.", personId);
+            return ApplicationErrors.PersonNotFound;
         }
 
         if (!string.IsNullOrWhiteSpace(NationalNo))
@@ -55,8 +55,15 @@ public class PersonUpdateService : IPersonUpdateService
 
         if (isPhoneExists && person.Phone != Phone.Trim())
         {
-        _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
-        return PersonErrors.PhoneExists; 
+            _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
+            return PersonErrors.PhoneExists; 
+        }
+        var isAddressExists =  await _context.Addresses
+            .AnyAsync(a => a.Id == AddressId, ct);
+        if (!isAddressExists)
+        {
+            _logger.LogWarning("Person update aborted. Address not found: {AddressId}", AddressId);
+            return PersonErrors.AddressNotFound;
         }
 
         var updateResult = person.Update(
@@ -64,13 +71,13 @@ public class PersonUpdateService : IPersonUpdateService
         Birthdate,
         Phone.Trim(),
         NationalNo?.Trim(),
-        Address.Trim(),
+        AddressId,
         Gender);
 
         if (updateResult.IsError)
         {
-        _logger.LogWarning("Update failed for Person {PersonId}: {Error}", personId, updateResult.Errors);
-        return updateResult.Errors;
+            _logger.LogWarning("Update failed for Person {PersonId}: {Error}", personId, updateResult.Errors);
+            return updateResult.Errors;
         }
 
         _logger.LogInformation("Person domain entity prepared to be updated (not persisted yet).");

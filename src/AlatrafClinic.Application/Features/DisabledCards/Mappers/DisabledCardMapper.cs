@@ -21,7 +21,7 @@ public static class DisabledCardMapper
             Age = entity.Patient?.Person?.Age ?? 0,
             Gender = UtilityService.GenderToArabicString(entity.Patient?.Person?.Gender ?? true),
             PhoneNumber = entity.Patient?.Person?.Phone ?? string.Empty,
-            Address = entity.Patient?.Person?.Address ?? string.Empty,
+            Address = entity.Patient?.Person?.Address.Name ?? string.Empty,
             PatientId = entity.PatientId
         };
     }

@@ -2,7 +2,7 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.MedicalPrograms.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 using MediatR;
 

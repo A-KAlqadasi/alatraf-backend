@@ -45,7 +45,7 @@ public class UpdateDoctorCommandHandler(
             command.Birthdate,
             command.Phone,
             command.NationalNo,
-            command.Address,
+            command.AddressId,
             command.Gender,
             ct);
 

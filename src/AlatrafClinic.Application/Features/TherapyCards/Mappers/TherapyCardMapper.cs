@@ -3,9 +3,9 @@ using AlatrafClinic.Application.Features.Diagnosises.Dtos;
 using AlatrafClinic.Application.Features.Diagnosises.Mappers;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Domain.Common.Constants;
+using AlatrafClinic.Domain.Sessions;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Enums;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Mappers;
 

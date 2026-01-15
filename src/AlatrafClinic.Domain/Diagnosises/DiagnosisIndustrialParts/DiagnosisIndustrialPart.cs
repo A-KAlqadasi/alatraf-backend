@@ -2,8 +2,8 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
+using AlatrafClinic.Domain.IndustrialParts;
 using AlatrafClinic.Domain.RepairCards;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 namespace AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 

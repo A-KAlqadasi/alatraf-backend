@@ -1,5 +1,5 @@
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
-using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Orders;
 using AlatrafClinic.Domain.Sales;
 
 using Microsoft.EntityFrameworkCore;

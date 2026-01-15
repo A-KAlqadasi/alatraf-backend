@@ -5,7 +5,6 @@ using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.Enums;
 using AlatrafClinic.Domain.TherapyCards;
 using AlatrafClinic.Domain.TherapyCards.Enums;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Application.Features.Diagnosises.Services.CreateDiagnosis;
 using AlatrafClinic.Domain.Payments;
@@ -15,6 +14,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 

@@ -4,9 +4,10 @@ using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 using AlatrafClinic.Domain.Inventory.Stores;
-using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Orders;
 
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.CreateExchangeOrderForOrder;

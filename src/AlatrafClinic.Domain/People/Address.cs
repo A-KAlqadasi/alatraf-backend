@@ -6,15 +6,18 @@ namespace AlatrafClinic.Domain.People;
 public class Address : AuditableEntity<int>
 {
     public string Name { get; set; } = null!;
-    private Address(string name)
+    public ICollection<Person> People { get; set; } = new List<Person>();
+    
+    private Address(int id, string name):base(id)
     {
         Name = name;
     }
     
-    public static Result<Address> Create(string name)
+    public static Result<Address> Create(int id, string name)
     {
-       return new Address(name);
+       return new Address(id, name);
     }
+    
     public Result<Updated> Update(string name)
     {
         Name = name;

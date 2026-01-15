@@ -1,5 +1,4 @@
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 using AlatrafClinic.Domain.Inventory.Units;
 using AlatrafClinic.Application.Common.Interfaces;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -8,6 +7,7 @@ using MediatR;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Domain.IndustrialParts;
 
 namespace AlatrafClinic.Application.Features.IndustrialParts.Commands.UpdateIndustrialPart;
 

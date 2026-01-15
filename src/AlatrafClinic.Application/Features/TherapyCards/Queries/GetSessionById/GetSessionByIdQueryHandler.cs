@@ -2,11 +2,11 @@ using Microsoft.Extensions.Logging;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Domain.Sessions;
 
 
 namespace AlatrafClinic.Application.Features.TherapyCards.Queries.GetSessionById;

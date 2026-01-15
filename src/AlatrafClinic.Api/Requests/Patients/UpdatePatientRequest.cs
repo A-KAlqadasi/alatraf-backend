@@ -16,8 +16,8 @@ public class UpdatePatientRequest
     [RegularExpression(@"^(77|78|73|71)\d{7}$", ErrorMessage = "Phone number must start with 77, 78, 73, or 71 and be 9 digits long.")]
     public string Phone { get; set; } = default!;
     public string? NationalNo {get; set; }
-    [Required(ErrorMessage = "Address is required")]
-    public string Address { get ;set; } = default!;
+    [Required(ErrorMessage = "Address Id is required")]
+    public int AddressId { get ;set; } = default!;
     [Required(ErrorMessage = "Gender is required")]
     public bool Gender {get; set; }
     [Required(ErrorMessage = "Patient Type is required")]

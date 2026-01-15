@@ -12,7 +12,7 @@ public sealed record UpdatePatientCommand(
     DateOnly Birthdate,
     string Phone,
     string? NationalNo,
-    string Address,
+    int AddressId,
     bool Gender,
     PatientType PatientType
 ) : IRequest<Result<Updated>>;

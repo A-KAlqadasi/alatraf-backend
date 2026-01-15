@@ -3,7 +3,7 @@ using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.TherapyCards.Dtos;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
+using AlatrafClinic.Domain.Sessions;
 
 using MediatR;
 

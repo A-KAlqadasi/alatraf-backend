@@ -12,6 +12,7 @@ public sealed record GetDoctorsQuery(
     int Page = 1,
     int PageSize = 20,
     int? DepartmentId = null,
+    int? AddressId = null,
     int? SectionId = null,
     int? RoomId = null,
     string? Search = null,

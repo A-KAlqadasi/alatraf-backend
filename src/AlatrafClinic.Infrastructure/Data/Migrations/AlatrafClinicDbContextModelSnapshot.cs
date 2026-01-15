@@ -22,6 +22,70 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Appointments.Appointment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("AppointmentId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("AttendDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PatientType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttendDate");
+
+                    b.HasIndex("PatientType");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TicketId")
+                        .IsUnique();
+
+                    b.ToTable("Appointments", (string)null);
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.Department", b =>
                 {
                     b.Property<int>("Id")
@@ -645,6 +709,65 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("ExitCards", (string)null);
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Holidays.Holiday", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("HolidayId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StartDate", "EndDate", "IsRecurring", "Type");
+
+                    b.ToTable("Holidays", (string)null);
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Identity.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -692,6 +815,98 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasFilter("[Token] IS NOT NULL");
 
                     b.ToTable("RefreshTokens", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.IndustrialParts.IndustrialPart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("IndustrialPartId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IndustrialParts", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.IndustrialParts.IndustrialPartUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("IndustrialPartUnitId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IndustrialPartId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("PricePerUnit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IndustrialPartId");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("IndustrialPartUnits", (string)null);
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
@@ -1230,6 +1445,164 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("Units", (string)null);
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.MedicalPrograms.MedicalProgram", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("MedicalProgramId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("SectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("MedicalPrograms", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Orders.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("OrderType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("RepairCardId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RepairCardId");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Orders.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ItemUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemUnitId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Patients.Patient", b =>
                 {
                     b.Property<int>("Id")
@@ -1482,6 +1855,42 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("WoundedPayments", (string)null);
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.People.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Addresses", (string)null);
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.People.Doctors.Doctor", b =>
                 {
                     b.Property<int>("Id")
@@ -1544,10 +1953,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -1597,6 +2004,8 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(15)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("AutoRegistrationNumber")
                         .IsUnique();
@@ -1659,204 +2068,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("DeliveryTimes", (string)null);
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("IndustrialPartId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IndustrialParts", (string)null);
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPartUnit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("IndustrialPartUnitId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IndustrialPartId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<decimal>("PricePerUnit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("UnitId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IndustrialPartId");
-
-                    b.HasIndex("UnitId");
-
-                    b.ToTable("IndustrialPartUnits", (string)null);
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("OrderType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("RepairCardId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RepairCardId");
-
-                    b.HasIndex("SectionId");
-
-                    b.ToTable("Orders", (string)null);
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.OrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ItemUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemUnitId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.RepairCard", b =>
@@ -2380,129 +2591,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("SaleItems", (string)null);
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Services.Appointments.Appointment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("AppointmentId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("AttendDate")
-                        .HasColumnType("date");
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("PatientType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttendDate");
-
-                    b.HasIndex("PatientType");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("TicketId")
-                        .IsUnique();
-
-                    b.ToTable("Appointments", (string)null);
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Services.Appointments.Holidays.Holiday", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("HolidayId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("EndDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRecurring")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StartDate", "EndDate", "IsRecurring", "Type");
-
-                    b.ToTable("Holidays", (string)null);
-                });
-
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Service", b =>
                 {
                     b.Property<int>("Id")
@@ -2554,159 +2642,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("Services", (string)null);
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Services.Tickets.Ticket", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("TicketId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int?>("PatientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("ServicePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("Tickets", (string)null);
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.Settings.AppSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppSettings");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.MedicalPrograms.MedicalProgram", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("MedicalProgramId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeletedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModifiedUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("SectionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("SectionId");
-
-                    b.ToTable("MedicalPrograms", (string)null);
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.Sessions.Session", b =>
+            modelBuilder.Entity("AlatrafClinic.Domain.Sessions.Session", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2756,7 +2692,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("Sessions", (string)null);
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.Sessions.SessionProgram", b =>
+            modelBuilder.Entity("AlatrafClinic.Domain.Sessions.SessionProgram", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2804,6 +2740,51 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasIndex("SessionId");
 
                     b.ToTable("SessionPrograms", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Settings.AppSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppSettings");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.TherapyCard", b =>
@@ -2923,6 +2904,61 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TherapyCardTypePrices", (string)null);
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Tickets.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("TicketId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeletedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("ServicePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.WoundedCards.WoundedCard", b =>
@@ -3453,6 +3489,17 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.ToTable("OutboxMessages");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.Appointments.Appointment", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Tickets.Ticket", "Ticket")
+                        .WithOne("Appointment")
+                        .HasForeignKey("AlatrafClinic.Domain.Appointments.Appointment", "TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Departments.DoctorSectionRooms.DoctorSectionRoom", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.People.Doctors.Doctor", "Doctor")
@@ -3509,7 +3556,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.Services.Tickets.Ticket", "Ticket")
+                    b.HasOne("AlatrafClinic.Domain.Tickets.Ticket", "Ticket")
                         .WithOne("Diagnosis")
                         .HasForeignKey("AlatrafClinic.Domain.Diagnosises.Diagnosis", "TicketId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -3533,7 +3580,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .HasForeignKey("DoctorSectionRoomId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPartUnit", "IndustrialPartUnit")
+                    b.HasOne("AlatrafClinic.Domain.IndustrialParts.IndustrialPartUnit", "IndustrialPartUnit")
                         .WithMany()
                         .HasForeignKey("IndustrialPartUnitId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -3562,7 +3609,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.TherapyCards.MedicalPrograms.MedicalProgram", "MedicalProgram")
+                    b.HasOne("AlatrafClinic.Domain.MedicalPrograms.MedicalProgram", "MedicalProgram")
                         .WithMany("DiagnosisPrograms")
                         .HasForeignKey("MedicalProgramId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -3616,9 +3663,28 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Sale");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.IndustrialParts.IndustrialPartUnit", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.IndustrialParts.IndustrialPart", "IndustrialPart")
+                        .WithMany("IndustrialPartUnits")
+                        .HasForeignKey("IndustrialPartId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.GeneralUnit", "Unit")
+                        .WithMany("IndustrialPartUnits")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("IndustrialPart");
+
+                    b.Navigation("Unit");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
                 {
-                    b.HasOne("AlatrafClinic.Domain.RepairCards.Orders.Order", null)
+                    b.HasOne("AlatrafClinic.Domain.Orders.Order", null)
                         .WithMany()
                         .HasForeignKey("RelatedOrderId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -3743,6 +3809,53 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Store");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.MedicalPrograms.MedicalProgram", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Departments.Sections.Section", "Section")
+                        .WithMany("MedicalPrograms")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Orders.Order", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.RepairCards.RepairCard", "RepairCard")
+                        .WithMany("Orders")
+                        .HasForeignKey("RepairCardId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AlatrafClinic.Domain.Departments.Sections.Section", "Section")
+                        .WithMany()
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("RepairCard");
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Orders.OrderItem", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Inventory.Items.ItemUnit", "ItemUnit")
+                        .WithMany()
+                        .HasForeignKey("ItemUnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlatrafClinic.Domain.Orders.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ItemUnit");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Patients.Patient", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.People.Person", "Person")
@@ -3792,7 +3905,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.Services.Tickets.Ticket", "Ticket")
+                    b.HasOne("AlatrafClinic.Domain.Tickets.Ticket", "Ticket")
                         .WithOne("Payment")
                         .HasForeignKey("AlatrafClinic.Domain.Payments.Payment", "TicketId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -3833,6 +3946,17 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.People.Person", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.People.Address", "Address")
+                        .WithMany("People")
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.DeliveryTimes.DeliveryTime", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.RepairCards.RepairCard", "RepairCard")
@@ -3842,62 +3966,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("RepairCard");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPartUnit", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPart", "IndustrialPart")
-                        .WithMany("IndustrialPartUnits")
-                        .HasForeignKey("IndustrialPartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Units.GeneralUnit", "Unit")
-                        .WithMany("IndustrialPartUnits")
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("IndustrialPart");
-
-                    b.Navigation("Unit");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.Order", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.RepairCards.RepairCard", "RepairCard")
-                        .WithMany("Orders")
-                        .HasForeignKey("RepairCardId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("AlatrafClinic.Domain.Departments.Sections.Section", "Section")
-                        .WithMany()
-                        .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("RepairCard");
-
-                    b.Navigation("Section");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.OrderItem", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.Inventory.Items.ItemUnit", "ItemUnit")
-                        .WithMany()
-                        .HasForeignKey("ItemUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlatrafClinic.Domain.RepairCards.Orders.Order", "Order")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ItemUnit");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.RepairCard", b =>
@@ -3992,17 +4060,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("StoreItemUnit");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Services.Appointments.Appointment", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.Services.Tickets.Ticket", "Ticket")
-                        .WithOne("Appointment")
-                        .HasForeignKey("AlatrafClinic.Domain.Services.Appointments.Appointment", "TicketId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
-                });
-
             modelBuilder.Entity("AlatrafClinic.Domain.Services.Service", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.Departments.Department", "Department")
@@ -4013,35 +4070,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Services.Tickets.Ticket", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.Patients.Patient", "Patient")
-                        .WithMany("Tickets")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("AlatrafClinic.Domain.Services.Service", "Service")
-                        .WithMany("Tickets")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Patient");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.MedicalPrograms.MedicalProgram", b =>
-                {
-                    b.HasOne("AlatrafClinic.Domain.Departments.Sections.Section", "Section")
-                        .WithMany("MedicalPrograms")
-                        .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Section");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.Sessions.Session", b =>
+            modelBuilder.Entity("AlatrafClinic.Domain.Sessions.Session", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.TherapyCards.TherapyCard", "TherapyCard")
                         .WithMany("Sessions")
@@ -4052,7 +4081,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("TherapyCard");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.Sessions.SessionProgram", b =>
+            modelBuilder.Entity("AlatrafClinic.Domain.Sessions.SessionProgram", b =>
                 {
                     b.HasOne("AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms.DiagnosisProgram", "DiagnosisProgram")
                         .WithMany("SessionPrograms")
@@ -4066,7 +4095,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AlatrafClinic.Domain.TherapyCards.Sessions.Session", "Session")
+                    b.HasOne("AlatrafClinic.Domain.Sessions.Session", "Session")
                         .WithMany("SessionPrograms")
                         .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4094,6 +4123,24 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Diagnosis");
 
                     b.Navigation("ParentCard");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Tickets.Ticket", b =>
+                {
+                    b.HasOne("AlatrafClinic.Domain.Patients.Patient", "Patient")
+                        .WithMany("Tickets")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AlatrafClinic.Domain.Services.Service", "Service")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.WoundedCards.WoundedCard", b =>
@@ -4318,6 +4365,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("DisabledPayments");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.IndustrialParts.IndustrialPart", b =>
+                {
+                    b.Navigation("IndustrialPartUnits");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Inventory.ExchangeOrders.ExchangeOrder", b =>
                 {
                     b.Navigation("Items");
@@ -4350,6 +4402,16 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("ItemUnits");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.MedicalPrograms.MedicalProgram", b =>
+                {
+                    b.Navigation("DiagnosisPrograms");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Orders.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.Patients.Patient", b =>
                 {
                     b.Navigation("Diagnoses");
@@ -4372,6 +4434,11 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("WoundedPayment");
                 });
 
+            modelBuilder.Entity("AlatrafClinic.Domain.People.Address", b =>
+                {
+                    b.Navigation("People");
+                });
+
             modelBuilder.Entity("AlatrafClinic.Domain.People.Doctors.Doctor", b =>
                 {
                     b.Navigation("Assignments");
@@ -4382,16 +4449,6 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.IndustrialParts.IndustrialPart", b =>
-                {
-                    b.Navigation("IndustrialPartUnits");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.Orders.Order", b =>
-                {
-                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Domain.RepairCards.RepairCard", b =>
@@ -4429,21 +4486,7 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("Tickets");
                 });
 
-            modelBuilder.Entity("AlatrafClinic.Domain.Services.Tickets.Ticket", b =>
-                {
-                    b.Navigation("Appointment");
-
-                    b.Navigation("Diagnosis");
-
-                    b.Navigation("Payment");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.MedicalPrograms.MedicalProgram", b =>
-                {
-                    b.Navigation("DiagnosisPrograms");
-                });
-
-            modelBuilder.Entity("AlatrafClinic.Domain.TherapyCards.Sessions.Session", b =>
+            modelBuilder.Entity("AlatrafClinic.Domain.Sessions.Session", b =>
                 {
                     b.Navigation("SessionPrograms");
                 });
@@ -4453,6 +4496,15 @@ namespace AlatrafClinic.Infrastructure.Data.Migrations
                     b.Navigation("DiagnosisPrograms");
 
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("AlatrafClinic.Domain.Tickets.Ticket", b =>
+                {
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Diagnosis");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("AlatrafClinic.Infrastructure.Identity.ApplicationPermission", b =>

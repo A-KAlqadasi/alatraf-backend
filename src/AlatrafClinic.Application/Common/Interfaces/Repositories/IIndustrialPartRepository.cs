@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.IndustrialParts;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

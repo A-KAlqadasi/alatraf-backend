@@ -3,8 +3,8 @@ using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Diagnosises;
 using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
+using AlatrafClinic.Domain.Sessions;
 using AlatrafClinic.Domain.TherapyCards.Enums;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
 
 namespace AlatrafClinic.Domain.TherapyCards;
 

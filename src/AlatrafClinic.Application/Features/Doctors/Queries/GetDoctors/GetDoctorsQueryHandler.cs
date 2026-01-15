@@ -25,7 +25,8 @@ public class GetDoctorsQueryHandler
         CancellationToken ct)
     {
         IQueryable<Doctor> doctorsQuery = _context.Doctors
-            .Include(d => d.Person)
+            .Include(d => d.Person!)
+                .ThenInclude(p => p.Address)
             .Include(d => d.Department)
             .Include(d => d.Assignments)
                 .ThenInclude(a => a.Section)
@@ -58,6 +59,10 @@ public class GetDoctorsQueryHandler
                 Specialization = d.Specialization,
                 DepartmentId  = d.DepartmentId,
                 DepartmentName = d.Department.Name,
+                
+                Address = d.Person != null && d.Person.Address != null
+                    ? d.Person.Address.Name
+                    : string.Empty,
 
                 SectionId = d.Assignments
                     .Where(a => a.IsActive)
@@ -111,6 +116,11 @@ public class GetDoctorsQueryHandler
             query = query.Where(d =>
                 d.Specialization != null &&
                 EF.Functions.Like(d.Specialization.ToLower(), $"%{spec}%"));
+        }
+        if (q.AddressId.HasValue)
+        {
+            var addressId = q.AddressId.Value;
+            query = query.Where(d => d.Person != null && d.Person.AddressId == addressId);
         }
 
         if (q.SectionId.HasValue)

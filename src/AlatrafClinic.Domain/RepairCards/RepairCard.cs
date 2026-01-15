@@ -5,9 +5,9 @@ using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
 using AlatrafClinic.Domain.ExitCards;
 using AlatrafClinic.Domain.RepairCards.DeliveryTimes;
 using AlatrafClinic.Domain.RepairCards.Enums;
-using AlatrafClinic.Domain.RepairCards.Orders;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Common.Constants;
+using AlatrafClinic.Domain.Orders;
 
 
 namespace AlatrafClinic.Domain.RepairCards;

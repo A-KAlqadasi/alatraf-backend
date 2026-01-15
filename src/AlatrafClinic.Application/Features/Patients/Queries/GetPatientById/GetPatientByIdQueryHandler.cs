@@ -19,7 +19,10 @@ public class GetPatientByIdQueryHandler(
 
     public async Task<Result<PatientDto>> Handle(GetPatientByIdQuery query, CancellationToken ct)
     {
-        var patient = await _context.Patients.Include(p=> p.Person).FirstOrDefaultAsync(p=> p.Id == query.PatientId, ct);
+        var patient = await _context.Patients
+            .Include(p=> p.Person)
+                .ThenInclude(p => p.Address)
+            .FirstOrDefaultAsync(p=> p.Id == query.PatientId, ct);
         if (patient is null)
         {
             return ApplicationErrors.PatientNotFound;

@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.IndustrialParts;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

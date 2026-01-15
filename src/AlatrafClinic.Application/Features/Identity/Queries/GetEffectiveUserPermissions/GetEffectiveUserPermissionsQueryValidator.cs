@@ -8,7 +8,7 @@ public sealed class GetEffectiveUserPermissionsQueryValidator
     public GetEffectiveUserPermissionsQueryValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty();
+            .NotEmpty().WithMessage("User ID is required.");
     }
 }
 

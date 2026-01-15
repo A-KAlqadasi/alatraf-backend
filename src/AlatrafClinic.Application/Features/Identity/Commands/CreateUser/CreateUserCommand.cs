@@ -10,7 +10,7 @@ public sealed record CreateUserCommand(
     DateOnly Birthdate,
     string Phone,
     string NationalNo,
-    string Address,
+    int AddressId,
     bool Gender,
     string UserName,
     string Password,

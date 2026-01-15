@@ -26,7 +26,7 @@ public class PersonCreateService : IPersonCreateService
         DateOnly Birthdate,
         string Phone,
         string? NationalNo,
-        string Address,
+        int AddressId,
         bool Gender, CancellationToken ct)
     {
         
@@ -47,8 +47,15 @@ public class PersonCreateService : IPersonCreateService
 
         if (isPhoneExists)
         {
-        _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
-        return PersonErrors.PhoneExists; 
+            _logger.LogWarning("Person creation aborted. Phone number already exists: {Phone}", Phone);
+            return PersonErrors.PhoneExists; 
+        }
+        var isAddressExists =  await _context.Addresses
+            .AnyAsync(a => a.Id == AddressId, ct);
+        if (!isAddressExists)
+        {
+            _logger.LogWarning("Person creation aborted. Address not found: {AddressId}", AddressId);
+            return PersonErrors.AddressNotFound;
         }
 
         var createResult = Person.Create(
@@ -56,7 +63,7 @@ public class PersonCreateService : IPersonCreateService
             Birthdate,
             Phone.Trim(),
             NationalNo?.Trim(),
-            Address.Trim(),
+            AddressId,
             Gender
             );
 

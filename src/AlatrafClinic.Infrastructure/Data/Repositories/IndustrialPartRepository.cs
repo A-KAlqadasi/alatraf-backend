@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.IndustrialParts;
 
 using Microsoft.EntityFrameworkCore;
 

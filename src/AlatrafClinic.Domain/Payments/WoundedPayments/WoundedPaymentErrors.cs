@@ -8,11 +8,11 @@ public static class WoundedPaymentErrors
     public static readonly Error PaymentIdIsRequired =
         Error.Validation(
             "WoundedPayment.PaymentIdIsRequired",
-            "Payment Id is required."
+            "معرف الدفع مطلوب."
         );
     public static readonly Error ReportNumberIsRequired =
         Error.Validation(
             "WoundedPayment.ReportNumberIsRequired",
-            "Report Number is required."
+            "رقم البلاغ مطلوب"
         );
 }

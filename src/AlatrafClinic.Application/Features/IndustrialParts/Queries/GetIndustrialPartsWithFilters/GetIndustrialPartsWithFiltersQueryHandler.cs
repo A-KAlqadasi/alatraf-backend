@@ -2,7 +2,7 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.IndustrialParts.Dtos;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.IndustrialParts;
 
 using MediatR;
 

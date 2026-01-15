@@ -24,9 +24,9 @@ public class UpdatePatientCommandValidator : AbstractValidator<UpdatePatientComm
             .Matches(@"^(77|78|73|71)\d{7}$")
             .WithMessage("Phone number must start with 77, 78, 73, or 71 and be 9 digits long.");
 
-        RuleFor(x => x.Address)
-            .NotEmpty()
-            .MaximumLength(250);
+        RuleFor(x => x.AddressId)
+            .GreaterThan(0)
+            .WithMessage("AddressId must be a positive integer.");
         RuleFor(x => x.Gender)
         .NotNull()
         .WithMessage("Gender is required (true = Male, false = Female).");

@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Hybrid;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 namespace AlatrafClinic.Application.Features.MedicalPrograms.Commands.DeleteMedicalProgram;
 

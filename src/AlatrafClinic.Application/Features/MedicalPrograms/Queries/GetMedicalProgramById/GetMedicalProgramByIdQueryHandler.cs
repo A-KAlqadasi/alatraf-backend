@@ -3,7 +3,7 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.MedicalPrograms.Dtos;
 using AlatrafClinic.Application.Features.MedicalPrograms.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 using MediatR;
 

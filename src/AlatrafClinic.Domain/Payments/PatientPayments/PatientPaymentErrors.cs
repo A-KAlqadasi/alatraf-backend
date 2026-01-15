@@ -6,15 +6,15 @@ public static class PatientPaymentErrors
 {
     public static readonly Error VoucherNumberIsRequired = Error.Validation(
         "PatientPayment.VoucherNumberIsRequired",
-        "Voucher number is required."
+        "رقم سند الدفع مطلوب"
     );
 
     public static readonly Error PaymentIdIsRequired = Error.Validation(
         "PatientPayment.PaymentIdIsRequired",
-        "Payment Id is required."
+        "معرف الدفع مطلوب"
     );
     public static readonly Error VoucherNumberAlreadyExists = Error.Validation(
         "PatientPayment.VoucherNumberAlreadyExists",
-        "Voucher number already exists."
+        "رقم سند الدفع موجود بالفعل"
     );
 }

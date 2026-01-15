@@ -4,10 +4,10 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.RepairCards.Orders;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Errors;
+using AlatrafClinic.Domain.Orders;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRawOrder;
 

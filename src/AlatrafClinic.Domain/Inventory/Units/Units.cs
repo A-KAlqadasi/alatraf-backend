@@ -1,7 +1,7 @@
 using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.IndustrialParts;
 using AlatrafClinic.Domain.Inventory.Items;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 namespace AlatrafClinic.Domain.Inventory.Units;
 

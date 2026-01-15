@@ -16,8 +16,8 @@ public sealed class CreateUserRequest
 
     [Required(ErrorMessage = "National number is required")]
     public string NationalNo {get; set; } = default!;
-    [Required(ErrorMessage = "Address is required")]
-    public string Address { get ;set; } = default!;
+    [Required(ErrorMessage = "Address Id is required")]
+    public int AddressId { get ;set; } = default!;
     [Required(ErrorMessage = "Gender is required")]
     public bool Gender {get; set; }
 

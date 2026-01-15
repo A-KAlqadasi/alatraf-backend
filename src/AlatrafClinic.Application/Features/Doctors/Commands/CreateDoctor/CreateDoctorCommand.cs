@@ -10,7 +10,7 @@ public sealed record CreateDoctorCommand(
     DateOnly Birthdate,
     string Phone,
     string NationalNo,
-    string Address,
+    int AddressId,
     bool Gender,
     string Specialization,
     int DepartmentId

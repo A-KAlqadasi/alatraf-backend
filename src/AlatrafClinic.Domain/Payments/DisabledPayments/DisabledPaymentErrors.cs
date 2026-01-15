@@ -7,11 +7,11 @@ public static class DisabledPaymentsErrors
     public static readonly Error DisabledCardIdIsRequired =
         Error.Validation(
             "DisabledPayment.DisabledCardIdIsRequired",
-            "Disabled Card Id is required."
+            "معرف بطاقة المعاق مطلوب"
         );
     public static readonly Error PaymentIdIsRequired =
         Error.Validation(
             "DisabledPayment.PaymentIdIsRequired",
-            "Payment Id is required."
+            "معرف الدفع مطلوب"
         );
 }

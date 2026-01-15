@@ -12,6 +12,7 @@ public sealed record GetPatientsQuery(
     int PageSize,
     string? SearchTerm = null,
     PatientType? PatientType = null,
+    int? AddressId = null,
     bool? Gender = null,
     DateOnly? BirthdateFrom = null,
     DateOnly? BirthdateTo = null,

@@ -10,6 +10,6 @@ public sealed record UpdatePersonCommand(
   DateOnly Birthdate,
   string Phone,
   string? NationalNo,
-  string Address,
+  int AddressId,
   bool Gender
 ) : IRequest<Result<Updated>>;

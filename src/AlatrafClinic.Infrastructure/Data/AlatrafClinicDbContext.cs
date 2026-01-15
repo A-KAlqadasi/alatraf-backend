@@ -32,16 +32,12 @@ using AlatrafClinic.Domain.Payments.WoundedPayments;
 using AlatrafClinic.Domain.People;
 using AlatrafClinic.Domain.People.Doctors;
 using AlatrafClinic.Domain.RepairCards;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
-using AlatrafClinic.Domain.RepairCards.Orders;
 using AlatrafClinic.Domain.Reports;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.SalesItems;
 using AlatrafClinic.Domain.Services;
 using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Domain.WoundedCards;
 using AlatrafClinic.Infrastructure.Identity;
@@ -56,6 +52,10 @@ using AlatrafClinic.Domain.Sagas;
 using AlatrafClinic.Domain.Appointments;
 using AlatrafClinic.Domain.Holidays;
 using AlatrafClinic.Domain.Tickets;
+using AlatrafClinic.Domain.Orders;
+using AlatrafClinic.Domain.IndustrialParts;
+using AlatrafClinic.Domain.MedicalPrograms;
+using AlatrafClinic.Domain.Sessions;
 
 
 namespace AlatrafClinic.Infrastructure.Data;
@@ -156,6 +156,7 @@ public class AlatrafClinicDbContext
     public DbSet<ReportDomain> Domains => Set<ReportDomain>();
     public DbSet<ReportField> Fields => Set<ReportField>();
     public DbSet<ReportJoin> Joins => Set<ReportJoin>();
+    public DbSet<Address> Addresses => Set<Address>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

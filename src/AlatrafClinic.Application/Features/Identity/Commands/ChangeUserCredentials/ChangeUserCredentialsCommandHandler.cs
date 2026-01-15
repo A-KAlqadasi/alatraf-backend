@@ -13,13 +13,15 @@ public sealed class ChangeUserCredentialsCommandHandler
     public ChangeUserCredentialsCommandHandler(IIdentityService identityService)
         => _identityService = identityService;
 
-    public Task<Result<Updated>> Handle(
+    public async Task<Result<Updated>> Handle(
         ChangeUserCredentialsCommand request,
         CancellationToken ct)
-        => _identityService.ChangeUserCredentialsAsync(
+    {
+        return await _identityService.ChangeUserCredentialsAsync(
             request.UserId,
             request.OldPassword,
             request.NewPassword,
             request.NewUsername,
             ct);
+    }
 }

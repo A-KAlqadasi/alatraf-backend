@@ -1,6 +1,7 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
-using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Orders;
+using AlatrafClinic.Domain.Orders.Enums;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -50,7 +51,7 @@ public class OrderRepository : GenericRepository<Order, int>, IOrderRepository
     {
         return await dbContext.Orders
             .AsNoTracking()
-            .Where(o => o.Status == AlatrafClinic.Domain.RepairCards.Enums.OrderStatus.Draft)
+            .Where(o => o.Status == OrderStatus.Draft)
             .Select(o => new AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto
             {
                 Id = o.Id,

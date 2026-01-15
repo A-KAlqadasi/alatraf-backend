@@ -6,7 +6,7 @@ using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
-using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Orders;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpsertOrderItems;
 

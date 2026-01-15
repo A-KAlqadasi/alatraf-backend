@@ -2,9 +2,9 @@ using Microsoft.Extensions.Logging;
 
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.RepairCards.Orders;
 
 using MediatR;
+using AlatrafClinic.Domain.Orders;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CancelOrder;
 

@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 namespace AlatrafClinic.Application.Common.Interfaces.Repositories;
 

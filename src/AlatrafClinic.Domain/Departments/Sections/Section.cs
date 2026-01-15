@@ -2,7 +2,7 @@ using AlatrafClinic.Domain.Common;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Departments.DoctorSectionRooms;
 using AlatrafClinic.Domain.Departments.Sections.Rooms;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 namespace AlatrafClinic.Domain.Departments.Sections;
 

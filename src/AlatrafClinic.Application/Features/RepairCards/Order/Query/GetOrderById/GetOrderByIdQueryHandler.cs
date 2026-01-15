@@ -2,9 +2,10 @@ using AlatrafClinic.Application.Common.Interfaces.Repositories;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
-using AlatrafClinic.Domain.RepairCards.Orders;
+using AlatrafClinic.Domain.Orders;
 
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetOrderById;

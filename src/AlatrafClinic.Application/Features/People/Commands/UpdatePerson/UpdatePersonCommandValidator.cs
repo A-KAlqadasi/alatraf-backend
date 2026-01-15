@@ -29,9 +29,8 @@ public sealed class UpdatePersonCommandValidator : AbstractValidator<UpdatePerso
        .NotNull()
        .WithMessage("Gender is required (true = Male, false = Female).");
 
-    RuleFor(x => x.Address)
-        .NotEmpty().WithMessage("Address is required.")
-        .MaximumLength(250).WithMessage("Address cannot exceed 250 characters.");
+    RuleFor(x => x.AddressId)
+        .GreaterThan(0).WithMessage("Address is required.");
 
     When(x => !string.IsNullOrWhiteSpace(x.NationalNo), () =>
     {

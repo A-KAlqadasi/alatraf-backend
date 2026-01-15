@@ -23,8 +23,8 @@ public class UpdatePersonCommandHandler(
         var person = await _context.People.FirstOrDefaultAsync(p=> p.Id == command.PersonId, ct);
         if (person is null)
         {
-        _logger.LogWarning("Person {PersonId} not found for update.", command.PersonId);
-        return ApplicationErrors.PersonNotFound;
+            _logger.LogWarning("Person {PersonId} not found for update.", command.PersonId);
+            return ApplicationErrors.PersonNotFound;
         }
 
         if (!string.IsNullOrWhiteSpace(command.NationalNo))
@@ -37,18 +37,26 @@ public class UpdatePersonCommandHandler(
                 return PersonErrors.NationalNoExists;
             }
         }
+
+        var isAddressExists =  await _context.Addresses
+            .AnyAsync(a => a.Id == command.AddressId, ct);
+        if (!isAddressExists)
+        {
+            _logger.LogWarning("Person update aborted. Address not found: {AddressId}", command.AddressId);
+            return PersonErrors.AddressNotFound;
+        }
         
         var updateResult = person.Update(
             command.Fullname.Trim(),
             command.Birthdate,
             command.Phone.Trim(),
             command.NationalNo?.Trim(),
-            command.Address.Trim(), command.Gender);
+            command.AddressId, command.Gender);
 
         if (updateResult.IsError)
         {
-        _logger.LogWarning("Update failed for Person {PersonId}: {Error}", command.PersonId, updateResult.Errors);
-        return updateResult.Errors;
+            _logger.LogWarning("Update failed for Person {PersonId}: {Error}", command.PersonId, updateResult.Errors);
+            return updateResult.Errors;
         }
         _context.People.Update(person);
         await _context.SaveChangesAsync(ct);

@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Common.Interfaces.Repositories;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 using Microsoft.EntityFrameworkCore;
 

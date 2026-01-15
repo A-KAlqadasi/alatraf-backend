@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Features.IndustrialParts.Dtos;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
+using AlatrafClinic.Domain.IndustrialParts;
 
 namespace AlatrafClinic.Application.Features.IndustrialParts.Mappers;
 

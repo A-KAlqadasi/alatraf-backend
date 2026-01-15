@@ -11,7 +11,7 @@ public interface IPersonUpdateService
         DateOnly Birthdate,
         string Phone,
         string? NationalNo,
-        string Address,
+        int AddressId,
         bool Gender,
         CancellationToken ct);
 }

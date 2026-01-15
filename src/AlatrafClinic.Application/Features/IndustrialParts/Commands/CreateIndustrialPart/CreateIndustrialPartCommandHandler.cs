@@ -2,8 +2,8 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.IndustrialParts.Dtos;
 using AlatrafClinic.Application.Features.IndustrialParts.Mappers;
 using AlatrafClinic.Domain.Common.Results;
+using AlatrafClinic.Domain.IndustrialParts;
 using AlatrafClinic.Domain.Inventory.Units;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
 
 using MediatR;
 

@@ -13,11 +13,14 @@ using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Holidays;
 using AlatrafClinic.Domain.Identity;
+using AlatrafClinic.Domain.IndustrialParts;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Purchases;
 using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.Inventory.Suppliers;
 using AlatrafClinic.Domain.Inventory.Units;
+using AlatrafClinic.Domain.MedicalPrograms;
+using AlatrafClinic.Domain.Orders;
 using AlatrafClinic.Domain.Patients;
 using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.Payments.DisabledPayments;
@@ -26,18 +29,15 @@ using AlatrafClinic.Domain.Payments.WoundedPayments;
 using AlatrafClinic.Domain.People;
 using AlatrafClinic.Domain.People.Doctors;
 using AlatrafClinic.Domain.RepairCards;
-using AlatrafClinic.Domain.RepairCards.IndustrialParts;
-using AlatrafClinic.Domain.RepairCards.Orders;
 using AlatrafClinic.Domain.Reports;
 
 using AlatrafClinic.Domain.Sagas;
 using AlatrafClinic.Domain.Sales;
 using AlatrafClinic.Domain.Sales.SalesItems;
 using AlatrafClinic.Domain.Services;
+using AlatrafClinic.Domain.Sessions;
 using AlatrafClinic.Domain.Settings;
 using AlatrafClinic.Domain.TherapyCards;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
-using AlatrafClinic.Domain.TherapyCards.Sessions;
 using AlatrafClinic.Domain.TherapyCards.TherapyCardTypePrices;
 using AlatrafClinic.Domain.Tickets;
 using AlatrafClinic.Domain.WoundedCards;
@@ -120,6 +120,7 @@ public interface IAppDbContext
     DbSet<SagaCompensationLog> SagaCompensationLogs { get; }
     DbSet<CompensationNotification> CompensationNotifications { get; }
     DbSet<ManualInterventionRequired> ManualInterventions { get; }
+    DbSet<Address> Addresses { get; }
 
 
     Task<int> SaveChangesAsync(CancellationToken ct);

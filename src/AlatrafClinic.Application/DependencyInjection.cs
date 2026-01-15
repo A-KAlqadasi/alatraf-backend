@@ -38,7 +38,8 @@ public static class DependencyInjection
         services.AddScoped<SaleSagaOrchestrator>();
         
         services.AddScoped<PaymentProcessor>();
-
+        
+       // Add this to your service registrations
         services.AddScoped<AppointmentSchedulingService>();
         services.AddScoped<ISchedulingRulesProvider>(sp => 
             sp.GetRequiredService<AppointmentSchedulingService>());

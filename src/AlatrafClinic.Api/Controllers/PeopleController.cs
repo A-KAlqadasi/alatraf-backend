@@ -51,7 +51,7 @@ public class PeopleController (ISender sender) : ApiController
             request.Birthdate,
             request.Phone,
             request.NationalNo,
-            request.Address,
+            request.AddressId,
             request.Gender
         ), ct);
 

@@ -10,6 +10,6 @@ public interface IPersonCreateService
         DateOnly Birthdate,
         string Phone,
         string? NationalNo,
-        string Address,
+        int AddressId,
         bool Gender, CancellationToken cancellationToken);
 }

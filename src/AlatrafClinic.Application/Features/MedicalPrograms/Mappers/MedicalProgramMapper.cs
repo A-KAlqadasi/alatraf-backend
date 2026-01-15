@@ -1,5 +1,5 @@
 using AlatrafClinic.Application.Features.MedicalPrograms.Dtos;
-using AlatrafClinic.Domain.TherapyCards.MedicalPrograms;
+using AlatrafClinic.Domain.MedicalPrograms;
 
 namespace AlatrafClinic.Application.Features.MedicalPrograms.Mappers;
 

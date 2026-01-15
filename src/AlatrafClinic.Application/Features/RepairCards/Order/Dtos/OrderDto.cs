@@ -1,4 +1,4 @@
-using AlatrafClinic.Domain.RepairCards.Enums;
+using AlatrafClinic.Domain.Orders.Enums;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Dtos;
 

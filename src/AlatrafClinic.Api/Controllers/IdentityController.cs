@@ -98,7 +98,7 @@ public sealed class IdentityController(ISender sender) : ApiController
             request.Birthdate,
             request.Phone,
             request.NationalNo,
-            request.Address,
+            request.AddressId,
             request.Gender,
             request.UserName,
             request.Password,

@@ -13,10 +13,10 @@ public sealed class UpsertUserRolesCommandHandler
     public UpsertUserRolesCommandHandler(IIdentityService identityService)
         => _identityService = identityService;
 
-    public Task<Result<Updated>> Handle(
+    public async Task<Result<Updated>> Handle(
         UpsertUserRolesCommand request,
         CancellationToken ct)
-        => _identityService.UpsertUserRolesAsync(
+        => await _identityService.UpsertUserRolesAsync(
             request.UserId,
             request.RoleIds,
             ct);
