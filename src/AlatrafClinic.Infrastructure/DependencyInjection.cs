@@ -138,6 +138,8 @@ public static class DependencyInjection
             sp.GetServices<ISagaCompensationHandler>().ToList());
 
         services.AddScoped<IPdfGenerator<Domain.Tickets.Ticket>, TicketPdfGenerator>();
+        services.AddScoped<IPdfGenerator<Domain.RepairCards.RepairCard>, RepairCardPdfGenerator>();
+        ConfigureQuestPdf();
 
         return services;
     }
@@ -147,7 +149,7 @@ public static class DependencyInjection
 
         // Register Arabic font
         FontManager.RegisterFont(
-            File.OpenRead("Infrastructure/Printing/Fonts/Cairo-Regular.ttf"));
+            File.OpenRead("./Statics/Fonts/Cairo-Regular.ttf"));
     }
 
     public static IServiceCollection AddReportServices(this IServiceCollection services, IConfiguration configuration)

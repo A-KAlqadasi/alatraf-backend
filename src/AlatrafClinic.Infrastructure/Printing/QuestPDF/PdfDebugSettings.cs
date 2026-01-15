@@ -1,0 +1,6 @@
+namespace AlatrafClinic.Infrastructure.Printing.QuestPDF;
+
+public static class PdfDebugSettings
+{
+    public static bool UseCompanion = false; // DEV ONLY
+}

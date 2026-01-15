@@ -12,8 +12,9 @@ public static class UtilityService
     public static string GetDayNameArabic(DateOnly date)
     {
         // "dddd" format specifier gives the full day name
-        return date.ToString("dddd", new CultureInfo("ar-SA")); 
+        return date.ToString("dddd", arabicCulture); 
     }
+    public static CultureInfo arabicCulture = new CultureInfo("ar-SA");
     
     public static decimal CalculatePercentage(decimal part, decimal total)
     {

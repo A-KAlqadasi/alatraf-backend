@@ -192,6 +192,13 @@ public sealed class TicketsController(ISender sender) : ApiController
     }
 
     [HttpGet("{id:int}/print")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Generates a printable PDF for the specified ticket.")]
+    [EndpointDescription("Generates and returns a PDF document for the ticket identified by the provided ID.")]
+    [EndpointName("PrintTicket")]
     public async Task<IActionResult> PrintTicket(
         int id,
         CancellationToken cancellationToken)

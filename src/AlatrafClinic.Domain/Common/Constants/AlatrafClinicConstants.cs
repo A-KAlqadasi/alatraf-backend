@@ -2,7 +2,7 @@ namespace AlatrafClinic.Domain.Common.Constants;
 
 public static class AlatrafClinicConstants
 {
-
+    public const string DefaultColor = "#003366";
     public const string SystemUser = "System";
     public const string AllowedDaysKey = "AllowedAppointmentDays";
     public const string AppointmentDailyCapacityKey = "AppointmentDailyCapacity";

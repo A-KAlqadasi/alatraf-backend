@@ -50,6 +50,8 @@ public class RepairCard : AuditableEntity<int>
 
     public bool IsEditable => IsActive && Status is not RepairCardStatus.LegalExit or RepairCardStatus.IllegalExit;
 
+    public bool IsPrintable => Status is RepairCardStatus.AssignedToTechnician;
+
     public Result<Updated> UpsertIndustrialParts(List<DiagnosisIndustrialPart> newIndustrialParts)
     {
         if (Status != RepairCardStatus.New)

@@ -8,6 +8,7 @@ public class PersonDto
     public string? Phone { get; set; }
     public string? NationalNo { get; set; }
     public string? Address { get; set; }
+    public int AddressId { get; set; }
     public string Gender { get; set; } = string.Empty;
     public string? AutoRegistrationNumber { get; set; }
 }

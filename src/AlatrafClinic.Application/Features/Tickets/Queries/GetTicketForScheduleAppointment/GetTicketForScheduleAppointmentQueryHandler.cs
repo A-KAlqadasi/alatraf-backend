@@ -2,7 +2,6 @@ using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Patients.Mappers;
 using AlatrafClinic.Application.Features.Tickets.Dtos;
 using AlatrafClinic.Application.Features.Tickets.Mappers;
-using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Tickets;
 
