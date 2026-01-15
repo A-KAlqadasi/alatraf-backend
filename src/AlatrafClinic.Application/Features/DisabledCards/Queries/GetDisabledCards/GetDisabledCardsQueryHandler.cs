@@ -29,6 +29,7 @@ public sealed class GetDisabledCardsQueryHandler
         IQueryable<DisabledCard> cardsQuery = _context.DisabledCards
             .Include(dc => dc.Patient)
                 .ThenInclude(p => p.Person)
+                    .ThenInclude(a => a.Address)
             .AsNoTracking();
 
         cardsQuery = ApplyFilters(cardsQuery, query);

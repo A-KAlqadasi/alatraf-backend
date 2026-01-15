@@ -32,7 +32,10 @@ public class AddDisabledCardCommandHandler : IRequestHandler<AddDisabledCardComm
             _logger.LogWarning("Card number {cardNumber} is already exists!", command.CardNumber);
             return DisabledCardErrors.CardNumberDuplicated;
         }
-        Patient? patient = await _context.Patients.FirstOrDefaultAsync(p=> p.Id == command.PatientId, ct);
+        Patient? patient = await _context.Patients
+            .Include(p=> p.Person)
+                .ThenInclude(a=> a.Address)
+        .FirstOrDefaultAsync(p=> p.Id == command.PatientId, ct);
 
         if (patient is null)
         {

@@ -27,6 +27,7 @@ public class GetDisabledCardByNumberQueryHandler : IRequestHandler<GetDisabledCa
         var card = await _context.DisabledCards
         .Include(c=> c.Patient)
             .ThenInclude(p=> p.Person)
+                .ThenInclude(a=> a.Address)
             .FirstOrDefaultAsync(c=> c.CardNumber == query.CardNumber, ct);
 
         if (card is null)
