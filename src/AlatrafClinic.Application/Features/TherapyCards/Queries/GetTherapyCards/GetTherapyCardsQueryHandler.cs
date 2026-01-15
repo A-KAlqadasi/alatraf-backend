@@ -30,7 +30,7 @@ public sealed class GetTherapyCardsQueryHandler
         IQueryable<TherapyCard> cardsQuery = _context.TherapyCards
             .Include(tc => tc.Diagnosis)
                 .ThenInclude(d => d.Patient)
-                    .ThenInclude(p => p.Person)
+                    .ThenInclude(p => p.Person).ThenInclude(p=> p.Address)
             .Include(tc => tc.Diagnosis)
                 .ThenInclude(tc=> tc.InjuryReasons)
             .Include(tc => tc.Diagnosis)

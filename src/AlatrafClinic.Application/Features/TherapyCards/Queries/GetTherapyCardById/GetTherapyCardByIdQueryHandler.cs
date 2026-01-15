@@ -27,7 +27,7 @@ public class GetTherapyCardByIdQueryHandler : IRequestHandler<GetTherapyCardById
         var therpayCard = await _context.TherapyCards
             .AsNoTracking()
             .Include(tc => tc.Diagnosis)
-                .ThenInclude(d => d.Patient)!.ThenInclude(p=> p.Person)
+                .ThenInclude(d => d.Patient)!.ThenInclude(p=> p.Person).ThenInclude(p=> p.Address)
             .Include(tc => tc.Diagnosis)
                 .ThenInclude(ir=> ir.InjuryReasons)
             .Include(tc => tc.Diagnosis)

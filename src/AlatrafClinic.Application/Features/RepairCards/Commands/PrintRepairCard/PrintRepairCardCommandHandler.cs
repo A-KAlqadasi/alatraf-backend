@@ -51,7 +51,7 @@ public class PrintRepairCardCommandHandler
 
         if (!repairCard.IsPrintable)
         {
-            return Error.Failure("كرت الاصلاح غير جاهز للطباعة");
+            return Error.Failure("كرت الاصلاح غير متاح للطباعة");
         }
 
         var printedDocument =

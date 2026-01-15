@@ -28,6 +28,7 @@ public sealed class GetTicketsQueryHandler
         IQueryable<Ticket> ticketsQuery = _context.Tickets
             .Include(t => t.Patient!)
                 .ThenInclude(p => p.Person)
+                    .ThenInclude(p=> p.Address)
             .Include(t => t.Service!)
                 .ThenInclude(s => s.Department)
             .AsNoTracking();

@@ -110,9 +110,9 @@ public class TicketPdfGenerator : IPdfGenerator<Ticket>
                         col.Item().LineHorizontal(1).LineColor(AlatrafClinicConstants.DefaultColor);
 
                         var formattedDate =
-                        $"{UtilityService.GetDayNameArabic(DateOnly.FromDateTime(ticket.CreatedAtUtc.DateTime))} - " +
-                        $"{ticket.CreatedAtUtc.ToString("dd/M/yyyy")} - " + 
-                         $"{ticket.CreatedAtUtc.ToString("h:mm tt", UtilityService.arabicCulture)} ";
+                        $"{UtilityService.GetDayNameArabic(DateOnly.FromDateTime(context.PrintedAt.Date))} - " +
+                        $"{context.PrintedAt.ToString("dd/M/yyyy")} - " + 
+                         $"{context.PrintedAt.ToString("h:mm tt", UtilityService.arabicCulture)} ";
 
                         // ================= FOOTER =================
                         col.Item().Text(formattedDate)

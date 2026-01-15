@@ -191,7 +191,7 @@ public sealed class TicketsController(ISender sender) : ApiController
         );
     }
 
-    [HttpGet("{id:int}/print")]
+    [HttpPost("{id:int}/print")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
