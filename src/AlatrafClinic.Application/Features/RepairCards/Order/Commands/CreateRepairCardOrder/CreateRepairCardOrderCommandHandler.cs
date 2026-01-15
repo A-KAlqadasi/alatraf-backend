@@ -8,11 +8,11 @@ using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Errors;
-<<<<<<< HEAD
+
 using AlatrafClinic.Domain.Orders;
-=======
+
 using Microsoft.EntityFrameworkCore;
->>>>>>> upstream/main
+
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateRepairCardOrder;
 

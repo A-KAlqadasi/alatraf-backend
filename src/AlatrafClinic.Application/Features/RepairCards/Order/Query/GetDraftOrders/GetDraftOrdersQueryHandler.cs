@@ -3,6 +3,8 @@ using AlatrafClinic.Domain.Common.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using AlatrafClinic.Domain.Orders.Enums;
+using AlatrafClinic.Application.Features.RepairCards.Dtos;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetDraftOrders;
 
@@ -21,8 +23,8 @@ public sealed class GetDraftOrdersQueryHandler : IRequestHandler<GetDraftOrdersQ
     {
         var projected = await _dbContext.Orders
             .AsNoTracking()
-            .Where(o => o.Status == AlatrafClinic.Domain.RepairCards.Enums.OrderStatus.Draft)
-            .Select(o => new AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto
+            .Where(o => o.Status == OrderStatus.Draft)
+            .Select(o => new OrderDto
             {
                 Id = o.Id,
                 RepairCardId = o.RepairCardId,
