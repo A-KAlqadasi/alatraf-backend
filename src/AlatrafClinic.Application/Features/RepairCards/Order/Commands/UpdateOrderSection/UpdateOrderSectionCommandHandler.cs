@@ -1,28 +1,31 @@
 using Microsoft.Extensions.Logging;
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.RepairCards;
 
 using MediatR;
 using AlatrafClinic.Application.Common.Errors;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.UpdateOrderSection;
 
 public sealed class UpdateOrderSectionCommandHandler : IRequestHandler<UpdateOrderSectionCommand, Result<Updated>>
 {
     private readonly ILogger<UpdateOrderSectionCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public UpdateOrderSectionCommandHandler(ILogger<UpdateOrderSectionCommandHandler> logger, IUnitOfWork unitOfWork)
+    public UpdateOrderSectionCommandHandler(ILogger<UpdateOrderSectionCommandHandler> logger, IAppDbContext dbContext)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<Updated>> Handle(UpdateOrderSectionCommand command, CancellationToken ct)
     {
-        var repairCard = await _unitOfWork.RepairCards.GetByIdAsync(command.RepairCardId, ct);
+        var repairCard = await _dbContext.RepairCards
+            .Include(rc => rc.Orders)
+            .SingleOrDefaultAsync(rc => rc.Id == command.RepairCardId, ct);
         if (repairCard is null)
         {
             _logger.LogError("RepairCard with Id {RepairCardId} not found.", command.RepairCardId);
@@ -30,8 +33,8 @@ public sealed class UpdateOrderSectionCommandHandler : IRequestHandler<UpdateOrd
         }
 
         // Validate Section existence
-        var section = await _unitOfWork.Sections.GetByIdAsync(command.SectionId, ct);
-        if (section is null)
+        var sectionExists = await _dbContext.Sections.AsNoTracking().AnyAsync(s => s.Id == command.SectionId, ct);
+        if (!sectionExists)
         {
             _logger.LogError("Section with Id {SectionId} not found.", command.SectionId);
             return ApplicationErrors.SectionNotFound;
@@ -44,8 +47,8 @@ public sealed class UpdateOrderSectionCommandHandler : IRequestHandler<UpdateOrd
             return result.Errors;
         }
 
-        await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.RepairCards.Update(repairCard);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Order {OrderId} for RepairCard {RepairCardId} updated to Section {SectionId}.", command.OrderId, command.RepairCardId, command.SectionId);
 

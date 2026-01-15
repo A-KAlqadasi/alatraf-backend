@@ -1,10 +1,11 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Units.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Units.Mappers;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Units.Queries.GetUnitsListQuery;
@@ -12,12 +13,12 @@ namespace AlatrafClinic.Application.Features.Inventory.Units.Queries.GetUnitsLis
 public sealed class GetUnitsListQueryHandler
     : IRequestHandler<GetUnitsListQuery, Result<List<UnitDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetUnitsListQueryHandler> _logger;
 
-    public GetUnitsListQueryHandler(IUnitOfWork unitOfWork, ILogger<GetUnitsListQueryHandler> logger)
+    public GetUnitsListQueryHandler(IAppDbContext dbContext, ILogger<GetUnitsListQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -25,7 +26,7 @@ public sealed class GetUnitsListQueryHandler
     {
         _logger.LogInformation("Fetching all units from database...");
 
-        var units = await _unitOfWork.Units.GetAllAsync(cancellationToken);
+        var units = await _dbContext.Units.ToListAsync(cancellationToken);
 
         if (units is null || !units.Any())
         {

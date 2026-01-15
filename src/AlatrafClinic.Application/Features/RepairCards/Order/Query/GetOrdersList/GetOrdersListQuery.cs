@@ -1,10 +1,8 @@
+using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Domain.Common.Results;
+
+using MediatR;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetOrdersList;
 
-public sealed record GetOrdersListQuery() : AlatrafClinic.Application.Common.Interfaces.ICachedQuery<Result<List<AlatrafClinic.Application.Features.RepairCards.Dtos.OrderDto>>>
-{
-    public string CacheKey => "orders_all";
-    public string[] Tags => new[] { "order" };
-    public TimeSpan Expiration => TimeSpan.FromMinutes(5);
-}
+public sealed record GetOrdersListQuery() : IRequest<Result<List<OrderDto>>>;

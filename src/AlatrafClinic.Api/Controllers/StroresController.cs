@@ -163,9 +163,9 @@ public sealed class StroresController(ISender sender) : ApiController
     [EndpointDescription("Adds an item unit with a quantity to the specified store.")]
     [EndpointName("AddItemUnitToStore")]
     [MapToApiVersion("1.0")]
-    public async Task<IActionResult> AddItemUnit(int storeId, [FromBody] AddItemUnitToStoreCommand command, CancellationToken ct)
+    public async Task<IActionResult> AddItemUnit([FromBody] AddItemUnitToStoreCommand command, CancellationToken ct)
     {
-        var cmd = new AddItemUnitToStoreCommand(storeId, command.ItemId, command.UnitId, command.Quantity);
+        var cmd = new AddItemUnitToStoreCommand(command.StoreId, command.ItemId, command.UnitId, command.Quantity);
         var result = await sender.Send(cmd, ct);
         return result.Match(
             _ => NoContent(),

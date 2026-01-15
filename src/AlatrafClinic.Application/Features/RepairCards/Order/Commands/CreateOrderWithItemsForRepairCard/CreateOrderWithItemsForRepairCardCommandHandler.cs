@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -11,23 +11,27 @@ using MediatR;
 using AlatrafClinic.Application.Common.Errors;
 using AlatrafClinic.Domain.Orders;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace AlatrafClinic.Application.Features.RepairCards.Commands.CreateOrderWithItemsForRepairCard;
 
 public sealed class CreateOrderWithItemsForRepairCardCommandHandler : IRequestHandler<CreateOrderWithItemsForRepairCardCommand, Result<OrderDto>>
 {
     private readonly ILogger<CreateOrderWithItemsForRepairCardCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public CreateOrderWithItemsForRepairCardCommandHandler(ILogger<CreateOrderWithItemsForRepairCardCommandHandler> logger, IUnitOfWork unitOfWork)
+    public CreateOrderWithItemsForRepairCardCommandHandler(ILogger<CreateOrderWithItemsForRepairCardCommandHandler> logger, IAppDbContext dbContext)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<OrderDto>> Handle(CreateOrderWithItemsForRepairCardCommand command, CancellationToken ct)
     {
         // Load repair card aggregate
-        var repairCard = await _unitOfWork.RepairCards.GetByIdAsync(command.RepairCardId, ct);
+        var repairCard = await _dbContext.RepairCards
+            .Include(rc => rc.Orders)
+            .SingleOrDefaultAsync(rc => rc.Id == command.RepairCardId, ct);
         if (repairCard is null)
         {
             _logger.LogError("RepairCard with Id {RepairCardId} not found.", command.RepairCardId);
@@ -35,8 +39,8 @@ public sealed class CreateOrderWithItemsForRepairCardCommandHandler : IRequestHa
         }
 
         // Validate section exists
-        var section = await _unitOfWork.Sections.GetByIdAsync(command.SectionId, ct);
-        if (section is null)
+        var sectionExists = await _dbContext.Sections.AsNoTracking().AnyAsync(s => s.Id == command.SectionId, ct);
+        if (!sectionExists)
         {
             _logger.LogError("Section with Id {SectionId} not found.", command.SectionId);
             return ApplicationErrors.SectionNotFound;
@@ -46,7 +50,10 @@ public sealed class CreateOrderWithItemsForRepairCardCommandHandler : IRequestHa
         var incoming = new List<(ItemUnit itemUnit, decimal quantity)>();
         foreach (var it in command.Items)
         {
-            var itemUnit = await _unitOfWork.Items.GetByIdAndUnitIdAsync(it.ItemId, it.UnitId, ct);
+            var itemUnit = await _dbContext.ItemUnits
+                .Include(iu => iu.Item)
+                .Include(iu => iu.Unit)
+                .SingleOrDefaultAsync(iu => iu.ItemId == it.ItemId && iu.UnitId == it.UnitId, ct);
             if (itemUnit is null)
             {
                 _logger.LogError("ItemUnit not found (ItemId={ItemId}, UnitId={UnitId}).", it.ItemId, it.UnitId);
@@ -89,8 +96,8 @@ public sealed class CreateOrderWithItemsForRepairCardCommandHandler : IRequestHa
         }
 
         // Persist aggregate
-        await _unitOfWork.RepairCards.UpdateAsync(repairCard, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.RepairCards.Update(repairCard);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Order {OrderId} created and assigned to RepairCard {RepairCardId} with {Count} items.", order.Id, command.RepairCardId, incoming.Count);
 

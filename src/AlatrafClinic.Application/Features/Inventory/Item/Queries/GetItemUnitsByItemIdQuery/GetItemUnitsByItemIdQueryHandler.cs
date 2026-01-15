@@ -1,10 +1,11 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Items;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Items.Queries.GetItemUnitsByItemIdQuery;
@@ -12,14 +13,14 @@ namespace AlatrafClinic.Application.Features.Inventory.Items.Queries.GetItemUnit
 public sealed class GetItemUnitsByItemIdQueryHandler
     : IRequestHandler<GetItemUnitsByItemIdQuery, Result<List<ItemUnitDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetItemUnitsByItemIdQueryHandler> _logger;
 
     public GetItemUnitsByItemIdQueryHandler(
-        IUnitOfWork unitOfWork,
+        IAppDbContext dbContext,
         ILogger<GetItemUnitsByItemIdQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -29,7 +30,11 @@ public sealed class GetItemUnitsByItemIdQueryHandler
     {
         _logger.LogInformation("Fetching units for item with ID: {ItemId}", request.ItemId);
 
-        var item = await _unitOfWork.Items.GetByIdWithUnitsAsync(request.ItemId, cancellationToken);
+        var item = await _dbContext.Items
+            .AsNoTracking()
+            .Include(i => i.ItemUnits).ThenInclude(u => u.Unit)
+            .SingleOrDefaultAsync(i => i.Id == request.ItemId, cancellationToken);
+
         if (item is null)
         {
             _logger.LogWarning("Item with ID {ItemId} not found.", request.ItemId);

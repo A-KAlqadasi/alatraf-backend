@@ -3,6 +3,8 @@ using System;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
+using MediatR;
+
 namespace AlatrafClinic.Application.Features.Inventory.Queries.GetAllExchangeOrders;
 
 public sealed record GetAllExchangeOrdersQuery(
@@ -13,9 +15,4 @@ public sealed record GetAllExchangeOrdersQuery(
     string? SortColumn,
     string? SortDirection
 )
-    : AlatrafClinic.Application.Common.Interfaces.ICachedQuery<Result<List<ExchangeOrderDto>>>
-{
-    public string CacheKey => "exchange_orders_all";
-    public string[] Tags => new[] { "exchange_order" };
-    public TimeSpan Expiration => TimeSpan.FromMinutes(2);
-}
+    : IRequest<Result<List<ExchangeOrderDto>>>;

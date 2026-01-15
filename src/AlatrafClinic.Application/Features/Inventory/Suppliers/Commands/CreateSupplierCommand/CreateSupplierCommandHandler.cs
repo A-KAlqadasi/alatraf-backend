@@ -1,5 +1,5 @@
 using MediatR;
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Inventory.Suppliers;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Application.Features.Inventory.Suppliers.Commands.CreateSupplierCommand;
@@ -7,17 +7,18 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Hybrid;
 using AlatrafClinic.Application.Features.Inventory.Suppliers.Mappers;
 using AlatrafClinic.Application.Features.Inventory.Suppliers.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Inventory.Suppliers.Commands.CreateSupplierCommand;
 
 public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierCommand, Result<SupplierDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<CreateSupplierCommandHandler> _logger;
     private readonly HybridCache _cache;
-    public CreateSupplierCommandHandler(IUnitOfWork unitOfWork, ILogger<CreateSupplierCommandHandler> logger, HybridCache cache)
+    public CreateSupplierCommandHandler(IAppDbContext dbContext, ILogger<CreateSupplierCommandHandler> logger, HybridCache cache)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
         _cache = cache;
     }
@@ -34,9 +35,9 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
 
         var supplier = supplierResult.Value;
 
-        await _unitOfWork.Suppliers.AddAsync(supplier, ct);
+        await _dbContext.Suppliers.AddAsync(supplier, ct);
 
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Supplier {Name} created successfully with ID {Id}.", supplier.SupplierName, supplier.Id);
 

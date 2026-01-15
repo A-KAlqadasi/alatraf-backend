@@ -12,27 +12,26 @@ public class StoreItemUnitConfiguration : IEntityTypeConfiguration<StoreItemUnit
         builder.ToTable("StoreItemUnits");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.StoreId).IsRequired();
         builder.Property(x => x.ItemUnitId).IsRequired();
-        builder.Property(x => x.Quantity)
-               .IsRequired()
-               .HasPrecision(18, 3);
-               
-        builder.Property(x => x.RowVersion)
-               .IsRowVersion()
-               .IsConcurrencyToken();
-        // علاقة مع Store
+
+        builder.HasIndex(x => new { x.StoreId, x.ItemUnitId })
+               .IsUnique(); // ✅ CRITICAL
+
         builder.HasOne(x => x.Store)
                .WithMany(s => s.StoreItemUnits)
                .HasForeignKey(x => x.StoreId)
                .OnDelete(DeleteBehavior.Cascade);
 
-        // علاقة مع ItemUnit
         builder.HasOne(x => x.ItemUnit)
                .WithMany()
                .HasForeignKey(x => x.ItemUnitId)
                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(x => x.RowVersion)
+               .IsRowVersion()
+               .IsConcurrencyToken();
     }
+
 }

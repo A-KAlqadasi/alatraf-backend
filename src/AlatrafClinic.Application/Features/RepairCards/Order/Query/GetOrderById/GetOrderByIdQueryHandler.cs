@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Application.Features.RepairCards.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -7,23 +7,24 @@ using AlatrafClinic.Domain.Orders;
 using MediatR;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetOrderById;
 
 public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Result<OrderDto>>
 {
     private readonly ILogger<GetOrderByIdQueryHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public GetOrderByIdQueryHandler(ILogger<GetOrderByIdQueryHandler> logger, IUnitOfWork unitOfWork)
+    public GetOrderByIdQueryHandler(ILogger<GetOrderByIdQueryHandler> logger, IAppDbContext dbContext)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<OrderDto>> Handle(GetOrderByIdQuery query, CancellationToken ct)
     {
-        var order = await _unitOfWork.Orders.GetByIdAsync(query.OrderId, ct);
+        var order = await _dbContext.Orders.AsNoTracking().SingleOrDefaultAsync(o => o.Id == query.OrderId, ct);
         if (order is null)
         {
             _logger.LogWarning("Order with Id {OrderId} not found.", query.OrderId);

@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Purchases.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Purchases.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -6,38 +6,45 @@ using AlatrafClinic.Domain.Inventory.Purchases;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Purchases.Commands.UpdatePurchaseInvoice;
 
 public class UpdatePurchaseInvoiceCommandHandler : IRequestHandler<UpdatePurchaseInvoiceCommand, Result<PurchaseInvoiceDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<UpdatePurchaseInvoiceCommandHandler> _logger;
 
-    public UpdatePurchaseInvoiceCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdatePurchaseInvoiceCommandHandler> logger)
+    public UpdatePurchaseInvoiceCommandHandler(IAppDbContext dbContext, ILogger<UpdatePurchaseInvoiceCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
     public async Task<Result<PurchaseInvoiceDto>> Handle(UpdatePurchaseInvoiceCommand request, CancellationToken ct)
     {
-        var invoice = await _unitOfWork.PurchaseInvoices.GetByIdAsync(request.Id, ct);
+        var invoice = await _dbContext.PurchaseInvoices
+            .Include(i => i.Items)
+            .Include(i => i.Supplier)
+            .Include(i => i.Store)
+            .SingleOrDefaultAsync(i => i.Id == request.Id, ct);
         if (invoice is null)
         {
             _logger.LogWarning("PurchaseInvoice {Id} not found.", request.Id);
             return Error.NotFound("PurchaseInvoice.NotFound", "Purchase invoice not found.");
         }
 
-        var supplier = await _unitOfWork.Suppliers.GetByIdAsync(request.SupplierId, ct);
+        var supplier = await _dbContext.Suppliers
+            .SingleOrDefaultAsync(s => s.Id == request.SupplierId, ct);
         if (supplier is null)
         {
             _logger.LogWarning("Supplier {SupplierId} not found when updating purchase invoice {InvoiceId}.", request.SupplierId, request.Id);
             return PurchaseInvoiceErrors.InvalidSupplier;
         }
 
-        var store = await _unitOfWork.Stores.GetByIdAsync(request.StoreId, ct);
+        var store = await _dbContext.Stores
+            .SingleOrDefaultAsync(s => s.Id == request.StoreId, ct);
         if (store is null)
         {
             _logger.LogWarning("Store {StoreId} not found when updating purchase invoice {InvoiceId}.", request.StoreId, request.Id);
@@ -51,8 +58,7 @@ public class UpdatePurchaseInvoiceCommandHandler : IRequestHandler<UpdatePurchas
             return updateResult.Errors;
         }
 
-        await _unitOfWork.PurchaseInvoices.UpdateAsync(invoice, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Updated PurchaseInvoice {Id}.", invoice.Id);
 

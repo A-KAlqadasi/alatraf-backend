@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Dtos;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -9,20 +9,21 @@ using AlatrafClinic.Domain.Orders;
 using MediatR;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.CreateExchangeOrderForOrder;
 
 public sealed class CreateExchangeOrderForOrderCommandHandler
     : IRequestHandler<CreateExchangeOrderForOrderCommand, Result<ExchangeOrderDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<CreateExchangeOrderForOrderCommandHandler> _logger;
 
     public CreateExchangeOrderForOrderCommandHandler(
-        IUnitOfWork unitOfWork,
+        IAppDbContext dbContext,
         ILogger<CreateExchangeOrderForOrderCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -33,12 +34,20 @@ public sealed class CreateExchangeOrderForOrderCommandHandler
         _logger.LogInformation("Creating exchange order for Order {OrderId}...", request.OrderId);
 
         // 1) Load order
-        var order = await _unitOfWork.Orders.GetByIdAsync(request.OrderId, ct);
+        var order = await _dbContext.Orders
+            .SingleOrDefaultAsync(o => o.Id == request.OrderId, ct);
         if (order is null)
             return OrderErrors.OrderNotFound;
 
         // 2) Load store with item units
-        var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(request.StoreId, ct);
+        var store = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+            .ThenInclude(siu => siu.ItemUnit)
+            .ThenInclude(iu => iu.Item)
+            .Include(s => s.StoreItemUnits)
+            .ThenInclude(siu => siu.ItemUnit)
+            .ThenInclude(iu => iu.Unit)
+            .SingleOrDefaultAsync(s => s.Id == request.StoreId, ct);
         if (store is null) return StoreErrors.StoreNotFound;
         if (store.StoreItemUnits == null || !store.StoreItemUnits.Any())
             return StoreItemUnitErrors.NotFound;
@@ -73,7 +82,7 @@ public sealed class CreateExchangeOrderForOrderCommandHandler
         var exchangeOrder = createResult.Value;
 
         // 5) Persist ExchangeOrder
-        await _unitOfWork.ExchangeOrders.AddAsync(exchangeOrder, ct);
+        await _dbContext.ExchangeOrders.AddAsync(exchangeOrder, ct);
 
         // 6) Approve ExchangeOrder
         var approveResult = exchangeOrder.Approve();
@@ -92,20 +101,20 @@ public sealed class CreateExchangeOrderForOrderCommandHandler
             if (adjustResult.IsError) return adjustResult.Errors;
         }
 
-        await _unitOfWork.Stores.UpdateAsync(store, ct);
+        // store tracked via context
 
         // 8) Approve order
         var orderApprove = order.Approve();
         if (orderApprove.IsError) return orderApprove.Errors;
-        await _unitOfWork.Orders.UpdateAsync(order, ct);
+        // order tracked via context
 
         // 9) Save changes
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         // 10) Map to DTO
         var dto = exchangeOrder.ToDto();
         dto.StoreName = store.Name;
-        if(dto.Items is null)
+        if (dto.Items is null)
             return StoreItemUnitErrors.NotFound;
 
         foreach (var item in dto.Items)

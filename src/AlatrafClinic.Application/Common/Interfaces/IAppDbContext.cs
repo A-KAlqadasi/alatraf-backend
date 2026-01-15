@@ -13,7 +13,10 @@ using AlatrafClinic.Domain.Diagnosises.InjuryTypes;
 using AlatrafClinic.Domain.DisabledCards;
 using AlatrafClinic.Domain.Holidays;
 using AlatrafClinic.Domain.Identity;
+
 using AlatrafClinic.Domain.IndustrialParts;
+
+using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 using AlatrafClinic.Domain.Inventory.Items;
 using AlatrafClinic.Domain.Inventory.Purchases;
 using AlatrafClinic.Domain.Inventory.Stores;
@@ -111,6 +114,8 @@ public interface IAppDbContext
     public DbSet<PurchaseInvoice> PurchaseInvoices { get; }
     public DbSet<PurchaseItem> PurchaseItems { get; }
     public DbSet<Supplier> Suppliers { get; }
+    public DbSet<ExchangeOrder> ExchangeOrders { get; }
+    
 
     //public DbSet<OutboxMessage> OutboxMessages { get; }
     public DbSet<InventoryReservation> InventoryReservations { get; }

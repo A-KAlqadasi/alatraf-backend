@@ -1,21 +1,22 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.CancelExchangeOrder;
 
 public sealed class CancelExchangeOrderCommandHandler : IRequestHandler<CancelExchangeOrderCommand, Result<Deleted>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<CancelExchangeOrderCommandHandler> _logger;
 
-    public CancelExchangeOrderCommandHandler(IUnitOfWork unitOfWork, ILogger<CancelExchangeOrderCommandHandler> logger)
+    public CancelExchangeOrderCommandHandler(IAppDbContext dbContext, ILogger<CancelExchangeOrderCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -23,7 +24,8 @@ public sealed class CancelExchangeOrderCommandHandler : IRequestHandler<CancelEx
     {
         _logger.LogInformation("Cancelling exchange order {ExchangeOrderId}...", request.ExchangeOrderId);
 
-        var exchangeOrder = await _unitOfWork.ExchangeOrders.GetByIdAsync(request.ExchangeOrderId, ct);
+        var exchangeOrder = await _dbContext.ExchangeOrders
+            .SingleOrDefaultAsync(e => e.Id == request.ExchangeOrderId, ct);
         if (exchangeOrder is null)
         {
             _logger.LogWarning("Exchange order {ExchangeOrderId} not found.", request.ExchangeOrderId);
@@ -49,8 +51,8 @@ public sealed class CancelExchangeOrderCommandHandler : IRequestHandler<CancelEx
             return ExchangeOrderErrors.ExchangeOrderAlreadyAssignedToOrder;
         }
 
-        await _unitOfWork.ExchangeOrders.DeleteAsync(exchangeOrder, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.ExchangeOrders.Remove(exchangeOrder);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Exchange order {ExchangeOrderId} cancelled.", request.ExchangeOrderId);
         return Result.Deleted;

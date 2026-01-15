@@ -1,21 +1,22 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
 using AlatrafClinic.Domain.Common.Results;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Items.Queries.GetInactiveItemsQuery;
 
 public sealed class GetInactiveItemsQueryHandler : IRequestHandler<GetInactiveItemsQuery, Result<List<ItemDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetInactiveItemsQueryHandler> _logger;
 
-    public GetInactiveItemsQueryHandler(IUnitOfWork unitOfWork, ILogger<GetInactiveItemsQueryHandler> logger)
+    public GetInactiveItemsQueryHandler(IAppDbContext dbContext, ILogger<GetInactiveItemsQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -23,9 +24,14 @@ public sealed class GetInactiveItemsQueryHandler : IRequestHandler<GetInactiveIt
     {
         _logger.LogInformation("Fetching inactive items...");
 
-        var inactiveItems = await _unitOfWork.Items.GetInactiveAsync(cancellationToken);
+        var inactiveItems = await _dbContext.Items
+            .AsNoTracking()
+            .Where(i => !i.IsActive)
+            .Include(i => i.BaseUnit)
+            .Include(i => i.ItemUnits).ThenInclude(u => u.Unit)
+            .ToListAsync(cancellationToken);
 
-        if (inactiveItems is null || !inactiveItems.Any())
+        if (inactiveItems.Count == 0)
         {
             _logger.LogWarning("No inactive items found.");
             return new List<ItemDto>(); // إرجاع قائمة فارغة بدون خطأ

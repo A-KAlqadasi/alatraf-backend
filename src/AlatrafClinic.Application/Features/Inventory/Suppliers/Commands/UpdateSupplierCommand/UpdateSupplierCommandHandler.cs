@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Suppliers.Dtos;
 using AlatrafClinic.Application.Features.Inventory.Suppliers.Mappers;
 using AlatrafClinic.Domain.Common.Results;
@@ -6,6 +6,7 @@ using AlatrafClinic.Domain.Inventory.Suppliers;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
@@ -13,20 +14,20 @@ namespace AlatrafClinic.Application.Features.Inventory.Suppliers.Commands.Update
 
 public class UpdateSupplierCommandHandler : IRequestHandler<UpdateSupplierCommand, Result<SupplierDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger _logger;
     private readonly HybridCache _cache;
 
-    public UpdateSupplierCommandHandler(IUnitOfWork unitOfWork, ILogger<UpdateSupplierCommandHandler> logger, HybridCache cache)
+    public UpdateSupplierCommandHandler(IAppDbContext dbContext, ILogger<UpdateSupplierCommandHandler> logger, HybridCache cache)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
         _cache = cache;
     }
 
     public async Task<Result<SupplierDto>> Handle(UpdateSupplierCommand command, CancellationToken ct)
     {
-        Supplier? supplier = await _unitOfWork.Suppliers.GetByIdAsync(command.Id, ct);
+        Supplier? supplier = await _dbContext.Suppliers.SingleOrDefaultAsync(s => s.Id == command.Id, ct);
         if (supplier is null)
         {
             _logger.LogWarning("Supplier with id {SupplierId} not found", command.Id);
@@ -38,8 +39,8 @@ public class UpdateSupplierCommandHandler : IRequestHandler<UpdateSupplierComman
             _logger.LogWarning("Failed to update supplier with id {SupplierId}: {Errors}", command.Id, updateResult.Errors);
             return updateResult.Errors;
         }
-        await _unitOfWork.Suppliers.UpdateAsync(supplier);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.Suppliers.Update(supplier);
+        await _dbContext.SaveChangesAsync(ct);
         await _cache.RemoveAsync("suppliers_list", ct);
         _logger.LogInformation("Supplier with id {SupplierId} updated successfully.", command.Id);
 

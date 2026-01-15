@@ -1,19 +1,22 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Features.Inventory.Items.Dtos;
 using AlatrafClinic.Domain.Common.Results;
+
 using MediatR;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Items.Queries.GetItemsWithUnitsQuery;
 
 public sealed class GetItemsWithUnitsQueryHandler : IRequestHandler<GetItemsWithUnitsQuery, Result<List<ItemDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetItemsWithUnitsQueryHandler> _logger;
 
-    public GetItemsWithUnitsQueryHandler(IUnitOfWork unitOfWork, ILogger<GetItemsWithUnitsQueryHandler> logger)
+    public GetItemsWithUnitsQueryHandler(IAppDbContext dbContext, ILogger<GetItemsWithUnitsQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -21,10 +24,13 @@ public sealed class GetItemsWithUnitsQueryHandler : IRequestHandler<GetItemsWith
     {
         _logger.LogInformation("Fetching all items with their units...");
 
-        // نفترض أن الريبو يحتوي على دالة مخصصة لجلب العناصر مع الوحدات
-        var items = await _unitOfWork.Items.GetAllWithUnitsAsync(cancellationToken);
+        var items = await _dbContext.Items
+            .AsNoTracking()
+            .Include(i => i.BaseUnit)
+            .Include(i => i.ItemUnits).ThenInclude(u => u.Unit)
+            .ToListAsync(cancellationToken);
 
-        if (items is null || !items.Any())
+        if (items.Count == 0)
         {
             _logger.LogWarning("No items found in the system.");
             return new List<ItemDto>(); // لا نرجع خطأ، فقط قائمة فارغة

@@ -1,8 +1,9 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.Stores;
 using AlatrafClinic.Domain.Inventory.Items;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Stores.Commands.AdjustStock;
@@ -10,12 +11,12 @@ namespace AlatrafClinic.Application.Features.Inventory.Stores.Commands.AdjustSto
 public class AdjustStockCommandHandler : IRequestHandler<AdjustStockCommand, Result<Updated>>
 {
     private readonly ILogger<AdjustStockCommandHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
 
-    public AdjustStockCommandHandler(ILogger<AdjustStockCommandHandler> logger, IUnitOfWork unitOfWork)
+    public AdjustStockCommandHandler(ILogger<AdjustStockCommandHandler> logger, IAppDbContext dbContext)
     {
         _logger = logger;
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<Updated>> Handle(AdjustStockCommand command, CancellationToken ct)
@@ -25,14 +26,17 @@ public class AdjustStockCommandHandler : IRequestHandler<AdjustStockCommand, Res
             return StoreItemUnitErrors.InvalidQuantity;
         }
 
-        var itemUnit = await _unitOfWork.Items.GetByIdAndUnitIdAsync(command.ItemId, command.UnitId, ct);
+        var itemUnit = await _dbContext.ItemUnits.SingleOrDefaultAsync(iu => iu.ItemId == command.ItemId && iu.UnitId == command.UnitId, ct);
         if (itemUnit is null)
         {
             _logger.LogWarning("ItemUnit not found for Item {ItemId} and Unit {UnitId}", command.ItemId, command.UnitId);
             return ItemUnitErrors.ItemUnitNotFound;
         }
 
-        var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(command.StoreId, ct);
+        var store = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+                .ThenInclude(siu => siu.ItemUnit)
+            .SingleOrDefaultAsync(s => s.Id == command.StoreId, ct);
         if (store is null)
         {
             _logger.LogWarning("Store {StoreId} not found when adjusting stock.", command.StoreId);
@@ -48,8 +52,8 @@ public class AdjustStockCommandHandler : IRequestHandler<AdjustStockCommand, Res
             return adjustResult.Errors;
         }
 
-        await _unitOfWork.Stores.UpdateAsync(store, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        _dbContext.Stores.Update(store);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Adjusted stock for Store {StoreId} ItemUnit {ItemUnitId} by {Delta}", command.StoreId, itemUnit.Id, quantityDelta);
 

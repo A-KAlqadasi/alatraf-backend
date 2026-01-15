@@ -301,6 +301,7 @@ public static class Permission
         public const string RemoveRoles = "user:remove_roles";
     }
 
+
     public static class Role
     {
         public const int ReadId = 103;
@@ -311,6 +312,7 @@ public static class Permission
         public const string ActivatePermissions = "role:activate_permissions";
         public const string DeactivatePermissions = "role:deactivate_permissions";
     }
+
 
     public static class Order
     {

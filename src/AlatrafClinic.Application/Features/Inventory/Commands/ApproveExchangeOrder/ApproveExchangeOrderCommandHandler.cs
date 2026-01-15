@@ -1,21 +1,22 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Domain.Common.Results;
 using AlatrafClinic.Domain.Inventory.ExchangeOrders;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AlatrafClinic.Application.Features.Inventory.Commands.ApproveExchangeOrder;
 
 public sealed class ApproveExchangeOrderCommandHandler : IRequestHandler<ApproveExchangeOrderCommand, Result<Updated>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<ApproveExchangeOrderCommandHandler> _logger;
 
-    public ApproveExchangeOrderCommandHandler(IUnitOfWork unitOfWork, ILogger<ApproveExchangeOrderCommandHandler> logger)
+    public ApproveExchangeOrderCommandHandler(IAppDbContext dbContext, ILogger<ApproveExchangeOrderCommandHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -23,7 +24,10 @@ public sealed class ApproveExchangeOrderCommandHandler : IRequestHandler<Approve
     {
         _logger.LogInformation("Approving exchange order {ExchangeOrderId}...", request.ExchangeOrderId);
 
-        var exchangeOrder = await _unitOfWork.ExchangeOrders.GetByIdAsync(request.ExchangeOrderId, ct);
+        var exchangeOrder = await _dbContext.ExchangeOrders
+            .Include(e => e.Items)
+            .Include(e => e.Store)
+            .SingleOrDefaultAsync(e => e.Id == request.ExchangeOrderId, ct);
         if (exchangeOrder is null)
         {
             _logger.LogWarning("Exchange order {ExchangeOrderId} not found.", request.ExchangeOrderId);
@@ -38,7 +42,14 @@ public sealed class ApproveExchangeOrderCommandHandler : IRequestHandler<Approve
         }
 
         // load store aggregate with item units so we can apply stock adjustments
-        var store = await _unitOfWork.Stores.GetByIdWithItemUnitsAsync(exchangeOrder.StoreId, ct);
+        var store = await _dbContext.Stores
+            .Include(s => s.StoreItemUnits)
+            .ThenInclude(siu => siu.ItemUnit)
+            .ThenInclude(iu => iu.Item)
+            .Include(s => s.StoreItemUnits)
+            .ThenInclude(siu => siu.ItemUnit)
+            .ThenInclude(iu => iu.Unit)
+            .SingleOrDefaultAsync(s => s.Id == exchangeOrder.StoreId, ct);
         if (store is null)
         {
             _logger.LogWarning("Store {StoreId} not found when approving exchange order {ExchangeOrderId}.", exchangeOrder.StoreId, exchangeOrder.Id);
@@ -62,9 +73,7 @@ public sealed class ApproveExchangeOrderCommandHandler : IRequestHandler<Approve
             }
         }
 
-        await _unitOfWork.Stores.UpdateAsync(store, ct);
-        await _unitOfWork.ExchangeOrders.UpdateAsync(exchangeOrder, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        await _dbContext.SaveChangesAsync(ct);
 
         _logger.LogInformation("Exchange order {ExchangeOrderId} approved.", request.ExchangeOrderId);
         return Result.Updated;

@@ -1,4 +1,4 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Inventory.ExchangeOrders.Dtos;
 using AlatrafClinic.Domain.Common.Results;
@@ -12,12 +12,12 @@ namespace AlatrafClinic.Application.Features.Inventory.Queries.GetExchangeOrders
 
 public sealed class GetExchangeOrdersQueryHandler : IRequestHandler<GetExchangeOrdersQuery, Result<PaginatedList<ExchangeOrderDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetExchangeOrdersQueryHandler> _logger;
 
-    public GetExchangeOrdersQueryHandler(IUnitOfWork unitOfWork, ILogger<GetExchangeOrdersQueryHandler> logger)
+    public GetExchangeOrdersQueryHandler(IAppDbContext dbContext, ILogger<GetExchangeOrdersQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -25,7 +25,18 @@ public sealed class GetExchangeOrdersQueryHandler : IRequestHandler<GetExchangeO
     {
         _logger.LogInformation("Building exchange orders query...");
 
-        var query = await _unitOfWork.ExchangeOrders.GetExchangeOrdersQueryAsync(ct);
+        var query = _dbContext.ExchangeOrders
+            .AsNoTracking()
+            .Include(e => e.Store)
+            .Include(e => e.Items)
+                .ThenInclude(i => i.StoreItemUnit)
+                .ThenInclude(siu => siu.ItemUnit)
+                .ThenInclude(iu => iu.Item)
+            .Include(e => e.Items)
+                .ThenInclude(i => i.StoreItemUnit)
+                .ThenInclude(siu => siu.ItemUnit)
+                .ThenInclude(iu => iu.Unit)
+            .AsQueryable();
 
         if (request.OrderId.HasValue)
             query = query.Where(e => e.RelatedOrderId == request.OrderId.Value);

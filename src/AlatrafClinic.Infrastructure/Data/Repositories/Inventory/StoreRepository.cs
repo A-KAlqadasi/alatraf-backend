@@ -56,4 +56,12 @@ public class StoreRepository : GenericRepository<Store, int>, IStoreRepository
 
         return false;
     }
+    public async Task<bool> HasStockAsync(int itemId, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.StoreItemUnits
+            .AsNoTracking()
+            .AnyAsync(siu => siu.ItemUnit.ItemId == itemId && siu.Quantity > 0, cancellationToken);
+    }
+
+
 }

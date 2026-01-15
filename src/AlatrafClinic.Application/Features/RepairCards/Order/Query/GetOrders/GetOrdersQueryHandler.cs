@@ -1,10 +1,12 @@
-using AlatrafClinic.Application.Common.Interfaces.Repositories;
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.RepairCards.Dtos;
 using AlatrafClinic.Domain.Common.Results;
+
 using AlatrafClinic.Domain.Orders.Enums;
 
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -12,12 +14,12 @@ namespace AlatrafClinic.Application.Features.RepairCards.Queries.GetOrders;
 
 public sealed class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, Result<PaginatedList<OrderDto>>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDbContext _dbContext;
     private readonly ILogger<GetOrdersQueryHandler> _logger;
 
-    public GetOrdersQueryHandler(IUnitOfWork unitOfWork, ILogger<GetOrdersQueryHandler> logger)
+    public GetOrdersQueryHandler(IAppDbContext dbContext, ILogger<GetOrdersQueryHandler> logger)
     {
-        _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -25,7 +27,7 @@ public sealed class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, Resu
     {
         _logger.LogInformation("Building orders query...");
 
-        var query = await _unitOfWork.Orders.GetOrdersQueryAsync(ct);
+        var query = _dbContext.Orders.AsNoTracking().AsQueryable();
 
         if (request.SectionId.HasValue)
             query = query.Where(o => o.SectionId == request.SectionId.Value);
