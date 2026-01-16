@@ -19,9 +19,6 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using QuestPDF.Companion;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 
 namespace AlatrafClinic.Api.Controllers;
 
@@ -258,6 +255,7 @@ public sealed class RepairCardsController(ISender sender) : ApiController
     [EndpointSummary("Generates a printable PDF for the specified repair card.")]
     [EndpointDescription("Generates and returns a PDF document for the repair card identified by the provided ID.")]
     [EndpointName("PrintRepairCard")]
+    [ApiVersion("1.0")]
     public async Task<IActionResult> PrintRepairCard(
         int id,
         CancellationToken cancellationToken)

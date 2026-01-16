@@ -1,19 +1,26 @@
+
+using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Printing;
 using AlatrafClinic.Application.Common.Printing.Interfaces;
+using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.RepairCards;
+
 
 using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace AlatrafClinic.Infrastructure.Printing.QuestPDF;
 
-public class RepairCardPdfGenerator : IPdfGenerator<RepairCard>
+
+public class RepairCardPdfGenerator(IUser user, IIdentityService identityService) : IPdfGenerator<RepairCard>
 {
     
     public byte[] Generate(RepairCard repairCard, PrintContext context)
     {
-         var document = Document.Create(container =>
+        
+        var document = Document.Create(container =>
         {
             container.Page(page =>
             {
@@ -24,12 +31,12 @@ public class RepairCardPdfGenerator : IPdfGenerator<RepairCard>
                 page.DefaultTextStyle(t =>
                     t.FontFamily("Cairo")
                     .FontSize(11)
-                    .FontColor(Colors.Blue.Darken2));
+                    .FontColor(AlatrafClinicConstants.DefaultColor));
 
                 page.Content().Column(col =>
                 {
-                    col.Spacing(12);
-
+                    col.Spacing(10);
+                    
                     // ================= HEADER =================
                     col.Item().Row(row =>
                     {
@@ -57,49 +64,90 @@ public class RepairCardPdfGenerator : IPdfGenerator<RepairCard>
                     });
 
                     col.Item().LineHorizontal(1);
-
-                    // ================= TITLE =================
-                    col.Item().Text("بطاقة إصلاح فني")
-                        .Bold()
-                        .FontSize(14)
-                        .AlignCenter();
-
-                    // ================= META INFO =================
-                    col.Item().Row(row =>
+                    
+                    // ================= TITLE BLOCK =================
+                    col.Item().PaddingBottom(5).Column(col =>
                     {
-                        row.RelativeItem().AlignRight()
-                            .Text("رقم البطاقة : 139075");
+                        col.Item().PaddingBottom(5).Row(row =>
+                        {
+                            
+                            row.RelativeItem().AlignRight()
+                                .Text(t =>
+                                {
+                                    t.Span("التاريخ: ");
+                                    t.Span(context.PrintedAt.ToString(" dd/MM/yyyy")).Bold();
+                                });
+                            
 
-                        row.RelativeItem().AlignCenter()
-                            .Text("بالإدارة الفنية المحترم");
+                            row.RelativeItem().AlignCenter().Text(t=>
+                            {
+                                t.Span("كرت إصلاح فني").Bold();
+                                if (context.PrintNumber > 1)
+                                {
+                                    t.Span($"   - نسخة رقم {context.PrintNumber}").FontSize(9);
+                                }
+                            });
+                                
+                            row.RelativeItem().AlignLeft()
+                                .Text(t=>
+                                {
+                                    t.Span("رقم الكرت: ");
+                                    t.Span(repairCard.Id.ToString()).Bold();
+                                });
+                        });
 
-                        row.RelativeItem().AlignLeft()
-                            .Text("التاريخ : 2026-01-17");
+                        col.Item().Row(row =>
+                        {
+                            
+                            row.RelativeItem().AlignRight()
+                                .Text(t=>
+                                {
+                                    t.Span("الأخ رئيس قسم: ");
+                                    t.Span(string.Join(", ", GetSections(repairCard))).Bold();
+                                    t.Span("     المحترم");
+                                });
+                            
+                            row.RelativeItem().AlignLeft()
+                                 .Text(t=>
+                                 {
+                                     t.Span("موعد التسليم: ");
+                                     t.Span(repairCard.DeliveryTime?.DeliveryDate.ToString("dd/MM/yyyy")).Bold();
+                                 });
+
+                        });
+
+                        col.Item().Row(row =>
+                        {
+                            row.RelativeItem().AlignRight()
+                                .Text(t =>
+                                {
+                                    t.Span("يتم سرعة إصلاح للأخ/الأخت: ");
+                                    t.Span(repairCard.Diagnosis.Patient?.Person.FullName ?? "غير معروف").Bold();
+                                });
+
+                            row.RelativeItem().AlignLeft()
+                                .Text(t =>
+                                {
+                                    t.Span("رقم المريض : ");
+                                    t.Span(repairCard.Diagnosis.Patient.Id.ToString()).Bold();
+                                });
+
+                        });
                     });
 
-                    col.Item().Row(row =>
-                    {
-                        row.RelativeItem().AlignRight()
-                            .Text("رقم : 43050");
-
-                        row.RelativeItem().AlignCenter()
-                            .Text("الأخ رئيس قسم : الحديد");
-
-                        row.RelativeItem().AlignLeft()
-                            .Text("يتم سرعة إصلاح للأخ : أيمن أحمد محمد مرعي");
-                    });
-
+                    
                     // ================= TABLE =================
-                    col.Item().Table(table =>
+                    col.Item().PaddingBottom(5).Table(table =>
                     {
+                        
                         table.ColumnsDefinition(columns =>
                         {
                             columns.ConstantColumn(30);  // م
-                            columns.RelativeColumn(4);   // القطع الصناعية
-                            columns.ConstantColumn(60);  // الكمية
-                            columns.ConstantColumn(60);  // الوحدة
+                            columns.RelativeColumn(3);   // القطع الصناعية
+                            columns.ConstantColumn(50);  // الكمية
+                            columns.ConstantColumn(80);  // الوحدة
                             columns.RelativeColumn(3);   // اسم الفني
-                            columns.RelativeColumn(3);   // ملاحظات
+                            columns.ConstantColumn(80);   // القسم
                         });
 
                         void Header(string text) =>
@@ -108,49 +156,70 @@ public class RepairCardPdfGenerator : IPdfGenerator<RepairCard>
                                 .Padding(5)
                                 .Text(text)
                                 .Bold()
-                                .AlignCenter();
+                                .AlignRight();
 
                         Header("م");
                         Header("القطع الصناعية");
                         Header("الكمية");
                         Header("الوحدة");
                         Header("اسم الفني");
-                        Header("ملاحظات");
+                        Header("القسم");
 
-                        void Cell(string text) =>
+                        void Cell(string text, Color background)
+                        {
                             table.Cell()
+                                .Background(background)
                                 .Padding(5)
                                 .Text(text)
                                 .AlignRight();
+                        }
+                            
 
-                        // Row 1
-                        Cell("1");
-                        Cell("جهاز حديد مع المفصل يمين");
-                        Cell("1");
-                        Cell("جهاز");
-                        Cell("عبدالعزيز السنجاني");
-                        Cell("");
+                        int index = 1;
 
-                        // Row 2
-                        Cell("2");
-                        Cell("جهاز حديد مع المفصل شمال");
-                        Cell("1");
-                        Cell("جهاز");
-                        Cell("عبدالعزيز السنجاني");
-                        Cell("");
+                        foreach (var item in repairCard.DiagnosisIndustrialParts)
+                        {
+                            var rowBackground = index % 2 == 0
+                                ? Colors.Grey.Lighten4   // stripe color
+                                : Colors.White;          // normal row
+                           
+                            Cell(index.ToString(), rowBackground);
+                            Cell(item.IndustrialPartUnit.IndustrialPart.Name, rowBackground);                            
+                            Cell(item.Quantity.ToString(), rowBackground);
+                            Cell(item.IndustrialPartUnit.Unit?.Name ?? string.Empty, rowBackground);
+                            Cell(item.DoctorSectionRoom?.Doctor?.Person?.FullName ?? "غير معروف", rowBackground);
+                            Cell(item.DoctorSectionRoom?.Section.Name ?? string.Empty, rowBackground);
+                            index++;
+                        }
+                                                
                     });
 
                     // ================= NOTES =================
+                    
                     col.Item().Row(row =>
                     {
+                        
                         row.RelativeItem().AlignRight()
-                            .Text("التخفيض");
+                            .Text(t =>
+                            {
+                                t.Span("رقم السند: ");
+                                t.Span(repairCard.Diagnosis.Payments.FirstOrDefault()?.PatientPayment?.VoucherNumber.ToString() ?? "").Bold();
+                            });
 
                         row.RelativeItem().AlignCenter()
-                            .Text("الاجمالي");
+                            .Text(t=>
+                            {
+                                t.Span("الاجمالي: ");
+                                t.Span(repairCard.Diagnosis.Payments.Sum(p=> p.TotalAmount).ToString()).Bold();
+                            });
 
                         row.RelativeItem().AlignLeft()
-                            .Text("رقم السند : 000000").Bold();
+                            .Text(t=>
+                            {
+                                t.Span("التخفيض: ");
+                                t.Span(repairCard.Diagnosis.Payments.Sum(p=> p.DiscountAmount).ToString()).Bold();
+                            });
+                        
                     });
 
                     col.Item().LineHorizontal(1);
@@ -158,22 +227,53 @@ public class RepairCardPdfGenerator : IPdfGenerator<RepairCard>
                     // ================= FOOTER =================
                     col.Item().Row(row =>
                     {
-                        row.RelativeItem().AlignCenter()
-                            .Text("مدير المركز");
+                        row.RelativeItem().AlignRight()
+                            .Text(async t=>
+                            {
+                                t.Span("المستخدم: ");
+                                t.Span(await GetUserName()).Bold();
+                            });
 
                         row.RelativeItem().AlignCenter()
                             .Text("رئيس قسم الإيرادات");
 
-                        row.RelativeItem().AlignCenter()
-                            .Text("المختص : هدى الحمزي").Bold();
+                        row.RelativeItem().PaddingLeft(20).AlignLeft()
+                            .Text("مدير المركز");
                     });
                 });
             });
         });
+        
 
         if (PdfDebugSettings.UseCompanion)
             document.ShowInCompanion(); // DEV ONLY
+
         return document.GeneratePdf();
     }
+    
+
+    private List<string> GetSections(RepairCard repairCard)
+    {
+        var sections = new List<string>();
+        foreach (var industrialPart in repairCard.DiagnosisIndustrialParts)
+        {
+            var section = industrialPart.DoctorSectionRoom?.Section.Name; 
+            if (section is null)
+                continue;
+            
+            if (!sections.Contains(section))
+                sections.Add(section);
+
+        }
+        return sections;
+    }
+
+    private async Task<string> GetUserName()
+    {
+        // 19a59129-6c20-417a-834d-11a208d32d96
+        return await identityService.GetUserFullNameAsync(user.Id ?? "");
+    }
+
+
 
 }

@@ -31,6 +31,7 @@ public interface IIdentityService
     string userId,
     IReadOnlyCollection<string> roleIds,
     CancellationToken ct);
+    public Task<string> GetUserFullNameAsync(string userId, CancellationToken ct = default);
     
 
     // =========================

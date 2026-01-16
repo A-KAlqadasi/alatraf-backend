@@ -46,13 +46,12 @@ public class TicketPdfGenerator : IPdfGenerator<Ticket>
 
                             row.RelativeItem().Column(c =>
                             {
-                                c.Item().Text("مركز الأطراف")
+                                c.Item().Text("مـركـــز الأطـــراف")
                                     .FontFamily("Cairo")
                                     .Bold()
                                     .AlignRight();
-                                    //
 
-                                c.Item().Text("والعلاج الطبيعي")
+                                c.Item().Text("والعلاج الطـبيعي")
                                     .FontFamily("Cairo")
                                     .Bold()
                                     .AlignRight();
@@ -109,17 +108,14 @@ public class TicketPdfGenerator : IPdfGenerator<Ticket>
 
                         col.Item().LineHorizontal(1).LineColor(AlatrafClinicConstants.DefaultColor);
 
-                        var formattedDate =
-                        $"{UtilityService.GetDayNameArabic(DateOnly.FromDateTime(context.PrintedAt.Date))} - " +
-                        $"{context.PrintedAt.ToString("dd/M/yyyy")} - " + 
-                         $"{context.PrintedAt.ToString("h:mm tt", UtilityService.arabicCulture)} ";
+                        var formattedDate = UtilityService.GetFormattedDateInArabic(context.PrintedAt);
 
                         // ================= FOOTER =================
                         col.Item().Text(formattedDate)
                             .FontFamily("Cairo")
                             .AlignCenter();
 
-                        col.Item().Text("شكراً لزيارتكم")
+                        col.Item().Text("شكراً لزيارتكم ,,")
                             .FontFamily("Cairo")
                             .Bold()
                             .AlignCenter();

@@ -199,6 +199,7 @@ public sealed class TicketsController(ISender sender) : ApiController
     [EndpointSummary("Generates a printable PDF for the specified ticket.")]
     [EndpointDescription("Generates and returns a PDF document for the ticket identified by the provided ID.")]
     [EndpointName("PrintTicket")]
+    [ApiVersion("1.0")]
     public async Task<IActionResult> PrintTicket(
         int id,
         CancellationToken cancellationToken)

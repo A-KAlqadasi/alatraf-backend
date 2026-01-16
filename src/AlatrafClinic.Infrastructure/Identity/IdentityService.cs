@@ -555,4 +555,12 @@ public sealed class IdentityService : IIdentityService
         var user = await _userManager.FindByNameAsync(userName.Trim());
         return user != null;
     }
+
+    public Task<string> GetUserFullNameAsync(string userId, CancellationToken ct = default)
+    {
+        return _db.Set<AppUser>()
+            .Where(u => u.Id == userId)
+            .Select(u => u.Person.FullName)
+            .FirstOrDefaultAsync(ct)!;
+    }
 }

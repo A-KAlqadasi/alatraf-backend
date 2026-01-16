@@ -21,5 +21,12 @@ public static class UtilityService
         if (total == 0) return 0;
         return Math.Round((part / total) * 100, 2);
     }
+    
+    public static string GetFormattedDateInArabic(DateTime date)
+    {
+        return  $"{GetDayNameArabic(DateOnly.FromDateTime(date.Date))} - " +
+                        $"{date.ToString("dd/M/yyyy")} - " + 
+                         $"{date.ToString("h:mm tt", arabicCulture)} ";
+    }
 
 }

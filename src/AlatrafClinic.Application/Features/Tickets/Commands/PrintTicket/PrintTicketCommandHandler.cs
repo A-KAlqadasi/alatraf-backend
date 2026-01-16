@@ -42,7 +42,13 @@ public class PrintTicketCommandHandler
         if (ticket is null)
         {
             return Error.NotFound(
-                $"Ticket with ID {request.TicketId} was not found.");
+                $"التذكرة بالمعرف {request.TicketId} غير موجودة.");
+        }
+
+        if (ticket.IsPrintable)
+        {
+            return Error.Conflict(
+                $"التذكرة بالمعرف {request.TicketId} غير قابلة للطباعة.");
         }
 
         var printedDocument =
@@ -58,7 +64,7 @@ public class PrintTicketCommandHandler
         var printContext = new PrintContext
         {
             PrintNumber = printNumber,
-            PrintedAt = DateTime.UtcNow
+            PrintedAt = DateTime.Now
         };
 
         try

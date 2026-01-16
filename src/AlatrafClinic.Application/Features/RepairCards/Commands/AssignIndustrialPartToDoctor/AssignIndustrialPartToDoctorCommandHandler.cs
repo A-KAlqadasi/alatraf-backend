@@ -32,6 +32,7 @@ public class AssignIndustrialPartToDoctorCommandHandler : IRequestHandler<Assign
             _logger.LogError("Repair card with id {RepairCardId} not found", command.RepairCardId);
             return RepairCardErrors.RepairCardNotFound;
         }
+        
 
         foreach (var doctorPart in command.DoctorIndustrialParts)
         {

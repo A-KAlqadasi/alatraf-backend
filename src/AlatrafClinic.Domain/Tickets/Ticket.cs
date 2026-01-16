@@ -17,7 +17,7 @@ public class Ticket : AuditableEntity<int>
     public decimal? ServicePrice { get; private set; } = null;
     public TicketStatus Status { get; private set; } = TicketStatus.New;
     public bool IsEditable => Status != TicketStatus.Completed && Status != TicketStatus.Cancelled;
-
+    public bool IsPrintable => IsEditable;
     // navigations
     public Diagnosis? Diagnosis { get; set; }
     public Appointment? Appointment { get; set; }
