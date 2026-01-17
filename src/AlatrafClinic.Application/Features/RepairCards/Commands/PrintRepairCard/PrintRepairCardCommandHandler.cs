@@ -50,6 +50,13 @@ public class PrintRepairCardCommandHandler
                     .ThenInclude(doc => doc.Person)
         .Include(r => r.Diagnosis)
             .ThenInclude(d=> d.Payments)
+                .ThenInclude(p=> p.PatientPayment)
+        .Include(r => r.Diagnosis)
+            .ThenInclude(d=> d.Payments)
+                .ThenInclude(p=> p.WoundedPayment)
+        .Include(r => r.Diagnosis)
+            .ThenInclude(d=> d.Payments)
+                .ThenInclude(p=> p.DisabledPayment)
         .FirstOrDefaultAsync(r=> r.Id == command.RepairCardId, ct);
 
         if (repairCard is null)

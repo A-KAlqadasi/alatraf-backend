@@ -3,6 +3,7 @@ using AlatrafClinic.Api.Requests.Common;
 using AlatrafClinic.Api.Requests.Payments;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.Payments.Commands.PayPayments;
+using AlatrafClinic.Application.Features.Payments.Commands.PrintPayment;
 using AlatrafClinic.Application.Features.Payments.Dtos;
 using AlatrafClinic.Application.Features.Payments.Queries.GetDisabledPaymentById;
 using AlatrafClinic.Application.Features.Payments.Queries.GetPatientPaymentById;
@@ -290,8 +291,25 @@ public sealed class PaymentsController(ISender sender) : ApiController
         );
     }
 
+    [HttpPost("{id:int}/print")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Generates a printable PDF for the specified payment.")]
+    [EndpointDescription("Generates and returns a PDF document for the payment identified by the provided ID.")]
+    [EndpointName("PrintPayment")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> PrintPayment(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new PrintPaymentCommand(id),
+            cancellationToken);
 
-
-
-
+          return result.Match(
+          response => File(response.Content!, "application/pdf", response.FileName),
+          Problem);
+    }
 }

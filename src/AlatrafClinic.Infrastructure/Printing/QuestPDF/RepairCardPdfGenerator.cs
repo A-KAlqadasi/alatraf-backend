@@ -81,7 +81,7 @@ public class RepairCardPdfGenerator(IUser user, IIdentityService identityService
 
                             row.RelativeItem().AlignCenter().Text(t=>
                             {
-                                t.Span("كرت إصلاح فني").Bold();
+                                t.Span("كرت إصلاح فني").Bold().FontSize(16);
                                 if (context.PrintNumber > 1)
                                 {
                                     t.Span($"   - نسخة رقم {context.PrintNumber}").FontSize(9);
@@ -173,7 +173,6 @@ public class RepairCardPdfGenerator(IUser user, IIdentityService identityService
                                 .Text(text)
                                 .AlignRight();
                         }
-                            
 
                         int index = 1;
 

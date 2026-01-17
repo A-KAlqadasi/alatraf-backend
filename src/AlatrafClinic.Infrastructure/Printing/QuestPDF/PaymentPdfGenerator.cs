@@ -1,11 +1,15 @@
+
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Printing;
 using AlatrafClinic.Application.Common.Printing.Interfaces;
 using AlatrafClinic.Application.Features.TherapyCards.Mappers;
 using AlatrafClinic.Domain.Common.Constants;
 using AlatrafClinic.Domain.Diagnosises;
-using AlatrafClinic.Domain.TherapyCards;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisIndustrialParts;
+using AlatrafClinic.Domain.Diagnosises.DiagnosisPrograms;
+using AlatrafClinic.Domain.Payments;
 using AlatrafClinic.Domain.TherapyCards.Enums;
+
 
 using QuestPDF.Companion;
 using QuestPDF.Fluent;
@@ -14,9 +18,11 @@ using QuestPDF.Infrastructure;
 
 namespace AlatrafClinic.Infrastructure.Printing.QuestPDF;
 
-public class TherapyCardPdfGenerator(IUser user, IIdentityService identityService) : IPdfGenerator<TherapyCard>
+
+public class PaymentPdfGenerator(IUser user, IIdentityService identityService) : IPdfGenerator<Payment>
 {
-    public byte[] Generate(TherapyCard therapyCard, PrintContext context)
+    
+    public byte[] Generate(Payment payment, PrintContext context)
     {
         
         var document = Document.Create(container =>
@@ -65,9 +71,9 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
                     col.Item().LineHorizontal(1);
                     
                     // ================= TITLE BLOCK =================
-                    col.Item().PaddingBottom(5).Column(col =>
+                    col.Item().PaddingBottom(10).Column(col =>
                     {
-                        col.Item().PaddingBottom(5).Row(row =>
+                        col.Item().PaddingBottom(10).Row(row =>
                         {
                             
                             row.RelativeItem().AlignRight()
@@ -80,39 +86,52 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
 
                             row.RelativeItem().AlignCenter().Text(t=>
                             {
-                                t.Span($"كرت علاج طبيعي - {therapyCard.Type.ToArabicTherapyCardType()}").Bold().FontSize(16);
+                                t.Span($"إستمارة تحويل").Bold().FontSize(16);
 
                                 if (context.PrintNumber > 1)
                                 {
-                                    t.Span($"   - نسخة رقم {context.PrintNumber}").FontSize(9);
+                                    t.Span($"   - نسخة رقم {context.PrintNumber}").FontSize(12);
                                 }
                             });
                                 
                             row.RelativeItem().AlignLeft()
                                 .Text(t=>
                                 {
-                                    t.Span("رقم الكرت: ");
-                                    t.Span(therapyCard.Id.ToString()).Bold();
+                                    t.Span("رقم الاستمارة: ");
+                                    t.Span(payment.Id.ToString()).Bold();
                                 });
                         });
 
                         
                         col.Item().Row(row =>
                         {
-                            row.RelativeItem().AlignRight()
+                            row.RelativeItem(2)
                                 .Text(t =>
                                 {
                                     t.Span("اسم المريض: ");
-                                    t.Span(therapyCard.Diagnosis.Patient?.Person.FullName ?? "غير معروف").Bold();
+                                    t.Span(payment.Diagnosis.Patient?.Person.FullName ?? "غير معروف").Bold();
                                 });
 
-                            row.RelativeItem().AlignLeft()
+                            row.RelativeItem(1)
                                 .Text(t =>
                                 {
                                     t.Span("رقم المريض: ");
-                                    t.Span(therapyCard.Diagnosis.Patient.Id.ToString()).Bold();
+                                    t.Span(payment.Diagnosis.Patient.Id.ToString()).Bold();
+                                });
+                                
+                            row.RelativeItem(1)
+                                .Text(t =>
+                                {
+                                    t.Span("الجنس: ");
+                                    t.Span(UtilityService.GenderToArabicString(payment.Diagnosis.Patient.Person.Gender)).Bold();
                                 });
 
+                             row.RelativeItem(1)
+                                .Text(t =>
+                                {
+                                    t.Span("العمر: ");
+                                    t.Span(payment.Diagnosis.Patient.Person.Age.ToString()).Bold();
+                                });
                         });
 
                         col.Item().Row(row =>
@@ -121,59 +140,69 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
                                 .Text(t =>
                                 {
                                     t.Span("سبب الإصابة : ");
-                                    t.Span(string.Join(", ", GetInjuryReasons(therapyCard.Diagnosis))).Bold();
+                                    t.Span(string.Join(", ", GetInjuryReasons(payment.Diagnosis))).Bold();
                                 });
 
                             row.RelativeItem().AlignCenter()
                                 .Text(t =>
                                 {
                                     t.Span("نوع الإصابة : ");
-                                    t.Span(string.Join(", ", GetInjuryTypes(therapyCard.Diagnosis))).Bold();
+                                    t.Span(string.Join(", ", GetInjuryTypes(payment.Diagnosis))).Bold();
                                 });
 
                              row.RelativeItem().AlignLeft()
                                 .Text(t =>
                                 {
                                     t.Span("جهة الإصابة : ");
-                                    t.Span(string.Join(", ", GetInjurySides(therapyCard.Diagnosis))).Bold();
+                                    t.Span(string.Join(", ", GetInjurySides(payment.Diagnosis))).Bold();
                                 });
 
                         });
 
-                        col.Item().PaddingBottom(5).Row(row =>
+                        col.Item().PaddingBottom(20).Row(row =>
                         {
                             
                             row.RelativeItem(3)
                                 .Text(t =>
                                 {
                                     t.Span("مدة الإصابة: ");
-                                    t.Span(UtilityService.CalculateDurationArabic(therapyCard.Diagnosis.InjuryDate).ToString()).Bold();
+                                    t.Span(UtilityService.CalculateDurationArabic(payment.Diagnosis.InjuryDate).ToString()).Bold();
                                 });
 
-                            row.RelativeItem(2)
+                            if(payment.PaymentReference != PaymentReference.Repair)
+                            {
+                                row.RelativeItem(2)
+                                .Text(t =>
+                                {
+                                    t.Span("نوع البرنامج: ");
+                                    t.Span(payment.Diagnosis?.TherapyCard?.Type.ToArabicTherapyCardType() ?? "").Bold();
+                                });
+
+                                row.RelativeItem(2)
                                 .Text(t =>
                                 {
                                     t.Span("بداية البرنامج: ");
-                                    t.Span(therapyCard.ProgramStartDate.ToString("dd/MM/yyyy")).Bold();
+                                    t.Span(payment.Diagnosis?.TherapyCard?.ProgramStartDate.ToString("dd/MM/yyyy")).Bold();
                                 });
-                            
-                            if(therapyCard.Type != TherapyCardType.Special)
-                            {
-                                row.RelativeItem(2).AlignLeft()
-                                .Text(t =>
+                                
+                                if(payment.Diagnosis?.TherapyCard?.Type != TherapyCardType.Special)
                                 {
-                                    t.Span("نهاية البرنامج: ");
-                                    t.Span(therapyCard.ProgramEndDate?.ToString("dd/MM/yyyy")).Bold();
-                                });
-                            } 
-                            else
-                            {
-                                row.RelativeItem(2).AlignLeft()
-                                .Text(t =>
+                                    row.RelativeItem(2).AlignLeft()
+                                    .Text(t =>
+                                    {
+                                        t.Span("نهاية البرنامج: ");
+                                        t.Span(payment.Diagnosis?.TherapyCard?.ProgramEndDate?.ToString("dd/MM/yyyy")).Bold();
+                                    });
+                                } 
+                                else
                                 {
-                                    t.Span("عدد الجلسات: ");
-                                    t.Span(therapyCard.NumberOfSessions.ToString()).Bold();
-                                });
+                                    row.RelativeItem(2).AlignLeft()
+                                    .Text(t =>
+                                    {
+                                        t.Span("عدد الجلسات: ");
+                                        t.Span(payment.Diagnosis?.TherapyCard?.NumberOfSessions.ToString()).Bold();
+                                    });
+                                }
                             }
 
                         });
@@ -182,16 +211,12 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
 
                         col.Item().Row(row =>
                         {
-                            row.RelativeItem().AlignLeft()
+                            row.RelativeItem(1).AlignMiddle().AlignRight()
+                                .Text("التشخيص ").Bold();
+                            row.RelativeItem(10).AlignLeft()
                                 .Text(t =>
                                 {
-                                    row.RelativeItem(1).AlignMiddle().AlignRight()
-                                    .Text("التشخيص ").Bold();
-                                    row.RelativeItem(10).AlignLeft()
-                                    .Text(t =>
-                                    {
-                                    t.Span(therapyCard.Diagnosis.DiagnosisText ?? "لا يوجد").Bold();
-                                    });
+                                   t.Span(payment.Diagnosis.DiagnosisText ?? "لا يوجد").Bold();
                                 });
                         });
 
@@ -199,7 +224,132 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
 
                     
                     // ================= TABLE =================
-                    col.Item().PaddingBottom(5).Table(table =>
+                    if(payment.PaymentReference == PaymentReference.Repair)
+                    {
+                        col.Item().Element(c =>
+                        {
+                            BuildIndustrialPartsTable(c, payment.Diagnosis.DiagnosisIndustrialParts);
+                        });
+                    }
+                    else
+                    {
+                        col.Item().Element(c =>
+                        {
+                            BuildMedicalProgramsTable(c, payment.Diagnosis.DiagnosisPrograms);
+                        });
+                    }
+
+                    col.Item().PaddingTop(10).Row(row =>
+                    {
+                        row.RelativeItem().AlignRight()
+                            .Text(t=>
+                            {
+                                t.Span("الاجمالي: ");
+                                t.Span(payment.TotalAmount.ToString("0.##")).Bold();
+                            });
+                    });
+
+                    
+                    col.Item().LineHorizontal(1);
+
+                    // ================= FOOTER =================
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeItem().AlignRight()
+                            .Text(async t=>
+                            {
+                                t.Span("المستخدم: ");
+                                t.Span(await GetUserName()).Bold();
+                            });
+
+                        row.RelativeItem().AlignCenter()
+                            .Text("رئيس قسم الإيرادات");
+
+                        row.RelativeItem().PaddingLeft(20).AlignLeft()
+                            .Text("مدير المركز");
+                    });
+                });
+            });
+        });
+        
+
+        if (PdfDebugSettings.UseCompanion)
+            document.ShowInCompanion(); // DEV ONLY
+
+        return document.GeneratePdf();
+    }
+    
+    private async Task<string> GetUserName()
+    {
+        // 19a59129-6c20-417a-834d-11a208d32d96
+        return await identityService.GetUserFullNameAsync(user.Id ?? "");
+    }
+
+    private static void BuildIndustrialPartsTable(
+    IContainer container,
+    IReadOnlyCollection<DiagnosisIndustrialPart> parts)
+    {
+        container.PaddingBottom(5).Table(table =>
+        {
+            table.ColumnsDefinition(columns =>
+            {
+                columns.ConstantColumn(30);  // م
+                columns.RelativeColumn(2);   // القطع الصناعية
+                columns.ConstantColumn(50);  // الكمية
+                columns.ConstantColumn(90);  // الوحدة
+                columns.ConstantColumn(90);   // االقيمة
+                columns.ConstantColumn(90);  // الاجمالي
+            });
+
+            void Header(string text) =>
+                table.Cell()
+                    .Background(Colors.Grey.Lighten3)
+                    .Padding(5)
+                    .Text(text)
+                    .Bold()
+                    .AlignRight();
+
+            Header("م");
+            Header("القطع الصناعية");
+            Header("الكمية");
+            Header("الوحدة");
+            Header("القيمة");
+            Header("الاجمالي");
+
+            void Cell(string text, Color background)
+            {
+                table.Cell()
+                    .Background(background)
+                    .Padding(5)
+                    .Text(text)
+                    .AlignRight();
+            }
+
+            int index = 1;
+
+            foreach (var item in parts)
+            {
+                var rowBackground = index % 2 == 0
+                    ? Colors.Grey.Lighten4
+                    : Colors.White;
+
+                Cell(index.ToString(), rowBackground);
+                Cell(item.IndustrialPartUnit.IndustrialPart.Name, rowBackground);
+                Cell(item.Quantity.ToString(), rowBackground);
+                Cell(item.IndustrialPartUnit.Unit?.Name ?? string.Empty, rowBackground);
+                Cell(item.IndustrialPartUnit.PricePerUnit.ToString("0.##") ?? "غير معروف", rowBackground);
+                Cell(item.Price.ToString("0.##") ?? string.Empty, rowBackground);
+
+                index++;
+            }
+        });
+    }
+
+     private static void BuildMedicalProgramsTable(
+    IContainer container,
+    IReadOnlyCollection<DiagnosisProgram> programs)
+    {
+        container.PaddingBottom(5).Table(table =>
                     {
                         
                         table.ColumnsDefinition(columns =>
@@ -236,7 +386,7 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
 
                         int index = 1;
 
-                        foreach (var item in therapyCard.DiagnosisPrograms)
+                        foreach (var item in programs)
                         {
                             var rowBackground = index % 2 == 0
                                 ? Colors.Grey.Lighten4   // stripe color
@@ -253,64 +403,7 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
                         }
                                                 
                     });
-
-                    // ================= NOTES =================
-                    
-                    col.Item().Row(row =>
-                    {
-                        
-                        row.RelativeItem().AlignRight()
-                            .Text(t =>
-                            {
-                                t.Span("رقم السند: ");
-                                t.Span(therapyCard.Diagnosis.Payments.FirstOrDefault()?.PatientPayment?.VoucherNumber.ToString() ?? "").Bold();
-                            });
-
-                        row.RelativeItem().AlignCenter()
-                            .Text(t=>
-                            {
-                                t.Span("الاجمالي: ");
-                                t.Span(therapyCard.Diagnosis.Payments.Sum(p=> p.TotalAmount).ToString()).Bold();
-                            });
-
-                        row.RelativeItem().AlignLeft()
-                            .Text(t=>
-                            {
-                                t.Span("التخفيض: ");
-                                t.Span(therapyCard.Diagnosis.Payments.Sum(p=> p.DiscountAmount).ToString()).Bold();
-                            });
-                        
-                    });
-
-                    col.Item().LineHorizontal(1);
-
-                    // ================= FOOTER =================
-                    col.Item().Row(row =>
-                    {
-                        row.RelativeItem().AlignRight()
-                            .Text(async t=>
-                            {
-                                t.Span("المستخدم: ");
-                                t.Span(await GetUserName()).Bold();
-                            });
-
-                        row.RelativeItem().AlignCenter()
-                            .Text("رئيس قسم الإيرادات");
-
-                        row.RelativeItem().PaddingLeft(20).AlignLeft()
-                            .Text("مدير المركز");
-                    });
-                });
-            });
-        });
-        
-
-        if (PdfDebugSettings.UseCompanion)
-            document.ShowInCompanion(); // DEV ONLY
-
-        return document.GeneratePdf();
     }
-    
 
     private List<string> GetInjuryReasons(Diagnosis diagnosis)
     {
@@ -343,12 +436,6 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
                 sides.Add(side.Name);
         }
         return sides;
-    }
-
-    private async Task<string> GetUserName()
-    {
-        // 19a59129-6c20-417a-834d-11a208d32d96
-        return await identityService.GetUserFullNameAsync(user.Id ?? "");
     }
 
 }

@@ -139,6 +139,8 @@ public static class DependencyInjection
 
         services.AddScoped<IPdfGenerator<Domain.Tickets.Ticket>, TicketPdfGenerator>();
         services.AddScoped<IPdfGenerator<Domain.RepairCards.RepairCard>, RepairCardPdfGenerator>();
+        services.AddScoped<IPdfGenerator<Domain.TherapyCards.TherapyCard>, TherapyCardPdfGenerator>();
+        services.AddScoped<IPdfGenerator<Domain.Payments.Payment>, PaymentPdfGenerator>();
         ConfigureQuestPdf();
 
         return services;

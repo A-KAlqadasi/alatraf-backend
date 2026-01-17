@@ -129,7 +129,7 @@ public static class TherapyCardMapper
         {
             case TherapyCardType.General : return "عام";
             case TherapyCardType.Special : return "خاص";
-            case TherapyCardType.NerveKids : return "أطفال اعصاب";
+            case TherapyCardType.NerveKids : return "أطفال أعصاب";
             default:
              throw new Exception("Therapy card type is unknown");
         }
