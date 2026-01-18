@@ -159,7 +159,7 @@ public class TherapyCard : AuditableEntity<int>
             return TherapyCardErrors.Readonly;
         }
 
-        if (Type != TherapyCardType.Special && AlatrafClinicConstants.TodayDate > ProgramEndDate)
+        if (Type != TherapyCardType.Special && IsExpired)
         {
             return TherapyCardErrors.ProgramEnded;
         }
@@ -177,7 +177,7 @@ public class TherapyCard : AuditableEntity<int>
         var sessionValidate = SessionValidation();
         if (sessionValidate.IsError)
         {
-            return sessionValidate.Errors;
+            return sessionValidate.TopError;
         }
 
         var session = Session.Create(Id, _sessions.Count + 1);

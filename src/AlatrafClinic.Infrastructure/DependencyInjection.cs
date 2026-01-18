@@ -142,6 +142,7 @@ public static class DependencyInjection
         services.AddScoped<IPdfGenerator<Domain.TherapyCards.TherapyCard>, TherapyCardPdfGenerator>();
         services.AddScoped<IPdfGenerator<Domain.Payments.Payment>, PaymentPdfGenerator>();
         ConfigureQuestPdf();
+        services.AddScoped<IPdfGenerator<Domain.Sessions.Session>, SessionPdfGenerator>();
 
         return services;
     }

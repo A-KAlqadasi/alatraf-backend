@@ -4,10 +4,7 @@ namespace AlatrafClinic.Domain.TherapyCards;
 
 public static class TherapyCardErrors
 {
-    public static readonly Error TherapyCardIdInvalid =
-    Error.Validation("TherapyCard.TherapyCardIdInvalid", "Therapy Card Id is invalid");
-    public static readonly Error DiagnosisIdInvalid =
-    Error.Validation("TherapyCard.DiagnosisIdInvalid", "Diagnosis Id is invalid");
+
     public static readonly Error ProgramStartDateNotInPast =
     Error.Conflict("TherapyCard.ProgramStartDateNotInPast", "Program Start Date must not be in past");
     public static readonly Error NumberOfSessionsIsRequired = Error.Validation("TherapyCard.NumberOfSessionsIsRequired", "Number of sessions is required");
@@ -20,8 +17,6 @@ public static class TherapyCardErrors
         code: "TherapyCard.Readonly",
         description: "TherapyCard is read-only.");
     public static Error ProgramEnded = Error.Forbidden("TherapyCard.ProgramEnded", "Therapy Card program ended");
-    public static Error IsNotPaid = Error.Forbidden("TherapyCard.IsNotPaid", "Therapy Card is not paid");
-    public static Error InvalidDiagnosisId = Error.Validation("TherapyCard.InvalidDiagnosisId", "Diagnosis Id is invalid");
     public static Error TherapyCardNotFound = Error.NotFound("TherapyCard.NotFound", "Therapy Card not found");
     public static Error DiagnosisNotIncluded = Error.Validation("TherapyCard.DiagnosisNotIncluded", "Diagnosis must be included in the Therapy Card");
     public static Error InvalidCardStatus = Error.Validation("TherapyCard.InvalidCardStatus", "Card Status is invalid");
@@ -32,7 +27,7 @@ public static class TherapyCardErrors
     Error.NotFound("TherapyCard.PaymentNotFound", "Payment for this therapy card not found");
     public static readonly Error NoActiveTherapyCardFound =
     Error.NotFound("TherapyCard.NoActiveTherapyCardFound", "No active therapy card found for the patient");
-    public static readonly Error AllSessionsAlreadyGenerated = Error.Validation("TherapyCard.AllSessionsAlreadyGenerated", "All sessions are already generated");
+    public static readonly Error AllSessionsAlreadyGenerated = Error.Validation("TherapyCard.AllSessionsAlreadyGenerated", "تم اخذ جميع الجلسات المقررة لهذه البطاقة العلاجية");
 
     public static readonly Error NoTherapyCardsFoundForPatient = Error.NotFound("TherapyCard.NoTherapyCardsFoundForPatient", "No Therapy Cards was found for this patient");
     public static readonly Error ProgramDatesAreRequired = Error.Validation("TherapyCard.ProgramDatesAreRequired", "Program start date and end date are required for this therapy card type");

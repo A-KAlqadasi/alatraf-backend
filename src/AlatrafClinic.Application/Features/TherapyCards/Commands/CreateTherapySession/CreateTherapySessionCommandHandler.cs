@@ -38,12 +38,15 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
             
             return TherapyCardErrors.TherapyCardNotFound;
         }
-        if (therapyCard.IsExpired)
+
+        if (therapyCard.Type != Domain.TherapyCards.Enums.TherapyCardType.Special && therapyCard.IsExpired)
         {
             _logger.LogError("TherapyCard with id {TherapyCardId} is expired", command.TherapyCardId);
 
             return TherapyCardErrors.TherapyCardExpired;
         }
+        
+
         List<(int diagnosisProgramId, int doctorSectionRoomId)> sessionProgramsData = new();
         foreach (var sessionProgram in command.SessionProgramsData)
         {
@@ -58,10 +61,11 @@ public class CreateTherapySessionCommandHandler : IRequestHandler<CreateTherapyS
             
             if (doctorSectionRoom is null)
             {
-                _logger.LogError("DoctorSectionRoom with DoctorId {DoctorId}, SectionId {SectionId}, RoomId {RoomId} not found or inactive", sessionProgram.DocotorId, sessionProgram.SectionId, sessionProgram.RoomId);
+                _logger.LogError("DoctorSectionRoom with DoctorId {DoctorId}, SectionId {SectionId}, RoomId {RoomId} not found", sessionProgram.DocotorId, sessionProgram.SectionId, sessionProgram.RoomId);
 
                 return DoctorSectionRoomErrors.DoctorSectionRoomNotFound;
             }
+            
             if(!doctorSectionRoom.IsActive)
             {
                 _logger.LogError("DoctorSectionRoom with DoctorId {DoctorId}, SectionId {SectionId}, RoomId {RoomId} is inactive", sessionProgram.DocotorId, sessionProgram.SectionId, sessionProgram.RoomId);

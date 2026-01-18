@@ -103,7 +103,7 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
                                 .Text(t =>
                                 {
                                     t.Span("اسم المريض: ");
-                                    t.Span(therapyCard.Diagnosis.Patient?.Person.FullName ?? "غير معروف").Bold();
+                                    t.Span(therapyCard.Diagnosis.Patient?.Person.FullName ?? "—").Bold();
                                 });
 
                             row.RelativeItem().AlignLeft()
@@ -190,7 +190,7 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
                                     row.RelativeItem(10).AlignLeft()
                                     .Text(t =>
                                     {
-                                    t.Span(therapyCard.Diagnosis.DiagnosisText ?? "لا يوجد").Bold();
+                                    t.Span(therapyCard.Diagnosis.DiagnosisText ?? "—").Bold();
                                     });
                                 });
                         });
@@ -243,10 +243,10 @@ public class TherapyCardPdfGenerator(IUser user, IIdentityService identityServic
                                 : Colors.White;          // normal row
                            
                             Cell(index.ToString(), rowBackground);
-                            Cell(item.MedicalProgram?.Name ?? "", rowBackground);                            
+                            Cell(item.MedicalProgram?.Name ?? "—", rowBackground);                            
                             Cell(item.Duration.ToString(), rowBackground);
-                            Cell(item.MedicalProgram?.Section?.Name ?? string.Empty, rowBackground);
-                            Cell(item.Notes ?? string.Empty, rowBackground);
+                            Cell(item.MedicalProgram?.Section?.Name ?? "—", rowBackground);
+                            Cell(item.Notes ?? "", rowBackground);
 
                             
                             index++;

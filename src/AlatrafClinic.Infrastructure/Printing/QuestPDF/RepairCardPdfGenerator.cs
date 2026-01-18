@@ -185,9 +185,9 @@ public class RepairCardPdfGenerator(IUser user, IIdentityService identityService
                             Cell(index.ToString(), rowBackground);
                             Cell(item.IndustrialPartUnit.IndustrialPart.Name, rowBackground);                            
                             Cell(item.Quantity.ToString(), rowBackground);
-                            Cell(item.IndustrialPartUnit.Unit?.Name ?? string.Empty, rowBackground);
-                            Cell(item.DoctorSectionRoom?.Doctor?.Person?.FullName ?? "غير معروف", rowBackground);
-                            Cell(item.DoctorSectionRoom?.Section.Name ?? string.Empty, rowBackground);
+                            Cell(item.IndustrialPartUnit.Unit?.Name ?? "—", rowBackground);
+                            Cell(item.DoctorSectionRoom?.Doctor?.Person?.FullName ?? "—", rowBackground);
+                            Cell(item.DoctorSectionRoom?.Section.Name ?? "—", rowBackground);
                             index++;
                         }
                                                 

@@ -6,5 +6,6 @@ public enum DocumentTypes
     Ticket =1,
     Payment,
     TherapyCard,
-    RepairCard
+    RepairCard,
+    Session
 }

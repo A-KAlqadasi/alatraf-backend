@@ -1,5 +1,3 @@
-using System.Drawing;
-
 using AlatrafClinic.Application.Common.Interfaces;
 using AlatrafClinic.Application.Common.Printing;
 using AlatrafClinic.Application.Common.Printing.Interfaces;

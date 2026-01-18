@@ -18,7 +18,7 @@ public static class TherapyCardMapper
             TherapyCardId = entity.Id,
             Diagnosis = entity.Diagnosis != null ? entity.Diagnosis.ToDto() : new DiagnosisDto(),
             IsActive = entity.IsActive,
-            NumberOfSessions = entity.NumberOfTakenSessions,
+            NumberOfSessions = entity.NumberOfSessions,
             ProgramStartDate = entity.ProgramStartDate,
             ProgramEndDate = entity.ProgramEndDate,
             TherapyCardType = entity.Type.ToArabicTherapyCardType(),
@@ -103,11 +103,11 @@ public static class TherapyCardMapper
             InjuryReasons = entity.Diagnosis.InjuryReasons.ToDtos(),
             InjurySides = entity.Diagnosis.InjurySides.ToDtos(),
             InjuryTypes = entity.Diagnosis.InjuryTypes.ToDtos(),
-            Programs = entity.Diagnosis.DiagnosisPrograms.ToDtos(),
+            Programs = entity.DiagnosisPrograms.ToDtos(),
             TherapyCardId  = entity.Id,
             ProgramStartDate = entity.ProgramStartDate,
             ProgramEndDate  = entity.ProgramEndDate,
-
+            NumberOfSessions = entity.NumberOfSessions,
             TherapyCardType = entity.Type.ToArabicTherapyCardType(),
 
             CardStatus = entity.CardStatus.ToArabicTherapyCardStatus(),

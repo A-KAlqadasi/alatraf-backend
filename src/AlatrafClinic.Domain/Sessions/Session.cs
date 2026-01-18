@@ -65,6 +65,7 @@ public class Session : AuditableEntity<int>
         {
             return SessionErrors.SessionAlreadyTaken;
         }
+        
         if (SessionDate != AlatrafClinicConstants.TodayDate)
         {
             return SessionErrors.InvalidSessionDate(SessionDate);

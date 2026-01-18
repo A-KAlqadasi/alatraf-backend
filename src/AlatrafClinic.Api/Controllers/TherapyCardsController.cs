@@ -3,6 +3,7 @@ using AlatrafClinic.Api.Requests.TherapyCards;
 using AlatrafClinic.Application.Common.Models;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.CreateTherapySession;
+using AlatrafClinic.Application.Features.TherapyCards.Commands.PrintSession;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.PrintTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.RenewTherapyCard;
 using AlatrafClinic.Application.Features.TherapyCards.Commands.UpdateTherapyCard;
@@ -278,6 +279,28 @@ public sealed class TherapyCardsController(ISender sender) : ApiController
     {
         var result = await sender.Send(
             new PrintTherapyCardCommand(id),
+            cancellationToken);
+
+          return result.Match(
+          response => File(response.Content!, "application/pdf", response.FileName),
+          Problem);
+    }
+
+    [HttpPost("sessions/{id:int}/print")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [EndpointSummary("Generates a printable PDF for the specified session.")]
+    [EndpointDescription("Generates and returns a PDF document for the session identified by the provided ID.")]
+    [EndpointName("PrintSession")]
+    [ApiVersion("1.0")]
+    public async Task<IActionResult> PrintSession(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new PrintSessionCommand(id),
             cancellationToken);
 
           return result.Match(

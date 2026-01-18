@@ -197,6 +197,7 @@ public class RepairCard : AuditableEntity<int>
         Status = RepairCardStatus.ExitForPractice;
         return Result.Updated;
     }
+    
     public Result<Updated> AssignDeliveryTime(DateOnly deliveryDate, string? note)
     {
         if (!IsEditable)
